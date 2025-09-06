@@ -21,80 +21,132 @@ C# Blazor 프론트엔드와 ASP.NET Core 마이크로서비스 백엔드를 이
 📱 반응형 디자인: 데스크탑·태블릿·모바일 최적화
 
 🏗️ 아키텍처
-text
-[ Ocelot Gateway ] 
-       ↓
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│ Contact MS   │   │ Lead MS      │   │ Deal MS      │
-│ (PostgreSQL) │   │ (PostgreSQL) │   │ (PostgreSQL) │
-└──────────────┘   └──────────────┘   └──────────────┘
-       ↓                  ↓                  ↓
-   RabbitMQ            RabbitMQ            RabbitMQ
-       ↓                  ↓                  ↓
-┌─────────────────────────────────────────────────┐
-│           Blazor Server / WASM UI             │
-└─────────────────────────────────────────────────┘
-       ↓                  ↓                  ↓
- Prometheus         Grafana           Jaeger Tracing
+```mermaid
+graph TD
+    subgraph "Client"
+        A[NexaCRM.WebClient]
+    end
+
+    subgraph "API Gateway"
+        B[ApiGateway]
+    end
+
+    subgraph "Services"
+        C[Contact.API]
+        D[Deal.API]
+        E[Identity.API]
+    end
+
+    subgraph "Building Blocks"
+        F[EventBus]
+        G[Common]
+    end
+
+    subgraph "Data Stores"
+        H[(PostgreSQL)]
+        I[(RabbitMQ)]
+    end
+
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+
+    C --> H
+    D --> H
+    E --> H
+
+    C --> I
+    D --> I
+    E --> I
+
+    F --> I
+    C --> G
+    D --> G
+    E --> G
+    F --> G
+```
+
 🛠️ 기술 스택
-영역	기술
-프론트엔드	Blazor Server/WebAssembly, MudBlazor, Radzen, Fluxor
-백엔드	ASP.NET Core Web API, EF Core, MediatR, AutoMapper, FluentValidation
-데이터베이스	PostgreSQL, Redis
-메시징	RabbitMQ, Apache Kafka
-인증/보안	Duende IdentityServer, JWT Bearer
-인프라	Docker, Kubernetes (AKS/EKS/GKE)
-CI/CD	GitHub Actions, Docker Hub / ACR
-테스트	xUnit, Moq, Playwright, Selenium
+| 영역 | 기술 |
+| --- | --- |
+| **프론트엔드** | Blazor Web App, .NET 8 |
+| **백엔드** | ASP.NET Core Web API, .NET 8 |
+| **게이트웨이** | Ocelot |
+| **데이터베이스** | PostgreSQL, Redis |
+| **메시징** | RabbitMQ |
+| **인증/보안** | Duende IdentityServer, JWT Bearer |
+| **공유 로직** | .NET Standard |
+| **테스트** | xUnit, Moq |
+
 🏁 시작하기
-필수 요소
-.NET SDK 8.0
+### 필수 요소
+- .NET SDK (6.0, 7.0, 8.0)
+- Docker & Docker Compose
 
-Docker & Docker Compose
-
-Node.js (Playwright용)
-
-(선택) PostgreSQL, Redis — Docker로 간편 설치 가능
-
-클론 및 설정
-bash
+### 클론 및 설정
+```bash
 git clone https://github.com/your-org/nexacrm.git
 cd nexacrm
-로컬 실행
-데이터베이스 & 메시지 브로커 실행
+```
 
-bash
+### 로컬 실행
+> `dotnet` CLI를 사용하여 각 서비스를 실행하거나, Visual Studio/Rider에서 솔루션을 열어 실행할 수 있습니다.
+
+#### 데이터베이스 & 메시지 브로커 실행
+```bash
 docker-compose up -d
-마이그레이션 적용
+```
 
-bash
-cd src/CrmApi
-dotnet ef database update
-백엔드 실행
+#### 백엔드 서비스 실행
+```bash
+dotnet run --project src/Services/Contact.API/Services.Contact.API.csproj
+dotnet run --project src/Services/Deal.API/Services.Deal.API.csproj
+# ... 다른 서비스들도 동일하게 실행
+```
 
-bash
-dotnet run --project src/CrmApi/CrmApi.csproj
-프론트엔드 실행
+#### 프론트엔드 실행
+```bash
+dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
+```
 
-bash
-dotnet run --project src/CrmUI/CrmUI.csproj
-접속
-
-UI: http://localhost:5000
-
-Swagger: http://localhost:5001/swagger
+### 접속 정보
+-   **Web UI**: `https://localhost:7001`
+-   **Contact API Swagger**: `https://localhost:7011/swagger`
+-   **Deal API Swagger**: `https://localhost:7021/swagger`
 
 📁 폴더 구조
-text
-.
-├── src
-│   ├── CrmApi        # ASP.NET Core 마이크로서비스
-│   ├── CrmUI         # Blazor 프론트엔드
-│   ├── CrmAuth       # IdentityServer 인증 서비스
-│   └── Shared        # 공용 DTO, 유틸리티
-├── docs              # 아키텍처 다이어그램, 와이어프레임
-├── tests             # 단위·통합·E2E 테스트
-└── docker-compose.yml
+```
+/NexaCRMSolution
+|
+|-- /src
+|   |-- /ApiGateway
+|   |   `-- NexaCrm.ApiGateway.csproj
+|   |
+|   |-- /BuildingBlocks
+|   |   |-- /EventBus
+|   |   |   `-- BuildingBlocks.EventBus.csproj
+|   |   `-- /Common
+|   |       `-- BuildingBlocks.Common.csproj
+|   |
+|   |-- /Services
+|   |   |-- /Contact.API
+|   |   |   `-- Services.Contact.API.csproj
+|   |   |-- /Deal.API
+|   |   |   `-- Services.Deal.API.csproj
+|   |   `-- /Identity.API
+|   |       `-- Services.Identity.API.csproj
+|   |
+|   `-- /Web
+|       `-- /NexaCRM.WebClient
+|           `-- NexaCRM.WebClient.csproj
+|
+|-- /tests
+|   |-- /Services.Contact.UnitTests
+|   |   `-- Services.Contact.UnitTests.csproj
+|
+`-- NexaCrmSolution.sln
+```
 ☁️ 배포
 Docker 이미지 빌드
 
