@@ -1,4 +1,17 @@
-*.vs
+# .NET 빌드 아티팩트 무시
+**/bin/
+**/obj/
+
+# Visual Studio 임시 파일
+*.user
+*.suo
+*.vs/
+
+# Rider 임시 파일
+.idea/
+
+# 로그 파일
+*.log
 
 # Prerequisites
 *.d

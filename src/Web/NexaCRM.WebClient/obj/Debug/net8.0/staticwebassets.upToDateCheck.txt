@@ -1,2 +1,0 @@
-wwwroot\css\app.css
-wwwroot\index.html
