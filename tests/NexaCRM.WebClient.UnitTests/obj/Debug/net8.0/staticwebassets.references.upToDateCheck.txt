@@ -1,1 +1,0 @@
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net8.0\staticwebassets.build.json
