@@ -1,0 +1,16 @@
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\bin\Debug\net8.0\BuildingBlocks.EventBus.deps.json
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\bin\Debug\net8.0\BuildingBlocks.EventBus.dll
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\bin\Debug\net8.0\BuildingBlocks.EventBus.pdb
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\bin\Debug\net8.0\BuildingBlocks.Common.dll
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\bin\Debug\net8.0\BuildingBlocks.Common.pdb
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.csproj.AssemblyReference.cache
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.AssemblyInfoInputs.cache
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.AssemblyInfo.cs
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.csproj.CoreCompileInputs.cache
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.sourcelink.json
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\Building.0E6823A6.Up2Date
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.dll
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\refint\BuildingBlocks.EventBus.dll
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\BuildingBlocks.EventBus.pdb
+C:\Users\Kidd\Source\Repos\-NexaCRM-\src\BuildingBlocks\EventBus\obj\Debug\net8.0\ref\BuildingBlocks.EventBus.dll
