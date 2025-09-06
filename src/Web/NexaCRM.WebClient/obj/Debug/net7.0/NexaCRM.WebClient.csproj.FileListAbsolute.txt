@@ -1,7 +1,0 @@
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\rpswa.dswa.cache.json
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\NexaCRM.WebClient.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\NexaCRM.WebClient.AssemblyInfoInputs.cache
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\NexaCRM.WebClient.AssemblyInfo.cs
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\NexaCRM.WebClient.csproj.CoreCompileInputs.cache
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\NexaCRM.WebClient.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\Kidd\Source\Repos\-NexaCRM-\src\Web\NexaCRM.WebClient\obj\Debug\net7.0\NexaCRM.WebClient.sourcelink.json
