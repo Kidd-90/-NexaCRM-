@@ -13,7 +13,7 @@ namespace NexaCRM.WebClient.Services
             return Task.FromResult(new AuthenticationState(_currentUser));
         }
 
-        public void UpdateAuthenticationState(string username, string[] roles)
+        public void UpdateAuthenticationState(string? username, string[]? roles)
         {
             ClaimsPrincipal claimsPrincipal;
 

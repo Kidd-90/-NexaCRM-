@@ -145,7 +145,7 @@
         <div class="flex flex-wrap justify-between gap-3 p-4">
             <AuthorizeView>
                 <Authorized Context="authContext">
-                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Welcome back, @authContext.User.Identity.Name</p>
+                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Welcome back, @authContext.User.Identity?.Name</p>
                 </Authorized>
             </AuthorizeView>
         </div>
