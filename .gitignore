@@ -68,3 +68,11 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Rider files
+.idea/
+*.sln.iml
+
+# Build results
+**/[Bb]in/
+**/[Oo]bj/
