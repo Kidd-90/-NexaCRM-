@@ -1,6 +1,10 @@
+@using NexaCRM.WebClient.Services
+@inject CustomAuthStateProvider AuthProvider
+@inject NavigationManager NavigationManager
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">NexaCRM.WebClient</a>
+        <a class="navbar-brand" href="">NexaCRM</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -9,21 +13,49 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="main-dashboard">
+                        <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
+                    </NavLink>
+                </div>
+                <AuthorizeView Roles="Manager">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="sales-manager-dashboard">
+                            <span class="oi oi-person" aria-hidden="true"></span> Manager Dashboard
+                        </NavLink>
+                    </div>
+                </AuthorizeView>
+                <div class="nav-item px-3">
+                    <button class="nav-link btn btn-link" @onclick="Logout">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                    </button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
-
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void Logout()
+    {
+        AuthProvider.Logout();
+        NavigationManager.NavigateTo("/");
     }
 }
