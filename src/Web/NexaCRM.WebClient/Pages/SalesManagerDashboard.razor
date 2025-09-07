@@ -1,4 +1,7 @@
 @page "/sales-manager-dashboard"
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize(Roles = "Manager")]
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
@@ -67,7 +70,11 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Sales Manager Dashboard</p>
+                <AuthorizeView>
+                    <Authorized>
+                        <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Welcome, @context.User.Identity.Name</p>
+                    </Authorized>
+                </AuthorizeView>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">Overview of team performance and key metrics</p>
               </div>
             </div>

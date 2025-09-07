@@ -1,4 +1,6 @@
 @page "/main-dashboard"
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize(Roles = "Sales,Manager")]
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -141,7 +143,11 @@
             </div>
         </header>
         <div class="flex flex-wrap justify-between gap-3 p-4">
-            <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Welcome back, Sarah</p>
+            <AuthorizeView>
+                <Authorized>
+                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Welcome back, @context.User.Identity.Name</p>
+                </Authorized>
+            </AuthorizeView>
         </div>
         <div class="px-4 py-3">
             <label class="flex flex-col min-w-40 h-12 w-full">

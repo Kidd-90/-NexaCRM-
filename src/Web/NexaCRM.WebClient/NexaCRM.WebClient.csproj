@@ -14,5 +14,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
 		<!-- Microsoft.AspNetCore.* 네임스페이스 정의 어셈블리 -->
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
 	</ItemGroup>
 </Project>
