@@ -14,18 +14,20 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <AuthorizeView>
-            <Authorized>
+            <Authorized Context="navContext">
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="main-dashboard">
                         <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
                     </NavLink>
                 </div>
-                <AuthorizeView Roles="Manager">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="sales-manager-dashboard">
-                            <span class="oi oi-person" aria-hidden="true"></span> Manager Dashboard
-                        </NavLink>
-                    </div>
+                <AuthorizeView Roles="Manager" Context="managerContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="sales-manager-dashboard">
+                                <span class="oi oi-person" aria-hidden="true"></span> Manager Dashboard
+                            </NavLink>
+                        </div>
+                    </Authorized>
                 </AuthorizeView>
                 <div class="nav-item px-3">
                     <button class="nav-link btn btn-link" @onclick="Logout">

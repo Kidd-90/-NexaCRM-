@@ -71,8 +71,8 @@
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
                 <AuthorizeView>
-                    <Authorized>
-                        <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Welcome, @context.User.Identity.Name</p>
+                    <Authorized Context="authContext">
+                        <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Welcome, @authContext.User.Identity?.Name</p>
                     </Authorized>
                 </AuthorizeView>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">Overview of team performance and key metrics</p>
@@ -161,7 +161,7 @@
               </div>
             </div>
             <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Top Performers</h2>
-            <div class="px-4 py-3 @container">
+            <div class="px-4 py-3 @@container">
               <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
                 <table class="flex-1">
                   <thead>
@@ -209,10 +209,10 @@
                 </table>
               </div>
               <style>
-                          @container(max-width:120px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120{display: none;}}
-                @container(max-width:240px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240{display: none;}}
-                @container(max-width:360px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360{display: none;}}
-                @container(max-width:480px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480{display: none;}}
+                          @@container(max-width:120px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120{display: none;}}
+                @@container(max-width:240px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240{display: none;}}
+                @@container(max-width:360px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360{display: none;}}
+                @@container(max-width:480px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480{display: none;}}
               </style>
             </div>
           </div>
