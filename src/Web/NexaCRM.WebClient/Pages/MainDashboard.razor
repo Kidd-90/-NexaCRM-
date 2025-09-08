@@ -144,8 +144,8 @@
         </header>
         <div class="flex flex-wrap justify-between gap-3 p-4">
             <AuthorizeView>
-                <Authorized Context="authContext">
-                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Welcome back, @authContext.User.Identity?.Name</p>
+                <Authorized>
+                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Welcome back, @context.User.Identity?.Name</p>
                 </Authorized>
             </AuthorizeView>
         </div>
@@ -252,7 +252,7 @@
             </div>
         </div>
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Tasks</h2>
-        <div class="px-4 py-3 @@container">
+        <div class="px-4 py-3 container">
             <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
             <table class="flex-1">
                 <thead>
@@ -313,11 +313,6 @@
                 </tbody>
             </table>
             </div>
-            <style>
-                        @@container(max-width:120px){.table-b8380c11-022e-424e-acc3-69900c40b013-column-120{display: none;}}
-            @@container(max-width:240px){.table-b8380c11-022e-424e-acc3-69900c40b013-column-240{display: none;}}
-            @@container(max-width:360px){.table-b8380c11-022e-424e-acc3-69900c40b013-column-360{display: none;}}
-            </style>
         </div>
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Recent Activity</h2>
         <div class="grid grid-cols-[40px_1fr] gap-x-2 px-4">

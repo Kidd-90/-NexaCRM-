@@ -1,0 +1,25 @@
+@container (max-width: 120px) {
+    .table-cafe7f43-be03-44a9-b798-d6051697b66c-column-120 {
+        display: none;
+    }
+}
+@container (max-width: 240px) {
+    .table-cafe7f43-be03-44a9-b798-d6051697b66c-column-240 {
+        display: none;
+    }
+}
+@container (max-width: 360px) {
+    .table-cafe7f43-be03-44a9-b798-d6051697b66c-column-360 {
+        display: none;
+    }
+}
+@container (max-width: 480px) {
+    .table-cafe7f43-be03-44a9-b798-d6051697b66c-column-480 {
+        display: none;
+    }
+}
+@container (max-width: 600px) {
+    .table-cafe7f43-be03-44a9-b798-d6051697b66c-column-600 {
+        display: none;
+    }
+}
