@@ -45,7 +45,7 @@ namespace NexaCRM.WebClient.Services
 
         public void Logout()
         {
-            UpdateAuthenticationState(null, null);
+            UpdateAuthenticationState(string.Empty, new string[0]);
         }
     }
 }

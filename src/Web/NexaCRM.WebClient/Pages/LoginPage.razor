@@ -10,10 +10,10 @@
       <div class="layout-container flex h-full grow flex-col">
         <div class="px-40 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
-            <div class="@container">
-              <div class="@[480px]:px-4 @[480px]:py-3">
+            <div class="container-login-page">
+              <div class="inner-div-login-page">
                 <div
-                  class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-slate-50 @[480px]:rounded-lg min-h-[218px]"
+                  class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-slate-50 image-div-login-page min-h-[218px]"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfaynYSIMyWSA0KAFt_F_0xbeEywahjPH6dXL7wfRm4aWKQTJPoGB_HZxp84Z__2mS2F2ZdqQpfAcc88i6ayJKktBU574T6a8WZQAUVqfblTYgNw6sKhbnKYmqNLZbI-9w41kt0_FPlVm7B0FgCsmx4jc0i9FBdko0SFT-P4C4Q68UTWM6pAhSE7iwRPIAso3lizthXAugbRD3gqQmrottH8RGjjF_tRxV8w53STiPSwDa7xyJ6tDSIm9BIlAHNZMXZ4kmJjOjuSd7");'
                 ></div>
               </div>
@@ -77,8 +77,8 @@
     </div>
 
 @code {
-    private string username;
-    private string password;
+    private string username = string.Empty;
+    private string password = string.Empty;
 
     private void Login()
     {
