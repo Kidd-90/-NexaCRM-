@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Surveys" xml:space="preserve">
+    <value>Surveys</value>
+  </data>
+  <data name="Templates" xml:space="preserve">
+    <value>Templates</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SurveysTitle" xml:space="preserve">
+    <value>Surveys</value>
+  </data>
+  <data name="NewSurvey" xml:space="preserve">
+    <value>New Survey</value>
+  </data>
+  <data name="SearchSurveys" xml:space="preserve">
+    <value>Search surveys</value>
+  </data>
+  <data name="AllSurveys" xml:space="preserve">
+    <value>All Surveys</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Drafts" xml:space="preserve">
+    <value>Drafts</value>
+  </data>
+  <data name="SurveyName" xml:space="preserve">
+    <value>Survey Name</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Responses" xml:space="preserve">
+    <value>Responses</value>
+  </data>
+  <data name="CompletionRate" xml:space="preserve">
+    <value>Completion Rate</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="CustomerSatisfactionSurvey" xml:space="preserve">
+    <value>Customer Satisfaction Survey</value>
+  </data>
+  <data name="ProductFeedbackSurvey" xml:space="preserve">
+    <value>Product Feedback Survey</value>
+  </data>
+  <data name="EventFeedbackSurvey" xml:space="preserve">
+    <value>Event Feedback Survey</value>
+  </data>
+  <data name="WebsiteUsabilitySurvey" xml:space="preserve">
+    <value>Website Usability Survey</value>
+  </data>
+  <data name="NewFeatureSurvey" xml:space="preserve">
+    <value>New Feature Survey</value>
+  </data>
+  <data name="Draft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+</root>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Home" xml:space="preserve">
+    <value>홈</value>
+  </data>
+  <data name="Surveys" xml:space="preserve">
+    <value>설문조사</value>
+  </data>
+  <data name="Templates" xml:space="preserve">
+    <value>템플릿</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="SurveysTitle" xml:space="preserve">
+    <value>설문조사</value>
+  </data>
+  <data name="NewSurvey" xml:space="preserve">
+    <value>새 설문조사</value>
+  </data>
+  <data name="SearchSurveys" xml:space="preserve">
+    <value>설문조사 검색</value>
+  </data>
+  <data name="AllSurveys" xml:space="preserve">
+    <value>모든 설문조사</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>활성</value>
+  </data>
+  <data name="Drafts" xml:space="preserve">
+    <value>초안</value>
+  </data>
+  <data name="SurveyName" xml:space="preserve">
+    <value>설문조사 이름</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>상태</value>
+  </data>
+  <data name="Responses" xml:space="preserve">
+    <value>응답</value>
+  </data>
+  <data name="CompletionRate" xml:space="preserve">
+    <value>완료율</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>생성일</value>
+  </data>
+  <data name="CustomerSatisfactionSurvey" xml:space="preserve">
+    <value>고객 만족도 설문조사</value>
+  </data>
+  <data name="ProductFeedbackSurvey" xml:space="preserve">
+    <value>제품 피드백 설문조사</value>
+  </data>
+  <data name="EventFeedbackSurvey" xml:space="preserve">
+    <value>이벤트 피드백 설문조사</value>
+  </data>
+  <data name="WebsiteUsabilitySurvey" xml:space="preserve">
+    <value>웹사이트 사용성 설문조사</value>
+  </data>
+  <data name="NewFeatureSurvey" xml:space="preserve">
+    <value>신기능 설문조사</value>
+  </data>
+  <data name="Draft" xml:space="preserve">
+    <value>초안</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>완료됨</value>
+  </data>
+</root>

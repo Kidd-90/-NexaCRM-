@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>다시 오신 것을 환영합니다</value>
+  </data>
+  <data name="SignInToYourAccount" xml:space="preserve">
+    <value>계정에 로그인하세요</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>사용자 이름</value>
+  </data>
+  <data name="EnterYourUsername" xml:space="preserve">
+    <value>사용자 이름을 입력하세요</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>비밀번호</value>
+  </data>
+  <data name="EnterYourPassword" xml:space="preserve">
+    <value>비밀번호를 입력하세요</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>기억하기</value>
+  </data>
+  <data name="LogIn" xml:space="preserve">
+    <value>로그인</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>비밀번호를 잊으셨나요?</value>
+  </data>
+  <data name="OrLogInWith" xml:space="preserve">
+    <value>또는 다음으로 로그인</value>
+  </data>
+  <data name="Google" xml:space="preserve">
+    <value>Google</value>
+  </data>
+  <data name="Microsoft" xml:space="preserve">
+    <value>Microsoft</value>
+  </data>
+</root>
