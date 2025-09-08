@@ -1,8 +1,10 @@
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 @code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/", forceLoad: true);
+        _ = JSRuntime.InvokeVoidAsync("console.log", "RedirectToLogin component initialized");
+        NavigationManager.NavigateTo("/login", false);
     }
 }

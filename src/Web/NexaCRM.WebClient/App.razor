@@ -1,8 +1,17 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime JSRuntime
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized Context="appAuthContext">
+                    @{
+                        // 디버깅을 위한 콘솔 로그
+                        _ = JSRuntime.InvokeVoidAsync("console.log", $"NotAuthorized triggered for route: {routeData.PageType.Name}");
+                        _ = JSRuntime.InvokeVoidAsync("console.log", $"User IsAuthenticated: {appAuthContext.User.Identity?.IsAuthenticated}");
+                        _ = JSRuntime.InvokeVoidAsync("console.log", $"User Name: {appAuthContext.User.Identity?.Name}");
+                    }
                     @if (appAuthContext.User.Identity?.IsAuthenticated != true)
                     {
                         <RedirectToLogin />

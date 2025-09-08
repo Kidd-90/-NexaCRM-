@@ -1,0 +1,12 @@
+@page "/"
+@attribute [AllowAnonymous]
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@code {
+    protected override void OnInitialized()
+    {
+        _ = JSRuntime.InvokeVoidAsync("console.log", "Index component initialized");
+        NavigationManager.NavigateTo("/login");
+    }
+}

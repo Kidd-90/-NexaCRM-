@@ -1,7 +1,10 @@
-@page "/"
+@page "/login"
+@attribute [AllowAnonymous]
 @using NexaCRM.WebClient.Services
+@using System.Linq
 @inject CustomAuthStateProvider AuthProvider
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <div
       class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden"
@@ -49,7 +52,7 @@
               </div>
             </div>
             <div class="flex px-4 py-3">
-              <button @onclick="Login"
+              <button @onclick="Login" type="button"
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
               >
                 <span class="truncate">Log in</span>
@@ -80,19 +83,36 @@
     private string username = string.Empty;
     private string password = string.Empty;
 
-    private void Login()
+    private async Task Login()
     {
+        await JSRuntime.InvokeVoidAsync("console.log", "Login button clicked!");
+        await JSRuntime.InvokeVoidAsync("console.log", $"Username: {username}, Password: {password}");
+        
         if (username == "sales" && password == "sales")
         {
             var roles = new[] { "Sales" };
+            await JSRuntime.InvokeVoidAsync("console.log", "Setting Sales role...");
             AuthProvider.UpdateAuthenticationState(username, roles);
+            await JSRuntime.InvokeVoidAsync("console.log", "Navigating to main dashboard");
             NavigationManager.NavigateTo("/main-dashboard");
         }
         else if (username == "manager" && password == "manager")
         {
             var roles = new[] { "Manager" };
+            await JSRuntime.InvokeVoidAsync("console.log", "Setting Manager role...");
             AuthProvider.UpdateAuthenticationState(username, roles);
+            
+            // 인증 상태 확인
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            await JSRuntime.InvokeVoidAsync("console.log", $"Auth state after login - IsAuthenticated: {authState.User.Identity?.IsAuthenticated}");
+            await JSRuntime.InvokeVoidAsync("console.log", $"User roles: {string.Join(", ", authState.User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))}");
+            
+            await JSRuntime.InvokeVoidAsync("console.log", "Navigating to manager dashboard");
             NavigationManager.NavigateTo("/sales-manager-dashboard");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", "Invalid credentials");
         }
     }
 }
