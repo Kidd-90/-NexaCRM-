@@ -1,4 +1,6 @@
 @using NexaCRM.WebClient.Services
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<NavMenu> Localizer
 @inject CustomAuthStateProvider AuthProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -14,28 +16,28 @@
             <Authorized Context="navContext">
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
-                        <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
+                        <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]
                     </NavLink>
                 </div>
                 <AuthorizeView Roles="Manager">
                     <Authorized Context="innerContext">
                         <div class="nav-item px-3">
                             <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
-                                <span class="oi oi-person" aria-hidden="true"></span> Manager Dashboard
+                                <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
                             </NavLink>
                         </div>
                     </Authorized>
                 </AuthorizeView>
                 <div class="nav-item px-3">
                     <button class="nav-link btn btn-link" @onclick="Logout">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> @Localizer["Logout"]
                     </button>
                 </div>
             </Authorized>
             <NotAuthorized>
                  <div class="nav-item px-3">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
-                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                        <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
                     </NavLink>
                 </div>
             </NotAuthorized>

@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -32,3 +33,16 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var cultureCookie = await JSRuntime.InvokeAsync<string>("getCultureCookie");
+        if (string.IsNullOrEmpty(cultureCookie))
+        {
+            var newCultureCookie = "c=ko-KR|uic=ko-KR";
+            await JSRuntime.InvokeVoidAsync("setCultureCookie", newCultureCookie);
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        }
+    }
+}

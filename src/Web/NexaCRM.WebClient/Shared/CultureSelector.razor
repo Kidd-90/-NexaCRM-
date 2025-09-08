@@ -1,0 +1,17 @@
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+<div class="d-flex align-items-center">
+    <button class="btn btn-link" @onclick='() => SetCulture("en-US")'>English</button>
+    <span class="mx-1">|</span>
+    <button class="btn btn-link" @onclick='() => SetCulture("ko-KR")'>한국어</button>
+</div>
+
+@code {
+    private async Task SetCulture(string culture)
+    {
+        var cultureCookie = $"c={culture}|uic={culture}";
+        await JSRuntime.InvokeVoidAsync("setCultureCookie", cultureCookie);
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+}
