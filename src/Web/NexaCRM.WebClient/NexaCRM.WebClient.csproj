@@ -16,6 +16,6 @@
 		<!-- Microsoft.AspNetCore.* 네임스페이스 정의 어셈블리 -->
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.0-preview.7.25380.108" />
 	</ItemGroup>
 </Project>
