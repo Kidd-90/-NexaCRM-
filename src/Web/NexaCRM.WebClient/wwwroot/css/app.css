@@ -1,5 +1,9 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* 가로 스크롤 방지 */
 }
 
 h1:focus {
@@ -17,7 +21,235 @@ a, .btn-link {
 }
 
 .content {
-    padding-top: 1.1rem;
+    padding-top: 0; /* 상단 여백 제거 */
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    min-height: 100vh; /* 전체 화면 높이 사용 */
+}
+
+/* Navigation styles - 반응형 디자인 */
+.sidebar {
+    background-color: #343a40;
+    width: 250px;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* 기본적으로 모든 화면에서 숨김 */
+    transform: translateX(-100%);
+}
+
+/* collapse 클래스가 없을 때만 보이기 (메뉴 열림) */
+.sidebar:not(.collapse) {
+    transform: translateX(0);
+}
+
+/* collapse 클래스가 있을 때는 강제로 숨김 (메뉴 닫힘) */
+.sidebar.collapse {
+    transform: translateX(-100%) !important;
+}
+
+.page {
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out;
+    /* 기본적으로 전체 화면 사용 */
+    margin-left: 0;
+    width: 100%;
+}
+
+/* 기존 top-row 숨김 - 더 이상 사용하지 않음 */
+.top-row {
+    display: none;
+}
+
+/* 플로팅 햄버거 메뉴 버튼 */
+.floating-menu-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(52, 58, 64, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    display: block;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1002;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.floating-menu-toggle:hover {
+    background: rgba(52, 58, 64, 1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.floating-menu-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+}
+
+.floating-menu-toggle .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.95)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.navbar-toggler:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.9)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.nav-item {
+    margin: 0.25rem 0;
+}
+
+.nav-link {
+    color: #ffffff !important;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    border-radius: 0.375rem;
+    margin: 0 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    background-color: #0d6efd;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link span {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.nav-link span.oi {
+    width: 20px;
+    text-align: center;
+}
+
+.collapse {
+    display: none;
+}
+
+/* 메뉴 오버레이 - 모든 화면에서 작동 */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* 메뉴가 열려있을 때만 오버레이 표시 (collapse 클래스가 없을 때) */
+.page:has(.sidebar:not(.collapse)) .mobile-overlay {
+    display: block;
+}
+
+/* 메뉴가 닫혀있을 때는 오버레이 숨김 (collapse 클래스가 있을 때) */
+.page:has(.sidebar.collapse) .mobile-overlay {
+    display: none !important;
+}
+
+/* 태블릿 환경 (768px - 1023px) */
+@media (max-width: 1023.98px) and (min-width: 768px) {
+    .sidebar {
+        width: 250px; /* 태블릿에서도 동일한 크기 */
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .nav-link span {
+        margin-right: 0.75rem;
+    }
+}
+
+/* 모바일 환경 (767px 이하) */
+@media (max-width: 767.98px) {
+    .sidebar {
+        width: 280px; /* 모바일에서는 약간 더 넓게 */
+    }
+    
+    .nav-link {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 0;
+        margin: 0;
+    }
+    
+    .nav-link:hover {
+        transform: none;
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .nav-link span {
+        margin-right: 1rem;
+        font-size: 1.2rem;
+    }
+}
+
+/* 아주 작은 화면 (480px 이하) */
+@media (max-width: 479.98px) {
+    .sidebar {
+        width: 100%; /* 작은 화면에서는 전체 너비 */
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .nav-link {
+        padding: 1.2rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .top-row {
+        height: 60px;
+    }
+    
+    .content {
+        padding-top: 5.5rem;
+    }
 }
 
 .valid.modified:not([type=checkbox]) {

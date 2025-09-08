@@ -11,67 +11,115 @@
       style="--checkbox-tick-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(248,250,252)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e'); font-family: Inter, &quot;Noto Sans&quot;, sans-serif;"
     >
       <div class="layout-container flex h-full grow flex-col">
-        <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
-            <div class="container-login-page">
-              <div class="inner-div-login-page">
-                <div
-                  class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-slate-50 image-div-login-page min-h-[218px]"
-                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfaynYSIMyWSA0KAFt_F_0xbeEywahjPH6dXL7wfRm4aWKQTJPoGB_HZxp84Z__2mS2F2ZdqQpfAcc88i6ayJKktBU574T6a8WZQAUVqfblTYgNw6sKhbnKYmqNLZbI-9w41kt0_FPlVm7B0FgCsmx4jc0i9FBdko0SFT-P4C4Q68UTWM6pAhSE7iwRPIAso3lizthXAugbRD3gqQmrottH8RGjjF_tRxV8w53STiPSwDa7xyJ6tDSIm9BIlAHNZMXZ4kmJjOjuSd7");'
-                ></div>
+        <!-- 완전한 화면 중앙 정렬을 위한 컨테이너 -->
+        <div class="flex flex-1 items-center justify-center py-8 px-4">
+          <div class="w-full max-w-md mx-auto">
+            <!-- 통합된 로그인 카드 -->
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#e5e7eb]">
+              <!-- 상단 이미지 섹션 -->
+              <div
+                class="w-full bg-center bg-no-repeat bg-cover image-div-login-page min-h-[180px] relative"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfaynYSIMyWSA0KAFt_F_0xbeEywahjPH6dXL7wfRm4aWKQTJPoGB_HZxp84Z__2mS2F2ZdqQpfAcc88i6ayJKktBU574T6a8WZQAUVqfblTYgNw6sKhbnKYmqNLZbI-9w41kt0_FPlVm7B0FgCsmx4jc0i9FBdko0SFT-P4C4Q68UTWM6pAhSE7iwRPIAso3lizthXAugbRD3gqQmrottH8RGjjF_tRxV8w53STiPSwDa7xyJ6tDSIm9BIlAHNZMXZ4kmJjOjuSd7");'>
+                <!-- 부드러운 그라데이션 오버레이 -->
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"></div>
               </div>
-            </div>
-            <h2 class="text-[#0e131b] tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">Welcome back</h2>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">Username</p>
-                <input @bind="username"
-                  placeholder="Enter your username"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
-                />
-              </label>
-            </div>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">Password</p>
-                <input @bind="password" type="password"
-                  placeholder="Enter your password"
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
-                />
-              </label>
-            </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14 justify-between">
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Remember me</p>
-              <div class="shrink-0">
-                <div class="flex size-7 items-center justify-center">
-                  <input
-                    type="checkbox"
-                    class="h-5 w-5 rounded border-[#d0d9e7] border-2 bg-transparent text-[#2a74ea] checked:bg-[#2a74ea] checked:border-[#2a74ea] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#d0d9e7] focus:outline-none"
+              
+              <!-- 텍스트와 폼이 통합된 콘텐츠 영역 -->
+              <div class="px-8 pb-8 pt-6">
+                <!-- 헤더 텍스트 -->
+                <div class="text-center mb-8">
+                  <h2 class="text-[#0e131b] tracking-light text-[28px] font-bold leading-tight mb-2">Welcome back</h2>
+                  <p class="text-[#4d6a99] text-base font-medium mb-4">Sign in to your account</p>
+                  <div class="w-12 h-0.5 bg-gradient-to-r from-[#2a74ea] to-[#4d6a99] rounded-full mx-auto"></div>
+                </div>
+                
+                <!-- 로그인 폼 필드들 -->
+              <!-- Username 필드 -->
+              <div class="mb-4">
+                <label class="flex flex-col">
+                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">Username</p>
+                  <input @bind="username"
+                    placeholder="Enter your username"
+                    class="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#2a74ea] h-12 placeholder:text-[#4d6a99] px-4 text-base font-normal leading-normal"
                   />
+                </label>
+              </div>
+              
+              <!-- Password 필드 -->
+              <div class="mb-4">
+                <label class="flex flex-col">
+                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">Password</p>
+                  <input @bind="password" type="password"
+                    placeholder="Enter your password"
+                    class="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#2a74ea] h-12 placeholder:text-[#4d6a99] px-4 text-base font-normal leading-normal"
+                  />
+                </label>
+              </div>
+              
+              <!-- Remember me 체크박스 -->
+              <div class="flex items-center gap-3 mb-6">
+                <div class="shrink-0">
+                  <div class="flex size-6 items-center justify-center">
+                    <input
+                      type="checkbox"
+                      class="h-4 w-4 rounded border-[#d0d9e7] border-2 bg-transparent text-[#2a74ea] checked:bg-[#2a74ea] checked:border-[#2a74ea] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#d0d9e7] focus:outline-none"
+                    />
+                  </div>
+                </div>
+                <p class="text-[#0e131b] text-sm font-normal leading-normal">Remember me</p>
+              </div>
+              
+              <!-- 로그인 버튼 -->
+              <div class="mb-4">
+                <button @onclick="Login" type="button"
+                  class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#2a74ea] hover:bg-[#1e5db8] transition-colors text-white text-base font-semibold leading-normal"
+                >
+                  <span class="truncate">Log in</span>
+                </button>
+              </div>
+              
+              <!-- Forgot password 링크 -->
+              <div class="text-center mb-6">
+                <a href="#" class="text-[#2a74ea] text-sm font-normal leading-normal hover:underline">Forgot password?</a>
+              </div>
+              
+              <!-- 구분선 -->
+              <div class="relative mb-6">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-[#d0d9e7]"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="bg-white px-4 text-[#4d6a99] font-medium">Or log in with</span>
                 </div>
               </div>
-            </div>
-            <div class="flex px-4 py-3">
-              <button @onclick="Login" type="button"
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
-              >
-                <span class="truncate">Log in</span>
-              </button>
-            </div>
-            <p class="text-[#4d6a99] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline">Forgot password?</p>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Or log in with</h3>
-            <div class="flex justify-center">
-              <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 max-w-[480px] justify-center">
+              
+              <!-- 소셜 로그인 버튼들 -->
+              <div class="flex gap-3">
                 <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em] grow"
+                  class="social-login-btn google-btn flex flex-1 cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-lg h-12 px-4 text-sm font-medium leading-normal"
                 >
-                  <span class="truncate">Google</span>
+                  <!-- Google Icon -->
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  <span class="truncate font-medium">Google</span>
                 </button>
                 <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em] grow"
+                  class="social-login-btn microsoft-btn flex flex-1 cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-lg h-12 px-4 text-sm font-medium leading-normal"
                 >
-                  <span class="truncate">Microsoft</span>
+                  <!-- Microsoft Icon -->
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#f25022" d="M1 1h10v10H1z"/>
+                    <path fill="#00a4ef" d="M13 1h10v10H13z"/>
+                    <path fill="#7fba00" d="M1 13h10v10H1z"/>
+                    <path fill="#ffb900" d="M13 13h10v10H13z"/>
+                  </svg>
+                  <span class="truncate font-medium">Microsoft</span>
                 </button>
+              </div>
               </div>
             </div>
           </div>
@@ -101,18 +149,13 @@
             var roles = new[] { "Manager" };
             await JSRuntime.InvokeVoidAsync("console.log", "Setting Manager role...");
             AuthProvider.UpdateAuthenticationState(username, roles);
-            
-            // 인증 상태 확인
-            var authState = await AuthProvider.GetAuthenticationStateAsync();
-            await JSRuntime.InvokeVoidAsync("console.log", $"Auth state after login - IsAuthenticated: {authState.User.Identity?.IsAuthenticated}");
-            await JSRuntime.InvokeVoidAsync("console.log", $"User roles: {string.Join(", ", authState.User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))}");
-            
-            await JSRuntime.InvokeVoidAsync("console.log", "Navigating to manager dashboard");
+            await JSRuntime.InvokeVoidAsync("console.log", "Navigating to sales manager dashboard");
             NavigationManager.NavigateTo("/sales-manager-dashboard");
         }
         else
         {
             await JSRuntime.InvokeVoidAsync("console.log", "Invalid credentials");
+            // 에러 처리 로직 추가 가능
         }
     }
 }

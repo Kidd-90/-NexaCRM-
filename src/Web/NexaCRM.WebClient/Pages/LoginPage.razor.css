@@ -2,6 +2,52 @@
     container-type: inline-size;
 }
 
+/* 소셜 로그인 버튼 스타일 */
+.social-login-btn {
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.social-login-btn:hover::before {
+    left: 100%;
+}
+
+.google-btn {
+    border: 2px solid #e8eaed;
+    background: #ffffff;
+    color: #3c4043;
+}
+
+.google-btn:hover {
+    background: #f8f9fa;
+    border-color: #dadce0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.microsoft-btn {
+    background: #0078d4;
+    border: 2px solid #0078d4;
+    color: white;
+}
+
+.microsoft-btn:hover {
+    background: #106ebe;
+    border-color: #106ebe;
+    box-shadow: 0 4px 12px rgba(16, 110, 190, 0.3);
+}
+
 @container (min-width: 480px) {
     .inner-div-login-page {
         padding-left: 1rem;
@@ -10,6 +56,23 @@
         padding-bottom: 0.75rem;
     }
     .image-div-login-page {
-        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .image-div-login-page:hover {
+        transform: scale(1.02);
+    }
+    
+    .image-div-login-page::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(42, 116, 234, 0.05) 0%, rgba(77, 106, 153, 0.05) 100%);
+        pointer-events: none;
     }
 }

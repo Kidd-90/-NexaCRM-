@@ -1,29 +1,26 @@
 @using NexaCRM.WebClient.Services
 @inject CustomAuthStateProvider AuthProvider
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">NexaCRM</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+<!-- 고정된 햄버거 버튼 -->
+<button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
+    <span class="navbar-toggler-icon"></span>
+</button>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass" @onclick:stopPropagation="true">
     <nav class="flex-column">
         <AuthorizeView>
             <Authorized Context="navContext">
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="main-dashboard">
+                    <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
                         <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
                     </NavLink>
                 </div>
                 <AuthorizeView Roles="Manager">
                     <Authorized Context="innerContext">
                         <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="sales-manager-dashboard">
+                            <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
                                 <span class="oi oi-person" aria-hidden="true"></span> Manager Dashboard
                             </NavLink>
                         </div>
@@ -37,7 +34,7 @@
             </Authorized>
             <NotAuthorized>
                  <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
                         <span class="oi oi-home" aria-hidden="true"></span> Home
                     </NavLink>
                 </div>
@@ -50,14 +47,35 @@
     private bool collapseNavMenu = true;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
+    private async Task ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+        // JavaScript 함수 호출하여 UI 업데이트
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", collapseNavMenu);
     }
 
-    private void Logout()
+    private async Task CloseNavMenu()
     {
+        collapseNavMenu = true;
+        // JavaScript 함수 호출하여 메뉴 닫기
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", collapseNavMenu);
+    }
+
+    private async Task Logout()
+    {
+        await CloseNavMenu(); // 로그아웃 시에도 메뉴 닫기
         AuthProvider.Logout();
         NavigationManager.NavigateTo("/");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 초기 렌더링 후 JavaScript 초기화
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
+            // 초기 상태를 확실히 설정 (메뉴 닫힌 상태)
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+        }
     }
 }
