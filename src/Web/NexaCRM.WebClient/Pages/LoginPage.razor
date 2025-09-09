@@ -3,6 +3,8 @@
 @using NexaCRM.WebClient.Services
 @using System.Linq
 @using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
 @inject IStringLocalizer<LoginPage> Localizer
 @inject CustomAuthStateProvider AuthProvider
 @inject NavigationManager NavigationManager
@@ -142,32 +144,85 @@
     private string password = string.Empty;
     private string? errorMessage;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckExistingAuthentication();
+    }
+
+    private async Task CheckExistingAuthentication()
+    {
+        try
+        {
+            // 이미 인증된 사용자인지 확인
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                await JSRuntime.InvokeVoidAsync("console.log", "User already authenticated, redirecting from login page");
+                
+                // 사용자 역할에 따라 적절한 대시보드로 리다이렉션
+                if (user.IsInRole("Manager"))
+                {
+                    NavigationManager.NavigateTo("/sales-manager-dashboard");
+                }
+                else if (user.IsInRole("Sales"))
+                {
+                    NavigationManager.NavigateTo("/main-dashboard");
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/main-dashboard");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"Error checking authentication: {ex.Message}");
+        }
+    }
+
     private async Task Login()
     {
         errorMessage = null; // Reset error message on new login attempt
-        await JSRuntime.InvokeVoidAsync("console.log", "Login button clicked!");
-        await JSRuntime.InvokeVoidAsync("console.log", $"Username: {username}, Password: {password}");
         
-        if (username == "sales" && password == "sales")
+        try
         {
-            var roles = new[] { "Sales" };
-            await JSRuntime.InvokeVoidAsync("console.log", "Setting Sales role...");
-            AuthProvider.UpdateAuthenticationState(username, roles);
-            await JSRuntime.InvokeVoidAsync("console.log", "Navigating to main dashboard");
-            NavigationManager.NavigateTo("/main-dashboard");
+            await JSRuntime.InvokeVoidAsync("console.log", "Login button clicked!");
+            await JSRuntime.InvokeVoidAsync("console.log", $"Username: {username}, Password: {password}");
+            
+            if (username == "sales" && password == "sales")
+            {
+                var roles = new[] { "Sales" };
+                await JSRuntime.InvokeVoidAsync("console.log", "Setting Sales role...");
+                AuthProvider.UpdateAuthenticationState(username, roles);
+                await JSRuntime.InvokeVoidAsync("console.log", "Navigating to main dashboard");
+                
+                // 약간의 지연을 두고 네비게이션
+                await Task.Delay(100);
+                NavigationManager.NavigateTo("/main-dashboard");
+            }
+            else if (username == "manager" && password == "manager")
+            {
+                var roles = new[] { "Manager" };
+                await JSRuntime.InvokeVoidAsync("console.log", "Setting Manager role...");
+                AuthProvider.UpdateAuthenticationState(username, roles);
+                await JSRuntime.InvokeVoidAsync("console.log", "Navigating to sales manager dashboard");
+                
+                // 약간의 지연을 두고 네비게이션
+                await Task.Delay(100);
+                NavigationManager.NavigateTo("/sales-manager-dashboard");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("console.log", "Invalid credentials");
+                errorMessage = "사용자 이름 또는 비밀번호가 잘못되었습니다.";
+            }
         }
-        else if (username == "manager" && password == "manager")
+        catch (Exception ex)
         {
-            var roles = new[] { "Manager" };
-            await JSRuntime.InvokeVoidAsync("console.log", "Setting Manager role...");
-            AuthProvider.UpdateAuthenticationState(username, roles);
-            await JSRuntime.InvokeVoidAsync("console.log", "Navigating to sales manager dashboard");
-            NavigationManager.NavigateTo("/sales-manager-dashboard");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("console.log", "Invalid credentials");
-            errorMessage = "사용자 이름 또는 비밀번호가 잘못되었습니다.";
+            await JSRuntime.InvokeVoidAsync("console.error", $"Error during login: {ex.Message}");
+            errorMessage = "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
         }
     }
 }

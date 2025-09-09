@@ -1,15 +1,14 @@
 @using NexaCRM.WebClient.Services
-@using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IStringLocalizer<NavMenu> Localizer
-@inject CustomAuthStateProvider AuthProvider
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
 <!-- 고정된 햄버거 버튼 -->
 <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
     <span class="navbar-toggler-icon"></span>
-</button>
+</button> 
 
 <div class="@NavMenuCssClass" @onclick:stopPropagation="true">
     <nav class="flex-column">
@@ -67,8 +66,23 @@
     private async Task Logout()
     {
         await CloseNavMenu(); // 로그아웃 시에도 메뉴 닫기
-        AuthProvider.Logout();
-        NavigationManager.NavigateTo("/");
+        
+        // CustomAuthStateProvider로 캐스팅하여 Logout 메서드 호출
+        if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
+        {
+            customAuthProvider.Logout();
+        }
+        
+        // auth manager를 통한 완전한 로그아웃 처리
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            if (window.authManager && window.authManager.logout) {
+                window.authManager.logout('manual_logout');
+            } else {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login';
+            }
+        ");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

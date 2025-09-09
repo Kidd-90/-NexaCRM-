@@ -25,6 +25,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
 builder.Services.AddScoped<IContactService, MockContactService>();
 builder.Services.AddScoped<IDealService, MockDealService>();
 builder.Services.AddScoped<ITaskService, MockTaskService>();
