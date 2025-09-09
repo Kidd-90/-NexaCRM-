@@ -1,6 +1,9 @@
 @page "/contacts"
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<ContactsPage> Localizer
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IContactService ContactService
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -20,8 +23,46 @@
         <div class="px-40 flex flex-1 justify-center py-5">
             <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
                 <h1 class="text-4xl font-bold">@Localizer["Contacts"]</h1>
-                <p class="text-lg text-gray-500">@Localizer["PageUnderConstruction"]</p>
+                @if (contacts == null)
+                {
+                    <p><em>@Localizer["Loading..."]</em></p>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Id"]</th>
+                                <th>@Localizer["FirstName"]</th>
+                                <th>@Localizer["LastName"]</th>
+                                <th>@Localizer["Email"]</th>
+                                <th>@Localizer["PhoneNumber"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var contact in contacts)
+                            {
+                                <tr>
+                                    <td>@contact.Id</td>
+                                    <td>@contact.FirstName</td>
+                                    <td>@contact.LastName</td>
+                                    <td>@contact.Email</td>
+                                    <td>@contact.PhoneNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
             </div>
         </div>
     </div>
 </div>
+
+@code {
+    private IEnumerable<Contact> contacts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        contacts = await ContactService.GetContactsAsync();
+    }
+}

@@ -1,6 +1,9 @@
 @page "/sales-pipeline-page"
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SalesPipelinePage> Localizer
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IDealService DealService
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -140,39 +143,25 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    @Localizer["Prospecting"]
-                    </td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">12</td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$50,000</td>
-                </tr>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    @Localizer["Qualification"]
-                    </td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">8</td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$30,000</td>
-                </tr>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Proposal"]</td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">5</td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$20,000</td>
-                </tr>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    @Localizer["Negotiation"]
-                    </td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">3</td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$15,000</td>
-                </tr>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    @Localizer["ClosedWon"]
-                    </td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">2</td>
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$10,000</td>
-                </tr>
+                    @if (dealsByStage == null)
+                    {
+                        <tr>
+                            <td colspan="3"><em>@Localizer["Loading..."]</em></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var stage in dealsByStage)
+                        {
+                            <tr class="border-t border-t-[#d0d9e7]">
+                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                                @stage.Key
+                                </td>
+                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Value.Count()</td>
+                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Value.Sum(d => d.Amount).ToString("C")</td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
             </div>
@@ -181,3 +170,13 @@
     </div>
     </div>
 </div>
+
+@code {
+    private IGrouping<string, Deal>[] dealsByStage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var deals = await DealService.GetDealsAsync();
+        dealsByStage = deals.GroupBy(d => d.Stage).ToArray();
+    }
+}

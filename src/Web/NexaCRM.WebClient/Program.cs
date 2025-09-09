@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.WebClient;
 using Microsoft.AspNetCore.Components.Authorization;
 using NexaCRM.WebClient.Services;
+using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.WebClient.Services.Mock;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -23,6 +25,8 @@ builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
+builder.Services.AddScoped<IContactService, MockContactService>();
+builder.Services.AddScoped<IDealService, MockDealService>();
 
 using System.Globalization;
 
