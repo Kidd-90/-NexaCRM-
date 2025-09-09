@@ -76,13 +76,13 @@
     <value>동적</value>
   </data>
   <data name="PurchaseHistory" xml:space="preserve">
-    <value>구매 내역 > $1000</value>
+    <value>구매 내역 &gt; $1000</value>
   </data>
   <data name="ActiveUsers" xml:space="preserve">
     <value>활성 사용자</value>
   </data>
   <data name="LastLogin" xml:space="preserve">
-    <value>마지막 로그인 < 30일</value>
+    <value>마지막 로그인 &lt; 30일</value>
   </data>
   <data name="NewLeads" xml:space="preserve">
     <value>신규 리드</value>
@@ -97,7 +97,7 @@
     <value>비활성 고객</value>
   </data>
   <data name="LastPurchase" xml:space="preserve">
-    <value>마지막 구매 > 1년</value>
+    <value>마지막 구매 &gt; 1년</value>
   </data>
   <data name="LoyalCustomers" xml:space="preserve">
     <value>충성 고객</value>
