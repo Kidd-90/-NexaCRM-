@@ -71,6 +71,14 @@
                 <p class="text-[#0e131b] text-sm font-normal leading-normal">@Localizer["RememberMe"]</p>
               </div>
               
+              <!-- 에러 메시지 표시 -->
+              @if (!string.IsNullOrEmpty(errorMessage))
+              {
+                  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                      <span class="block sm:inline">@errorMessage</span>
+                  </div>
+              }
+
               <!-- 로그인 버튼 -->
               <div class="mb-4">
                 <button @onclick="Login" type="button"
@@ -132,9 +140,11 @@
 @code {
     private string username = string.Empty;
     private string password = string.Empty;
+    private string? errorMessage;
 
     private async Task Login()
     {
+        errorMessage = null; // Reset error message on new login attempt
         await JSRuntime.InvokeVoidAsync("console.log", "Login button clicked!");
         await JSRuntime.InvokeVoidAsync("console.log", $"Username: {username}, Password: {password}");
         
@@ -157,7 +167,7 @@
         else
         {
             await JSRuntime.InvokeVoidAsync("console.log", "Invalid credentials");
-            // 에러 처리 로직 추가 가능
+            errorMessage = "사용자 이름 또는 비밀번호가 잘못되었습니다.";
         }
     }
 }
