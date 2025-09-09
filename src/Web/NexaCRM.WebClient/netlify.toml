@@ -7,4 +7,10 @@
   DOTNET_NOLOGO = "true"
 
 [build.lifecycle]
-  onBuild = "wget https://dot.net/v1/dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel 8.0"
+  onBuild = """
+    wget https://dot.net/v1/dotnet-install.sh
+    chmod +x dotnet-install.sh
+    ./dotnet-install.sh --channel 8.0
+    export PATH=$HOME/.dotnet:$PATH
+    dotnet --version
+  """
