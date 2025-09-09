@@ -103,7 +103,7 @@
     <value>충성 고객</value>
   </data>
   <data name="RepeatPurchases" xml:space="preserve">
-    <value>반복 구매 > 5</value>
+    <value>반복 구매</value>
   </data>
   <data name="View" xml:space="preserve">
     <value>보기</value>

@@ -1,5 +1,6 @@
 // Program.cs
 using System;
+using System.Globalization;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -11,11 +12,11 @@ using NexaCRM.WebClient.Services.Mock;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// App ÄÄÆ÷³ÍÆ® ¸¶¿îÆ® ÁöÁ¡ ¼³Á¤
+// App ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// HttpClient µî·Ï: BaseAddress¸¦ È£½ºÆ® È¯°æ ÁÖ¼Ò·Î ¼³Á¤
+// HttpClient ï¿½ï¿½ï¿½: BaseAddressï¿½ï¿½ È£ï¿½ï¿½Æ® È¯ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½
 builder.Services.AddScoped(sp =>
     new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
 );
@@ -24,11 +25,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<CustomAuthStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
 builder.Services.AddScoped<IContactService, MockContactService>();
 builder.Services.AddScoped<IDealService, MockDealService>();
-
-using System.Globalization;
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;
