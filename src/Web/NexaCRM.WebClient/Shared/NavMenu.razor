@@ -40,37 +40,34 @@
                 <!-- 👥 고객관리 -->
                 <AuthorizeView Roles="Sales,Manager">
                     <Authorized Context="customerContext">
-                        @if (canAccessCustomerManagement)
-                        {
-                            <div class="nav-item px-3">
-                                <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
-                                    <span class="oi oi-people" aria-hidden="true"></span> 
-                                    @Localizer["CustomerManagement"]
-                                    <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
-                                </div>
-                                
-                                @if (showCustomerSubmenu)
-                                {
-                                    <div class="nav-submenu">
-                                        <NavLink class="nav-link submenu-link" href="customer-segmentation-tool" @onclick="CloseNavMenu">
-                                            <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["CustomerSegmentation"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="customer-support-dashboard" @onclick="CloseNavMenu">
-                                            <span class="oi oi-headphones" aria-hidden="true"></span> @Localizer["CustomerSupportDashboard"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="customer-support-knowledge-base" @onclick="CloseNavMenu">
-                                            <span class="oi oi-book" aria-hidden="true"></span> @Localizer["KnowledgeBase"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="customer-support-ticket-management-interface" @onclick="CloseNavMenu">
-                                            <span class="oi oi-task" aria-hidden="true"></span> @Localizer["TicketManagement"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="customer-feedback-and-survey-management-tool" @onclick="CloseNavMenu">
-                                            <span class="oi oi-clipboard" aria-hidden="true"></span> @Localizer["FeedbackSurvey"]
-                                        </NavLink>
-                                    </div>
-                                }
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-people" aria-hidden="true"></span> 
+                                @Localizer["CustomerManagement"]
+                                <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
+                            
+                            @if (showCustomerSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <NavLink class="nav-link submenu-link" href="customer-segmentation-tool" @onclick="CloseNavMenu">
+                                        <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["CustomerSegmentation"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-support-dashboard" @onclick="CloseNavMenu">
+                                        <span class="oi oi-headphones" aria-hidden="true"></span> @Localizer["CustomerSupportDashboard"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-support-knowledge-base" @onclick="CloseNavMenu">
+                                        <span class="oi oi-book" aria-hidden="true"></span> @Localizer["KnowledgeBase"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-support-ticket-management-interface" @onclick="CloseNavMenu">
+                                        <span class="oi oi-task" aria-hidden="true"></span> @Localizer["TicketManagement"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-feedback-and-survey-management-tool" @onclick="CloseNavMenu">
+                                        <span class="oi oi-clipboard" aria-hidden="true"></span> @Localizer["FeedbackSurvey"]
+                                    </NavLink>
+                                </div>
+                            }
+                        </div>
                     </Authorized>
                 </AuthorizeView>
 
@@ -147,23 +144,7 @@
     private bool collapseNavMenu = true;
     private bool showCustomerSubmenu = false;
     private bool showSalesSubmenu = false;
-    private bool canAccessCustomerManagement = false;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await CheckPermissions();
-    }
-
-    private async Task CheckPermissions()
-    {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        
-        // Customer management access should be available to both Sales and Manager roles
-        canAccessCustomerManagement = user.Identity?.IsAuthenticated == true && 
-                                    (user.IsInRole("Sales") || user.IsInRole("Manager") || user.IsInRole("Admin"));
-    }
 
     private void ToggleCustomerSubmenu()
     {
