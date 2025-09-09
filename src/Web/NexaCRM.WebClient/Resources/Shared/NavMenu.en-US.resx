@@ -24,4 +24,28 @@
   <data name="Contacts" xml:space="preserve">
     <value>Contacts</value>
   </data>
+  <data name="CustomerManagement" xml:space="preserve">
+    <value>Customer Management</value>
+  </data>
+  <data name="CustomerSegmentation" xml:space="preserve">
+    <value>Customer Segmentation</value>
+  </data>
+  <data name="CustomerSupportDashboard" xml:space="preserve">
+    <value>Customer Support Dashboard</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="TicketManagement" xml:space="preserve">
+    <value>Ticket Management</value>
+  </data>
+  <data name="FeedbackSurvey" xml:space="preserve">
+    <value>Feedback &amp; Survey</value>
+  </data>
+  <data name="SalesManagement" xml:space="preserve">
+    <value>Sales Management</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
 </root>
