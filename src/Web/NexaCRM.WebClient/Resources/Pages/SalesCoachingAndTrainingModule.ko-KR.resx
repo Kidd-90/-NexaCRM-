@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>세일즈프로</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>영업</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>마케팅</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>서비스</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="AcmeCo" xml:space="preserve">
+    <value>Acme Co</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>홈</value>
+  </data>
+  <data name="Coaching" xml:space="preserve">
+    <value>코칭</value>
+  </data>
+  <data name="CoachingAndTraining" xml:space="preserve">
+    <value>코칭 및 교육</value>
+  </data>
+  <data name="CoachingAndTrainingDescription" xml:space="preserve">
+    <value>대상 교육 모듈로 팀의 기술을 향상시키세요.</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>개요</value>
+  </data>
+  <data name="TrainingLibrary" xml:space="preserve">
+    <value>교육 라이브러리</value>
+  </data>
+  <data name="Assignments" xml:space="preserve">
+    <value>과제</value>
+  </data>
+  <data name="SearchTrainingMaterials" xml:space="preserve">
+    <value>교육 자료 검색</value>
+  </data>
+  <data name="FeaturedTraining" xml:space="preserve">
+    <value>주요 교육</value>
+  </data>
+  <data name="MasteringSalesTechniques" xml:space="preserve">
+    <value>영업 기술 마스터하기</value>
+  </data>
+  <data name="MasteringSalesTechniquesDescription" xml:space="preserve">
+    <value>더 많은 거래를 성사시키기 위한 고급 영업 전략을 배우세요.</value>
+  </data>
+  <data name="ExceptionalCustomerService" xml:space="preserve">
+    <value>탁월한 고객 서비스</value>
+  </data>
+  <data name="ExceptionalCustomerServiceDescription" xml:space="preserve">
+    <value>검증된 서비스 방법으로 고객 만족도를 높이세요.</value>
+  </data>
+  <data name="DeepDiveIntoProductFeatures" xml:space="preserve">
+    <value>제품 기능 심층 분석</value>
+  </data>
+  <data name="DeepDiveIntoProductFeaturesDescription" xml:space="preserve">
+    <value>제품 제공에 대한 전문가가 되십시오.</value>
+  </data>
+  <data name="TrainingCategories" xml:space="preserve">
+    <value>교육 카테고리</value>
+  </data>
+  <data name="SalesSkills" xml:space="preserve">
+    <value>영업 기술</value>
+  </data>
+  <data name="CustomerService" xml:space="preserve">
+    <value>고객 서비스</value>
+  </data>
+  <data name="ProductKnowledge" xml:space="preserve">
+    <value>제품 지식</value>
+  </data>
+  <data name="Communication" xml:space="preserve">
+    <value>커뮤니케이션</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>협상</value>
+  </data>
+  <data name="TimeManagement" xml:space="preserve">
+    <value>시간 관리</value>
+  </data>
+  <data name="RecentlyAdded" xml:space="preserve">
+    <value>최근 추가됨</value>
+  </data>
+  <data name="EffectiveSalesProspecting" xml:space="preserve">
+    <value>효과적인 영업 잠재 고객 발굴</value>
+  </data>
+  <data name="EffectiveSalesProspectingDescription" xml:space="preserve">
+    <value>잠재 리드를 효과적으로 식별하고 자격을 부여하는 방법을 배우세요.</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>보기</value>
+  </data>
+  <data name="HandlingCustomerObjections" xml:space="preserve">
+    <value>고객 이의 처리</value>
+  </data>
+  <data name="HandlingCustomerObjectionsDescription" xml:space="preserve">
+    <value>고객의 우려 사항을 해결하고 극복하기 위한 전략.</value>
+  </data>
+  <data name="AdvancedNegotiationTactics" xml:space="preserve">
+    <value>고급 협상 전술</value>
+  </data>
+  <data name="AdvancedNegotiationTacticsDescription" xml:space="preserve">
+    <value>협상에서 유리한 결과를 얻기 위한 기술.</value>
+  </data>
+</root>

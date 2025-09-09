@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SupportHub" xml:space="preserve">
+    <value>Support Hub</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="Community" xml:space="preserve">
+    <value>Community</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="GettingStarted" xml:space="preserve">
+    <value>Getting Started</value>
+  </data>
+  <data name="Troubleshooting" xml:space="preserve">
+    <value>Troubleshooting</value>
+  </data>
+  <data name="ProductManuals" xml:space="preserve">
+    <value>Product Manuals</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>FAQs</value>
+  </data>
+  <data name="ReleaseNotes" xml:space="preserve">
+    <value>Release Notes</value>
+  </data>
+  <data name="KnowledgeBaseTitle" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="KnowledgeBaseDescription" xml:space="preserve">
+    <value>Find answers to common questions and solutions to issues.</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Search for articles, FAQs, or guides</value>
+  </data>
+  <data name="FeaturedArticles" xml:space="preserve">
+    <value>Featured Articles</value>
+  </data>
+  <data name="Article1Title" xml:space="preserve">
+    <value>Setting up your new device</value>
+  </data>
+  <data name="Article1Description" xml:space="preserve">
+    <value>A step-by-step guide to get your device up and running.</value>
+  </data>
+  <data name="Article2Title" xml:space="preserve">
+    <value>Troubleshooting common issues</value>
+  </data>
+  <data name="Article2Description" xml:space="preserve">
+    <value>Solutions to common problems users encounter.</value>
+  </data>
+  <data name="Article3Title" xml:space="preserve">
+    <value>Understanding your device's features</value>
+  </data>
+  <data name="Article3Description" xml:space="preserve">
+    <value>Learn about the various features and functionalities of your device.</value>
+  </data>
+  <data name="BrowseByTopic" xml:space="preserve">
+    <value>Browse by Topic</value>
+  </data>
+  <data name="TopicAccountManagement" xml:space="preserve">
+    <value>Account Management</value>
+  </data>
+  <data name="TopicBillingPayments" xml:space="preserve">
+    <value>Billing &amp; Payments</value>
+  </data>
+  <data name="TopicDeviceSupport" xml:space="preserve">
+    <value>Device Support</value>
+  </data>
+  <data name="TopicConnectivityIssues" xml:space="preserve">
+    <value>Connectivity Issues</value>
+  </data>
+  <data name="TopicSoftwareUpdates" xml:space="preserve">
+    <value>Software Updates</value>
+  </data>
+  <data name="TopicSecurityPrivacy" xml:space="preserve">
+    <value>Security &amp; Privacy</value>
+  </data>
+</root>

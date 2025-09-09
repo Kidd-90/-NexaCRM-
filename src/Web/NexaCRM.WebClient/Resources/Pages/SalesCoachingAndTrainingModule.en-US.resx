@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>SalesPro</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AcmeCo" xml:space="preserve">
+    <value>Acme Co</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Coaching" xml:space="preserve">
+    <value>Coaching</value>
+  </data>
+  <data name="CoachingAndTraining" xml:space="preserve">
+    <value>Coaching &amp; Training</value>
+  </data>
+  <data name="CoachingAndTrainingDescription" xml:space="preserve">
+    <value>Enhance your team's skills with targeted training modules.</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="TrainingLibrary" xml:space="preserve">
+    <value>Training Library</value>
+  </data>
+  <data name="Assignments" xml:space="preserve">
+    <value>Assignments</value>
+  </data>
+  <data name="SearchTrainingMaterials" xml:space="preserve">
+    <value>Search training materials</value>
+  </data>
+  <data name="FeaturedTraining" xml:space="preserve">
+    <value>Featured Training</value>
+  </data>
+  <data name="MasteringSalesTechniques" xml:space="preserve">
+    <value>Mastering Sales Techniques</value>
+  </data>
+  <data name="MasteringSalesTechniquesDescription" xml:space="preserve">
+    <value>Learn advanced sales strategies to close more deals.</value>
+  </data>
+  <data name="ExceptionalCustomerService" xml:space="preserve">
+    <value>Exceptional Customer Service</value>
+  </data>
+  <data name="ExceptionalCustomerServiceDescription" xml:space="preserve">
+    <value>Enhance customer satisfaction with proven service methods.</value>
+  </data>
+  <data name="DeepDiveIntoProductFeatures" xml:space="preserve">
+    <value>Deep Dive into Product Features</value>
+  </data>
+  <data name="DeepDiveIntoProductFeaturesDescription" xml:space="preserve">
+    <value>Become an expert on our product offerings.</value>
+  </data>
+  <data name="TrainingCategories" xml:space="preserve">
+    <value>Training Categories</value>
+  </data>
+  <data name="SalesSkills" xml:space="preserve">
+    <value>Sales Skills</value>
+  </data>
+  <data name="CustomerService" xml:space="preserve">
+    <value>Customer Service</value>
+  </data>
+  <data name="ProductKnowledge" xml:space="preserve">
+    <value>Product Knowledge</value>
+  </data>
+  <data name="Communication" xml:space="preserve">
+    <value>Communication</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>Negotiation</value>
+  </data>
+  <data name="TimeManagement" xml:space="preserve">
+    <value>Time Management</value>
+  </data>
+  <data name="RecentlyAdded" xml:space="preserve">
+    <value>Recently Added</value>
+  </data>
+  <data name="EffectiveSalesProspecting" xml:space="preserve">
+    <value>Effective Sales Prospecting</value>
+  </data>
+  <data name="EffectiveSalesProspectingDescription" xml:space="preserve">
+    <value>Learn how to identify and qualify potential leads effectively.</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="HandlingCustomerObjections" xml:space="preserve">
+    <value>Handling Customer Objections</value>
+  </data>
+  <data name="HandlingCustomerObjectionsDescription" xml:space="preserve">
+    <value>Strategies for addressing and overcoming customer concerns.</value>
+  </data>
+  <data name="AdvancedNegotiationTactics" xml:space="preserve">
+    <value>Advanced Negotiation Tactics</value>
+  </data>
+  <data name="AdvancedNegotiationTacticsDescription" xml:space="preserve">
+    <value>Techniques for achieving favorable outcomes in negotiations.</value>
+  </data>
+</root>

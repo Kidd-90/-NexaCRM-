@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AcmeCo" xml:space="preserve">
+    <value>Acme Co</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>홈</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>계정</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="Campaigns" xml:space="preserve">
+    <value>캠페인</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="NewCampaign" xml:space="preserve">
+    <value>새 캠페인</value>
+  </data>
+  <data name="ActiveCampaigns" xml:space="preserve">
+    <value>활성 캠페인</value>
+  </data>
+  <data name="PastCampaigns" xml:space="preserve">
+    <value>지난 캠페인</value>
+  </data>
+  <data name="Drafts" xml:space="preserve">
+    <value>초안</value>
+  </data>
+  <data name="SearchCampaigns" xml:space="preserve">
+    <value>캠페인 검색...</value>
+  </data>
+  <data name="CampaignName" xml:space="preserve">
+    <value>캠페인 이름</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>유형</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>상태</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>시작일</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>종료일</value>
+  </data>
+  <data name="Budget" xml:space="preserve">
+    <value>예산</value>
+  </data>
+  <data name="ROI" xml:space="preserve">
+    <value>ROI</value>
+  </data>
+  <data name="SummerSale" xml:space="preserve">
+    <value>여름 세일</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>이메일</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>활성</value>
+  </data>
+  <data name="ProductLaunch" xml:space="preserve">
+    <value>제품 출시</value>
+  </data>
+  <data name="SocialMedia" xml:space="preserve">
+    <value>소셜 미디어</value>
+  </data>
+  <data name="Scheduled" xml:space="preserve">
+    <value>예약됨</value>
+  </data>
+  <data name="HolidayPromotion" xml:space="preserve">
+    <value>휴일 프로모션</value>
+  </data>
+  <data name="Ads" xml:space="preserve">
+    <value>광고</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>완료됨</value>
+  </data>
+  <data name="SpringCollection" xml:space="preserve">
+    <value>봄 컬렉션</value>
+  </data>
+  <data name="AnniversaryEvent" xml:space="preserve">
+    <value>기념일 이벤트</value>
+  </data>
+</root>

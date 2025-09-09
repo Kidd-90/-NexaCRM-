@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>세일즈프로</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>영업</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>마케팅</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>서비스</value>
+  </data>
+  <data name="Analytics" xml:space="preserve">
+    <value>분석</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="EmailTemplateBuilder" xml:space="preserve">
+    <value>이메일 템플릿 빌더</value>
+  </data>
+  <data name="Blocks" xml:space="preserve">
+    <value>블록</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>미리보기</value>
+  </data>
+  <data name="BasicBlocks" xml:space="preserve">
+    <value>기본 블록</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>텍스트</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>이미지</value>
+  </data>
+  <data name="Button" xml:space="preserve">
+    <value>버튼</value>
+  </data>
+  <data name="SocialLinks" xml:space="preserve">
+    <value>소셜 링크</value>
+  </data>
+  <data name="AdvancedBlocks" xml:space="preserve">
+    <value>고급 블록</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>레이아웃</value>
+  </data>
+  <data name="Divider" xml:space="preserve">
+    <value>구분선</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>비디오</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>제품</value>
+  </data>
+  <data name="NewEmailTemplate" xml:space="preserve">
+    <value>새 이메일 템플릿</value>
+  </data>
+  <data name="DragAndDrop" xml:space="preserve">
+    <value>블록을 드래그 앤 드롭하여 이메일 템플릿을 만드세요</value>
+  </data>
+  <data name="DragAndDropHere" xml:space="preserve">
+    <value>여기에 블록을 드래그 앤 드롭하세요</value>
+  </data>
+  <data name="StartBuilding" xml:space="preserve">
+    <value>왼쪽 패널에서 블록을 드래그하여 이메일 템플릿 만들기를 시작하세요.</value>
+  </data>
+  <data name="SaveTemplate" xml:space="preserve">
+    <value>템플릿 저장</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+</root>

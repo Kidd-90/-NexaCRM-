@@ -1,4 +1,6 @@
 @page "/reports-page"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ReportsPage> Localizer
 
 <div
     class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden"
@@ -24,14 +26,14 @@
                 ></path>
             </svg>
             </div>
-            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">SalesPro</h2>
+            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
         </div>
         <div class="flex items-center gap-9">
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Dashboard</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Contacts</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Deals</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Tasks</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Reports</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Contacts"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Deals"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Tasks"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
         </div>
         </div>
         <div class="flex flex-1 justify-end gap-8">
@@ -50,7 +52,7 @@
                 </svg>
             </div>
             <input
-                placeholder="Search"
+                placeholder='@Localizer["Search"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                 value=""
             />
@@ -76,14 +78,14 @@
     <div class="px-40 flex flex-1 justify-center py-5">
         <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
         <div class="flex flex-wrap justify-between gap-3 p-4">
-            <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Reports</p>
+            <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["ReportsTitle"]</p>
             <button
             class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
             >
-            <span class="truncate">New Report</span>
+            <span class="truncate">@Localizer["NewReport"]</span>
             </button>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Report Builder</h2>
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["ReportBuilder"]</h2>
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
             <select
@@ -150,7 +152,7 @@
             </select>
             </label>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Grouping and Sorting</h2>
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["GroupingAndSorting"]</h2>
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
             <select
@@ -173,7 +175,7 @@
             </select>
             </label>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Visualization</h2>
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Visualization"]</h2>
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label class="flex flex-col min-w-40 flex-1">
             <select
@@ -201,12 +203,12 @@
             <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
             >
-                <span class="truncate">Export PDF</span>
+                <span class="truncate">@Localizer["ExportPDF"]</span>
             </button>
             <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
             >
-                <span class="truncate">Export CSV</span>
+                <span class="truncate">@Localizer["ExportCSV"]</span>
             </button>
             </div>
         </div>
@@ -214,7 +216,7 @@
             <button
             class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
             >
-            <span class="truncate">Schedule Report</span>
+            <span class="truncate">@Localizer["ScheduleReport"]</span>
             </button>
         </div>
         </div>

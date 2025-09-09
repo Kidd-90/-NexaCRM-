@@ -1,4 +1,7 @@
 @page "/notification-settings-page"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<NotificationSettingsPage> Localizer
+
 <div
       class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden"
       style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(77,106,153)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Inter, &quot;Noto Sans&quot;, sans-serif;"
@@ -22,16 +25,16 @@
                 ></path>
               </svg>
             </div>
-            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">SalesPro</h2>
+            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
           </div>
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Dashboard</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Sales</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Marketing</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Service</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Reports</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Analytics</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Sales"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Service"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Analytics"]</a>
             </div>
             <div class="flex gap-2">
               <button
@@ -67,15 +70,15 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Notification Settings</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Manage your notification preferences for various events and channels.</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["NotificationSettings"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["NotificationSettingsDescription"]</p>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">New Leads</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["NewLeads"]</h3>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">New Lead Created</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications when a new lead is created.</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewLeadCreated"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["NewLeadCreatedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
@@ -88,8 +91,8 @@
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Lead Status Updated</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications when a lead's status changes.</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["LeadStatusUpdated"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["LeadStatusUpdatedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
@@ -100,40 +103,11 @@
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Deal Updates</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["DealUpdates"]</h3>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Deal Stage Changed</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications when a deal moves to a new stage.</p>
-              </div>
-              <div class="shrink-0">
-                <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
-                >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
-                </label>
-              </div>
-            </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Deal Value Updated</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications when a deal's value is updated.</p>
-              </div>
-              <div class="shrink-0">
-                <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
-                >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
-                </label>
-              </div>
-            </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Task Assignments</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">New Task Assigned</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications when a new task is assigned to you.</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["DealStageChanged"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["DealStageChangedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
@@ -146,8 +120,8 @@
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Task Due Date Reminder</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications when a task's due date is approaching.</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["DealValueUpdated"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["DealValueUpdatedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
@@ -158,25 +132,11 @@
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Notification Channels</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["TaskAssignments"]</h3>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Email Notifications</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications via email.</p>
-              </div>
-              <div class="shrink-0">
-                <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
-                >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
-                </label>
-              </div>
-            </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">In-App Notifications</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive notifications within the application.</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewTaskAssigned"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["NewTaskAssignedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
@@ -189,8 +149,8 @@
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Push Notifications</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Receive push notifications on your mobile device.</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["TaskDueDateReminder"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["TaskDueDateReminderDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
@@ -201,10 +161,53 @@
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Notification Frequency</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["NotificationChannels"]</h3>
+            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+              <div class="flex flex-col justify-center">
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["EmailNotifications"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["EmailNotificationsDescription"]</p>
+              </div>
+              <div class="shrink-0">
+                <label
+                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                >
+                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible absolute" />
+                </label>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+              <div class="flex flex-col justify-center">
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["InAppNotifications"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["InAppNotificationsDescription"]</p>
+              </div>
+              <div class="shrink-0">
+                <label
+                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                >
+                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible absolute" />
+                </label>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+              <div class="flex flex-col justify-center">
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["PushNotifications"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["PushNotificationsDescription"]</p>
+              </div>
+              <div class="shrink-0">
+                <label
+                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                >
+                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible absolute" />
+                </label>
+              </div>
+            </div>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["NotificationFrequency"]</h3>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">Frequency</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["Frequency"]</p>
                 <select
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 bg-[image:--select-button-svg] placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
                 >
@@ -214,10 +217,10 @@
                 </select>
               </label>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Snooze Options</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["SnoozeOptions"]</h3>
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">Snooze Duration</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["SnoozeDuration"]</p>
                 <select
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 bg-[image:--select-button-svg] placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
                 >
@@ -231,7 +234,7 @@
               <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
               >
-                <span class="truncate">Save Settings</span>
+                <span class="truncate">@Localizer["SaveSettings"]</span>
               </button>
             </div>
           </div>

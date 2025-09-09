@@ -1,4 +1,7 @@
 @page "/customer-segmentation-tool"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CustomerSegmentationTool> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
@@ -18,15 +21,15 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">Connectly</h2>
+              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["Connectly"]</h2>
             </div>
             <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Dashboard</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Contacts</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Companies</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Deals</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Marketing</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Reports</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Contacts"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Companies"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Deals"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
             </div>
           </div>
           <div class="flex flex-1 justify-end gap-8">
@@ -45,7 +48,7 @@
                   </svg>
                 </div>
                 <input
-                  placeholder="Search"
+                  placeholder='@Localizer["Search"]'
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                   value=""
                 />
@@ -81,7 +84,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">All segments</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["AllSegments"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
@@ -91,7 +94,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Static lists</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["StaticLists"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
@@ -101,7 +104,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Dynamic lists</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["DynamicLists"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
@@ -111,7 +114,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Property-based lists</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["PropertyBasedLists"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
@@ -121,22 +124,22 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Engagement-based lists</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["EngagementBasedLists"]</p>
                   </div>
                 </div>
               </div>
               <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
               >
-                <span class="truncate">Create list</span>
+                <span class="truncate">@Localizer["CreateList"]</span>
               </button>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Customer Segments</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Create and manage customer segments for targeted marketing campaigns.</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["CustomerSegments"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["CustomerSegmentsDescription"]</p>
               </div>
             </div>
             <div class="px-4 py-3">
@@ -155,7 +158,7 @@
                     </svg>
                   </div>
                   <input
-                    placeholder="Search segments..."
+                    placeholder='@Localizer["SearchSegments"]'
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                     value=""
                   />
@@ -168,100 +171,100 @@
                   <thead>
                     <tr class="bg-slate-50">
                       <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
-                        Segment Name
+                        @Localizer["SegmentName"]
                       </th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Type</th>
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Type"]</th>
                       <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
-                        Criteria
+                        @Localizer["Criteria"]
                       </th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Size</th>
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Size"]</th>
                       <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
-                        Created At
+                        @Localizer["CreatedAt"]
                       </th>
                       <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 px-4 py-3 text-left text-[#0e131b] w-60 text-[#4d6a99] text-sm font-medium leading-normal">
-                        Actions
+                        @Localizer["Actions"]
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        High-Value Customers
+                        @Localizer["HighValueCustomers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">Dynamic</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Purchase History &gt; $1000
+                        @Localizer["PurchaseHistory"]
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">500</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
                         2023-01-15
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        View
+                        @Localizer["View"]
                       </td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Active Users
+                        @Localizer["ActiveUsers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">Dynamic</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Last Login &lt; 30 days
+                        @Localizer["LastLogin"]
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">1200</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
                         2023-02-20
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        View
+                        @Localizer["View"]
                       </td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        New Leads
+                        @Localizer["NewLeads"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">Static</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Static"]</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Lead Source = Website
+                        @Localizer["LeadSource"]
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">300</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
                         2023-03-10
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        View
+                        @Localizer["View"]
                       </td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Inactive Customers
+                        @Localizer["InactiveCustomers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">Dynamic</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Last Purchase &gt; 1 year
+                        @Localizer["LastPurchase"]
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">800</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
                         2023-04-05
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        View
+                        @Localizer["View"]
                       </td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Loyal Customers
+                        @Localizer["LoyalCustomers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">Dynamic</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Repeat Purchases &gt; 5
+                        @Localizer["RepeatPurchases"]
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">250</td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
                         2023-05-12
                       </td>
                       <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        View
+                        @Localizer["View"]
                       </td>
                     </tr>
                   </tbody>

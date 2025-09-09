@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>SalesPro</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>Deals</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="ReportsTitle" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="NewReport" xml:space="preserve">
+    <value>New Report</value>
+  </data>
+  <data name="ReportBuilder" xml:space="preserve">
+    <value>Report Builder</value>
+  </data>
+  <data name="GroupingAndSorting" xml:space="preserve">
+    <value>Grouping and Sorting</value>
+  </data>
+  <data name="Visualization" xml:space="preserve">
+    <value>Visualization</value>
+  </data>
+  <data name="ExportPDF" xml:space="preserve">
+    <value>Export PDF</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="ScheduleReport" xml:space="preserve">
+    <value>Schedule Report</value>
+  </data>
+</root>

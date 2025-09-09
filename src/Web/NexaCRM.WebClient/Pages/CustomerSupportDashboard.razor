@@ -1,4 +1,7 @@
 @page "/customer-support-dashboard"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CustomerSupportDashboard> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
@@ -6,8 +9,8 @@
             <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
               <div class="flex flex-col gap-4">
                 <div class="flex flex-col">
-                  <h1 class="text-[#0e131b] text-base font-medium leading-normal">Support Hub</h1>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">v1.2</p>
+                  <h1 class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["SupportHub"]</h1>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Version"]</p>
                 </div>
                 <div class="flex flex-col gap-2">
                   <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
@@ -18,7 +21,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Home</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Home"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Ticket" data-size="24px" data-weight="regular">
@@ -28,7 +31,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Tickets</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Tickets"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
@@ -38,7 +41,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Customers</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Customers"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular">
@@ -48,7 +51,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Reports</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Reports"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Gear" data-size="24px" data-weight="regular">
@@ -58,7 +61,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Settings</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Settings"]</p>
                   </div>
                 </div>
               </div>
@@ -67,21 +70,21 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Support Dashboard</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Real-time overview of support operations</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["SupportDashboard"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["DashboardDescription"]</p>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Live Interactions</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["LiveInteractions"]</h3>
             <div class="pb-3">
               <div class="flex border-b border-[#d0d9e7] px-4 gap-8">
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#">
-                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">Live Chat</p>
+                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["LiveChat"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Call Queues</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["CallQueues"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Social Media</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["SocialMedia"]</p>
                 </a>
               </div>
             </div>
@@ -91,155 +94,155 @@
                   <thead>
                     <tr class="bg-slate-50">
                       <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
-                        Customer
+                        @Localizer["Customer"]
                       </th>
-                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Issue</th>
-                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Agent</th>
-                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">Status</th>
-                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Time</th>
+                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Issue"]</th>
+                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Agent"]</th>
+                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">@Localizer["Status"]</th>
+                      <th class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Time"]</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Sophia Clark
+                        @Localizer["SophiaClark"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Payment issue
+                        @Localizer["PaymentIssue"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Ethan Harper
+                        @Localizer["EthanHarper"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">In Progress</span>
+                          <span class="truncate">@Localizer["InProgress"]</span>
                         </button>
                       </td>
-                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">5 min</td>
+                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["FiveMin"]</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Liam Carter
+                        @Localizer["LiamCarter"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Product inquiry
+                        @Localizer["ProductInquiry"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Olivia Bennett
+                        @Localizer["OliviaBennett"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Waiting</span>
+                          <span class="truncate">@Localizer["Waiting"]</span>
                         </button>
                       </td>
-                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">12 min</td>
+                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["TwelveMin"]</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Ava Reynolds
+                        @Localizer["AvaReynolds"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Technical support
+                        @Localizer["TechnicalSupport"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Noah Foster
+                        @Localizer["NoahFoster"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Resolved</span>
+                          <span class="truncate">@Localizer["Resolved"]</span>
                         </button>
                       </td>
-                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">20 min</td>
+                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["TwentyMin"]</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Jackson Hayes
+                        @Localizer["JacksonHayes"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Refund request
+                        @Localizer["RefundRequest"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Isabella Reed
+                        @Localizer["IsabellaReed"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">In Progress</span>
+                          <span class="truncate">@Localizer["InProgress"]</span>
                         </button>
                       </td>
-                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">25 min</td>
+                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["TwentyFiveMin"]</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Chloe Morgan
+                        @Localizer["ChloeMorgan"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Account access
+                        @Localizer["AccountAccess"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        Lucas Coleman
+                        @Localizer["LucasColeman"]
                       </td>
                       <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Waiting</span>
+                          <span class="truncate">@Localizer["Waiting"]</span>
                         </button>
                       </td>
-                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">30 min</td>
+                      <td class="table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ThirtyMin"]</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Key Metrics</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["KeyMetrics"]</h3>
             <div class="flex flex-wrap gap-4 p-4">
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#d0d9e7]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Ticket Volume</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TicketVolume"]</p>
                 <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">125</p>
               </div>
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#d0d9e7]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Resolution Rate</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["ResolutionRate"]</p>
                 <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">85%</p>
               </div>
               <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 border border-[#d0d9e7]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Customer Satisfaction</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CustomerSatisfaction"]</p>
                 <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">4.7/5</p>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Performance Indicators</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["PerformanceIndicators"]</h3>
             <div class="flex flex-wrap gap-4 px-4 py-6">
               <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Tickets by Category</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TicketsByCategory"]</p>
                 <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">50</p>
                 <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">This Month</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">+10%</p>
+                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["ThisMonth"]</p>
+                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusTenPercent"]</p>
                 </div>
                 <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 50%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Billing</p>
+                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Billing"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 40%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Technical</p>
+                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Technical"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">General</p>
+                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["General"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Feedback</p>
+                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Feedback"]</p>
                 </div>
               </div>
               <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Resolution Trends</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["ResolutionTrends"]</p>
                 <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">90%</p>
                 <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">Last 6 Months</p>
-                  <p class="text-[#e73908] text-base font-medium leading-normal">-5%</p>
+                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastSixMonths"]</p>
+                  <p class="text-[#e73908] text-base font-medium leading-normal">@Localizer["MinusFivePercent"]</p>
                 </div>
                 <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
                   <svg width="100%" height="148" viewBox="-3 0 478 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -261,12 +264,12 @@
                     </defs>
                   </svg>
                   <div class="flex justify-around">
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
+                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jan"]</p>
+                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Feb"]</p>
+                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Mar"]</p>
+                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Apr"]</p>
+                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["May"]</p>
+                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jun"]</p>
                   </div>
                 </div>
               </div>

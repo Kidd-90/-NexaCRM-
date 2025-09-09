@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SupportCentral" xml:space="preserve">
+    <value>Support Central</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="TicketsTitle" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="SearchTickets" xml:space="preserve">
+    <value>Search tickets</value>
+  </data>
+  <data name="AllTickets" xml:space="preserve">
+    <value>All Tickets</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Filters" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Assignee" xml:space="preserve">
+    <value>Assignee</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Team</value>
+  </data>
+  <data name="NewTicket" xml:space="preserve">
+    <value>New Ticket</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="LastUpdated" xml:space="preserve">
+    <value>Last Updated</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="LiamCarter" xml:space="preserve">
+    <value>Liam Carter</value>
+  </data>
+  <data name="IssueWithOrder12345" xml:space="preserve">
+    <value>Issue with order #12345</value>
+  </data>
+  <data name="SophiaBennett" xml:space="preserve">
+    <value>Sophia Bennett</value>
+  </data>
+  <data name="TwoHoursAgo" xml:space="preserve">
+    <value>2 hours ago</value>
+  </data>
+  <data name="AvaHarper" xml:space="preserve">
+    <value>Ava Harper</value>
+  </data>
+  <data name="LoginProblems" xml:space="preserve">
+    <value>Login problems</value>
+  </data>
+  <data name="EthanWalker" xml:space="preserve">
+    <value>Ethan Walker</value>
+  </data>
+  <data name="FiveHoursAgo" xml:space="preserve">
+    <value>5 hours ago</value>
+  </data>
+  <data name="NoahClark" xml:space="preserve">
+    <value>Noah Clark</value>
+  </data>
+  <data name="RefundRequest" xml:space="preserve">
+    <value>Refund request</value>
+  </data>
+  <data name="IsabellaReed" xml:space="preserve">
+    <value>Isabella Reed</value>
+  </data>
+  <data name="OneDayAgo" xml:space="preserve">
+    <value>1 day ago</value>
+  </data>
+  <data name="IssueWithOrder67890" xml:space="preserve">
+    <value>Issue with order #67890</value>
+  </data>
+  <data name="OliviaHayes" xml:space="preserve">
+    <value>Olivia Hayes</value>
+  </data>
+  <data name="JacksonFoster" xml:space="preserve">
+    <value>Jackson Foster</value>
+  </data>
+  <data name="IssueWithOrder44556" xml:space="preserve">
+    <value>Issue with order #44556</value>
+  </data>
+  <data name="ChloeBennett" xml:space="preserve">
+    <value>Chloe Bennett</value>
+  </data>
+  <data name="AmeliaTurner" xml:space="preserve">
+    <value>Amelia Turner</value>
+  </data>
+</root>

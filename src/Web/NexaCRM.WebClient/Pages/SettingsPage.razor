@@ -1,4 +1,7 @@
 @page "/settings-page"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SettingsPage> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
@@ -14,7 +17,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Dashboard</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Dashboard"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
@@ -24,7 +27,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Contacts</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Contacts"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="regular">
@@ -34,7 +37,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Campaigns</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Campaigns"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular">
@@ -44,7 +47,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Reports</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Reports"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
                     <div class="text-[#0e131b]" data-icon="Gear" data-size="24px" data-weight="fill">
@@ -54,119 +57,119 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Settings</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Settings"]</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4"><p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">Settings</p></div>
+            <div class="flex flex-wrap justify-between gap-3 p-4"><p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["Settings"]</p></div>
             <div class="pb-3">
               <div class="flex border-b border-[#d0d9e7] px-4 gap-8">
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#">
-                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">User Management</p>
+                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["UserManagement"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">API Keys</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["APIKeys"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Integrations</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Integrations"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Security</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Security"]</p>
                 </a>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">User Management</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["UserManagement"]</h2>
             <div class="px-4 py-3 container">
               <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
                 <table class="flex-1">
                   <thead>
                     <tr class="bg-slate-50">
-                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Name</th>
-                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Email</th>
-                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-360 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">Role</th>
-                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-480 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">Status</th>
+                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Name"]</th>
+                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Email"]</th>
+                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-360 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">@Localizer["Role"]</th>
+                      <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-480 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">@Localizer["Status"]</th>
                       <th class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-600 px-4 py-3 text-left text-[#0e131b] w-60 text-[#4d6a99] text-sm font-medium leading-normal">
-                        Actions
+                        @Localizer["Actions"]
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Ethan Carter
+                        @Localizer["EthanCarter"]
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        ethan.carter@example.com
+                        @Localizer["EthanCarterEmail"]
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Admin</span>
+                          <span class="truncate">@Localizer["Admin"]</span>
                         </button>
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Active</span>
+                          <span class="truncate">@Localizer["Active"]</span>
                         </button>
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-600 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        Edit | Delete
+                        @Localizer["EditDelete"]
                       </td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Olivia Bennett
+                        @Localizer["OliviaBennett"]
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        olivia.bennett@example.com
+                        @Localizer["OliviaBennettEmail"]
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Sales</span>
+                          <span class="truncate">@Localizer["Sales"]</span>
                         </button>
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Active</span>
+                          <span class="truncate">@Localizer["Active"]</span>
                         </button>
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-600 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        Edit | Delete
+                        @Localizer["EditDelete"]
                       </td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                        Noah Thompson
+                        @Localizer["NoahThompson"]
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
-                        noah.thompson@example.com
+                        @Localizer["NoahThompsonEmail"]
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Marketing</span>
+                          <span class="truncate">@Localizer["Marketing"]</span>
                         </button>
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                         <button
                           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
                         >
-                          <span class="truncate">Inactive</span>
+                          <span class="truncate">@Localizer["Inactive"]</span>
                         </button>
                       </td>
                       <td class="table-ea08c9dc-38a0-443e-b93b-5bc9be11998c-column-600 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
-                        Edit | Delete
+                        @Localizer["EditDelete"]
                       </td>
                     </tr>
                   </tbody>
@@ -177,7 +180,7 @@
               <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
               >
-                <span class="truncate">Create User</span>
+                <span class="truncate">@Localizer["CreateUser"]</span>
               </button>
             </div>
           </div>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Connectly" xml:space="preserve">
+    <value>커넥틀리</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="Companies" xml:space="preserve">
+    <value>회사</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>마케팅</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="AllSegments" xml:space="preserve">
+    <value>모든 세그먼트</value>
+  </data>
+  <data name="StaticLists" xml:space="preserve">
+    <value>정적 목록</value>
+  </data>
+  <data name="DynamicLists" xml:space="preserve">
+    <value>동적 목록</value>
+  </data>
+  <data name="PropertyBasedLists" xml:space="preserve">
+    <value>속성 기반 목록</value>
+  </data>
+  <data name="EngagementBasedLists" xml:space="preserve">
+    <value>참여 기반 목록</value>
+  </data>
+  <data name="CreateList" xml:space="preserve">
+    <value>목록 만들기</value>
+  </data>
+  <data name="CustomerSegments" xml:space="preserve">
+    <value>고객 세그먼트</value>
+  </data>
+  <data name="CustomerSegmentsDescription" xml:space="preserve">
+    <value>타겟 마케팅 캠페인을 위한 고객 세그먼트를 만들고 관리합니다.</value>
+  </data>
+  <data name="SearchSegments" xml:space="preserve">
+    <value>세그먼트 검색...</value>
+  </data>
+  <data name="SegmentName" xml:space="preserve">
+    <value>세그먼트 이름</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>유형</value>
+  </data>
+  <data name="Criteria" xml:space="preserve">
+    <value>기준</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>크기</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>생성일</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="HighValueCustomers" xml:space="preserve">
+    <value>고가치 고객</value>
+  </data>
+  <data name="Dynamic" xml:space="preserve">
+    <value>동적</value>
+  </data>
+  <data name="PurchaseHistory" xml:space="preserve">
+    <value>구매 내역 > $1000</value>
+  </data>
+  <data name="ActiveUsers" xml:space="preserve">
+    <value>활성 사용자</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>마지막 로그인 < 30일</value>
+  </data>
+  <data name="NewLeads" xml:space="preserve">
+    <value>신규 리드</value>
+  </data>
+  <data name="Static" xml:space="preserve">
+    <value>정적</value>
+  </data>
+  <data name="LeadSource" xml:space="preserve">
+    <value>리드 소스 = 웹사이트</value>
+  </data>
+  <data name="InactiveCustomers" xml:space="preserve">
+    <value>비활성 고객</value>
+  </data>
+  <data name="LastPurchase" xml:space="preserve">
+    <value>마지막 구매 > 1년</value>
+  </data>
+  <data name="LoyalCustomers" xml:space="preserve">
+    <value>충성 고객</value>
+  </data>
+  <data name="RepeatPurchases" xml:space="preserve">
+    <value>반복 구매 > 5</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>보기</value>
+  </data>
+</root>

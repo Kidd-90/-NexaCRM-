@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SupportHub" xml:space="preserve">
+    <value>Support Hub</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>v1.2</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SupportDashboard" xml:space="preserve">
+    <value>Support Dashboard</value>
+  </data>
+  <data name="DashboardDescription" xml:space="preserve">
+    <value>Real-time overview of support operations</value>
+  </data>
+  <data name="LiveInteractions" xml:space="preserve">
+    <value>Live Interactions</value>
+  </data>
+  <data name="LiveChat" xml:space="preserve">
+    <value>Live Chat</value>
+  </data>
+  <data name="CallQueues" xml:space="preserve">
+    <value>Call Queues</value>
+  </data>
+  <data name="SocialMedia" xml:space="preserve">
+    <value>Social Media</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Issue" xml:space="preserve">
+    <value>Issue</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="SophiaClark" xml:space="preserve">
+    <value>Sophia Clark</value>
+  </data>
+  <data name="PaymentIssue" xml:space="preserve">
+    <value>Payment issue</value>
+  </data>
+  <data name="EthanHarper" xml:space="preserve">
+    <value>Ethan Harper</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="FiveMin" xml:space="preserve">
+    <value>5 min</value>
+  </data>
+  <data name="LiamCarter" xml:space="preserve">
+    <value>Liam Carter</value>
+  </data>
+  <data name="ProductInquiry" xml:space="preserve">
+    <value>Product inquiry</value>
+  </data>
+  <data name="OliviaBennett" xml:space="preserve">
+    <value>Olivia Bennett</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="TwelveMin" xml:space="preserve">
+    <value>12 min</value>
+  </data>
+  <data name="AvaReynolds" xml:space="preserve">
+    <value>Ava Reynolds</value>
+  </data>
+  <data name="TechnicalSupport" xml:space="preserve">
+    <value>Technical support</value>
+  </data>
+  <data name="NoahFoster" xml:space="preserve">
+    <value>Noah Foster</value>
+  </data>
+  <data name="Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="TwentyMin" xml:space="preserve">
+    <value>20 min</value>
+  </data>
+  <data name="JacksonHayes" xml:space="preserve">
+    <value>Jackson Hayes</value>
+  </data>
+  <data name="RefundRequest" xml:space="preserve">
+    <value>Refund request</value>
+  </data>
+  <data name="IsabellaReed" xml:space="preserve">
+    <value>Isabella Reed</value>
+  </data>
+  <data name="TwentyFiveMin" xml:space="preserve">
+    <value>25 min</value>
+  </data>
+  <data name="ChloeMorgan" xml:space="preserve">
+    <value>Chloe Morgan</value>
+  </data>
+  <data name="AccountAccess" xml:space="preserve">
+    <value>Account access</value>
+  </data>
+  <data name="LucasColeman" xml:space="preserve">
+    <value>Lucas Coleman</value>
+  </data>
+  <data name="ThirtyMin" xml:space="preserve">
+    <value>30 min</value>
+  </data>
+  <data name="KeyMetrics" xml:space="preserve">
+    <value>Key Metrics</value>
+  </data>
+  <data name="TicketVolume" xml:space="preserve">
+    <value>Ticket Volume</value>
+  </data>
+  <data name="ResolutionRate" xml:space="preserve">
+    <value>Resolution Rate</value>
+  </data>
+  <data name="CustomerSatisfaction" xml:space="preserve">
+    <value>Customer Satisfaction</value>
+  </data>
+  <data name="PerformanceIndicators" xml:space="preserve">
+    <value>Performance Indicators</value>
+  </data>
+  <data name="TicketsByCategory" xml:space="preserve">
+    <value>Tickets by Category</value>
+  </data>
+  <data name="ThisMonth" xml:space="preserve">
+    <value>This Month</value>
+  </data>
+  <data name="PlusTenPercent" xml:space="preserve">
+    <value>+10%</value>
+  </data>
+  <data name="Billing" xml:space="preserve">
+    <value>Billing</value>
+  </data>
+  <data name="Technical" xml:space="preserve">
+    <value>Technical</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="ResolutionTrends" xml:space="preserve">
+    <value>Resolution Trends</value>
+  </data>
+  <data name="LastSixMonths" xml:space="preserve">
+    <value>Last 6 Months</value>
+  </data>
+  <data name="MinusFivePercent" xml:space="preserve">
+    <value>-5%</value>
+  </data>
+  <data name="Jan" xml:space="preserve">
+    <value>Jan</value>
+  </data>
+  <data name="Feb" xml:space="preserve">
+    <value>Feb</value>
+  </data>
+  <data name="Mar" xml:space="preserve">
+    <value>Mar</value>
+  </data>
+  <data name="Apr" xml:space="preserve">
+    <value>Apr</value>
+  </data>
+  <data name="May" xml:space="preserve">
+    <value>May</value>
+  </data>
+  <data name="Jun" xml:space="preserve">
+    <value>Jun</value>
+  </data>
+</root>

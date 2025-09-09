@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>세일즈프로</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>영업</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>마케팅</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>서비스</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Analytics" xml:space="preserve">
+    <value>분석</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="NotificationSettings" xml:space="preserve">
+    <value>알림 설정</value>
+  </data>
+  <data name="NotificationSettingsDescription" xml:space="preserve">
+    <value>다양한 이벤트 및 채널에 대한 알림 기본 설정을 관리합니다.</value>
+  </data>
+  <data name="NewLeads" xml:space="preserve">
+    <value>신규 리드</value>
+  </data>
+  <data name="NewLeadCreated" xml:space="preserve">
+    <value>신규 리드 생성됨</value>
+  </data>
+  <data name="NewLeadCreatedDescription" xml:space="preserve">
+    <value>새로운 리드가 생성되면 알림을 받습니다.</value>
+  </data>
+  <data name="LeadStatusUpdated" xml:space="preserve">
+    <value>리드 상태 업데이트됨</value>
+  </data>
+  <data name="LeadStatusUpdatedDescription" xml:space="preserve">
+    <value>리드의 상태가 변경되면 알림을 받습니다.</value>
+  </data>
+  <data name="DealUpdates" xml:space="preserve">
+    <value>거래 업데이트</value>
+  </data>
+  <data name="DealStageChanged" xml:space="preserve">
+    <value>거래 단계 변경됨</value>
+  </data>
+  <data name="DealStageChangedDescription" xml:space="preserve">
+    <value>거래가 새로운 단계로 이동하면 알림을 받습니다.</value>
+  </data>
+  <data name="DealValueUpdated" xml:space="preserve">
+    <value>거래 가치 업데이트됨</value>
+  </data>
+  <data name="DealValueUpdatedDescription" xml:space="preserve">
+    <value>거래의 가치가 업데이트되면 알림을 받습니다.</value>
+  </data>
+  <data name="TaskAssignments" xml:space="preserve">
+    <value>작업 할당</value>
+  </data>
+  <data name="NewTaskAssigned" xml:space="preserve">
+    <value>새 작업 할당됨</value>
+  </data>
+  <data name="NewTaskAssignedDescription" xml:space="preserve">
+    <value>새로운 작업이 할당되면 알림을 받습니다.</value>
+  </data>
+  <data name="TaskDueDateReminder" xml:space="preserve">
+    <value>작업 마감일 알림</value>
+  </data>
+  <data name="TaskDueDateReminderDescription" xml:space="preserve">
+    <value>작업 마감일이 다가오면 알림을 받습니다.</value>
+  </data>
+  <data name="NotificationChannels" xml:space="preserve">
+    <value>알림 채널</value>
+  </data>
+  <data name="EmailNotifications" xml:space="preserve">
+    <value>이메일 알림</value>
+  </data>
+  <data name="EmailNotificationsDescription" xml:space="preserve">
+    <value>이메일을 통해 알림을 받습니다.</value>
+  </data>
+  <data name="InAppNotifications" xml:space="preserve">
+    <value>인앱 알림</value>
+  </data>
+  <data name="InAppNotificationsDescription" xml:space="preserve">
+    <value>애플리케이션 내에서 알림을 받습니다.</value>
+  </data>
+  <data name="PushNotifications" xml:space="preserve">
+    <value>푸시 알림</value>
+  </data>
+  <data name="PushNotificationsDescription" xml:space="preserve">
+    <value>모바일 장치에서 푸시 알림을 받습니다.</value>
+  </data>
+  <data name="NotificationFrequency" xml:space="preserve">
+    <value>알림 빈도</value>
+  </data>
+  <data name="Frequency" xml:space="preserve">
+    <value>빈도</value>
+  </data>
+  <data name="SnoozeOptions" xml:space="preserve">
+    <value>다시 알림 옵션</value>
+  </data>
+  <data name="SnoozeDuration" xml:space="preserve">
+    <value>다시 알림 기간</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>설정 저장</value>
+  </data>
+</root>

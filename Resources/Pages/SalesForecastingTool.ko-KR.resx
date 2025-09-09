@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Adjustments" xml:space="preserve">
+    <value>조정</value>
+  </data>
+  <data name="AverageDealSize" xml:space="preserve">
+    <value>평균 거래 규모</value>
+  </data>
+  <data name="BestCase" xml:space="preserve">
+    <value>최상의 경우</value>
+  </data>
+  <data name="ClosedWon" xml:space="preserve">
+    <value>수주</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>통화</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="ForecastChart" xml:space="preserve">
+    <value>예측 차트</value>
+  </data>
+  <data name="ForecastDetails" xml:space="preserve">
+    <value>예측 세부 정보</value>
+  </data>
+  <data name="ForecastSettings" xml:space="preserve">
+    <value>예측 설정</value>
+  </data>
+  <data name="ForecastSummary" xml:space="preserve">
+    <value>예측 요약</value>
+  </data>
+  <data name="ForecastingModel" xml:space="preserve">
+    <value>예측 모델</value>
+  </data>
+  <data name="GenerateForecast" xml:space="preserve">
+    <value>예측 생성</value>
+  </data>
+  <data name="GeneratedOn" xml:space="preserve">
+    <value>{0}에 생성됨</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>협상</value>
+  </data>
+  <data name="PipelineConversionRate" xml:space="preserve">
+    <value>파이프라인 전환율</value>
+  </data>
+  <data name="Probability" xml:space="preserve">
+    <value>확률</value>
+  </data>
+  <data name="ProjectedRevenue" xml:space="preserve">
+    <value>예상 수익</value>
+  </data>
+  <data name="Proposal" xml:space="preserve">
+    <value>제안</value>
+  </data>
+  <data name="Prospecting" xml:space="preserve">
+    <value>잠재 고객 발굴</value>
+  </data>
+  <data name="Qualification" xml:space="preserve">
+    <value>자격</value>
+  </data>
+  <data name="RevenueForecastOverTime" xml:space="preserve">
+    <value>시간에 따른 수익 예측</value>
+  </data>
+  <data name="SalesForecastFor" xml:space="preserve">
+    <value>{0}에 대한 판매 예측</value>
+  </data>
+  <data name="Stage" xml:space="preserve">
+    <value>단계</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>팀</value>
+  </data>
+  <data name="TimePeriod" xml:space="preserve">
+    <value>기간</value>
+  </data>
+  <data name="TotalValue" xml:space="preserve">
+    <value>총 가치</value>
+  </data>
+  <data name="WeightedValue" xml:space="preserve">
+    <value>가중 가치</value>
+  </data>
+  <data name="WorstCase" xml:space="preserve">
+    <value>최악의 경우</value>
+  </data>
+  <data name="Month_Jul" xml:space="preserve">
+    <value>7월</value>
+  </data>
+  <data name="Month_Aug" xml:space="preserve">
+    <value>8월</value>
+  </data>
+  <data name="Month_Sep" xml:space="preserve">
+    <value>9월</value>
+  </data>
+</root>

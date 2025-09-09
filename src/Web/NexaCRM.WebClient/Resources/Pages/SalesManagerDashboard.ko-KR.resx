@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SalesCRM" xml:space="preserve">
+    <value>영업 CRM</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>도구</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>환영합니다, {0}님</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>팀 성과 및 주요 지표 개요</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>팀</value>
+  </data>
+  <data name="TimePeriod" xml:space="preserve">
+    <value>기간</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>제품</value>
+  </data>
+  <data name="TotalSales" xml:space="preserve">
+    <value>총 매출</value>
+  </data>
+  <data name="SalesPipelineValue" xml:space="preserve">
+    <value>영업 파이프라인 가치</value>
+  </data>
+  <data name="WinRate" xml:space="preserve">
+    <value>성공률</value>
+  </data>
+  <data name="AverageDealSize" xml:space="preserve">
+    <value>평균 거래 규모</value>
+  </data>
+  <data name="TeamPerformance" xml:space="preserve">
+    <value>팀 성과</value>
+  </data>
+  <data name="SalesByTeamMember" xml:space="preserve">
+    <value>팀원별 매출</value>
+  </data>
+  <data name="Alex" xml:space="preserve">
+    <value>알렉스</value>
+  </data>
+  <data name="Jordan" xml:space="preserve">
+    <value>조던</value>
+  </data>
+  <data name="Taylor" xml:space="preserve">
+    <value>테일러</value>
+  </data>
+  <data name="Casey" xml:space="preserve">
+    <value>케이시</value>
+  </data>
+  <data name="Morgan" xml:space="preserve">
+    <value>모건</value>
+  </data>
+  <data name="SalesPipeline" xml:space="preserve">
+    <value>영업 파이프라인</value>
+  </data>
+  <data name="PipelineStages" xml:space="preserve">
+    <value>파이프라인 단계</value>
+  </data>
+  <data name="Prospecting" xml:space="preserve">
+    <value>잠재 고객 발굴</value>
+  </data>
+  <data name="Qualification" xml:space="preserve">
+    <value>자격</value>
+  </data>
+  <data name="Proposal" xml:space="preserve">
+    <value>제안</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>협상</value>
+  </data>
+  <data name="ClosedWon" xml:space="preserve">
+    <value>수주 성공</value>
+  </data>
+  <data name="ClosedLost" xml:space="preserve">
+    <value>수주 실패</value>
+  </data>
+  <data name="TopPerformers" xml:space="preserve">
+    <value>상위 실적자</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>순위</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>이름</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>매출</value>
+  </data>
+  <data name="DealsWon" xml:space="preserve">
+    <value>성사된 거래</value>
+  </data>
+</root>
