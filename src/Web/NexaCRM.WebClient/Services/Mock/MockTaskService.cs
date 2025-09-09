@@ -1,0 +1,68 @@
+using NexaCRM.WebClient.Models;
+using NexaCRM.WebClient.Models.Enums;
+using NexaCRM.WebClient.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace NexaCRM.WebClient.Services.Mock
+{
+    public class MockTaskService : ITaskService
+    {
+        private readonly List<Models.Task> _tasks;
+
+        public MockTaskService()
+        {
+            _tasks = new List<Models.Task>
+            {
+                new Models.Task { Id = 1, Title = "Follow up with John Doe", Description = "Discuss the new proposal.", DueDate = DateTime.Now.AddDays(2), IsCompleted = false, Priority = Priority.High, AssignedTo = "Alice" },
+                new Models.Task { Id = 2, Title = "Prepare presentation for marketing meeting", Description = "Include Q2 results and Q3 forecast.", DueDate = DateTime.Now.AddDays(5), IsCompleted = false, Priority = Priority.Medium, AssignedTo = "Bob" },
+                new Models.Task { Id = 3, Title = "Review campaign performance", Description = "Analyze the results of the summer sale campaign.", DueDate = DateTime.Now.AddDays(10), IsCompleted = true, Priority = Priority.Low, AssignedTo = "Alice" }
+            };
+        }
+
+        public Task<IEnumerable<Models.Task>> GetTasksAsync()
+        {
+            return Task.FromResult<IEnumerable<Models.Task>>(_tasks);
+        }
+
+        public Task<Models.Task> GetTaskByIdAsync(int id)
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == id);
+            return Task.FromResult(task);
+        }
+
+        public Task CreateTaskAsync(Models.Task task)
+        {
+            task.Id = _tasks.Max(t => t.Id) + 1;
+            _tasks.Add(task);
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateTaskAsync(Models.Task task)
+        {
+            var existingTask = _tasks.FirstOrDefault(t => t.Id == task.Id);
+            if (existingTask != null)
+            {
+                existingTask.Title = task.Title;
+                existingTask.Description = task.Description;
+                existingTask.DueDate = task.DueDate;
+                existingTask.IsCompleted = task.IsCompleted;
+                existingTask.Priority = task.Priority;
+                existingTask.AssignedTo = task.AssignedTo;
+            }
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteTaskAsync(int id)
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null)
+            {
+                _tasks.Remove(task);
+            }
+            return Task.CompletedTask;
+        }
+    }
+}
