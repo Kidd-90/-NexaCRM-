@@ -1,0 +1,84 @@
+.nav-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    margin: 4px 0;
+    font-weight: 500;
+    color: #333;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.nav-section-header:hover {
+    background-color: #f8f9fa;
+}
+
+.submenu-toggle {
+    font-size: 12px;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.submenu-toggle.expanded {
+    transform: rotate(0deg);
+}
+
+.submenu-toggle.collapsed {
+    transform: rotate(-90deg);
+}
+
+.nav-submenu {
+    padding-left: 20px;
+    border-left: 2px solid #e9ecef;
+    margin-left: 16px;
+    margin-bottom: 8px;
+}
+
+.submenu-link {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px !important;
+    margin: 2px 0;
+    font-size: 14px;
+    color: #6c757d;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.submenu-link:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+}
+
+.submenu-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.submenu-link .oi {
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .nav-section-header {
+        padding: 10px 8px;
+    }
+    
+    .nav-submenu {
+        padding-left: 15px;
+        margin-left: 12px;
+    }
+    
+    .submenu-link {
+        padding: 8px 10px !important;
+    }
+}

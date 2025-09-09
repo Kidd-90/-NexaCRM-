@@ -1,0 +1,74 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using NexaCRM.WebClient.Services.Interfaces
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IRolePermissionService RolePermissionService
+
+@if (HasAccess)
+{
+    @ChildContent
+}
+else if (ShowAccessDeniedMessage)
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>접근 권한이 없습니다.</strong> 이 기능을 사용하려면 @RequiredRoles 권한이 필요합니다.
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string RequiredRoles { get; set; } = "";
+    [Parameter] public string RequiredPermission { get; set; } = "";
+    [Parameter] public bool ShowAccessDeniedMessage { get; set; } = false;
+
+    private bool HasAccess { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAccess();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await CheckAccess();
+    }
+
+    private async Task CheckAccess()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated == true)
+        {
+            HasAccess = false;
+            return;
+        }
+
+        // Check role-based access
+        if (!string.IsNullOrEmpty(RequiredRoles))
+        {
+            var roles = RequiredRoles.Split(',').Select(r => r.Trim()).ToArray();
+            HasAccess = roles.Any(role => user.IsInRole(role));
+            
+            if (HasAccess) return;
+        }
+
+        // Check permission-based access
+        if (!string.IsNullOrEmpty(RequiredPermission))
+        {
+            HasAccess = RequiredPermission.ToLower() switch
+            {
+                "createcustomer" => await RolePermissionService.CanCreateNewCustomerAsync(user),
+                "editcustomer" => await RolePermissionService.CanEditCustomerAsync(user),
+                "viewcustomer" => await RolePermissionService.CanViewCustomerAsync(user),
+                "customermanagement" => await RolePermissionService.CanAccessCustomerManagementAsync(user),
+                _ => false
+            };
+        }
+
+        // If no specific requirements, allow access for authenticated users
+        if (string.IsNullOrEmpty(RequiredRoles) && string.IsNullOrEmpty(RequiredPermission))
+        {
+            HasAccess = true;
+        }
+    }
+}

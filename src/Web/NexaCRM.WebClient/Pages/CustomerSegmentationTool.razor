@@ -1,6 +1,10 @@
 @page "/customer-segmentation-tool"
 @using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Authorization
+@using NexaCRM.WebClient.Services.Interfaces
 @inject IStringLocalizer<CustomerSegmentationTool> Localizer
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IRolePermissionService RolePermissionService
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
@@ -128,11 +132,22 @@
                   </div>
                 </div>
               </div>
-              <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
-              >
-                <span class="truncate">@Localizer["CreateList"]</span>
-              </button>
+              <RoleBasedComponent RequiredPermission="createcustomer" ShowAccessDeniedMessage="false">
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">@Localizer["CreateList"]</span>
+                </button>
+              </RoleBasedComponent>
+              
+              <!-- Show message for Sales users explaining the restriction -->
+              <AuthorizeView Roles="Sales">
+                <Authorized>
+                  <div class="text-sm text-gray-600 italic px-4 py-2">
+                    ℹ️ 영업 담당자는 기존 고객 목록을 보고 관리할 수 있지만, 새로운 목록을 생성할 수는 없습니다.
+                  </div>
+                </Authorized>
+              </AuthorizeView>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
