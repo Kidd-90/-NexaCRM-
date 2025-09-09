@@ -59,9 +59,9 @@
 </div>
 
 @code {
-    private IEnumerable<Contact> contacts;
+    private IEnumerable<Contact>? contacts;
 
-    protected override async Task OnInitializedAsync()
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         contacts = await ContactService.GetContactsAsync();
     }

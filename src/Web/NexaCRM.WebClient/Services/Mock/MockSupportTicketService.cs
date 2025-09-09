@@ -4,7 +4,6 @@ using NexaCRM.WebClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
@@ -24,30 +23,30 @@ namespace NexaCRM.WebClient.Services.Mock
             };
         }
 
-        public Task<IEnumerable<SupportTicket>> GetTicketsAsync()
+        public System.Threading.Tasks.Task<IEnumerable<SupportTicket>> GetTicketsAsync()
         {
-            return Task.FromResult<IEnumerable<SupportTicket>>(_tickets);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<SupportTicket>>(_tickets);
         }
 
-        public Task<SupportTicket> GetTicketByIdAsync(int id)
+        public System.Threading.Tasks.Task<SupportTicket?> GetTicketByIdAsync(int id)
         {
             var ticket = _tickets.FirstOrDefault(t => t.Id == id);
-            return Task.FromResult(ticket);
+            return System.Threading.Tasks.Task.FromResult(ticket);
         }
 
-        public Task<IEnumerable<SupportTicket>> GetLiveInteractionsAsync()
+        public System.Threading.Tasks.Task<IEnumerable<SupportTicket>> GetLiveInteractionsAsync()
         {
-            return Task.FromResult<IEnumerable<SupportTicket>>(_tickets.Where(t => t.Status == TicketStatus.InProgress || t.Status == TicketStatus.Open));
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<SupportTicket>>(_tickets.Where(t => t.Status == TicketStatus.InProgress || t.Status == TicketStatus.Open));
         }
 
-        public Task CreateTicketAsync(SupportTicket ticket)
+        public System.Threading.Tasks.Task CreateTicketAsync(SupportTicket ticket)
         {
             ticket.Id = _tickets.Max(t => t.Id) + 1;
             _tickets.Add(ticket);
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        public Task UpdateTicketAsync(SupportTicket ticket)
+        public System.Threading.Tasks.Task UpdateTicketAsync(SupportTicket ticket)
         {
             var existingTicket = _tickets.FirstOrDefault(t => t.Id == ticket.Id);
             if (existingTicket != null)
@@ -60,17 +59,17 @@ namespace NexaCRM.WebClient.Services.Mock
                 existingTicket.AgentName = ticket.AgentName;
                 existingTicket.Category = ticket.Category;
             }
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        public Task DeleteTicketAsync(int id)
+        public System.Threading.Tasks.Task DeleteTicketAsync(int id)
         {
             var ticket = _tickets.FirstOrDefault(t => t.Id == id);
             if (ticket != null)
             {
                 _tickets.Remove(ticket);
             }
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
     }
 }

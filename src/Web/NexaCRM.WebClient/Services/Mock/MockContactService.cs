@@ -1,13 +1,12 @@
 using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Services.Interfaces;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
     public class MockContactService : IContactService
     {
-        public Task<IEnumerable<Contact>> GetContactsAsync()
+        public System.Threading.Tasks.Task<IEnumerable<Contact>> GetContactsAsync()
         {
             var contacts = new List<Contact>
             {
@@ -15,7 +14,7 @@ namespace NexaCRM.WebClient.Services.Mock
                 new Contact { Id = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", PhoneNumber = "098-765-4321" },
                 new Contact { Id = 3, FirstName = "Peter", LastName = "Jones", Email = "peter.jones@example.com", PhoneNumber = "111-222-3333" }
             };
-            return Task.FromResult<IEnumerable<Contact>>(contacts);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<Contact>>(contacts);
         }
     }
 }

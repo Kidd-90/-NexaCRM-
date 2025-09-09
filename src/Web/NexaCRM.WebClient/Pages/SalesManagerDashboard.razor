@@ -74,7 +74,7 @@
               <div class="flex min-w-72 flex-col gap-3">
                 <AuthorizeView>
                     <Authorized>
-                        <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["Welcome", @context.User.Identity?.Name]</p>
+                        <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["Welcome", @context.User.Identity?.Name ?? ""]</p>
                     </Authorized>
                 </AuthorizeView>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Overview"]</p>

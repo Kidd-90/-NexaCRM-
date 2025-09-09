@@ -1,13 +1,12 @@
 using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Services.Interfaces;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
     public class MockReportService : IReportService
     {
-        public Task<ReportData> GetQuarterlyPerformanceAsync()
+        public System.Threading.Tasks.Task<ReportData> GetQuarterlyPerformanceAsync()
         {
             var data = new ReportData
             {
@@ -20,10 +19,10 @@ namespace NexaCRM.WebClient.Services.Mock
                     { "Q4", 30000 }
                 }
             };
-            return Task.FromResult(data);
+            return System.Threading.Tasks.Task.FromResult(data);
         }
 
-        public Task<ReportData> GetLeadSourceAnalyticsAsync()
+        public System.Threading.Tasks.Task<ReportData> GetLeadSourceAnalyticsAsync()
         {
             var data = new ReportData
             {
@@ -36,10 +35,10 @@ namespace NexaCRM.WebClient.Services.Mock
                     { "Email Campaign", 60 }
                 }
             };
-            return Task.FromResult(data);
+            return System.Threading.Tasks.Task.FromResult(data);
         }
 
-        public Task<ReportData> GetTicketVolumeAsync()
+        public System.Threading.Tasks.Task<ReportData> GetTicketVolumeAsync()
         {
             var data = new ReportData
             {
@@ -49,10 +48,10 @@ namespace NexaCRM.WebClient.Services.Mock
                     { "Total", 125 }
                 }
             };
-            return Task.FromResult(data);
+            return System.Threading.Tasks.Task.FromResult(data);
         }
 
-        public Task<ReportData> GetResolutionRateAsync()
+        public System.Threading.Tasks.Task<ReportData> GetResolutionRateAsync()
         {
             var data = new ReportData
             {
@@ -62,10 +61,10 @@ namespace NexaCRM.WebClient.Services.Mock
                     { "Rate", 0.85 }
                 }
             };
-            return Task.FromResult(data);
+            return System.Threading.Tasks.Task.FromResult(data);
         }
 
-        public Task<ReportData> GetTicketsByCategoryAsync()
+        public System.Threading.Tasks.Task<ReportData> GetTicketsByCategoryAsync()
         {
             var data = new ReportData
             {
@@ -78,7 +77,7 @@ namespace NexaCRM.WebClient.Services.Mock
                     { "Feedback", 70 }
                 }
             };
-            return Task.FromResult(data);
+            return System.Threading.Tasks.Task.FromResult(data);
         }
     }
 }

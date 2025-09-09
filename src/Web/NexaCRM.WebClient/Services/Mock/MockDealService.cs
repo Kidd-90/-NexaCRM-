@@ -1,13 +1,12 @@
 using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Services.Interfaces;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
     public class MockDealService : IDealService
     {
-        public Task<IEnumerable<Deal>> GetDealsAsync()
+        public System.Threading.Tasks.Task<IEnumerable<Deal>> GetDealsAsync()
         {
             var deals = new List<Deal>
             {
@@ -17,7 +16,7 @@ namespace NexaCRM.WebClient.Services.Mock
                 new Deal { Id = 4, Name = "Deal 4", Stage = "Negotiation", Amount = 15000, Company = "Company D", ContactPerson = "Mary Johnson" },
                 new Deal { Id = 5, Name = "Deal 5", Stage = "Closed (Won)", Amount = 10000, Company = "Company E", ContactPerson = "David Williams" }
             };
-            return Task.FromResult<IEnumerable<Deal>>(deals);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<Deal>>(deals);
         }
     }
 }

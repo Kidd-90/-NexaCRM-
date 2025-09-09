@@ -2,7 +2,6 @@ using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
@@ -20,9 +19,9 @@ namespace NexaCRM.WebClient.Services.Mock
             };
         }
 
-        public Task<IEnumerable<Activity>> GetRecentActivitiesAsync()
+        public System.Threading.Tasks.Task<IEnumerable<Activity>> GetRecentActivitiesAsync()
         {
-            return Task.FromResult<IEnumerable<Activity>>(_activities);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<Activity>>(_activities);
         }
     }
 }

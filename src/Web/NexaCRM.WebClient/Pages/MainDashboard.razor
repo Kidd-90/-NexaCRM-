@@ -158,7 +158,7 @@
         <div class="flex flex-wrap justify-between gap-3 p-4">
             <AuthorizeView>
                 <Authorized>
-                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["WelcomeBack", @context.User.Identity?.Name]</p>
+                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["WelcomeBack", @context.User.Identity?.Name ?? ""]</p>
                 </Authorized>
             </AuthorizeView>
         </div>
