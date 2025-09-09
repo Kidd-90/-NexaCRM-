@@ -27,6 +27,12 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<IContactService, MockContactService>();
 builder.Services.AddScoped<IDealService, MockDealService>();
+builder.Services.AddScoped<ITaskService, MockTaskService>();
+builder.Services.AddScoped<ISupportTicketService, MockSupportTicketService>();
+builder.Services.AddScoped<IAgentService, MockAgentService>();
+builder.Services.AddScoped<IMarketingCampaignService, MockMarketingCampaignService>();
+builder.Services.AddScoped<IReportService, MockReportService>();
+builder.Services.AddScoped<IActivityService, MockActivityService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;
