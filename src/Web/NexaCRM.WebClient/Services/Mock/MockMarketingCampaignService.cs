@@ -4,7 +4,6 @@ using NexaCRM.WebClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
@@ -24,25 +23,25 @@ namespace NexaCRM.WebClient.Services.Mock
             };
         }
 
-        public Task<IEnumerable<MarketingCampaign>> GetCampaignsAsync()
+        public System.Threading.Tasks.Task<IEnumerable<MarketingCampaign>> GetCampaignsAsync()
         {
-            return Task.FromResult<IEnumerable<MarketingCampaign>>(_campaigns);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<MarketingCampaign>>(_campaigns);
         }
 
-        public Task<MarketingCampaign> GetCampaignByIdAsync(int id)
+        public System.Threading.Tasks.Task<MarketingCampaign?> GetCampaignByIdAsync(int id)
         {
             var campaign = _campaigns.FirstOrDefault(c => c.Id == id);
-            return Task.FromResult(campaign);
+            return System.Threading.Tasks.Task.FromResult(campaign);
         }
 
-        public Task CreateCampaignAsync(MarketingCampaign campaign)
+        public System.Threading.Tasks.Task CreateCampaignAsync(MarketingCampaign campaign)
         {
             campaign.Id = _campaigns.Max(c => c.Id) + 1;
             _campaigns.Add(campaign);
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        public Task UpdateCampaignAsync(MarketingCampaign campaign)
+        public System.Threading.Tasks.Task UpdateCampaignAsync(MarketingCampaign campaign)
         {
             var existingCampaign = _campaigns.FirstOrDefault(c => c.Id == campaign.Id);
             if (existingCampaign != null)
@@ -55,17 +54,17 @@ namespace NexaCRM.WebClient.Services.Mock
                 existingCampaign.Budget = campaign.Budget;
                 existingCampaign.ROI = campaign.ROI;
             }
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        public Task DeleteCampaignAsync(int id)
+        public System.Threading.Tasks.Task DeleteCampaignAsync(int id)
         {
             var campaign = _campaigns.FirstOrDefault(c => c.Id == id);
             if (campaign != null)
             {
                 _campaigns.Remove(campaign);
             }
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
     }
 }

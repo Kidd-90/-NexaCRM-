@@ -157,8 +157,8 @@
                                 <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
                                 @stage.Key
                                 </td>
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Value.Count()</td>
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Value.Sum(d => d.Amount).ToString("C")</td>
+                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Count()</td>
+                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Sum(d => d.Amount).ToString("C")</td>
                             </tr>
                         }
                     }
@@ -172,11 +172,11 @@
 </div>
 
 @code {
-    private IGrouping<string, Deal>[] dealsByStage;
+    private IGrouping<string, Deal>[]? dealsByStage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         var deals = await DealService.GetDealsAsync();
-        dealsByStage = deals.GroupBy(d => d.Stage).ToArray();
+        dealsByStage = deals.Where(d => !string.IsNullOrEmpty(d.Stage)).GroupBy(d => d.Stage!).ToArray();
     }
 }

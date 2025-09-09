@@ -1,7 +1,6 @@
 using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Services.Interfaces;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
@@ -21,9 +20,9 @@ namespace NexaCRM.WebClient.Services.Mock
             };
         }
 
-        public Task<IEnumerable<Agent>> GetAgentsAsync()
+        public System.Threading.Tasks.Task<IEnumerable<Agent>> GetAgentsAsync()
         {
-            return Task.FromResult<IEnumerable<Agent>>(_agents);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<Agent>>(_agents);
         }
     }
 }

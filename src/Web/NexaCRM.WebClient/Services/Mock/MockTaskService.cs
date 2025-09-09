@@ -4,7 +4,6 @@ using NexaCRM.WebClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
@@ -22,25 +21,25 @@ namespace NexaCRM.WebClient.Services.Mock
             };
         }
 
-        public Task<IEnumerable<Models.Task>> GetTasksAsync()
+        public System.Threading.Tasks.Task<IEnumerable<Models.Task>> GetTasksAsync()
         {
-            return Task.FromResult<IEnumerable<Models.Task>>(_tasks);
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<Models.Task>>(_tasks);
         }
 
-        public Task<Models.Task> GetTaskByIdAsync(int id)
+        public System.Threading.Tasks.Task<Models.Task?> GetTaskByIdAsync(int id)
         {
             var task = _tasks.FirstOrDefault(t => t.Id == id);
-            return Task.FromResult(task);
+            return System.Threading.Tasks.Task.FromResult(task);
         }
 
-        public Task CreateTaskAsync(Models.Task task)
+        public System.Threading.Tasks.Task CreateTaskAsync(Models.Task task)
         {
             task.Id = _tasks.Max(t => t.Id) + 1;
             _tasks.Add(task);
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        public Task UpdateTaskAsync(Models.Task task)
+        public System.Threading.Tasks.Task UpdateTaskAsync(Models.Task task)
         {
             var existingTask = _tasks.FirstOrDefault(t => t.Id == task.Id);
             if (existingTask != null)
@@ -52,17 +51,17 @@ namespace NexaCRM.WebClient.Services.Mock
                 existingTask.Priority = task.Priority;
                 existingTask.AssignedTo = task.AssignedTo;
             }
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
-        public Task DeleteTaskAsync(int id)
+        public System.Threading.Tasks.Task DeleteTaskAsync(int id)
         {
             var task = _tasks.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
                 _tasks.Remove(task);
             }
-            return Task.CompletedTask;
+            return System.Threading.Tasks.Task.CompletedTask;
         }
     }
 }
