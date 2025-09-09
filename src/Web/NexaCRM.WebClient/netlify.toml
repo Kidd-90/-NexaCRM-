@@ -1,8 +1,10 @@
 [build]
-  command = "dotnet publish -c Release -o dist"
-  publish = "dist/wwwroot"
+  command = "dotnet publish src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj -c Release -o publish"
+  publish = "src/Web/NexaCRM.WebClient/publish/wwwroot"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[build.environment]
+  DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+  DOTNET_NOLOGO = "true"
+
+[build.lifecycle]
+  onBuild = "wget https://dot.net/v1/dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel 8.0"
