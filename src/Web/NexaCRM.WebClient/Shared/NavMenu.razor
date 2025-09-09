@@ -13,22 +13,48 @@
 <div class="@NavMenuCssClass" @onclick:stopPropagation="true">
     <nav class="flex-column">
         <AuthorizeView>
-            <Authorized Context="navContext">
+            <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
                         <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]
                     </NavLink>
                 </div>
-                <AuthorizeView Roles="Manager">
-                    <Authorized Context="innerContext">
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
-                                <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
-                            </NavLink>
-                        </div>
-                    </Authorized>
+
+                <AuthorizeView Roles="Admin">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
+                            <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["AdminDashboard"]
+                        </NavLink>
+                    </div>
                 </AuthorizeView>
-                <div class="nav-item px-3">
+
+                <AuthorizeView Roles="Manager">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
+                            <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
+                            <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
+                        </NavLink>
+                    </div>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Sales">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="sales-pipeline" @onclick="CloseNavMenu">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["SalesPipeline"]
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="contacts" @onclick="CloseNavMenu">
+                            <span class="oi oi-people" aria-hidden="true"></span> @Localizer["Contacts"]
+                        </NavLink>
+                    </div>
+                </AuthorizeView>
+
+                <div class="nav-item px-3 mt-auto">
                     <button class="nav-link btn btn-link" @onclick="Logout">
                         <span class="oi oi-account-logout" aria-hidden="true"></span> @Localizer["Logout"]
                     </button>
