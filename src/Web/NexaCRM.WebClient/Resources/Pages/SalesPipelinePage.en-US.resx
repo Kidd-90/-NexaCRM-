@@ -105,4 +105,7 @@
   <data name="ClosedWon" xml:space="preserve">
     <value>Closed Won</value>
   </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Loading...</value>
+  </data>
 </root>
