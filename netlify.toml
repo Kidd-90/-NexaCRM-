@@ -1,6 +1,6 @@
 [build]
   command = "dotnet publish src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj -c Release -o publish"
-  publish = "publish/wwwroot"
+  publish = "publish"  # "publish/wwwroot"에서 "publish"로 변경
 
 [build.environment]
   DOTNET_CLI_TELEMETRY_OPTOUT = "1"
