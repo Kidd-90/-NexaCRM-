@@ -1,3 +1,8 @@
-git add src/Web/NexaCRM.WebClient/wwwroot/_redirects netlify.toml
-git commit -m "Netlify SPA routing fix for Blazor WASM"
-git push
+[build]
+  publish = "src/Web/NexaCRM.WebClient/bin/Release/net9.0/publish/wwwroot"
+  command = "dotnet publish -c Release -o publish"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
