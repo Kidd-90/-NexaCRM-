@@ -1,11 +1,14 @@
 @page "/sales-coaching-and-training-module"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SalesCoachingAndTrainingModule> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-80">
             <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
               <div class="flex flex-col gap-4">
-                <h1 class="text-[#0e131b] text-base font-medium leading-normal">Acme Co</h1>
+                <h1 class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["AcmeCo"]</h1>
                 <div class="flex flex-col gap-2">
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="House" data-size="24px" data-weight="regular">
@@ -15,7 +18,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Home</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Home"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Briefcase" data-size="24px" data-weight="regular">
@@ -25,7 +28,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Sales</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Sales"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="regular">
@@ -35,7 +38,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Marketing</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Marketing"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2">
                     <div class="text-[#0e131b]" data-icon="Headset" data-size="24px" data-weight="regular">
@@ -45,7 +48,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Service</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Service"]</p>
                   </div>
                   <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
                     <div class="text-[#0e131b]" data-icon="GraduationCap" data-size="24px" data-weight="fill">
@@ -55,7 +58,7 @@
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">Coaching</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Coaching"]</p>
                   </div>
                 </div>
               </div>
@@ -64,20 +67,20 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Coaching &amp; Training</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Enhance your team's skills with targeted training modules.</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["CoachingAndTraining"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["CoachingAndTrainingDescription"]</p>
               </div>
             </div>
             <div class="pb-3">
               <div class="flex border-b border-[#d0d9e7] px-4 gap-8">
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Overview</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Overview"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#">
-                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">Training Library</p>
+                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["TrainingLibrary"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Assignments</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Assignments"]</p>
                 </a>
               </div>
             </div>
@@ -97,14 +100,14 @@
                     </svg>
                   </div>
                   <input
-                    placeholder="Search training materials"
+                    placeholder='@Localizer["SearchTrainingMaterials"]'
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                     value=""
                   />
                 </div>
               </label>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Training</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["FeaturedTraining"]</h2>
             <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
               <div class="flex items-stretch p-4 gap-3">
                 <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
@@ -113,8 +116,8 @@
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKolwYCU8My6-zjVPCS4QBb8PaS6D2foPR8iwWTd5MSbZ33VJiR6s-8tCwuutRxKcSvjVGOmQDrj9haK7LRDgFxTr8LCG8VFZiGdDzukVIMSf9JHsM5Wk6o9N30wc9KwCfofjECMADIgGWo6Tgd5OflQgiASdxMaLGoVNYM5J82GIJvCn3Hbf76_k2pgbRwo9tKYSvbpq1kNKKtcyw3MQiZM0f1nUpZUz4HkZyf4RVIqdwgx2SRNFrK7tDBy0vUHN3pqPFrHH3jtF8");'
                   ></div>
                   <div>
-                    <p class="text-[#0e131b] text-base font-medium leading-normal">Mastering Sales Techniques</p>
-                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">Learn advanced sales strategies to close more deals.</p>
+                    <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["MasteringSalesTechniques"]</p>
+                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["MasteringSalesTechniquesDescription"]</p>
                   </div>
                 </div>
                 <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
@@ -123,8 +126,8 @@
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCetiI8qjQ-5nVaxPn43IKFhu-xYvMpV7dPrjK6bg1VSq514EYRNdaRMltxezFPMoszzEvw5TFFShs-2sNSsBNz_gD7GTO9W7NBvKa5OeV4hXQOiS1-5kPrw4CQJSIjDRjvCQ5qjAPd27yX_monE_U0rhryAvrJzdJPhZ2L1YeYy7sJOc6CidMQboBfQtEctUDY8qpnMCQmoTu3aCgYFnA40Vfs4-iTK6JIRnVzlO0E2Qinf7I7Fq8wyx_msMXDaoEsHAkx9JY9YIJB");'
                   ></div>
                   <div>
-                    <p class="text-[#0e131b] text-base font-medium leading-normal">Exceptional Customer Service</p>
-                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">Enhance customer satisfaction with proven service methods.</p>
+                    <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["ExceptionalCustomerService"]</p>
+                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ExceptionalCustomerServiceDescription"]</p>
                   </div>
                 </div>
                 <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
@@ -133,69 +136,69 @@
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTDP0TlzTYU5TmR0DGbiF50Q_ZWU0j1815R-148zsMpgMmdJgoS8NjRLVeSwSsnHzy45fh9_2-dtoKKlfcizyXrKY761FpDf4oqdus4SaQ8F2-DHrv5-bkY4qZ-2pPbNRz08ZH7qhcZEAQNFr1oZtdMw9dTB7cJHKYLnZ0Yloo0vWgq6xKwgHU7gkOrQCW_kQSeoLxER3c3dzis4t2ZjJMh4wPS5okOOyxkwK5nHoAks-RY40_hbN2gIsh3VMql9wxBSJHoJqFdqT6");'
                   ></div>
                   <div>
-                    <p class="text-[#0e131b] text-base font-medium leading-normal">Deep Dive into Product Features</p>
-                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">Become an expert on our product offerings.</p>
+                    <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["DeepDiveIntoProductFeatures"]</p>
+                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["DeepDiveIntoProductFeaturesDescription"]</p>
                   </div>
                 </div>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Training Categories</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TrainingCategories"]</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBl4tvAWkRvJVrzIXJ2tnb6xo_gymDJWOiNWavpjbbbwSNbC75l4ZlMHzaMn6uAe2p--40831kOyqVQD6W4chY7wpvU1K_tE_U7kcB053K0ViZNVd46o0FuimdHmlttmuOsQZsl4LByByHTvCI_GkrelXBMGsB-E6hfxM9wEW4kASO9t2vONHdQaf7C3QshZalo2GrEkLeqdA7jC8tGeBYPtHrHMANRH_-EMSg08aKdYkTCT-02CsxXa4-D3lCCoCH1tuk8lDPETaR-");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Sales Skills</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["SalesSkills"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAArpVJ_TzOZLjNPuVAcld9ZlVLuqO4Z_CXWVchHZhBQXf3_VYmMsRJIqtWPWHW-bztxRTVwEqW39TtrOjkInXNsZKaK4hgTu-QmzHn4voA6Ra24O-MiwVP2TXVukndZc90uiuhcUNAnPSuCUJAJVRQklQJhAkV8viPIPjsoLZOCyudlvlmuUdVcnABrbrlo3-4OUJP737ZeUutOl4A-vA_2-tDOMzN7r-lrgUSjL9vfDGLnIVLDCW-gZUuyH0pdJbUaBIYjIgOH61F");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Customer Service</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CustomerService"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBWDxegdLwV00mG8tg0jcdMJZBT_byFLU4q_PeaKbRn6RdItWlem8Igg3EybkjtiQboSYFQ11tQ0F-Bzc3kkOG7Dc_0IWUiq_0FpGvpL9R1Dp3E4N9T19gCa19fAeF4JXSho8kNGqseCsI5vU4V1ZMjhemmA9QE0LVHaXrcMONlpSjVuJPb77oRRKGYO3dtyky9MdyrYQUBEHodVgyMXXFmupMmhiZNHhuoa59TEi6Yjr3hPdLqYqKoxrlCZqWlUdj-anuVs_jz-L3b");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Product Knowledge</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["ProductKnowledge"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7FbHIt9SKdheUex28Gt8TgaUmTy6IujAEUMV2xCIF_cr5mtY1qshEwNlxT3lz_bmMVdt38mQRLTdD4sxHg2G8nBgZlG_8wfKQg-GN4fzaTQvWly9rVVBY_ElFVU3U8pRA0gOB06GHAvAX-dp_cvc_T2kY-C2ycCfQeHVlvBh7bvQQlMca-NuP5OzL0lTL3orZbQSqA0sqOOQjqVF75ZJ-BtqhX3QNvA13MTS0X-53AzNMMYx1LtQlMn567ZafjBMeHE1JdrFC9Buk");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Communication</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["Communication"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBmz3kRg1DUTitjdImiarp9BsUsXJZQycP8O7bQ85ps3r6DQoQU68k5QT38B9rVmzbOQF22nsg0YvoAGOZmdHvVprCafFfatYVx3WBemA7C9GeRPQ0d8dPisGtWe-gxcgWqDlMZaRgxSptud18BvcSmid7YmXJf-PtqgVmhWfMHije2Rca6wd442xpQGahp2c8jFqnByY_8row-yi5YHmzRP426Xl_T93QNA8Z65MeluUP4hXX3q6AVDYU8D9WdEi3Vt7OTpGRtjdnT");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Negotiation</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["Negotiation"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCcfcs4HGPPz9KgKEZrDlazdv72T_DQcWVpO5oDJbwIuoA3SA-WvMFzFF_Zv86WLYe8aYOn53WEY7ySVKkbNRrFe5t1a369PqaOv0GYR5gy12y2dFl0BwDSVQ1JzjWF2IIzuc2h-QyALNDvykxnl2dOyDd3OAsn26RtgwsRC-uGJG4zJadrjZPGUxv2NiX0LsepEufcFQ4_6pEhTQDs59Ghe-YSeTODkyQGIWiV9AhW6megQlwowGbyIPJTXAb_gov7FtPSZTyrHXBz");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Time Management</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TimeManagement"]</p>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Recently Added</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["RecentlyAdded"]</h2>
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-[2_2_0px] flex-col gap-4">
                   <div class="flex flex-col gap-1">
-                    <p class="text-[#0e131b] text-base font-bold leading-tight">Effective Sales Prospecting</p>
-                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">Learn how to identify and qualify potential leads effectively.</p>
+                    <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["EffectiveSalesProspecting"]</p>
+                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["EffectiveSalesProspectingDescription"]</p>
                   </div>
                   <button
                     class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 flex-row-reverse bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-fit"
                   >
-                    <span class="truncate">View</span>
+                    <span class="truncate">@Localizer["View"]</span>
                   </button>
                 </div>
                 <div
@@ -208,13 +211,13 @@
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-[2_2_0px] flex-col gap-4">
                   <div class="flex flex-col gap-1">
-                    <p class="text-[#0e131b] text-base font-bold leading-tight">Handling Customer Objections</p>
-                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">Strategies for addressing and overcoming customer concerns.</p>
+                    <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["HandlingCustomerObjections"]</p>
+                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["HandlingCustomerObjectionsDescription"]</p>
                   </div>
                   <button
                     class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 flex-row-reverse bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-fit"
                   >
-                    <span class="truncate">View</span>
+                    <span class="truncate">@Localizer["View"]</span>
                   </button>
                 </div>
                 <div
@@ -227,13 +230,13 @@
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-[2_2_0px] flex-col gap-4">
                   <div class="flex flex-col gap-1">
-                    <p class="text-[#0e131b] text-base font-bold leading-tight">Advanced Negotiation Tactics</p>
-                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">Techniques for achieving favorable outcomes in negotiations.</p>
+                    <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["AdvancedNegotiationTactics"]</p>
+                    <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["AdvancedNegotiationTacticsDescription"]</p>
                   </div>
                   <button
                     class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 flex-row-reverse bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-fit"
                   >
-                    <span class="truncate">View</span>
+                    <span class="truncate">@Localizer["View"]</span>
                   </button>
                 </div>
                 <div

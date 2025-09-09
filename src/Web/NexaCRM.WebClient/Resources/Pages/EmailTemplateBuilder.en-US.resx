@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>SalesPro</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="Analytics" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="EmailTemplateBuilder" xml:space="preserve">
+    <value>Email Template Builder</value>
+  </data>
+  <data name="Blocks" xml:space="preserve">
+    <value>Blocks</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="BasicBlocks" xml:space="preserve">
+    <value>Basic Blocks</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Button" xml:space="preserve">
+    <value>Button</value>
+  </data>
+  <data name="SocialLinks" xml:space="preserve">
+    <value>Social Links</value>
+  </data>
+  <data name="AdvancedBlocks" xml:space="preserve">
+    <value>Advanced Blocks</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="Divider" xml:space="preserve">
+    <value>Divider</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="NewEmailTemplate" xml:space="preserve">
+    <value>New Email Template</value>
+  </data>
+  <data name="DragAndDrop" xml:space="preserve">
+    <value>Drag and drop blocks to build your email template</value>
+  </data>
+  <data name="DragAndDropHere" xml:space="preserve">
+    <value>Drag and drop blocks here</value>
+  </data>
+  <data name="StartBuilding" xml:space="preserve">
+    <value>Start building your email template by dragging blocks from the left panel.</value>
+  </data>
+  <data name="SaveTemplate" xml:space="preserve">
+    <value>Save Template</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+</root>

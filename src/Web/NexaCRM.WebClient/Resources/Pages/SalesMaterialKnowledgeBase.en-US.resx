@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SalesHub" xml:space="preserve">
+    <value>Sales Hub</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>Deals</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="ProductInformation" xml:space="preserve">
+    <value>Product Information</value>
+  </data>
+  <data name="SalesCollateral" xml:space="preserve">
+    <value>Sales Collateral</value>
+  </data>
+  <data name="BestPractices" xml:space="preserve">
+    <value>Best Practices</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>FAQs</value>
+  </data>
+  <data name="CaseStudies" xml:space="preserve">
+    <value>Case Studies</value>
+  </data>
+  <data name="CompetitiveAnalysis" xml:space="preserve">
+    <value>Competitive Analysis</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="FindResources" xml:space="preserve">
+    <value>Find resources to help you close more deals</value>
+  </data>
+  <data name="SearchArticles" xml:space="preserve">
+    <value>Search for articles, documents, and more</value>
+  </data>
+  <data name="FeaturedResources" xml:space="preserve">
+    <value>Featured Resources</value>
+  </data>
+  <data name="UnderstandingProductSuite" xml:space="preserve">
+    <value>Understanding Our Product Suite</value>
+  </data>
+  <data name="ComprehensiveGuide" xml:space="preserve">
+    <value>Comprehensive guide to all our products, features, and benefits.</value>
+  </data>
+  <data name="SalesPresentationTemplate" xml:space="preserve">
+    <value>Sales Presentation Template</value>
+  </data>
+  <data name="DownloadCustomizable" xml:space="preserve">
+    <value>Download our customizable sales presentation template to impress your clients.</value>
+  </data>
+  <data name="EffectiveSalesTechniques" xml:space="preserve">
+    <value>Effective Sales Techniques</value>
+  </data>
+  <data name="LearnProven" xml:space="preserve">
+    <value>Learn proven sales techniques to improve your closing rates and customer satisfaction.</value>
+  </data>
+  <data name="RecentUpdates" xml:space="preserve">
+    <value>Recent Updates</value>
+  </data>
+  <data name="NewProductFeature" xml:space="preserve">
+    <value>New Product Feature Release Notes</value>
+  </data>
+  <data name="Updated2Days" xml:space="preserve">
+    <value>Updated 2 days ago</value>
+  </data>
+  <data name="CompetitiveAnalysisX" xml:space="preserve">
+    <value>Competitive Analysis: Competitor X</value>
+  </data>
+  <data name="Updated1Week" xml:space="preserve">
+    <value>Updated 1 week ago</value>
+  </data>
+  <data name="SalesPlaybookQ3" xml:space="preserve">
+    <value>Sales Playbook for Q3</value>
+  </data>
+  <data name="Updated2Weeks" xml:space="preserve">
+    <value>Updated 2 weeks ago</value>
+  </data>
+</root>

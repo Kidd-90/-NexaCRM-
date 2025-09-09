@@ -1,4 +1,7 @@
 @page "/sales-material-knowledge-base"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SalesMaterialKnowledgeBase> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
@@ -12,15 +15,15 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">Sales Hub</h2>
+              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesHub"]</h2>
             </div>
             <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Home</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Contacts</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Deals</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Tasks</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Documents</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Reports</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Home"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Contacts"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Deals"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Tasks"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Documents"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
             </div>
           </div>
           <div class="flex flex-1 justify-end gap-8">
@@ -39,7 +42,7 @@
                   </svg>
                 </div>
                 <input
-                  placeholder="Search"
+                  placeholder='@Localizer["Search"]'
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                   value=""
                 />
@@ -64,7 +67,7 @@
         </header>
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-80">
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Categories</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Categories"]</h2>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -73,7 +76,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Product Information</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["ProductInformation"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -83,7 +86,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Sales Collateral</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["SalesCollateral"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -93,7 +96,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Best Practices</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["BestPractices"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -103,7 +106,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">FAQs</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["FAQs"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -113,7 +116,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Case Studies</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["CaseStudies"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -123,14 +126,14 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Competitive Analysis</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["CompetitiveAnalysis"]</p>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Knowledge Base</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Find resources to help you close more deals</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["KnowledgeBase"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["FindResources"]</p>
               </div>
             </div>
             <div class="px-4 py-3">
@@ -149,20 +152,20 @@
                     </svg>
                   </div>
                   <input
-                    placeholder="Search for articles, documents, and more"
+                    placeholder='@Localizer["SearchArticles"]'
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                     value=""
                   />
                 </div>
               </label>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Resources</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["FeaturedResources"]</h2>
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Product Information</p>
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">Understanding Our Product Suite</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Comprehensive guide to all our products, features, and benefits.</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ProductInformation"]</p>
+                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["UnderstandingProductSuite"]</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ComprehensiveGuide"]</p>
                 </div>
                 <div
                   class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
@@ -173,9 +176,9 @@
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Sales Collateral</p>
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">Sales Presentation Template</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Download our customizable sales presentation template to impress your clients.</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["SalesCollateral"]</p>
+                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPresentationTemplate"]</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["DownloadCustomizable"]</p>
                 </div>
                 <div
                   class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
@@ -186,9 +189,9 @@
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Best Practices</p>
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">Effective Sales Techniques</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Learn proven sales techniques to improve your closing rates and customer satisfaction.</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["BestPractices"]</p>
+                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["EffectiveSalesTechniques"]</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["LearnProven"]</p>
                 </div>
                 <div
                   class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
@@ -196,7 +199,7 @@
                 ></div>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Recent Updates</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["RecentUpdates"]</h2>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-12" data-icon="File" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -206,8 +209,8 @@
                 </svg>
               </div>
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">New Product Feature Release Notes</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Updated 2 days ago</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewProductFeature"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["Updated2Days"]</p>
               </div>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
@@ -219,8 +222,8 @@
                 </svg>
               </div>
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Competitive Analysis: Competitor X</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Updated 1 week ago</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["CompetitiveAnalysisX"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["Updated1Week"]</p>
               </div>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
@@ -232,8 +235,8 @@
                 </svg>
               </div>
               <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">Sales Playbook for Q3</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">Updated 2 weeks ago</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["SalesPlaybookQ3"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["Updated2Weeks"]</p>
               </div>
             </div>
           </div>

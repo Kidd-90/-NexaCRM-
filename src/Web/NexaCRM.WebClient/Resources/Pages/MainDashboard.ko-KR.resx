@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="CRM" xml:space="preserve">
+    <value>CRM</value>
+  </data>
+  <data name="AcmeCo" xml:space="preserve">
+    <value>Acme Co.</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>영업</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>마케팅</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>서비스</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>다시 오신 것을 환영합니다, {0}</value>
+  </data>
+  <data name="DashboardOverview" xml:space="preserve">
+    <value>대시보드 개요</value>
+  </data>
+  <data name="SalesPipeline" xml:space="preserve">
+    <value>영업 파이프라인</value>
+  </data>
+  <data name="QuarterlyPerformance" xml:space="preserve">
+    <value>분기별 실적</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>최근 활동</value>
+  </data>
+  <data name="SalesPipelineSummary" xml:space="preserve">
+    <value>영업 파이프라인 요약</value>
+  </data>
+  <data name="DealsByStage" xml:space="preserve">
+    <value>단계별 거래</value>
+  </data>
+  <data name="Prospecting" xml:space="preserve">
+    <value>잠재 고객 발굴</value>
+  </data>
+  <data name="Qualification" xml:space="preserve">
+    <value>자격 평가</value>
+  </data>
+  <data name="Proposal" xml:space="preserve">
+    <value>제안</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>협상</value>
+  </data>
+  <data name="ClosedWon" xml:space="preserve">
+    <value>수주 성공</value>
+  </data>
+  <data name="ClosedLost" xml:space="preserve">
+    <value>수주 실패</value>
+  </data>
+  <data name="RevenueByQuarter" xml:space="preserve">
+    <value>분기별 수익</value>
+  </data>
+  <data name="Q1" xml:space="preserve">
+    <value>1분기</value>
+  </data>
+  <data name="Q2" xml:space="preserve">
+    <value>2분기</value>
+  </data>
+  <data name="Q3" xml:space="preserve">
+    <value>3분기</value>
+  </data>
+  <data name="Q4" xml:space="preserve">
+    <value>4분기</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>마감일</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>우선순위</value>
+  </data>
+  <data name="FollowUp" xml:space="preserve">
+    <value>잠재 고객과 후속 조치</value>
+  </data>
+  <data name="PreparePresentation" xml:space="preserve">
+    <value>영업 프레젠테이션 준비</value>
+  </data>
+  <data name="ReviewCampaign" xml:space="preserve">
+    <value>마케팅 캠페인 결과 검토</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>높음</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>중간</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>낮음</value>
+  </data>
+  <data name="NewLead" xml:space="preserve">
+    <value>웹사이트에서 새로운 리드</value>
+  </data>
+  <data name="SalesCall" xml:space="preserve">
+    <value>고객과의 영업 통화</value>
+  </data>
+  <data name="ClosedDeal" xml:space="preserve">
+    <value>Acme Corp와의 거래 성사</value>
+  </data>
+  <data name="LeadSourceAnalytics" xml:space="preserve">
+    <value>리드 소스 분석</value>
+  </data>
+  <data name="LeadsBySource" xml:space="preserve">
+    <value>소스별 리드</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>웹사이트</value>
+  </data>
+  <data name="Referral" xml:space="preserve">
+    <value>추천</value>
+  </data>
+  <data name="SocialMedia" xml:space="preserve">
+    <value>소셜 미디어</value>
+  </data>
+  <data name="EmailCampaign" xml:space="preserve">
+    <value>이메일 캠페인</value>
+  </data>
+</root>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Connectly" xml:space="preserve">
+    <value>Connectly</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>Deals</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AllSegments" xml:space="preserve">
+    <value>All segments</value>
+  </data>
+  <data name="StaticLists" xml:space="preserve">
+    <value>Static lists</value>
+  </data>
+  <data name="DynamicLists" xml:space="preserve">
+    <value>Dynamic lists</value>
+  </data>
+  <data name="PropertyBasedLists" xml:space="preserve">
+    <value>Property-based lists</value>
+  </data>
+  <data name="EngagementBasedLists" xml:space="preserve">
+    <value>Engagement-based lists</value>
+  </data>
+  <data name="CreateList" xml:space="preserve">
+    <value>Create list</value>
+  </data>
+  <data name="CustomerSegments" xml:space="preserve">
+    <value>Customer Segments</value>
+  </data>
+  <data name="CustomerSegmentsDescription" xml:space="preserve">
+    <value>Create and manage customer segments for targeted marketing campaigns.</value>
+  </data>
+  <data name="SearchSegments" xml:space="preserve">
+    <value>Search segments...</value>
+  </data>
+  <data name="SegmentName" xml:space="preserve">
+    <value>Segment Name</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Criteria" xml:space="preserve">
+    <value>Criteria</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Created At</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="HighValueCustomers" xml:space="preserve">
+    <value>High-Value Customers</value>
+  </data>
+  <data name="Dynamic" xml:space="preserve">
+    <value>Dynamic</value>
+  </data>
+  <data name="PurchaseHistory" xml:space="preserve">
+    <value>Purchase History &gt; $1000</value>
+  </data>
+  <data name="ActiveUsers" xml:space="preserve">
+    <value>Active Users</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>Last Login &lt; 30 days</value>
+  </data>
+  <data name="NewLeads" xml:space="preserve">
+    <value>New Leads</value>
+  </data>
+  <data name="Static" xml:space="preserve">
+    <value>Static</value>
+  </data>
+  <data name="LeadSource" xml:space="preserve">
+    <value>Lead Source = Website</value>
+  </data>
+  <data name="InactiveCustomers" xml:space="preserve">
+    <value>Inactive Customers</value>
+  </data>
+  <data name="LastPurchase" xml:space="preserve">
+    <value>Last Purchase &gt; 1 year</value>
+  </data>
+  <data name="LoyalCustomers" xml:space="preserve">
+    <value>Loyal Customers</value>
+  </data>
+  <data name="RepeatPurchases" xml:space="preserve">
+    <value>Repeat Purchases &gt; 5</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+</root>

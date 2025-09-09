@@ -1,4 +1,7 @@
 @page "/customer-support-knowledge-base"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CustomerSupportKnowledgeBase> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
@@ -12,14 +15,14 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">Support Hub</h2>
+              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SupportHub"]</h2>
             </div>
             <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Home</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Tickets</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Knowledge Base</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Community</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Reports</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Home"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Tickets"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["KnowledgeBase"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Community"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
             </div>
           </div>
           <div class="flex flex-1 justify-end gap-8">
@@ -38,7 +41,7 @@
                   </svg>
                 </div>
                 <input
-                  placeholder="Search"
+                  placeholder='@Localizer["Search"]'
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                   value=""
                 />
@@ -52,7 +55,7 @@
         </header>
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-80">
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Categories</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Categories"]</h2>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -61,7 +64,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Getting Started</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["GettingStarted"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -71,7 +74,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Troubleshooting</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["Troubleshooting"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -81,7 +84,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Product Manuals</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["ProductManuals"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -91,7 +94,7 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">FAQs</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["FAQs"]</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
               <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
@@ -101,14 +104,14 @@
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">Release Notes</p>
+              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["ReleaseNotes"]</p>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Knowledge Base</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Find answers to common questions and solutions to issues.</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["KnowledgeBaseTitle"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["KnowledgeBaseDescription"]</p>
               </div>
             </div>
             <div class="px-4 py-3">
@@ -127,19 +130,19 @@
                     </svg>
                   </div>
                   <input
-                    placeholder="Search for articles, FAQs, or guides"
+                    placeholder='@Localizer["SearchPlaceholder"]'
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                     value=""
                   />
                 </div>
               </label>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Articles</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["FeaturedArticles"]</h2>
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">Setting up your new device</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">A step-by-step guide to get your device up and running.</p>
+                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Article1Title"]</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Article1Description"]</p>
                 </div>
                 <div
                   class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
@@ -150,8 +153,8 @@
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">Troubleshooting common issues</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Solutions to common problems users encounter.</p>
+                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Article2Title"]</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Article2Description"]</p>
                 </div>
                 <div
                   class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
@@ -162,8 +165,8 @@
             <div class="p-4">
               <div class="flex items-stretch justify-between gap-4 rounded-lg">
                 <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">Understanding your device's features</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">Learn about the various features and functionalities of your device.</p>
+                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Article3Title"]</p>
+                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Article3Description"]</p>
                 </div>
                 <div
                   class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
@@ -171,49 +174,49 @@
                 ></div>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Browse by Topic</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["BrowseByTopic"]</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJRpqtLuAAAXcegnZv9q0Pvf2P82BsGncNTTtshtIKPaJ4DWQHZglJLJSxIztF1UyJVyS43umrWN1yUOG9BZhEw1EqbRS9P0hoyT3L5_zRDZOqHU9-PEJlJdM_mpkzL1kf3QsIpzBMjE-l8JVugZQ7s1_onhOtT3og0gOuRgud2oYLQBvCT19lIQ1QicKeQIOaEISPSvRAneHYSAiFXkRozTkIAlnJZ8_5A9S2BsCh9RQ-lb62omu6wxFqTxkIMqmfcpS44QYW1U5z");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Account Management</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TopicAccountManagement"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuArb2a-OFBz8mdi5ISSwgFNkIW4s6fy3fPzYRXeBRwx121UZPu4hzzULieYeKJupryZtGQQINPb_BURbFw8oU5L7zul3OSOhepISsNbHgSnUPyvOklYBXm52829C6q1XspTdk3HuL56SotsmxPZ_VPEj-u4Xcrvi30zZDOl3pa0jWw1nPrUhKc2exgesB34SCqP8txO-R8V6R8egLaJVKvtN80AyWkFsWFl4zi5Aht-d9Z2wfAhoEjTKEK5THyYOe9SeR2RQ41GLW-N");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Billing &amp; Payments</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TopicBillingPayments"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC42lvr_LHvdA6HTW5a3OzQVHDII1iMA6udINTzJj9sVpZGo8QwQoS1mBxQhw66CAxkoWm-IXgVxCGMXe3k9i1mG2pLMvipBkg5RVAC-7u0kU3yF2e_DrgZ9FUfxtJ2FJWhDp2RLpRmDA1JqDLQ1HeglQPw0G23h5gl-BicQAkdBPA7KfimOLscRdbP9nlsGlTu2VNgaeZMvup5elL1spfSeShH4WvVGNBz4wUz_X-GYRfH4cj3TVtyZPxOmIw1-ZSJtF4NjsBGlu5H");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Device Support</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TopicDeviceSupport"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDOddk8AVEyoNmxHZHP8NrcODeZpISFTvutvpJw8ipXkomguVnh_uqbV4OaaFvj06shndNTwMaOKshNU8MtjeoNJUD0KTWsN7eYkiibONRV63SsP3W1cbIS8LMKqF6neQhXUi1q7K10FIzhYrVHUrdkLFm4JtZfbBrGyWL2d29JaAYSQtgrlGA4cv94BkPo03CfpDXC5ZW64D2OvAroQPYAD5tGS2cXL0CQ-YpQ-8T-XEaxH0rLuqUXlvh6QI2Tjy7sfzX-HYLTjc8L");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Connectivity Issues</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TopicConnectivityIssues"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEQ0u9CwzBWUgpan1jhZ5zaFr7UpklStiBxzkISNAanPzJ5ocNZzXXVPeAAb9UngFXBWl7KCGZQQDp-oSYkWectCGPOMaQfpa5gOcMR3twzQ96GbEeghwflHLlLMBxsM4FxsYTaU2P_VmnhRVonNxcwarrs28tQlAjl_4Op001-1PyNUuaZSt5FriKK9vr-EP11Tcftpb4bAJOM-T7qFwNmk2AX_dA0LToTtHY39oGh1PIguOr4ikE4oRjaIxRdHAGtGKYcibRT6qA");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Software Updates</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TopicSoftwareUpdates"]</p>
               </div>
               <div class="flex flex-col gap-3 pb-3">
                 <div
                   class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
                   style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD2B6DVVcu1Qw6zPK4unAEWWVWNRHnS_EIl1uz1aMVcxOStXTd7fhIBzfGvikpFV9WQqJyLe0RwGAK1TbfCsjw4j9xPV_CduS122Tfkf3zsXvprwpAibKTcKseLBXoXkdQanHNFwjIjSiwymOlDjmrDJn2aCiS0aOgwUBY9cgyuh04bbiWfowyORte4cdh8to-_eSPsRqo2Gz0BkuyafCagn3Mh2uPp_FYE0pTF3M_oM67xEKn8wflli-IYJmZI-2NsDyb2GgvGQZRb");'
                 ></div>
-                <p class="text-[#0e131b] text-base font-medium leading-normal">Security &amp; Privacy</p>
+                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TopicSecurityPrivacy"]</p>
               </div>
             </div>
           </div>

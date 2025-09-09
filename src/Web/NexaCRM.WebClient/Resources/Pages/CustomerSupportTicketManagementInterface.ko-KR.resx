@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SupportCentral" xml:space="preserve">
+    <value>지원 센터</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Tickets" xml:space="preserve">
+    <value>티켓</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>지식 베이스</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="TicketsTitle" xml:space="preserve">
+    <value>티켓</value>
+  </data>
+  <data name="SearchTickets" xml:space="preserve">
+    <value>티켓 검색</value>
+  </data>
+  <data name="AllTickets" xml:space="preserve">
+    <value>모든 티켓</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>열림</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>대기 중</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>닫힘</value>
+  </data>
+  <data name="Filters" xml:space="preserve">
+    <value>필터</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>상태</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>우선순위</value>
+  </data>
+  <data name="Assignee" xml:space="preserve">
+    <value>담당자</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>팀</value>
+  </data>
+  <data name="NewTicket" xml:space="preserve">
+    <value>새 티켓</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>제목</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>고객</value>
+  </data>
+  <data name="LastUpdated" xml:space="preserve">
+    <value>마지막 업데이트</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>높음</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>중간</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>낮음</value>
+  </data>
+  <data name="LiamCarter" xml:space="preserve">
+    <value>리암 카터</value>
+  </data>
+  <data name="IssueWithOrder12345" xml:space="preserve">
+    <value>주문 #12345 관련 문제</value>
+  </data>
+  <data name="SophiaBennett" xml:space="preserve">
+    <value>소피아 베넷</value>
+  </data>
+  <data name="TwoHoursAgo" xml:space="preserve">
+    <value>2시간 전</value>
+  </data>
+  <data name="AvaHarper" xml:space="preserve">
+    <value>에이바 하퍼</value>
+  </data>
+  <data name="LoginProblems" xml:space="preserve">
+    <value>로그인 문제</value>
+  </data>
+  <data name="EthanWalker" xml:space="preserve">
+    <value>이선 워커</value>
+  </data>
+  <data name="FiveHoursAgo" xml:space="preserve">
+    <value>5시간 전</value>
+  </data>
+  <data name="NoahClark" xml:space="preserve">
+    <value>노아 클라크</value>
+  </data>
+  <data name="RefundRequest" xml:space="preserve">
+    <value>환불 요청</value>
+  </data>
+  <data name="IsabellaReed" xml:space="preserve">
+    <value>이사벨라 리드</value>
+  </data>
+  <data name="OneDayAgo" xml:space="preserve">
+    <value>1일 전</value>
+  </data>
+  <data name="IssueWithOrder67890" xml:space="preserve">
+    <value>주문 #67890 관련 문제</value>
+  </data>
+  <data name="OliviaHayes" xml:space="preserve">
+    <value>올리비아 헤이즈</value>
+  </data>
+  <data name="JacksonFoster" xml:space="preserve">
+    <value>잭슨 포스터</value>
+  </data>
+  <data name="IssueWithOrder44556" xml:space="preserve">
+    <value>주문 #44556 관련 문제</value>
+  </data>
+  <data name="ChloeBennett" xml:space="preserve">
+    <value>클로이 베넷</value>
+  </data>
+  <data name="AmeliaTurner" xml:space="preserve">
+    <value>아멜리아 터너</value>
+  </data>
+</root>

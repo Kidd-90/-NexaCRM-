@@ -1,4 +1,6 @@
 @page "/sales-pipeline-page"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SalesPipelinePage> Localizer
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -21,14 +23,14 @@
                 ></path>
             </svg>
             </div>
-            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">SalesPro</h2>
+            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
         </div>
         <div class="flex items-center gap-9">
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/main-dashboard">Dashboard</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/contacts">Contacts</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/sales-pipeline-page">Deals</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tasks">Tasks</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/reports-page">Reports</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/main-dashboard">@Localizer["Dashboard"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/contacts">@Localizer["Contacts"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/sales-pipeline-page">@Localizer["Deals"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tasks">@Localizer["Tasks"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/reports-page">@Localizer["Reports"]</a>
         </div>
         </div>
         <div class="flex flex-1 justify-end gap-8">
@@ -47,7 +49,7 @@
                 </svg>
             </div>
             <input
-                placeholder="Search"
+                placeholder='@Localizer["Search"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                 value=""
             />
@@ -56,7 +58,7 @@
         <button
             class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
         >
-            <span class="truncate">New</span>
+            <span class="truncate">@Localizer["New"]</span>
         </button>
         <div
             class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
@@ -68,13 +70,13 @@
         <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
         <div class="flex flex-wrap justify-between gap-3 p-4">
             <div class="flex min-w-72 flex-col gap-3">
-            <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">Sales Pipeline</p>
-            <p class="text-[#4d6a99] text-sm font-normal leading-normal">Manage your sales process effectively with our intuitive pipeline view.</p>
+            <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["SalesPipeline"]</p>
+            <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ManageSalesProcess"]</p>
             </div>
             <button
             class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
             >
-            <span class="truncate">Add Deal</span>
+            <span class="truncate">@Localizer["AddDeal"]</span>
             </button>
         </div>
         <div class="px-4 py-3">
@@ -93,7 +95,7 @@
                 </svg>
                 </div>
                 <input
-                placeholder="Search deals..."
+                placeholder='@Localizer["SearchDeals"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                 value=""
                 />
@@ -102,7 +104,7 @@
         </div>
         <div class="flex gap-3 p-3 flex-wrap pr-4">
             <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">Owner</p>
+            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Owner"]</p>
             <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
@@ -110,7 +112,7 @@
             </div>
             </button>
             <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">Time Period</p>
+            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["TimePeriod"]</p>
             <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
@@ -118,7 +120,7 @@
             </div>
             </button>
             <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">Amount</p>
+            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Amount"]</p>
             <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
@@ -126,47 +128,47 @@
             </div>
             </button>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Pipeline Stages</h2>
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["PipelineStages"]</h2>
         <div class="px-4 py-3 container">
             <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
             <table class="flex-1">
                 <thead>
                 <tr class="bg-slate-50">
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Stage</th>
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Deals</th>
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">Amount</th>
+                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Stage"]</th>
+                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Deals"]</th>
+                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Amount"]</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr class="border-t border-t-[#d0d9e7]">
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    Prospecting
+                    @Localizer["Prospecting"]
                     </td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">12</td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$50,000</td>
                 </tr>
                 <tr class="border-t border-t-[#d0d9e7]">
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    Qualification
+                    @Localizer["Qualification"]
                     </td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">8</td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$30,000</td>
                 </tr>
                 <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">Proposal</td>
+                    <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Proposal"]</td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">5</td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$20,000</td>
                 </tr>
                 <tr class="border-t border-t-[#d0d9e7]">
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    Negotiation
+                    @Localizer["Negotiation"]
                     </td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">3</td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$15,000</td>
                 </tr>
                 <tr class="border-t border-t-[#d0d9e7]">
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
-                    Closed Won
+                    @Localizer["ClosedWon"]
                     </td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">2</td>
                     <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$10,000</td>

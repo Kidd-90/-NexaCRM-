@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AcmeCo" xml:space="preserve">
+    <value>Acme Co</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>Deals</value>
+  </data>
+  <data name="Campaigns" xml:space="preserve">
+    <value>Campaigns</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="NewCampaign" xml:space="preserve">
+    <value>New Campaign</value>
+  </data>
+  <data name="ActiveCampaigns" xml:space="preserve">
+    <value>Active Campaigns</value>
+  </data>
+  <data name="PastCampaigns" xml:space="preserve">
+    <value>Past Campaigns</value>
+  </data>
+  <data name="Drafts" xml:space="preserve">
+    <value>Drafts</value>
+  </data>
+  <data name="SearchCampaigns" xml:space="preserve">
+    <value>Search campaigns...</value>
+  </data>
+  <data name="CampaignName" xml:space="preserve">
+    <value>Campaign Name</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="Budget" xml:space="preserve">
+    <value>Budget</value>
+  </data>
+  <data name="ROI" xml:space="preserve">
+    <value>ROI</value>
+  </data>
+  <data name="SummerSale" xml:space="preserve">
+    <value>Summer Sale</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ProductLaunch" xml:space="preserve">
+    <value>Product Launch</value>
+  </data>
+  <data name="SocialMedia" xml:space="preserve">
+    <value>Social Media</value>
+  </data>
+  <data name="Scheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="HolidayPromotion" xml:space="preserve">
+    <value>Holiday Promotion</value>
+  </data>
+  <data name="Ads" xml:space="preserve">
+    <value>Ads</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="SpringCollection" xml:space="preserve">
+    <value>Spring Collection</value>
+  </data>
+  <data name="AnniversaryEvent" xml:space="preserve">
+    <value>Anniversary Event</value>
+  </data>
+</root>

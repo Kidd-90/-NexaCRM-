@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>세일즈프로</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="ReportsTitle" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="NewReport" xml:space="preserve">
+    <value>새 보고서</value>
+  </data>
+  <data name="ReportBuilder" xml:space="preserve">
+    <value>보고서 빌더</value>
+  </data>
+  <data name="GroupingAndSorting" xml:space="preserve">
+    <value>그룹화 및 정렬</value>
+  </data>
+  <data name="Visualization" xml:space="preserve">
+    <value>시각화</value>
+  </data>
+  <data name="ExportPDF" xml:space="preserve">
+    <value>PDF로 내보내기</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>CSV로 내보내기</value>
+  </data>
+  <data name="ScheduleReport" xml:space="preserve">
+    <value>보고서 예약</value>
+  </data>
+</root>

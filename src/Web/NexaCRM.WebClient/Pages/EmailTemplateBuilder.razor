@@ -1,4 +1,7 @@
 @page "/email-template-builder"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<EmailTemplateBuilder> Localizer
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
@@ -20,14 +23,14 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">SalesPro</h2>
+              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
             </div>
             <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Dashboard</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Sales</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Marketing</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Service</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">Analytics</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Sales"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Service"]</a>
+              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Analytics"]</a>
             </div>
           </div>
           <div class="flex flex-1 justify-end gap-8">
@@ -46,7 +49,7 @@
                   </svg>
                 </div>
                 <input
-                  placeholder="Search"
+                  placeholder='@Localizer["Search"]'
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                   value=""
                 />
@@ -71,21 +74,21 @@
         </header>
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-80">
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Email Template Builder</h2>
+            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["EmailTemplateBuilder"]</h2>
             <div class="pb-3">
               <div class="flex border-b border-[#d0d9e7] px-4 gap-8">
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#">
-                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">Blocks</p>
+                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Blocks"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Settings</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Settings"]</p>
                 </a>
                 <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">Preview</p>
+                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Preview"]</p>
                 </a>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Basic Blocks</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["BasicBlocks"]</h3>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="TextB" data-size="24px" data-weight="regular">
@@ -95,7 +98,7 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Text</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Text"]</h2>
               </div>
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="Image" data-size="24px" data-weight="regular">
@@ -105,7 +108,7 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Image</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Image"]</h2>
               </div>
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="CursorClick" data-size="24px" data-weight="regular">
@@ -115,7 +118,7 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Button</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Button"]</h2>
               </div>
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
@@ -125,10 +128,10 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Social Links</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SocialLinks"]</h2>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Advanced Blocks</h3>
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["AdvancedBlocks"]</h3>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="Layout" data-size="24px" data-weight="regular">
@@ -138,7 +141,7 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Layout</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Layout"]</h2>
               </div>
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="Divide" data-size="24px" data-weight="regular">
@@ -148,7 +151,7 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Divider</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Divider"]</h2>
               </div>
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="Video" data-size="24px" data-weight="regular">
@@ -158,7 +161,7 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Video</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Video"]</h2>
               </div>
               <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
                 <div class="text-[#0e131b]" data-icon="X" data-size="24px" data-weight="regular">
@@ -168,29 +171,29 @@
                     ></path>
                   </svg>
                 </div>
-                <h2 class="text-[#0e131b] text-base font-bold leading-tight">Product</h2>
+                <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Product"]</h2>
               </div>
             </div>
           </div>
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">New Email Template</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">Drag and drop blocks to build your email template</p>
+                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["NewEmailTemplate"]</p>
+                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["DragAndDrop"]</p>
               </div>
             </div>
             <div class="flex flex-col p-4">
               <div class="flex flex-col items-center gap-6 rounded-lg border-2 border-dashed border-[#d0d9e7] px-6 py-14">
                 <div class="flex max-w-[480px] flex-col items-center gap-2">
-                  <p class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">Drag and drop blocks here</p>
+                  <p class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">@Localizer["DragAndDropHere"]</p>
                   <p class="text-[#0e131b] text-sm font-normal leading-normal max-w-[480px] text-center">
-                    Start building your email template by dragging blocks from the left panel.
+                    @Localizer["StartBuilding"]
                   </p>
                 </div>
                 <button
                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
                 >
-                  <span class="truncate">Save Template</span>
+                  <span class="truncate">@Localizer["SaveTemplate"]</span>
                 </button>
               </div>
             </div>
@@ -199,12 +202,12 @@
                 <button
                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
                 >
-                  <span class="truncate">Cancel</span>
+                  <span class="truncate">@Localizer["Cancel"]</span>
                 </button>
                 <button
                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
                 >
-                  <span class="truncate">Save Template</span>
+                  <span class="truncate">@Localizer["SaveTemplate"]</span>
                 </button>
               </div>
             </div>

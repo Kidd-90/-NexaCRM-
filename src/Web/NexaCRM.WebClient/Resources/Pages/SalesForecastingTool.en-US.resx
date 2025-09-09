@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ForecastSettings" xml:space="preserve">
+    <value>Forecast Settings</value>
+  </data>
+  <data name="ForecastingModel" xml:space="preserve">
+    <value>Forecasting Model</value>
+  </data>
+  <data name="TimePeriod" xml:space="preserve">
+    <value>Time Period</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Team</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="Adjustments" xml:space="preserve">
+    <value>Adjustments</value>
+  </data>
+  <data name="PipelineConversionRate" xml:space="preserve">
+    <value>Pipeline Conversion Rate</value>
+  </data>
+  <data name="AverageDealSize" xml:space="preserve">
+    <value>Average Deal Size</value>
+  </data>
+  <data name="GenerateForecast" xml:space="preserve">
+    <value>Generate Forecast</value>
+  </data>
+  <data name="SalesForecastFor" xml:space="preserve">
+    <value>Sales Forecast for Q3 2024</value>
+  </data>
+  <data name="GeneratedOn" xml:space="preserve">
+    <value>Generated on July 15, 2024</value>
+  </data>
+  <data name="ForecastSummary" xml:space="preserve">
+    <value>Forecast Summary</value>
+  </data>
+  <data name="ProjectedRevenue" xml:space="preserve">
+    <value>Projected Revenue</value>
+  </data>
+  <data name="BestCase" xml:space="preserve">
+    <value>Best Case</value>
+  </data>
+  <data name="WorstCase" xml:space="preserve">
+    <value>Worst Case</value>
+  </data>
+  <data name="ForecastChart" xml:space="preserve">
+    <value>Forecast Chart</value>
+  </data>
+  <data name="RevenueForecastOverTime" xml:space="preserve">
+    <value>Revenue Forecast Over Time</value>
+  </data>
+  <data name="Q32024" xml:space="preserve">
+    <value>Q3 2024</value>
+  </data>
+  <data name="Plus15Percent" xml:space="preserve">
+    <value>+15%</value>
+  </data>
+  <data name="Jul" xml:space="preserve">
+    <value>Jul</value>
+  </data>
+  <data name="Aug" xml:space="preserve">
+    <value>Aug</value>
+  </data>
+  <data name="Sep" xml:space="preserve">
+    <value>Sep</value>
+  </data>
+  <data name="ForecastDetails" xml:space="preserve">
+    <value>Forecast Details</value>
+  </data>
+  <data name="Stage" xml:space="preserve">
+    <value>Stage</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>Deals</value>
+  </data>
+  <data name="TotalValue" xml:space="preserve">
+    <value>Total Value</value>
+  </data>
+  <data name="Probability" xml:space="preserve">
+    <value>Probability</value>
+  </data>
+  <data name="WeightedValue" xml:space="preserve">
+    <value>Weighted Value</value>
+  </data>
+  <data name="Prospecting" xml:space="preserve">
+    <value>Prospecting</value>
+  </data>
+  <data name="Qualification" xml:space="preserve">
+    <value>Qualification</value>
+  </data>
+  <data name="Proposal" xml:space="preserve">
+    <value>Proposal</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>Negotiation</value>
+  </data>
+  <data name="ClosedWon" xml:space="preserve">
+    <value>Closed-Won</value>
+  </data>
+</root>

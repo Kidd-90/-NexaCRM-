@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="CRM" xml:space="preserve">
+    <value>CRM</value>
+  </data>
+  <data name="AcmeCo" xml:space="preserve">
+    <value>Acme Co.</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Welcome back, {0}</value>
+  </data>
+  <data name="DashboardOverview" xml:space="preserve">
+    <value>Dashboard Overview</value>
+  </data>
+  <data name="SalesPipeline" xml:space="preserve">
+    <value>Sales Pipeline</value>
+  </data>
+  <data name="QuarterlyPerformance" xml:space="preserve">
+    <value>Quarterly Performance</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="RecentActivity" xml:space="preserve">
+    <value>Recent Activity</value>
+  </data>
+  <data name="SalesPipelineSummary" xml:space="preserve">
+    <value>Sales Pipeline Summary</value>
+  </data>
+  <data name="DealsByStage" xml:space="preserve">
+    <value>Deals by Stage</value>
+  </data>
+  <data name="Prospecting" xml:space="preserve">
+    <value>Prospecting</value>
+  </data>
+  <data name="Qualification" xml:space="preserve">
+    <value>Qualification</value>
+  </data>
+  <data name="Proposal" xml:space="preserve">
+    <value>Proposal</value>
+  </data>
+  <data name="Negotiation" xml:space="preserve">
+    <value>Negotiation</value>
+  </data>
+  <data name="ClosedWon" xml:space="preserve">
+    <value>Closed Won</value>
+  </data>
+  <data name="ClosedLost" xml:space="preserve">
+    <value>Closed Lost</value>
+  </data>
+  <data name="RevenueByQuarter" xml:space="preserve">
+    <value>Revenue by Quarter</value>
+  </data>
+  <data name="Q1" xml:space="preserve">
+    <value>Q1</value>
+  </data>
+  <data name="Q2" xml:space="preserve">
+    <value>Q2</value>
+  </data>
+  <data name="Q3" xml:space="preserve">
+    <value>Q3</value>
+  </data>
+  <data name="Q4" xml:space="preserve">
+    <value>Q4</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>Task</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Due Date</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="FollowUp" xml:space="preserve">
+    <value>Follow up with potential client</value>
+  </data>
+  <data name="PreparePresentation" xml:space="preserve">
+    <value>Prepare sales presentation</value>
+  </data>
+  <data name="ReviewCampaign" xml:space="preserve">
+    <value>Review marketing campaign results</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="Low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="NewLead" xml:space="preserve">
+    <value>New lead from website</value>
+  </data>
+  <data name="SalesCall" xml:space="preserve">
+    <value>Sales call with client</value>
+  </data>
+  <data name="ClosedDeal" xml:space="preserve">
+    <value>Closed deal with Acme Corp</value>
+  </data>
+  <data name="LeadSourceAnalytics" xml:space="preserve">
+    <value>Lead Source Analytics</value>
+  </data>
+  <data name="LeadsBySource" xml:space="preserve">
+    <value>Leads by Source</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="Referral" xml:space="preserve">
+    <value>Referral</value>
+  </data>
+  <data name="SocialMedia" xml:space="preserve">
+    <value>Social Media</value>
+  </data>
+  <data name="EmailCampaign" xml:space="preserve">
+    <value>Email Campaign</value>
+  </data>
+</root>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SalesCRM" xml:space="preserve">
+    <value>영업 CRM</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Goals" xml:space="preserve">
+    <value>목표</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>팀</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="SalesGoals" xml:space="preserve">
+    <value>영업 목표</value>
+  </data>
+  <data name="SetAndTrack" xml:space="preserve">
+    <value>팀의 영업 목표를 설정하고 추적하세요.</value>
+  </data>
+  <data name="TeamGoals" xml:space="preserve">
+    <value>팀 목표</value>
+  </data>
+  <data name="GoalName" xml:space="preserve">
+    <value>목표 이름</value>
+  </data>
+  <data name="GoalType" xml:space="preserve">
+    <value>목표 유형</value>
+  </data>
+  <data name="TargetValue" xml:space="preserve">
+    <value>목표 값</value>
+  </data>
+  <data name="Deadline" xml:space="preserve">
+    <value>마감일</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>소유자</value>
+  </data>
+  <data name="SetGoal" xml:space="preserve">
+    <value>목표 설정</value>
+  </data>
+  <data name="IndividualGoals" xml:space="preserve">
+    <value>개인 목표</value>
+  </data>
+  <data name="SalesRep" xml:space="preserve">
+    <value>영업 담당자</value>
+  </data>
+  <data name="GoalTracking" xml:space="preserve">
+    <value>목표 추적</value>
+  </data>
+  <data name="Goal" xml:space="preserve">
+    <value>목표</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>유형</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>목표</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>진행률</value>
+  </data>
+  <data name="Q3SalesTarget" xml:space="preserve">
+    <value>3분기 영업 목표</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>수익</value>
+  </data>
+  <data name="Q3EthanHarperSalesTarget" xml:space="preserve">
+    <value>3분기 Ethan Harper 영업 목표</value>
+  </data>
+  <data name="EthanHarper" xml:space="preserve">
+    <value>이선 하퍼</value>
+  </data>
+  <data name="SalesTeam" xml:space="preserve">
+    <value>영업팀</value>
+  </data>
+</root>

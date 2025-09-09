@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>SalesPro</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="Marketing" xml:space="preserve">
+    <value>Marketing</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Analytics" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="NotificationSettings" xml:space="preserve">
+    <value>Notification Settings</value>
+  </data>
+  <data name="NotificationSettingsDescription" xml:space="preserve">
+    <value>Manage your notification preferences for various events and channels.</value>
+  </data>
+  <data name="NewLeads" xml:space="preserve">
+    <value>New Leads</value>
+  </data>
+  <data name="NewLeadCreated" xml:space="preserve">
+    <value>New Lead Created</value>
+  </data>
+  <data name="NewLeadCreatedDescription" xml:space="preserve">
+    <value>Receive notifications when a new lead is created.</value>
+  </data>
+  <data name="LeadStatusUpdated" xml:space="preserve">
+    <value>Lead Status Updated</value>
+  </data>
+  <data name="LeadStatusUpdatedDescription" xml:space="preserve">
+    <value>Receive notifications when a lead's status changes.</value>
+  </data>
+  <data name="DealUpdates" xml:space="preserve">
+    <value>Deal Updates</value>
+  </data>
+  <data name="DealStageChanged" xml:space="preserve">
+    <value>Deal Stage Changed</value>
+  </data>
+  <data name="DealStageChangedDescription" xml:space="preserve">
+    <value>Receive notifications when a deal moves to a new stage.</value>
+  </data>
+  <data name="DealValueUpdated" xml:space="preserve">
+    <value>Deal Value Updated</value>
+  </data>
+  <data name="DealValueUpdatedDescription" xml:space="preserve">
+    <value>Receive notifications when a deal's value is updated.</value>
+  </data>
+  <data name="TaskAssignments" xml:space="preserve">
+    <value>Task Assignments</value>
+  </data>
+  <data name="NewTaskAssigned" xml:space="preserve">
+    <value>New Task Assigned</value>
+  </data>
+  <data name="NewTaskAssignedDescription" xml:space="preserve">
+    <value>Receive notifications when a new task is assigned to you.</value>
+  </data>
+  <data name="TaskDueDateReminder" xml:space="preserve">
+    <value>Task Due Date Reminder</value>
+  </data>
+  <data name="TaskDueDateReminderDescription" xml:space="preserve">
+    <value>Receive notifications when a task's due date is approaching.</value>
+  </data>
+  <data name="NotificationChannels" xml:space="preserve">
+    <value>Notification Channels</value>
+  </data>
+  <data name="EmailNotifications" xml:space="preserve">
+    <value>Email Notifications</value>
+  </data>
+  <data name="EmailNotificationsDescription" xml:space="preserve">
+    <value>Receive notifications via email.</value>
+  </data>
+  <data name="InAppNotifications" xml:space="preserve">
+    <value>In-App Notifications</value>
+  </data>
+  <data name="InAppNotificationsDescription" xml:space="preserve">
+    <value>Receive notifications within the application.</value>
+  </data>
+  <data name="PushNotifications" xml:space="preserve">
+    <value>Push Notifications</value>
+  </data>
+  <data name="PushNotificationsDescription" xml:space="preserve">
+    <value>Receive push notifications on your mobile device.</value>
+  </data>
+  <data name="NotificationFrequency" xml:space="preserve">
+    <value>Notification Frequency</value>
+  </data>
+  <data name="Frequency" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="SnoozeOptions" xml:space="preserve">
+    <value>Snooze Options</value>
+  </data>
+  <data name="SnoozeDuration" xml:space="preserve">
+    <value>Snooze Duration</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Save Settings</value>
+  </data>
+</root>

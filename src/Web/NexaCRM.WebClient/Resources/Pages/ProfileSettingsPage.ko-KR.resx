@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="SalesPro" xml:space="preserve">
+    <value>세일즈프로</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="Deals" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="Analytics" xml:space="preserve">
+    <value>분석</value>
+  </data>
+  <data name="ProfileSettings" xml:space="preserve">
+    <value>프로필 설정</value>
+  </data>
+  <data name="ProfileSettingsDescription" xml:space="preserve">
+    <value>개인 정보 및 계정 설정을 관리합니다.</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>전체 이름</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>이메일</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>전화번호</value>
+  </data>
+  <data name="ProfilePicture" xml:space="preserve">
+    <value>프로필 사진</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>비밀번호 변경</value>
+  </data>
+  <data name="LinkedAccounts" xml:space="preserve">
+    <value>연결된 계정</value>
+  </data>
+  <data name="SocialMedia" xml:space="preserve">
+    <value>소셜 미디어</value>
+  </data>
+  <data name="SocialMediaDescription" xml:space="preserve">
+    <value>원활한 통합을 위해 소셜 미디어 계정을 연결하세요.</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>변경 내용 저장</value>
+  </data>
+</root>

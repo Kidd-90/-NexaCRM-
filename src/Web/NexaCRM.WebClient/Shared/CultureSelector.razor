@@ -1,11 +1,12 @@
-@using Microsoft.JSInterop
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CultureSelector> Localizer
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
 <div class="d-flex align-items-center">
-    <button class="btn btn-link" @onclick='() => SetCulture("en-US")'>English</button>
+    <button class="btn btn-link" @onclick='() => SetCulture("en-US")'>@Localizer["English"]</button>
     <span class="mx-1">|</span>
-    <button class="btn btn-link" @onclick='() => SetCulture("ko-KR")'>한국어</button>
+    <button class="btn btn-link" @onclick='() => SetCulture("ko-KR")'>@Localizer["Korean"]</button>
 </div>
 
 @code {
