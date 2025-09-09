@@ -1,5 +1,8 @@
 @using NexaCRM.WebClient.Services
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
 @inject IStringLocalizer<NavMenu> Localizer
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
@@ -20,38 +23,44 @@
                     </NavLink>
                 </div>
 
-                <AuthorizeView Roles="Admin">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
-                            <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["AdminDashboard"]
-                        </NavLink>
-                    </div>
+                <AuthorizeView Roles="Admin" Context="adminContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
+                                <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["AdminDashboard"]
+                            </NavLink>
+                        </div>
+                    </Authorized>
                 </AuthorizeView>
 
-                <AuthorizeView Roles="Manager">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
-                            <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
-                            <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
-                        </NavLink>
-                    </div>
+                <AuthorizeView Roles="Manager" Context="managerContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
+                                <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
+                                <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
+                            </NavLink>
+                        </div>
+                    </Authorized>
                 </AuthorizeView>
 
-                <AuthorizeView Roles="Sales">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="sales-pipeline" @onclick="CloseNavMenu">
-                            <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["SalesPipeline"]
-                        </NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="contacts" @onclick="CloseNavMenu">
-                            <span class="oi oi-people" aria-hidden="true"></span> @Localizer["Contacts"]
-                        </NavLink>
-                    </div>
+                <AuthorizeView Roles="Sales" Context="salesContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="sales-pipeline" @onclick="CloseNavMenu">
+                                <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["SalesPipeline"]
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="contacts" @onclick="CloseNavMenu">
+                                <span class="oi oi-people" aria-hidden="true"></span> @Localizer["Contacts"]
+                            </NavLink>
+                        </div>
+                    </Authorized>
                 </AuthorizeView>
 
                 <div class="nav-item px-3 mt-auto">
