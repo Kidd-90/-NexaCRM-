@@ -1,0 +1,236 @@
+/* ContactsPage Mobile Responsive Styles */
+
+/* Default desktop table view - maintain existing behavior */
+.contacts-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.contacts-table {
+    min-width: 100%;
+}
+
+/* Mobile contact cards - hidden by default */
+.contacts-mobile-view {
+    display: none;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+    /* Hide table on mobile */
+    .contacts-table-container {
+        display: none !important;
+    }
+    
+    /* Show mobile card view */
+    .contacts-mobile-view {
+        display: block !important;
+    }
+    
+    .contact-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease-in-out;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .contact-card:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .contact-id {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .contact-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-height: 44px; /* Ensure adequate touch target */
+    }
+    
+    .contact-info-icon {
+        width: 20px;
+        height: 20px;
+        color: #4f46e5;
+        flex-shrink: 0;
+    }
+    
+    .contact-info-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .contact-info-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+        margin-bottom: 0.125rem;
+    }
+    
+    .contact-info-value {
+        font-size: 0.875rem;
+        color: #111827;
+        word-break: break-all;
+        line-height: 1.4;
+    }
+    
+    .contact-info-value a {
+        color: #4f46e5;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        display: block;
+        padding: 0.25rem 0;
+        border-radius: 4px;
+        -webkit-tap-highlight-color: transparent;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .contact-info-value a:hover,
+    .contact-info-value a:focus {
+        color: #3730a3;
+        background-color: #f8faff;
+        outline: none;
+    }
+    
+    .contact-info-value a:active {
+        color: #1e1b4b;
+        background-color: #e0e7ff;
+    }
+    
+    /* Page header adjustments for mobile */
+    .contacts-header {
+        padding: 1rem 0 1.5rem 0;
+    }
+    
+    .contacts-title {
+        font-size: 1.875rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+}
+
+/* Small mobile devices (480px and below) */
+@media (max-width: 480px) {
+    .contact-card {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .contact-name {
+        font-size: 1rem;
+    }
+    
+    .contact-info {
+        gap: 0.5rem;
+    }
+    
+    .contact-info-item {
+        gap: 0.5rem;
+    }
+    
+    .contact-info-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .contacts-title {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Tablet view (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .contacts-table th,
+    .contacts-table td {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .contacts-table th {
+        font-size: 0.75rem;
+    }
+}
+
+/* Loading state styles */
+.contacts-loading {
+    text-align: center;
+    padding: 2rem 0;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Animation for smooth transitions */
+.contact-card {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .contact-card,
+    .contact-info-value a {
+        transition: none;
+        animation: none;
+    }
+    
+    .contact-card:hover {
+        transform: none;
+    }
+    
+    .contact-card:active {
+        transform: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .contact-card {
+        border: 2px solid #000;
+    }
+    
+    .contact-info-value a {
+        text-decoration: underline;
+    }
+}
