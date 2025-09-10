@@ -12,11 +12,11 @@ using NexaCRM.WebClient.Services.Mock;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// App ������Ʈ ����Ʈ ���� ����
+// Add root components to the app
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// HttpClient ���: BaseAddress�� ȣ��Ʈ ȯ�� �ּҷ� ����
+// HttpClient setup: BaseAddress set to host environment address
 builder.Services.AddScoped(sp =>
     new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
 );
