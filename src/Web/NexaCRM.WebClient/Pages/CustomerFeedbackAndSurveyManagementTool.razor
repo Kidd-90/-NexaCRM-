@@ -4,8 +4,8 @@
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-80">
+        <div class="gap-1 px-4 sm:px-6 flex flex-1 justify-center py-5 dashboard-container">
+          <div class="layout-content-container flex flex-col w-full sm:w-80 dashboard-sidebar hidden lg:flex">
             <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
               <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
@@ -63,11 +63,11 @@
               </div>
             </div>
           </div>
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div class="layout-content-container flex flex-col w-full max-w-none lg:max-w-[960px] flex-1 dashboard-main-content">
             <div class="flex flex-wrap justify-between gap-3 p-4">
-              <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["SurveysTitle"]</p>
+              <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl lg:text-[32px] font-bold leading-tight min-w-0">@Localizer["SurveysTitle"]</p>
               <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
+                class="flex min-w-[84px] max-w-[200px] sm:max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
               >
                 <span class="truncate">@Localizer["NewSurvey"]</span>
               </button>
