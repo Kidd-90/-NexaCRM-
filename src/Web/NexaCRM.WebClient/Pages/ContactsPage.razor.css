@@ -299,11 +299,6 @@
 }
 
 /* Large tablet/small desktop (769px to 1200px) */
-@media (min-width: 769px) and (max-width: 1200px) {
-    .navigation-menu {
-        gap: 1rem;
-    }
-}
 
 /* Loading state styles */
 .contacts-loading {
