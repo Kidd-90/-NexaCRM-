@@ -1,0 +1,264 @@
+.appointment-form {
+    width: 100%;
+    max-width: 600px;
+}
+
+.form-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.form-header h4 {
+    margin: 0;
+    color: #333;
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.form-group.flex-half {
+    flex: 0 0 calc(50% - 7.5px);
+}
+
+.form-group label {
+    margin-bottom: 8px; /* Increased spacing */
+    font-weight: 600;
+    color: #555;
+    font-size: 15px; /* Better readability on mobile */
+    line-height: 1.3;
+}
+
+.form-control {
+    padding: 14px 18px; /* Increased padding for better touch targets */
+    border: 1px solid #ced4da;
+    border-radius: 10px; /* More rounded for modern mobile look */
+    font-size: 16px; /* Prevent zoom on iOS */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    min-height: 48px; /* Increased minimum touch target size */
+    line-height: 1.4;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control:invalid {
+    border-color: #dc3545;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 90px; /* Better default height for mobile */
+    font-family: inherit; /* Use same font as other controls */
+    line-height: 1.5;
+}
+
+.validation-summary {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.validation-summary ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.validation-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 14px 22px; /* Increased padding for better touch targets */
+    border: 1px solid transparent;
+    border-radius: 10px; /* More rounded for modern mobile look */
+    font-size: 16px; /* Larger font for mobile */
+    font-weight: 500; /* Slightly bolder for better visibility */
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; /* Larger gap between icon and text */
+    min-height: 48px; /* Increased minimum touch target size */
+    min-width: 48px;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+    touch-action: manipulation; /* Optimize for touch */
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .appointment-form {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .form-header {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+    
+    .form-header h4 {
+        font-size: 1.25rem;
+        text-align: center;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 18px; /* Increased spacing between form elements */
+    }
+    
+    .form-group.flex-half {
+        flex: 1;
+    }
+    
+    .form-group label {
+        font-size: 16px;
+        margin-bottom: 10px; /* Increased spacing */
+        font-weight: 600;
+    }
+    
+    .form-control {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 16px 18px; /* Increased padding */
+        border-radius: 10px;
+        line-height: 1.4;
+        min-height: 52px; /* Larger touch targets on mobile */
+    }
+    
+    textarea.form-control {
+        min-height: 110px; /* Larger textarea on mobile */
+        resize: vertical;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 18px; /* Increased spacing between buttons */
+        padding-top: 30px; /* More breathing room */
+        margin-top: 25px;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 17px; /* Slightly larger for better readability */
+        padding: 18px 20px; /* Larger padding */
+        border-radius: 12px; /* More rounded corners */
+        font-weight: 600; /* Bolder text */
+        min-height: 56px; /* Larger touch targets */
+    }
+    
+    .btn:active {
+        transform: scale(0.98);
+        transition-duration: 0.1s;
+    }
+    
+    .validation-summary {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    
+    .validation-message {
+        font-size: 14px;
+        margin-top: 6px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .form-header h4 {
+        font-size: 1.15rem;
+        line-height: 1.3;
+    }
+    
+    .form-control {
+        padding: 18px 16px; /* Larger padding for very small screens */
+        font-size: 16px;
+        min-height: 54px; /* Even larger touch targets */
+    }
+    
+    .btn {
+        padding: 20px 20px; /* Larger touch area */
+        font-size: 17px;
+        min-height: 58px;
+        border-radius: 14px; /* More rounded for modern look */
+    }
+    
+    .form-group label {
+        font-size: 16px; /* Consistent with input size */
+        margin-bottom: 12px; /* More breathing room */
+        line-height: 1.4;
+    }
+    
+    .form-row {
+        gap: 20px; /* More spacing between sections */
+    }
+    
+    textarea.form-control {
+        min-height: 120px; /* Larger textarea for better usability */
+    }
+}

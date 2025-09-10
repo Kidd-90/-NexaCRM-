@@ -24,4 +24,34 @@
   <data name="Contacts" xml:space="preserve">
     <value>연락처</value>
   </data>
+  <data name="CustomerManagement" xml:space="preserve">
+    <value>고객관리</value>
+  </data>
+  <data name="CustomerSegmentation" xml:space="preserve">
+    <value>고객 세분화 도구</value>
+  </data>
+  <data name="CustomerSupportDashboard" xml:space="preserve">
+    <value>고객 지원 대시보드</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>지식 베이스</value>
+  </data>
+  <data name="TicketManagement" xml:space="preserve">
+    <value>티켓 관리</value>
+  </data>
+  <data name="FeedbackSurvey" xml:space="preserve">
+    <value>피드백 &amp; 설문조사</value>
+  </data>
+  <data name="SalesManagement" xml:space="preserve">
+    <value>영업관리</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="SalesCalendar" xml:space="preserve">
+    <value>영업 캘린더</value>
+  </data>
+  <data name="ConsultationNotes" xml:space="preserve">
+    <value>상담 노트</value>
+  </data>
 </root>

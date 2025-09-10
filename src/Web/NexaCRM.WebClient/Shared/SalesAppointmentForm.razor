@@ -1,0 +1,251 @@
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IStringLocalizer<SalesAppointmentForm> Localizer
+@inject ISalesManagementService SalesService
+
+<div class="appointment-form">
+    <div class="form-header">
+        <h4>@(Appointment?.Id == 0 ? Localizer["NewAppointment"] : Localizer["EditAppointment"])</h4>
+    </div>
+
+    <EditForm Model="@Appointment" OnValidSubmit="@HandleValidSubmit" class="form-content">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="validation-summary" />
+
+        @* Conflict Warning Display *@
+        @if (conflictingAppointments.Any())
+        {
+            <div class="alert alert-warning">
+                <h5><span class="oi oi-warning"></span> @Localizer["TimeConflictDetected"]</h5>
+                <p>@Localizer["ConflictMessage"]</p>
+                <ul>
+                    @foreach (var conflict in conflictingAppointments)
+                    {
+                        <li>@conflict.Title - @conflict.StartDateTime.ToString("MMM dd, yyyy HH:mm") to @conflict.EndDateTime.ToString("HH:mm")</li>
+                    }
+                </ul>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @bind="overrideConflict" id="overrideConflict">
+                    <label class="form-check-label" for="overrideConflict">
+                        @Localizer["OverrideConflict"]
+                    </label>
+                </div>
+            </div>
+        }
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="title">@Localizer["Title"]</label>
+                <InputText id="title" class="form-control" @bind-Value="Appointment!.Title" />
+                <ValidationMessage For="@(() => Appointment.Title)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="contact">@Localizer["Contact"]</label>
+                <InputSelect id="contact" class="form-control" @bind-Value="selectedContactId" @onchange="OnContactChanged">
+                    <option value="0">@Localizer["SelectContact"]</option>
+                    @foreach (var contact in Contacts)
+                    {
+                        <option value="@contact.Id">@contact.FirstName @contact.LastName - @contact.Email</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="startdate">@Localizer["StartDate"]</label>
+                <InputDate id="startdate" class="form-control" @bind-Value="startDate" @bind-Value:after="OnDateTimeChanged" />
+            </div>
+            <div class="form-group flex-half">
+                <label for="starttime">@Localizer["StartTime"]</label>
+                <InputText id="starttime" type="time" class="form-control" @bind-Value="startTime" @bind-Value:after="OnDateTimeChanged" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="enddate">@Localizer["EndDate"]</label>
+                <InputDate id="enddate" class="form-control" @bind-Value="endDate" @bind-Value:after="OnDateTimeChanged" />
+            </div>
+            <div class="form-group flex-half">
+                <label for="endtime">@Localizer["EndTime"]</label>
+                <InputText id="endtime" type="time" class="form-control" @bind-Value="endTime" @bind-Value:after="OnDateTimeChanged" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="type">@Localizer["Type"]</label>
+                <InputSelect id="type" class="form-control" @bind-Value="Appointment.Type">
+                    @foreach (var type in Enum.GetValues<AppointmentType>())
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group flex-half">
+                <label for="status">@Localizer["Status"]</label>
+                <InputSelect id="status" class="form-control" @bind-Value="Appointment.Status">
+                    @foreach (var status in Enum.GetValues<AppointmentStatus>())
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="location">@Localizer["Location"]</label>
+                <InputText id="location" class="form-control" @bind-Value="Appointment.Location" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="description">@Localizer["Description"]</label>
+                <InputTextArea id="description" class="form-control" rows="3" @bind-Value="Appointment.Description" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="notes">@Localizer["Notes"]</label>
+                <InputTextArea id="notes" class="form-control" rows="2" @bind-Value="Appointment.Notes" />
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <span class="oi oi-check"></span> @Localizer["SaveAppointment"]
+            </button>
+            <button type="button" class="btn btn-secondary" @onclick="OnCancel">
+                <span class="oi oi-x"></span> @Localizer["Cancel"]
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public SalesAppointment? Appointment { get; set; }
+    [Parameter] public List<Contact> Contacts { get; set; } = new();
+    [Parameter] public EventCallback<SalesAppointment> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private int selectedContactId = 0;
+    private DateTime startDate = DateTime.Today;
+    private string startTime = "09:00";
+    private DateTime endDate = DateTime.Today;
+    private string endTime = "10:00";
+    
+    // Conflict detection
+    private List<SalesAppointment> conflictingAppointments = new();
+    private bool overrideConflict = false;
+    private string currentUserId = "user1"; // This should come from authentication
+
+    protected override void OnInitialized()
+    {
+        if (Appointment != null)
+        {
+            selectedContactId = Appointment.ContactId;
+            startDate = Appointment.StartDateTime.Date;
+            startTime = Appointment.StartDateTime.ToString("HH:mm");
+            endDate = Appointment.EndDateTime.Date;
+            endTime = Appointment.EndDateTime.ToString("HH:mm");
+        }
+    }
+
+    private void OnContactChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var contactId) && Appointment != null)
+        {
+            selectedContactId = contactId;
+            var contact = Contacts.FirstOrDefault(c => c.Id == contactId);
+            if (contact != null)
+            {
+                Appointment.ContactId = contactId;
+                Appointment.ContactName = $"{contact.FirstName} {contact.LastName}";
+                // Note: ContactCompany would need to be added to Contact model or derived from somewhere else
+                Appointment.ContactCompany = ""; // Placeholder
+            }
+        }
+    }
+
+    private async System.Threading.Tasks.Task HandleValidSubmit()
+    {
+        if (Appointment == null) return;
+
+        // Combine date and time
+        if (TimeSpan.TryParse(startTime, out var startTimeSpan))
+        {
+            Appointment.StartDateTime = startDate.Date.Add(startTimeSpan);
+        }
+
+        if (TimeSpan.TryParse(endTime, out var endTimeSpan))
+        {
+            Appointment.EndDateTime = endDate.Date.Add(endTimeSpan);
+        }
+
+        // Basic validation
+        if (Appointment.StartDateTime >= Appointment.EndDateTime)
+        {
+            // Handle validation error - end time must be after start time
+            return;
+        }
+
+        // Check for conflicts before saving
+        await CheckConflicts();
+        
+        // If there are conflicts and user hasn't overridden, don't save
+        if (conflictingAppointments.Any() && !overrideConflict)
+        {
+            // Conflicts detected, form will show the conflict warning
+            return;
+        }
+
+        await OnSave.InvokeAsync(Appointment);
+    }
+
+    private async System.Threading.Tasks.Task CheckConflicts()
+    {
+        if (Appointment == null) return;
+
+        // Create combined date/time for conflict checking
+        var checkStartDateTime = startDate.Date;
+        var checkEndDateTime = endDate.Date;
+        
+        if (TimeSpan.TryParse(startTime, out var startTimeSpan))
+        {
+            checkStartDateTime = startDate.Date.Add(startTimeSpan);
+        }
+
+        if (TimeSpan.TryParse(endTime, out var endTimeSpan))
+        {
+            checkEndDateTime = endDate.Date.Add(endTimeSpan);
+        }
+
+        // Check for conflicts, excluding current appointment if editing
+        conflictingAppointments = await SalesService.CheckAppointmentConflictsAsync(
+            currentUserId, 
+            checkStartDateTime, 
+            checkEndDateTime, 
+            Appointment.Id == 0 ? null : Appointment.Id);
+
+        StateHasChanged();
+    }
+
+    private async System.Threading.Tasks.Task OnDateTimeChanged()
+    {
+        // Clear override when date/time changes
+        overrideConflict = false;
+        
+        // Check for conflicts when date/time changes
+        await CheckConflicts();
+    }
+}

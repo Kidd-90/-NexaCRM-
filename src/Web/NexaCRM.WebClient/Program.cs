@@ -12,11 +12,11 @@ using NexaCRM.WebClient.Services.Mock;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// App ������Ʈ ����Ʈ ���� ����
+// Add root components to the app
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// HttpClient ���: BaseAddress�� ȣ��Ʈ ȯ�� �ּҷ� ����
+// HttpClient setup: BaseAddress set to host environment address
 builder.Services.AddScoped(sp =>
     new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
 );
@@ -34,6 +34,8 @@ builder.Services.AddScoped<IAgentService, MockAgentService>();
 builder.Services.AddScoped<IMarketingCampaignService, MockMarketingCampaignService>();
 builder.Services.AddScoped<IReportService, MockReportService>();
 builder.Services.AddScoped<IActivityService, MockActivityService>();
+builder.Services.AddScoped<ISalesManagementService, MockSalesManagementService>();
+builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;

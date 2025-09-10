@@ -1,0 +1,39 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<style>
+/* Login-specific layout styles - no navigation elements */
+.page {
+    min-height: 100vh;
+    width: 100%;
+    margin-left: 0;
+}
+
+.content {
+    padding: 0 !important;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Hide any floating menu toggle on login page */
+.floating-menu-toggle {
+    display: none !important;
+}
+
+/* Hide sidebar completely */
+.sidebar {
+    display: none !important;
+}
+
+/* No mobile overlay needed */
+.mobile-overlay {
+    display: none !important;
+}
+</style>

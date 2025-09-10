@@ -1,0 +1,8 @@
+[build]
+  publish = "src/Web/NexaCRM.WebClient/bin/Release/net9.0/publish/wwwroot"
+  command = "dotnet publish -c Release -o publish"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

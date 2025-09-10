@@ -4,3 +4,81 @@
 @container(max-width:480px){.table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480{display: none;}}
 @container(max-width:600px){.table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600{display: none;}}
 @container(max-width:720px){.table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720{display: none;}}
+
+/* CustomerSegmentationTool Mobile Responsive Styles */
+
+/* Mobile devices (767px and below) */
+@media (max-width: 767.98px) {
+    .dashboard-container {
+        flex-direction: column;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Completely hide dashboard sidebar on mobile */
+    .dashboard-sidebar {
+        display: none !important;
+    }
+    
+    .dashboard-main-content {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    /* Mobile header navigation - convert to hamburger menu */
+    .header-nav-links {
+        display: none !important;
+    }
+    
+    /* Adjust search and profile elements */
+    .header-search {
+        min-width: 120px !important;
+        max-width: 150px !important;
+    }
+    
+    .header-profile {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    /* Mobile button adjustments */
+    .header-help-button {
+        padding: 0.5rem !important;
+        min-width: 40px !important;
+    }
+}
+
+/* Tablet devices (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .dashboard-sidebar {
+        width: 280px !important;
+        max-width: 280px !important;
+    }
+    
+    .header-nav-links {
+        gap: 0.5rem !important;
+    }
+    
+    .header-nav-links a {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Small mobile devices (479px and below) */
+@media (max-width: 479.98px) {
+    .dashboard-main-content {
+        padding: 0 !important;
+    }
+    
+    .dashboard-container {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .header-search {
+        display: none !important;
+    }
+    
+    .header-help-button {
+        min-width: 36px !important;
+        padding: 0.375rem !important;
+    }
+}

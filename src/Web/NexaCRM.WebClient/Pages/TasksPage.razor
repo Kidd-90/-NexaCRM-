@@ -1,26 +1,53 @@
-@page "/tasks"
+@page "/tasks-page"
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<TasksPage> Localizer
 
+<PageTitle>@Localizer["Tasks"] - NexaCRM</PageTitle>
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-            <div class="flex items-center gap-8">
-                <div class="flex items-center gap-4 text-[#0e131b]">
-                    <div class="size-4">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor"></path>
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["NexaCRM"]</h2>
-                </div>
-            </div>
-        </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
+        <div class="px-4 md:px-40 flex flex-1 justify-center py-5">
             <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-                <h1 class="text-4xl font-bold">@Localizer["Tasks"]</h1>
-                <p class="text-lg text-gray-500">@Localizer["PageUnderConstruction"]</p>
+                <div class="flex flex-wrap justify-between gap-3 p-4">
+                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["TaskManagement"]</p>
+                </div>
+                
+                <!-- Mobile-friendly task cards -->
+                <div class="grid gap-4 p-4">
+                    <div class="flex flex-col gap-3 rounded-lg border border-[#d0d9e7] bg-white p-4 dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-[#0e131b] text-lg font-bold">@Localizer["FollowUp"]</h3>
+                            <span class="bg-red-100 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded">@Localizer["High"]</span>
+                        </div>
+                        <p class="text-[#4d6a99] text-sm">@Localizer["DueDate"]: 2024-07-15</p>
+                        <p class="text-[#0e131b] text-sm">@Localizer["FollowUpDescription"]</p>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3 rounded-lg border border-[#d0d9e7] bg-white p-4 dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-[#0e131b] text-lg font-bold">@Localizer["PreparePresentation"]</h3>
+                            <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">@Localizer["Medium"]</span>
+                        </div>
+                        <p class="text-[#4d6a99] text-sm">@Localizer["DueDate"]: 2024-07-20</p>
+                        <p class="text-[#0e131b] text-sm">@Localizer["PrepareDescription"]</p>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3 rounded-lg border border-[#d0d9e7] bg-white p-4 dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-[#0e131b] text-lg font-bold">@Localizer["ReviewCampaign"]</h3>
+                            <span class="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded">@Localizer["Low"]</span>
+                        </div>
+                        <p class="text-[#4d6a99] text-sm">@Localizer["DueDate"]: 2024-07-25</p>
+                        <p class="text-[#0e131b] text-sm">@Localizer["ReviewDescription"]</p>
+                    </div>
+                </div>
+                
+                <!-- Add new task button -->
+                <div class="px-4 py-3">
+                    <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#3b82f6] text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-4 w-full dashboard-button">
+                        <span class="truncate">@Localizer["AddNewTask"]</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

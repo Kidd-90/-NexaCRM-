@@ -7,8 +7,8 @@
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-            <div class="flex items-center gap-8">
+        <header class="contacts-header flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-4 sm:px-6 md:px-10 py-3">
+            <div class="flex items-center gap-4 sm:gap-8">
                 <div class="flex items-center gap-4 text-[#0e131b]">
                     <div class="size-4">
                         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,42 +16,163 @@
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor"></path>
                         </svg>
                     </div>
-                    <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["NexaCRM"]</h2>
+                    <h2 class="text-[#0e131b] text-sm sm:text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["NexaCRM"]</h2>
+                </div>
+                <!-- Add navigation links for consistency with dashboard -->
+                <div class="hidden md:flex items-center gap-6 lg:gap-9">
+                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/main-dashboard">@Localizer["Dashboard"]</a>
+                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/sales-pipeline-page">@Localizer["Deals"]</a>
+                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/contacts">@Localizer["Contacts"]</a>
+                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/reports-page">@Localizer["Reports"]</a>
+                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tools">@Localizer["Tools"]</a>
                 </div>
             </div>
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Mobile Menu Button -->
+                <button class="contacts-mobile-menu-button md:hidden" @onclick="ToggleMobileMenu">
+                    <svg class="w-6 h-6 text-[#0e131b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <!-- User Profile -->
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10" 
+                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3h94o6negA_azqf1Sd6Zk10lxjjOCkpvUgo5T5ta-tQ8gO2eIu6nTXzncWb-v-kWC7qgJgPC-Ikyam8M9zSllKz9T6t-KMp8zKdL2I_zolPBQa-sQ2Q5Sc7eFuQoz82t4L4_hSgpZiJh8jgsgAgKeAHrDbn0EbpHyR5iimdJjxEWSoG5LKtzj1nEbk0rBfytEmvpu_JnAI5-I9FDSad_QJXhJedXas0YopEKXpG9_mkZ3vOm76KDjNHfWNCxmaPwr3idKeJ98jN_M");'></div>
+            </div>
         </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
-            <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-                <h1 class="text-4xl font-bold">@Localizer["Contacts"]</h1>
+        
+        <!-- Mobile Navigation Overlay for Contacts -->
+        <div class="contacts-mobile-nav-overlay @(isMobileMenuOpen ? "active" : "")" @onclick="CloseMobileMenu"></div>
+        
+        <!-- Mobile Navigation Menu for Contacts -->
+        <nav class="contacts-mobile-nav-menu @(isMobileMenuOpen ? "active" : "")">
+            <button class="contacts-mobile-nav-close" @onclick="CloseMobileMenu">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <ul class="contacts-mobile-nav-links">
+                <li><a class="contacts-mobile-nav-link" href="/main-dashboard" @onclick="CloseMobileMenu">@Localizer["Dashboard"]</a></li>
+                <li><a class="contacts-mobile-nav-link" href="/sales-pipeline-page" @onclick="CloseMobileMenu">@Localizer["Deals"]</a></li>
+                <li><a class="contacts-mobile-nav-link" href="/contacts" @onclick="CloseMobileMenu">@Localizer["Contacts"]</a></li>
+                <li><a class="contacts-mobile-nav-link" href="/reports-page" @onclick="CloseMobileMenu">@Localizer["Reports"]</a></li>
+                <li><a class="contacts-mobile-nav-link" href="/tools" @onclick="CloseMobileMenu">@Localizer["Tools"]</a></li>
+            </ul>
+        </nav>
+        <div class="px-4 sm:px-6 md:px-12 lg:px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col w-full max-w-none sm:max-w-full md:max-w-[960px] flex-1">
+                <div class="contacts-header">
+                    <h1 class="contacts-title text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">@Localizer["Contacts"]</h1>
+                </div>
                 @if (contacts == null)
                 {
-                    <p><em>@Localizer["Loading..."]</em></p>
+                    <p class="contacts-loading text-center py-8"><em>@Localizer["Loading..."]</em></p>
                 }
                 else
                 {
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>@Localizer["Id"]</th>
-                                <th>@Localizer["FirstName"]</th>
-                                <th>@Localizer["LastName"]</th>
-                                <th>@Localizer["Email"]</th>
-                                <th>@Localizer["PhoneNumber"]</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var contact in contacts)
-                            {
-                                <tr>
-                                    <td>@contact.Id</td>
-                                    <td>@contact.FirstName</td>
-                                    <td>@contact.LastName</td>
-                                    <td>@contact.Email</td>
-                                    <td>@contact.PhoneNumber</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                    <!-- Desktop/Tablet Table View -->
+                    <div class="contacts-table-container overflow-x-auto -mx-4 sm:mx-0">
+                        <div class="inline-block min-w-full align-middle">
+                            <table class="contacts-table min-w-full divide-y divide-gray-200 bg-white shadow-sm rounded-lg overflow-hidden">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            @Localizer["Id"]
+                                        </th>
+                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            @Localizer["FirstName"]
+                                        </th>
+                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            @Localizer["LastName"]
+                                        </th>
+                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            @Localizer["Email"]
+                                        </th>
+                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            @Localizer["PhoneNumber"]
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach (var contact in contacts)
+                                    {
+                                        <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                @contact.Id
+                                            </td>
+                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                @contact.FirstName
+                                            </td>
+                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                @contact.LastName
+                                            </td>
+                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <a href="mailto:@contact.Email" class="text-indigo-600 hover:text-indigo-900 break-all">
+                                                    @contact.Email
+                                                </a>
+                                            </td>
+                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <a href="tel:@contact.PhoneNumber" class="text-indigo-600 hover:text-indigo-900">
+                                                    @contact.PhoneNumber
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="contacts-mobile-view">
+                        @foreach (var contact in contacts)
+                        {
+                            <div class="contact-card">
+                                <div class="contact-name">
+                                    @if (!string.IsNullOrEmpty(contact.FirstName) || !string.IsNullOrEmpty(contact.LastName))
+                                    {
+                                        @($"{contact.FirstName} {contact.LastName}".Trim())
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">@Localizer["No Name"]</span>
+                                    }
+                                </div>
+                                <div class="contact-id">ID: @contact.Id</div>
+                                
+                                <div class="contact-info">
+                                    @if (!string.IsNullOrEmpty(contact.Email))
+                                    {
+                                        <div class="contact-info-item">
+                                            <svg class="contact-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                            <div class="contact-info-content">
+                                                <div class="contact-info-label">@Localizer["Email"]</div>
+                                                <div class="contact-info-value">
+                                                    <a href="mailto:@contact.Email">@contact.Email</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                    @if (!string.IsNullOrEmpty(contact.PhoneNumber))
+                                    {
+                                        <div class="contact-info-item">
+                                            <svg class="contact-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            </svg>
+                                            <div class="contact-info-content">
+                                                <div class="contact-info-label">@Localizer["PhoneNumber"]</div>
+                                                <div class="contact-info-value">
+                                                    <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
                 }
             </div>
         </div>
@@ -60,9 +181,20 @@
 
 @code {
     private IEnumerable<Contact>? contacts;
+    private bool isMobileMenuOpen = false;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         contacts = await ContactService.GetContactsAsync();
+    }
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = false;
     }
 }

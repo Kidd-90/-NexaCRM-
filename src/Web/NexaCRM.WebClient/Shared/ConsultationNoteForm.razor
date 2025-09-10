@@ -1,0 +1,150 @@
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ConsultationNoteForm> Localizer
+
+<div class="consultation-note-form">
+    <div class="form-header">
+        <h4>@(Note?.Id == 0 ? Localizer["NewConsultationNote"] : Localizer["EditConsultationNote"])</h4>
+    </div>
+
+    <EditForm Model="@Note" OnValidSubmit="@HandleValidSubmit" class="form-content">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="title">@Localizer["Title"]</label>
+                <InputText id="title" class="form-control" @bind-Value="Note!.Title" placeholder="@Localizer["TitlePlaceholder"]" />
+                <ValidationMessage For="@(() => Note.Title)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="contact">@Localizer["Contact"]</label>
+                <InputSelect id="contact" class="form-control" @bind-Value="selectedContactId" @onchange="OnContactChanged">
+                    <option value="0">@Localizer["SelectContact"]</option>
+                    @foreach (var contact in Contacts)
+                    {
+                        <option value="@contact.Id">@contact.FirstName @contact.LastName - @contact.Email</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group flex-half">
+                <label for="priority">@Localizer["Priority"]</label>
+                <InputSelect id="priority" class="form-control" @bind-Value="Note.Priority">
+                    @foreach (var priority in Enum.GetValues<ConsultationPriority>())
+                    {
+                        <option value="@priority">@priority</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="content">@Localizer["ConsultationDetails"]</label>
+                <InputTextArea id="content" class="form-control" rows="8" @bind-Value="Note.Content" 
+                              placeholder="@Localizer["DetailsPlaceholder"]" />
+                <ValidationMessage For="@(() => Note.Content)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tags">@Localizer["Tags"]</label>
+                <InputText id="tags" class="form-control" @bind-Value="Note.Tags" 
+                          placeholder="@Localizer["TagsPlaceholder"]" />
+                <small class="form-text text-muted">@Localizer["TagsHelpText"]</small>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <div class="form-check">
+                    <InputCheckbox id="followup" class="form-check-input" @bind-Value="Note.IsFollowUpRequired" />
+                    <label class="form-check-label" for="followup">
+                        @Localizer["FollowUpRequired"]
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        @if (Note.IsFollowUpRequired)
+        {
+            <div class="form-row follow-up-section">
+                <div class="form-group">
+                    <label for="followupdate">@Localizer["FollowUpDate"]</label>
+                    <InputDate id="followupdate" class="form-control" @bind-Value="followUpDate" />
+                </div>
+            </div>
+        }
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <span class="oi oi-check"></span> @Localizer["SaveNote"]
+            </button>
+            <button type="button" class="btn btn-secondary" @onclick="OnCancel">
+                <span class="oi oi-x"></span> @Localizer["Cancel"]
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public ConsultationNote? Note { get; set; }
+    [Parameter] public List<Contact> Contacts { get; set; } = new();
+    [Parameter] public EventCallback<ConsultationNote> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private int selectedContactId = 0;
+    private DateTime? followUpDate = null;
+
+    protected override void OnInitialized()
+    {
+        if (Note != null)
+        {
+            selectedContactId = Note.ContactId;
+            followUpDate = Note.FollowUpDate;
+        }
+    }
+
+    private void OnContactChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var contactId) && Note != null)
+        {
+            selectedContactId = contactId;
+            var contact = Contacts.FirstOrDefault(c => c.Id == contactId);
+            if (contact != null)
+            {
+                Note.ContactId = contactId;
+                Note.ContactName = $"{contact.FirstName} {contact.LastName}";
+            }
+        }
+    }
+
+    private async System.Threading.Tasks.Task HandleValidSubmit()
+    {
+        if (Note == null) return;
+
+        // Set follow-up date
+        Note.FollowUpDate = Note.IsFollowUpRequired ? followUpDate : null;
+
+        // Basic validation
+        if (string.IsNullOrWhiteSpace(Note.Title))
+        {
+            // Handle validation error
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Note.Content))
+        {
+            // Handle validation error
+            return;
+        }
+
+        await OnSave.InvokeAsync(Note);
+    }
+}
