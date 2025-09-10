@@ -1,5 +1,52 @@
 /* ContactsPage Mobile Responsive Styles */
 
+/* Header and navigation responsive styles */
+.navigation-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: #4f46e5;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.search-container {
+    min-width: 10rem;
+    max-width: 16rem;
+}
+
+.notifications-btn {
+    transition: all 0.2s ease;
+    min-width: 2.5rem;
+    flex-shrink: 0;
+}
+
+.notifications-btn:hover {
+    background-color: #d1d5db;
+}
+
+.user-avatar {
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+}
+
 /* Default desktop table view - maintain existing behavior */
 .contacts-table-container {
     overflow-x: auto;
@@ -17,6 +64,44 @@
 
 /* Mobile-first responsive design */
 @media (max-width: 768px) {
+    /* Header adjustments for mobile */
+    header {
+        padding: 0.75rem 1rem !important;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    /* Hide navigation menu on mobile, show hamburger instead */
+    .navigation-menu {
+        display: none;
+    }
+
+    /* Adjust header controls for mobile */
+    .header-controls {
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    .search-container {
+        min-width: 8rem;
+        max-width: 12rem;
+    }
+
+    .search-container input {
+        font-size: 0.875rem;
+        padding: 0.5rem;
+    }
+
+    .notifications-btn {
+        min-width: 2rem;
+        padding: 0.375rem;
+    }
+
+    .user-avatar {
+        width: 2rem;
+        height: 2rem;
+    }
+
     /* Hide table on mobile */
     .contacts-table-container {
         display: none !important;
@@ -142,6 +227,19 @@
 
 /* Small mobile devices (480px and below) */
 @media (max-width: 480px) {
+    header {
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    .header-controls {
+        gap: 0.5rem;
+    }
+
+    .search-container {
+        min-width: 6rem;
+        max-width: 10rem;
+    }
+
     .contact-card {
         padding: 1rem;
         border-radius: 8px;
@@ -172,6 +270,23 @@
 
 /* Tablet view (769px to 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
+    .navigation-menu {
+        gap: 1rem;
+    }
+
+    .nav-link {
+        font-size: 0.875rem;
+    }
+
+    .header-controls {
+        gap: 1rem;
+    }
+
+    .search-container {
+        min-width: 8rem;
+        max-width: 14rem;
+    }
+
     .contacts-table th,
     .contacts-table td {
         padding: 0.75rem 1rem;
@@ -180,6 +295,13 @@
     
     .contacts-table th {
         font-size: 0.75rem;
+    }
+}
+
+/* Large tablet/small desktop (769px to 1200px) */
+@media (min-width: 769px) and (max-width: 1200px) {
+    .navigation-menu {
+        gap: 1rem;
     }
 }
 
@@ -210,7 +332,10 @@
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
     .contact-card,
-    .contact-info-value a {
+    .contact-info-value a,
+    .nav-link,
+    .notifications-btn,
+    .user-avatar {
         transition: none;
         animation: none;
     }
@@ -220,6 +345,10 @@
     }
     
     .contact-card:active {
+        transform: none;
+    }
+
+    .user-avatar:hover {
         transform: none;
     }
 }
@@ -232,5 +361,32 @@
     
     .contact-info-value a {
         text-decoration: underline;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus {
+        text-decoration: underline;
+    }
+}
+
+/* Focus management for keyboard navigation */
+.nav-link:focus,
+.notifications-btn:focus,
+.search-container input:focus,
+.contact-info-value a:focus {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .header-controls,
+    .navigation-menu,
+    .contacts-mobile-view {
+        display: none !important;
+    }
+
+    .contacts-table-container {
+        display: block !important;
     }
 }
