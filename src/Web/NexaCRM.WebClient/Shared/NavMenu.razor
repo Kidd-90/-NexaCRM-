@@ -155,6 +155,13 @@
         await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
     }
 
+    private async Task NavigateAndCloseMenu(string url)
+    {
+        // Close navigation menu and navigate
+        await CloseNavMenu();
+        NavigationManager.NavigateTo(url);
+    }
+
     private async Task Logout()
     {
         await CloseNavMenu(); // 로그아웃 시에도 메뉴 닫기

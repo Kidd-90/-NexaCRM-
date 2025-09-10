@@ -31,6 +31,205 @@ window.navigationHelper = {
         }
     },
 
+    // Mobile dashboard navigation functionality
+    setupMobileDashboardNavigation: () => {
+        // Setup smooth scrolling for dashboard navigation links
+        window.navigationHelper.setupSmoothScrolling();
+        
+        // Setup touch-friendly interactions for dashboard elements
+        window.navigationHelper.setupTouchInteractions();
+        
+        // Setup click handlers for dashboard buttons and cards
+        window.navigationHelper.setupDashboardClickHandlers();
+        
+        // Setup mobile responsiveness for dashboard
+        window.navigationHelper.setupMobileResponsiveness();
+    },
+
+    // Smooth scrolling functionality
+    setupSmoothScrolling: () => {
+        // Enable smooth scrolling for all internal links
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href^="#"]');
+            if (link) {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Smooth scrolling for dashboard sections
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        dashboardCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Add smooth transition effect
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    },
+
+    // Touch-friendly interactions
+    setupTouchInteractions: () => {
+        // Add touch feedback for interactive elements
+        const interactiveElements = document.querySelectorAll(
+            'button, .nav-link, .dashboard-card, .dashboard-button, .submenu-link, a[href]'
+        );
+
+        interactiveElements.forEach(element => {
+            // Add touch start feedback
+            element.addEventListener('touchstart', (e) => {
+                element.style.opacity = '0.7';
+                element.style.transform = 'scale(0.97)';
+            }, { passive: true });
+
+            // Remove touch feedback
+            element.addEventListener('touchend', (e) => {
+                setTimeout(() => {
+                    element.style.opacity = '';
+                    element.style.transform = '';
+                }, 150);
+            }, { passive: true });
+
+            // Handle touch cancel
+            element.addEventListener('touchcancel', (e) => {
+                element.style.opacity = '';
+                element.style.transform = '';
+            }, { passive: true });
+        });
+
+        // Improve scrolling performance on touch devices
+        const scrollableElements = document.querySelectorAll('.sidebar, .dashboard-main-content, main');
+        scrollableElements.forEach(element => {
+            element.style.webkitOverflowScrolling = 'touch';
+            element.style.overflowScrolling = 'touch';
+        });
+    },
+
+    // Dashboard click handlers
+    setupDashboardClickHandlers: () => {
+        // Handle dashboard card clicks
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        dashboardCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                const cardText = card.querySelector('h2')?.textContent;
+                console.log(`Dashboard card clicked: ${cardText}`);
+                
+                // Add visual feedback
+                card.classList.add('clicked');
+                setTimeout(() => {
+                    card.classList.remove('clicked');
+                }, 300);
+
+                // Navigate based on card content
+                window.navigationHelper.handleDashboardCardNavigation(cardText);
+            });
+        });
+
+        // Handle dashboard button clicks
+        const dashboardButtons = document.querySelectorAll('.dashboard-button');
+        dashboardButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Add click animation
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 100);
+
+                // Handle button functionality
+                console.log('Dashboard button clicked');
+            });
+        });
+
+        // Handle sidebar navigation in dashboard
+        const dashboardSidebarLinks = document.querySelectorAll('.dashboard-sidebar a');
+        dashboardSidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                // Close mobile navigation when dashboard sidebar link is clicked
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.mobile-overlay');
+                
+                if (window.innerWidth <= 768) {
+                    if (sidebar) sidebar.classList.add('collapse');
+                    if (overlay) overlay.classList.remove('show');
+                }
+            });
+        });
+    },
+
+    // Handle dashboard card navigation
+    handleDashboardCardNavigation: (cardText) => {
+        const navigationMap = {
+            'Sales Pipeline': '/sales-pipeline',
+            'Quarterly Performance': '/reports',
+            'Tasks': '/tasks-page',
+            'Recent Activity': '/main-dashboard#recent-activity'
+        };
+
+        const route = navigationMap[cardText];
+        if (route) {
+            if (route.includes('#')) {
+                // Handle smooth scrolling to section
+                const [path, section] = route.split('#');
+                if (window.location.pathname === path || path === window.location.pathname) {
+                    const element = document.getElementById(section);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    window.location.href = route;
+                }
+            } else {
+                // Navigate to new page
+                window.location.href = route;
+            }
+        }
+    },
+
+    // Mobile responsiveness improvements
+    setupMobileResponsiveness: () => {
+        // Hide dashboard sidebar and top nav on mobile
+        const updateMobileLayout = () => {
+            const dashboardSidebar = document.querySelector('.dashboard-sidebar');
+            const dashboardTopNav = document.querySelector('.dashboard-top-nav');
+            const isMobile = window.innerWidth <= 768;
+
+            if (dashboardSidebar) {
+                dashboardSidebar.style.display = isMobile ? 'none' : '';
+            }
+            if (dashboardTopNav) {
+                dashboardTopNav.style.display = isMobile ? 'none' : '';
+            }
+
+            // Adjust main content spacing on mobile
+            const dashboardMainContent = document.querySelector('.dashboard-main-content');
+            if (dashboardMainContent && isMobile) {
+                dashboardMainContent.style.maxWidth = '100%';
+                dashboardMainContent.style.padding = '1rem';
+            }
+        };
+
+        // Initial setup
+        updateMobileLayout();
+
+        // Update on resize
+        window.addEventListener('resize', updateMobileLayout);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateMobileLayout, 100);
+        });
+    },
+
     // 자동 로그아웃 처리
     setupAutoLogout: () => {
         // 페이지 언로드 시 (브라우저 종료, 탭 닫기, 새로고침)
@@ -130,10 +329,12 @@ window.navigationHelper = {
             document.addEventListener('DOMContentLoaded', () => {
                 window.navigationHelper.setupOverlayHandler();
                 window.navigationHelper.setupAutoLogout();
+                window.navigationHelper.setupMobileDashboardNavigation();
             });
         } else {
             window.navigationHelper.setupOverlayHandler();
             window.navigationHelper.setupAutoLogout();
+            window.navigationHelper.setupMobileDashboardNavigation();
         }
         
         // 즉시 실행하여 초기 상태 보장
@@ -150,6 +351,38 @@ window.navigationHelper = {
                 overlay.classList.remove('show');
             }
         }, 100);
+
+        // Re-setup dashboard navigation when page content changes (for SPA routing)
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    // Check if dashboard content was added
+                    const dashboardAdded = Array.from(mutation.addedNodes).some(node => 
+                        node.nodeType === 1 && (
+                            node.querySelector && (
+                                node.querySelector('[data-page="main-dashboard"]') ||
+                                node.classList && node.classList.contains('dashboard-card')
+                            )
+                        )
+                    );
+                    
+                    if (dashboardAdded) {
+                        setTimeout(() => {
+                            window.navigationHelper.setupMobileDashboardNavigation();
+                        }, 100);
+                    }
+                }
+            });
+        });
+
+        // Observe changes to the main content area
+        const mainElement = document.querySelector('main') || document.body;
+        if (mainElement) {
+            observer.observe(mainElement, {
+                childList: true,
+                subtree: true
+            });
+        }
     }
 };
 
