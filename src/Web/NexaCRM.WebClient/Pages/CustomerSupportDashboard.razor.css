@@ -3,3 +3,89 @@
 @container(max-width:360px){.table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-360{display: none;}}
 @container(max-width:480px){.table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-480{display: none;}}
 @container(max-width:600px){.table-9ed4b39a-6a3d-4583-88e7-88e4b7fa83bd-column-600{display: none;}}
+
+/* CustomerSupportDashboard Mobile Responsive Styles */
+
+/* Mobile devices (767px and below) */
+@media (max-width: 767.98px) {
+    .dashboard-container {
+        flex-direction: column;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Completely hide dashboard sidebar on mobile */
+    .dashboard-sidebar {
+        display: none !important;
+    }
+    
+    .dashboard-main-content {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem !important;
+    }
+    
+    .dashboard-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    .dashboard-card {
+        padding: 1rem !important;
+        min-height: 60px;
+    }
+    
+    /* Touch-friendly buttons */
+    .dashboard-button {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Tablet devices (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .dashboard-sidebar {
+        width: 280px !important;
+        max-width: 280px !important;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Small mobile devices (479px and below) */
+@media (max-width: 479.98px) {
+    .dashboard-main-content {
+        padding: 0 !important;
+    }
+    
+    .dashboard-header {
+        padding: 0.75rem !important;
+    }
+    
+    .dashboard-card {
+        padding: 0.75rem !important;
+    }
+    
+    .dashboard-container {
+        padding: 0.25rem 0.5rem;
+    }
+}
