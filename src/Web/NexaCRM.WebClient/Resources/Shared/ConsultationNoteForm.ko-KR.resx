@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NewConsultationNote" xml:space="preserve">
+    <value>새 상담 노트</value>
+  </data>
+  <data name="EditConsultationNote" xml:space="preserve">
+    <value>상담 노트 편집</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>제목 *</value>
+  </data>
+  <data name="TitlePlaceholder" xml:space="preserve">
+    <value>상담 내용에 대한 간략한 설명...</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="SelectContact" xml:space="preserve">
+    <value>연락처를 선택하세요...</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>우선순위</value>
+  </data>
+  <data name="ConsultationDetails" xml:space="preserve">
+    <value>상담 세부사항 *</value>
+  </data>
+  <data name="DetailsPlaceholder" xml:space="preserve">
+    <value>논의된 핵심 포인트, 고객 요구사항, 우려사항 및 다음 단계를 포함한 상담의 상세 노트...</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>태그</value>
+  </data>
+  <data name="TagsPlaceholder" xml:space="preserve">
+    <value>쉼표로 구분된 태그 (예: 가격, 데모, 요구사항, 긴급)</value>
+  </data>
+  <data name="TagsHelpText" xml:space="preserve">
+    <value>여러 태그를 구분하려면 쉼표를 사용하세요</value>
+  </data>
+  <data name="FollowUpRequired" xml:space="preserve">
+    <value>후속조치 필요</value>
+  </data>
+  <data name="FollowUpDate" xml:space="preserve">
+    <value>후속조치 날짜</value>
+  </data>
+  <data name="SaveNote" xml:space="preserve">
+    <value>노트 저장</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+</root>
