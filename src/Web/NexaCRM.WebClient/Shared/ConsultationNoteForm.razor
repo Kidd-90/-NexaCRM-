@@ -1,0 +1,148 @@
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="consultation-note-form">
+    <div class="form-header">
+        <h4>@(Note?.Id == 0 ? "New Consultation Note" : "Edit Consultation Note")</h4>
+    </div>
+
+    <EditForm Model="@Note" OnValidSubmit="@HandleValidSubmit" class="form-content">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <InputText id="title" class="form-control" @bind-Value="Note!.Title" placeholder="Brief description of the consultation..." />
+                <ValidationMessage For="@(() => Note.Title)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="contact">Contact</label>
+                <InputSelect id="contact" class="form-control" @bind-Value="selectedContactId" @onchange="OnContactChanged">
+                    <option value="0">Select a contact...</option>
+                    @foreach (var contact in Contacts)
+                    {
+                        <option value="@contact.Id">@contact.FirstName @contact.LastName - @contact.Email</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group flex-half">
+                <label for="priority">Priority</label>
+                <InputSelect id="priority" class="form-control" @bind-Value="Note.Priority">
+                    @foreach (var priority in Enum.GetValues<ConsultationPriority>())
+                    {
+                        <option value="@priority">@priority</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="content">Consultation Details *</label>
+                <InputTextArea id="content" class="form-control" rows="8" @bind-Value="Note.Content" 
+                              placeholder="Detailed notes from the consultation including key points discussed, client requirements, concerns, and next steps..." />
+                <ValidationMessage For="@(() => Note.Content)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tags">Tags</label>
+                <InputText id="tags" class="form-control" @bind-Value="Note.Tags" 
+                          placeholder="Comma-separated tags (e.g., pricing, demo, requirements, urgent)" />
+                <small class="form-text text-muted">Use commas to separate multiple tags</small>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <div class="form-check">
+                    <InputCheckbox id="followup" class="form-check-input" @bind-Value="Note.IsFollowUpRequired" />
+                    <label class="form-check-label" for="followup">
+                        Follow-up required
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        @if (Note.IsFollowUpRequired)
+        {
+            <div class="form-row follow-up-section">
+                <div class="form-group">
+                    <label for="followupdate">Follow-up Date</label>
+                    <InputDate id="followupdate" class="form-control" @bind-Value="followUpDate" />
+                </div>
+            </div>
+        }
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <span class="oi oi-check"></span> Save Note
+            </button>
+            <button type="button" class="btn btn-secondary" @onclick="OnCancel">
+                <span class="oi oi-x"></span> Cancel
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public ConsultationNote? Note { get; set; }
+    [Parameter] public List<Contact> Contacts { get; set; } = new();
+    [Parameter] public EventCallback<ConsultationNote> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private int selectedContactId = 0;
+    private DateTime? followUpDate = null;
+
+    protected override void OnInitialized()
+    {
+        if (Note != null)
+        {
+            selectedContactId = Note.ContactId;
+            followUpDate = Note.FollowUpDate;
+        }
+    }
+
+    private void OnContactChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var contactId) && Note != null)
+        {
+            selectedContactId = contactId;
+            var contact = Contacts.FirstOrDefault(c => c.Id == contactId);
+            if (contact != null)
+            {
+                Note.ContactId = contactId;
+                Note.ContactName = $"{contact.FirstName} {contact.LastName}";
+            }
+        }
+    }
+
+    private async System.Threading.Tasks.Task HandleValidSubmit()
+    {
+        if (Note == null) return;
+
+        // Set follow-up date
+        Note.FollowUpDate = Note.IsFollowUpRequired ? followUpDate : null;
+
+        // Basic validation
+        if (string.IsNullOrWhiteSpace(Note.Title))
+        {
+            // Handle validation error
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Note.Content))
+        {
+            // Handle validation error
+            return;
+        }
+
+        await OnSave.InvokeAsync(Note);
+    }
+}

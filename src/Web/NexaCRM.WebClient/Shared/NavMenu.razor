@@ -80,6 +80,12 @@
                             @if (showSalesSubmenu)
                             {
                                 <div class="nav-submenu">
+                                    <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
+                                        <span class="oi oi-calendar" aria-hidden="true"></span> Sales Calendar
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-consultation-notes" @onclick="CloseNavMenu">
+                                        <span class="oi oi-document" aria-hidden="true"></span> Consultation Notes
+                                    </NavLink>
                                     <NavLink class="nav-link submenu-link" href="sales-pipeline" @onclick="CloseNavMenu">
                                         <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["SalesPipeline"]
                                     </NavLink>

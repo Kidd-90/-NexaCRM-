@@ -1,0 +1,458 @@
+@page "/sales-calendar"
+@using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IStringLocalizer<SalesCalendar> Localizer
+@inject ISalesManagementService SalesService
+@inject IContactService ContactService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
+
+<div class="sales-calendar-container">
+    <div class="calendar-header">
+        <div class="header-controls">
+            <h1 class="calendar-title">
+                <span class="oi oi-calendar" aria-hidden="true"></span>
+                Sales Calendar
+            </h1>
+            
+            <div class="view-controls">
+                <button class="btn btn-outline-primary @(currentView == CalendarView.Day ? "active" : "")" 
+                        @onclick="() => SetView(CalendarView.Day)">Day</button>
+                <button class="btn btn-outline-primary @(currentView == CalendarView.Week ? "active" : "")" 
+                        @onclick="() => SetView(CalendarView.Week)">Week</button>
+                <button class="btn btn-outline-primary @(currentView == CalendarView.Month ? "active" : "")" 
+                        @onclick="() => SetView(CalendarView.Month)">Month</button>
+            </div>
+
+            <div class="date-navigation">
+                <button class="btn btn-outline-secondary" @onclick="PreviousPeriod">
+                    <span class="oi oi-chevron-left"></span>
+                </button>
+                <span class="current-date">@GetCurrentDateDisplay()</span>
+                <button class="btn btn-outline-secondary" @onclick="NextPeriod">
+                    <span class="oi oi-chevron-right"></span>
+                </button>
+                <button class="btn btn-outline-secondary" @onclick="GoToToday">Today</button>
+            </div>
+
+            <button class="btn btn-success" @onclick="ShowNewAppointmentModal">
+                <span class="oi oi-plus"></span> New Appointment
+            </button>
+        </div>
+    </div>
+
+    <div class="calendar-content">
+        @if (currentView == CalendarView.Month)
+        {
+            <div class="month-view">
+                <div class="month-header">
+                    @foreach (var dayName in GetDayNames())
+                    {
+                        <div class="day-header">@dayName</div>
+                    }
+                </div>
+                <div class="month-grid">
+                    @foreach (var week in GetMonthWeeks())
+                    {
+                        @foreach (var day in week)
+                        {
+                            <div class="day-cell @(day.Date.Date == DateTime.Today ? "today" : "") @(day.Date.Month != currentDate.Month ? "other-month" : "")"
+                                 @onclick="() => SelectDate(day.Date)">
+                                <div class="day-number">@day.Date.Day</div>
+                                <div class="day-appointments">
+                                    @foreach (var appointment in GetAppointmentsForDay(day.Date))
+                                    {
+                                        <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
+                                             @onclick="() => ShowAppointmentDetails(appointment)"
+                                             @onclick:stopPropagation="true">
+                                            @appointment.Title
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        else if (currentView == CalendarView.Week)
+        {
+            <div class="week-view">
+                <div class="week-header">
+                    @foreach (var day in GetWeekDays())
+                    {
+                        <div class="week-day-header @(day.Date == DateTime.Today ? "today" : "")">
+                            <div class="day-name">@day.DayOfWeek.ToString().Substring(0, 3)</div>
+                            <div class="day-number">@day.Day</div>
+                        </div>
+                    }
+                </div>
+                <div class="week-grid">
+                    @for (int hour = 8; hour < 18; hour++)
+                    {
+                        <div class="time-row">
+                            <div class="time-label">@hour:00</div>
+                            @foreach (var day in GetWeekDays())
+                            {
+                                <div class="time-slot" @onclick="() => SelectTimeSlot(day, hour)">
+                                    @foreach (var appointment in GetAppointmentsForHour(day, hour))
+                                    {
+                                        <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
+                                             @onclick="() => ShowAppointmentDetails(appointment)"
+                                             @onclick:stopPropagation="true">
+                                            @appointment.Title
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (currentView == CalendarView.Day)
+        {
+            <div class="day-view">
+                <div class="day-header">
+                    <h3>@currentDate.ToString("dddd, MMMM dd, yyyy")</h3>
+                </div>
+                <div class="day-grid">
+                    @for (int hour = 8; hour < 18; hour++)
+                    {
+                        <div class="time-row">
+                            <div class="time-label">@hour:00</div>
+                            <div class="time-slot" @onclick="() => SelectTimeSlot(currentDate, hour)">
+                                @foreach (var appointment in GetAppointmentsForHour(currentDate, hour))
+                                {
+                                    <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
+                                         @onclick="() => ShowAppointmentDetails(appointment)"
+                                         @onclick:stopPropagation="true">
+                                        <div class="appointment-title">@appointment.Title</div>
+                                        <div class="appointment-time">@appointment.StartDateTime.ToString("HH:mm") - @appointment.EndDateTime.ToString("HH:mm")</div>
+                                        <div class="appointment-contact">@appointment.ContactName</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- New/Edit Appointment Modal -->
+@if (showAppointmentModal)
+{
+    <div class="modal-backdrop" @onclick="CloseAppointmentModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <SalesAppointmentForm 
+                Appointment="selectedAppointment" 
+                Contacts="contacts"
+                OnSave="SaveAppointment"
+                OnCancel="CloseAppointmentModal" />
+        </div>
+    </div>
+}
+
+<!-- Appointment Details Modal -->
+@if (showDetailsModal)
+{
+    <div class="modal-backdrop" @onclick="CloseDetailsModal">
+        <div class="modal-content appointment-details" @onclick:stopPropagation="true">
+            @if (selectedAppointment != null)
+            {
+                <div class="modal-header">
+                    <h4>@selectedAppointment.Title</h4>
+                    <button class="btn-close" @onclick="CloseDetailsModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="detail-row">
+                        <strong>Date & Time:</strong>
+                        @selectedAppointment.StartDateTime.ToString("MMM dd, yyyy HH:mm") - @selectedAppointment.EndDateTime.ToString("HH:mm")
+                    </div>
+                    <div class="detail-row">
+                        <strong>Contact:</strong>
+                        @selectedAppointment.ContactName (@selectedAppointment.ContactCompany)
+                    </div>
+                    <div class="detail-row">
+                        <strong>Type:</strong>
+                        @selectedAppointment.Type
+                    </div>
+                    <div class="detail-row">
+                        <strong>Status:</strong>
+                        <span class="status-badge status-@selectedAppointment.Status.ToString().ToLower()">@selectedAppointment.Status</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Location:</strong>
+                        @selectedAppointment.Location
+                    </div>
+                    @if (!string.IsNullOrEmpty(selectedAppointment.Description))
+                    {
+                        <div class="detail-row">
+                            <strong>Description:</strong>
+                            <p>@selectedAppointment.Description</p>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(selectedAppointment.Notes))
+                    {
+                        <div class="detail-row">
+                            <strong>Notes:</strong>
+                            <p>@selectedAppointment.Notes</p>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="() => EditAppointment(selectedAppointment)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteAppointment(selectedAppointment.Id)">Delete</button>
+                    <button class="btn btn-secondary" @onclick="CloseDetailsModal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private enum CalendarView { Day, Week, Month }
+    
+    private CalendarView currentView = CalendarView.Week;
+    private DateTime currentDate = DateTime.Today;
+    private List<SalesAppointment> appointments = new();
+    private List<Contact> contacts = new();
+    private string currentUserId = "user1"; // This should come from authentication
+    
+    private bool showAppointmentModal = false;
+    private bool showDetailsModal = false;
+    private SalesAppointment? selectedAppointment;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async System.Threading.Tasks.Task LoadData()
+    {
+        try
+        {
+            appointments = await SalesService.GetAppointmentsAsync(currentUserId);
+            contacts = (await ContactService.GetContactsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            // Handle error appropriately
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+    }
+
+    private void SetView(CalendarView view)
+    {
+        currentView = view;
+    }
+
+    private string GetCurrentDateDisplay()
+    {
+        return currentView switch
+        {
+            CalendarView.Day => currentDate.ToString("MMM dd, yyyy"),
+            CalendarView.Week => $"{GetWeekStart().ToString("MMM dd")} - {GetWeekEnd().ToString("MMM dd, yyyy")}",
+            CalendarView.Month => currentDate.ToString("MMMM yyyy"),
+            _ => currentDate.ToString("MMM dd, yyyy")
+        };
+    }
+
+    private void PreviousPeriod()
+    {
+        currentDate = currentView switch
+        {
+            CalendarView.Day => currentDate.AddDays(-1),
+            CalendarView.Week => currentDate.AddDays(-7),
+            CalendarView.Month => currentDate.AddMonths(-1),
+            _ => currentDate.AddDays(-1)
+        };
+    }
+
+    private void NextPeriod()
+    {
+        currentDate = currentView switch
+        {
+            CalendarView.Day => currentDate.AddDays(1),
+            CalendarView.Week => currentDate.AddDays(7),
+            CalendarView.Month => currentDate.AddMonths(1),
+            _ => currentDate.AddDays(1)
+        };
+    }
+
+    private void GoToToday()
+    {
+        currentDate = DateTime.Today;
+    }
+
+    private List<string> GetDayNames()
+    {
+        return new List<string> { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+    }
+
+    private List<List<DateTime>> GetMonthWeeks()
+    {
+        var weeks = new List<List<DateTime>>();
+        var firstDay = new DateTime(currentDate.Year, currentDate.Month, 1);
+        var lastDay = firstDay.AddMonths(1).AddDays(-1);
+        
+        var startDate = firstDay.AddDays(-(int)firstDay.DayOfWeek);
+        var currentWeek = new List<DateTime>();
+
+        for (var date = startDate; date <= lastDay.AddDays(6 - (int)lastDay.DayOfWeek); date = date.AddDays(1))
+        {
+            currentWeek.Add(date);
+            if (currentWeek.Count == 7)
+            {
+                weeks.Add(currentWeek);
+                currentWeek = new List<DateTime>();
+            }
+        }
+
+        return weeks;
+    }
+
+    private List<DateTime> GetWeekDays()
+    {
+        var startOfWeek = GetWeekStart();
+        var days = new List<DateTime>();
+        
+        for (int i = 0; i < 7; i++)
+        {
+            days.Add(startOfWeek.AddDays(i));
+        }
+        
+        return days;
+    }
+
+    private DateTime GetWeekStart()
+    {
+        var diff = (7 + (currentDate.DayOfWeek - DayOfWeek.Sunday)) % 7;
+        return currentDate.AddDays(-1 * diff).Date;
+    }
+
+    private DateTime GetWeekEnd()
+    {
+        return GetWeekStart().AddDays(6);
+    }
+
+    private List<SalesAppointment> GetAppointmentsForDay(DateTime date)
+    {
+        return appointments.Where(a => a.StartDateTime.Date == date.Date).ToList();
+    }
+
+    private List<SalesAppointment> GetAppointmentsForHour(DateTime date, int hour)
+    {
+        return appointments.Where(a => 
+            a.StartDateTime.Date == date.Date && 
+            a.StartDateTime.Hour == hour).ToList();
+    }
+
+    private string GetAppointmentTypeClass(AppointmentType type)
+    {
+        return $"appointment-{type.ToString().ToLower()}";
+    }
+
+    private void SelectDate(DateTime date)
+    {
+        currentDate = date;
+        SetView(CalendarView.Day);
+    }
+
+    private void SelectTimeSlot(DateTime date, int hour)
+    {
+        var newAppointment = new SalesAppointment
+        {
+            StartDateTime = new DateTime(date.Year, date.Month, date.Day, hour, 0, 0),
+            EndDateTime = new DateTime(date.Year, date.Month, date.Day, hour + 1, 0, 0),
+            UserId = currentUserId
+        };
+        
+        ShowAppointmentModalWithData(newAppointment);
+    }
+
+    private void ShowNewAppointmentModal()
+    {
+        var newAppointment = new SalesAppointment
+        {
+            StartDateTime = currentDate.Date.AddHours(9),
+            EndDateTime = currentDate.Date.AddHours(10),
+            UserId = currentUserId
+        };
+        
+        ShowAppointmentModalWithData(newAppointment);
+    }
+
+    private void ShowAppointmentModalWithData(SalesAppointment appointment)
+    {
+        selectedAppointment = appointment;
+        showAppointmentModal = true;
+    }
+
+    private void EditAppointment(SalesAppointment appointment)
+    {
+        CloseDetailsModal();
+        ShowAppointmentModalWithData(appointment);
+    }
+
+    private void CloseAppointmentModal()
+    {
+        showAppointmentModal = false;
+        selectedAppointment = null;
+    }
+
+    private void ShowAppointmentDetails(SalesAppointment appointment)
+    {
+        selectedAppointment = appointment;
+        showDetailsModal = true;
+    }
+
+    private void CloseDetailsModal()
+    {
+        showDetailsModal = false;
+        selectedAppointment = null;
+    }
+
+    private async System.Threading.Tasks.Task SaveAppointment(SalesAppointment appointment)
+    {
+        try
+        {
+            if (appointment.Id == 0)
+            {
+                await SalesService.CreateAppointmentAsync(appointment);
+            }
+            else
+            {
+                await SalesService.UpdateAppointmentAsync(appointment);
+            }
+            
+            await LoadData();
+            CloseAppointmentModal();
+        }
+        catch (Exception ex)
+        {
+            // Handle error appropriately
+            Console.WriteLine($"Error saving appointment: {ex.Message}");
+        }
+    }
+
+    private async System.Threading.Tasks.Task DeleteAppointment(int appointmentId)
+    {
+        try
+        {
+            await SalesService.DeleteAppointmentAsync(appointmentId);
+            await LoadData();
+            CloseDetailsModal();
+        }
+        catch (Exception ex)
+        {
+            // Handle error appropriately
+            Console.WriteLine($"Error deleting appointment: {ex.Message}");
+        }
+    }
+}

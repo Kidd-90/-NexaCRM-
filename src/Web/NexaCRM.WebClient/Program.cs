@@ -34,6 +34,7 @@ builder.Services.AddScoped<IAgentService, MockAgentService>();
 builder.Services.AddScoped<IMarketingCampaignService, MockMarketingCampaignService>();
 builder.Services.AddScoped<IReportService, MockReportService>();
 builder.Services.AddScoped<IActivityService, MockActivityService>();
+builder.Services.AddScoped<ISalesManagementService, MockSalesManagementService>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 
 var culture = new CultureInfo("ko-KR");
