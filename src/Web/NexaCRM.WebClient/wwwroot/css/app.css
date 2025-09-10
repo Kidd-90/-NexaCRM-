@@ -30,7 +30,7 @@ a, .btn-link {
 
 /* Navigation styles - 반응형 디자인 */
 .sidebar {
-    background-color: #343a40;
+    background-color: #0e131b; /* Updated to match dashboard theme */
     width: 250px;
     min-height: 100vh;
     position: fixed;
@@ -74,8 +74,8 @@ a, .btn-link {
     position: fixed !important;
     top: 1rem !important;
     right: 1rem !important;
-    background: rgba(52, 58, 64, 0.9) !important;
-    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(14, 19, 27, 0.9) !important; /* Updated to match dashboard theme */
+    border: 2px solid rgba(77, 106, 153, 0.4) !important; /* Using dashboard secondary color */
     color: #ffffff !important;
     padding: 0.875rem !important; /* Increased for better touch target (minimum 44px) */
     min-width: 2.75rem !important; /* Ensure minimum 44px touch target */
@@ -89,7 +89,7 @@ a, .btn-link {
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
     z-index: 9999 !important; /* Very high z-index to ensure it's always visible */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 4px 12px rgba(14, 19, 27, 0.25) !important; /* Updated shadow color */
     /* Improve accessibility */
     -webkit-tap-highlight-color: transparent !important;
     user-select: none !important;
@@ -97,15 +97,15 @@ a, .btn-link {
 }
 
 .floating-menu-toggle:hover {
-    background: rgba(52, 58, 64, 1);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(14, 19, 27, 1); /* Full opacity on hover */
+    border-color: rgba(77, 106, 153, 0.6); /* Stronger border on hover */
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 20px rgba(14, 19, 27, 0.35); /* Enhanced shadow */
 }
 
 .floating-menu-toggle:focus {
     outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 0.25rem rgba(77, 106, 153, 0.4); /* Updated focus color to match theme */
 }
 
 /* Active state for better mobile feedback */
@@ -280,6 +280,11 @@ a, .btn-link {
     
     /* Hide dashboard top navigation bar on mobile */
     .dashboard-top-nav {
+        display: none !important;
+    }
+    
+    /* Hide dashboard sidebar on mobile (in case it's present) */
+    .dashboard-sidebar {
         display: none !important;
     }
 }
