@@ -102,6 +102,11 @@ a, .btn-link {
     display: inline-block;
     width: 1.5em;
     height: 1.5em;
+    transition: transform 0.3s ease;
+}
+
+.floating-menu-toggle:hover .navbar-toggler-icon {
+    transform: rotate(90deg);
 }
 
 .navbar-toggler:hover {
@@ -225,6 +230,11 @@ a, .btn-link {
     .nav-link span {
         margin-right: 1rem;
         font-size: 1.2rem;
+    }
+    
+    /* MainDashboard integration */
+    .content:has([data-page="main-dashboard"]) {
+        padding: 0 !important;
     }
 }
 
