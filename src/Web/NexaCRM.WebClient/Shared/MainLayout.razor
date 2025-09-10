@@ -1,7 +1,13 @@
 @inherits LayoutComponentBase
 @using NexaCRM.WebClient.Shared
+@inject IJSRuntime JSRuntime
 
 <div class="page">
+    <!-- 고정된 햄버거 버튼 - sidebar 밖에 배치 -->
+    <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -12,3 +18,25 @@
         </article>
     </main>
 </div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private async Task ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+        // JavaScript 함수 호출하여 UI 업데이트
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", collapseNavMenu);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 초기 렌더링 후 JavaScript 초기화
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
+            // 초기 상태를 확실히 설정 (메뉴 닫힌 상태)
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+        }
+    }
+}

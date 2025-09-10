@@ -70,15 +70,40 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .nav-section-header {
-        padding: 10px 8px;
+        padding: 0.875rem 1rem; /* Increased for better touch targets */
+        min-height: 2.75rem; /* Ensure minimum 44px touch target */
+        display: flex;
+        align-items: center;
     }
     
     .nav-submenu {
-        padding-left: 15px;
-        margin-left: 12px;
+        padding-left: 1rem; /* Reduced for mobile */
+        margin-left: 0.75rem;
+        border-left: 2px solid rgba(255, 255, 255, 0.1); /* Better visibility in dark sidebar */
     }
     
     .submenu-link {
-        padding: 8px 10px !important;
+        padding: 0.875rem 1rem 0.875rem 2rem !important;
+        min-height: 2.5rem; /* Adequate touch target for submenu items */
+        font-size: 0.95rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .nav-section-header {
+        padding: 1rem 1.25rem;
+        min-height: 3rem; /* Larger touch targets on very small screens */
+    }
+    
+    .submenu-link {
+        padding: 1rem 1.25rem 1rem 2.5rem !important;
+        min-height: 2.75rem;
+        font-size: 1rem;
+    }
+    
+    .nav-submenu {
+        padding-left: 1.25rem;
+        margin-left: 1rem;
     }
 }

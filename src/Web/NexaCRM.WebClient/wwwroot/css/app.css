@@ -36,11 +36,14 @@ a, .btn-link {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000;
-    transition: transform 0.3s ease-in-out;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 9998; /* High z-index but below the hamburger button */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother easing */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
     /* 기본적으로 모든 화면에서 숨김 */
     transform: translateX(-100%);
+    /* Improve scrolling on mobile */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* collapse 클래스가 없을 때만 보이기 (메뉴 열림) */
@@ -68,21 +71,29 @@ a, .btn-link {
 
 /* 플로팅 햄버거 메뉴 버튼 */
 .floating-menu-toggle {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(52, 58, 64, 0.9);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    display: block;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 1002;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: fixed !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    background: rgba(52, 58, 64, 0.9) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    padding: 0.875rem !important; /* Increased for better touch target (minimum 44px) */
+    min-width: 2.75rem !important; /* Ensure minimum 44px touch target */
+    min-height: 2.75rem !important; /* Ensure minimum 44px touch target */
+    border-radius: 0.75rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smoother easing */
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    z-index: 9999 !important; /* Very high z-index to ensure it's always visible */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    /* Improve accessibility */
+    -webkit-tap-highlight-color: transparent !important;
+    user-select: none !important;
+    pointer-events: auto !important; /* Ensure it's clickable */
 }
 
 .floating-menu-toggle:hover {
@@ -97,12 +108,18 @@ a, .btn-link {
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
 }
 
+/* Active state for better mobile feedback */
+.floating-menu-toggle:active {
+    transform: scale(0.98);
+    transition-duration: 0.1s;
+}
+
 .floating-menu-toggle .navbar-toggler-icon {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.95)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
     display: inline-block;
     width: 1.5em;
     height: 1.5em;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .floating-menu-toggle:hover .navbar-toggler-icon {
@@ -180,21 +197,19 @@ a, .btn-link {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 9997; /* High z-index but below sidebar and hamburger button */
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-/* 메뉴가 열려있을 때만 오버레이 표시 (collapse 클래스가 없을 때) */
-.page:has(.sidebar:not(.collapse)) .mobile-overlay {
+/* JavaScript will handle the overlay visibility instead of :has() for better browser support */
+.mobile-overlay.show {
     display: block;
 }
 
-/* 메뉴가 닫혀있을 때는 오버레이 숨김 (collapse 클래스가 있을 때) */
-.page:has(.sidebar.collapse) .mobile-overlay {
-    display: none !important;
-}
-
-/* 태블릿 환경 (768px - 1023px) */
-@media (max-width: 1023.98px) and (min-width: 768px) {
+/* 태블릿 환경 (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
     .sidebar {
         width: 250px; /* 태블릿에서도 동일한 크기 */
     }
@@ -202,17 +217,23 @@ a, .btn-link {
     .nav-link {
         padding: 0.75rem 1rem;
         font-size: 0.95rem;
+        min-height: 2.75rem; /* Ensure adequate touch target */
     }
     
     .nav-link span {
         margin-right: 0.75rem;
     }
+    
+    .floating-menu-toggle {
+        top: 1.5rem;
+        right: 1.5rem;
+    }
 }
 
-/* 모바일 환경 (767px 이하) */
-@media (max-width: 767.98px) {
+/* 모바일 환경 (768px 이하) */
+@media (max-width: 768px) {
     .sidebar {
-        width: 280px; /* 모바일에서는 약간 더 넓게 */
+        width: min(280px, 80vw); /* Responsive width, max 80% of viewport */
     }
     
     .nav-link {
@@ -220,6 +241,9 @@ a, .btn-link {
         font-size: 1rem;
         border-radius: 0;
         margin: 0;
+        min-height: 2.75rem; /* Ensure minimum 44px touch target */
+        display: flex;
+        align-items: center;
     }
     
     .nav-link:hover {
@@ -227,38 +251,62 @@ a, .btn-link {
         background-color: rgba(255, 255, 255, 0.15);
     }
     
+    .nav-link:active {
+        background-color: rgba(255, 255, 255, 0.2);
+        transition-duration: 0.1s;
+    }
+    
     .nav-link span {
         margin-right: 1rem;
         font-size: 1.2rem;
+    }
+    
+    /* Improved submenu spacing for mobile */
+    .nav-submenu .submenu-link {
+        padding: 0.875rem 1.5rem 0.875rem 2.5rem !important;
+        min-height: 2.5rem;
     }
     
     /* MainDashboard integration */
     .content:has([data-page="main-dashboard"]) {
         padding: 0 !important;
     }
+    
+    .floating-menu-toggle {
+        top: 1rem;
+        right: 1rem;
+        /* Ensure button is easily reachable on mobile */
+    }
 }
 
 /* 아주 작은 화면 (480px 이하) */
-@media (max-width: 479.98px) {
+@media (max-width: 480px) {
     .sidebar {
-        width: 100%; /* 작은 화면에서는 전체 너비 */
-    }
-    
-    .navbar-brand {
-        font-size: 1.1rem;
+        width: min(100vw, 320px); /* Full width on very small screens, but capped */
     }
     
     .nav-link {
-        padding: 1.2rem 1.5rem;
-        font-size: 1.1rem;
+        padding: 1.125rem 1.5rem; /* Slightly larger for very small screens */
+        font-size: 1.05rem;
+        min-height: 3rem; /* Larger touch targets on very small screens */
     }
     
-    .top-row {
-        height: 60px;
+    .nav-link span {
+        margin-right: 1rem;
+        font-size: 1.25rem;
     }
     
-    .content {
-        padding-top: 5.5rem;
+    .nav-submenu .submenu-link {
+        padding: 1rem 1.5rem 1rem 3rem !important;
+        min-height: 2.75rem;
+    }
+    
+    .floating-menu-toggle {
+        top: 0.75rem;
+        right: 0.75rem;
+        min-width: 3rem; /* Larger on very small screens */
+        min-height: 3rem;
+        padding: 1rem;
     }
     
     /* Remove unwanted padding on login page for mobile devices */
