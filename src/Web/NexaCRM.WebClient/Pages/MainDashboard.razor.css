@@ -10,11 +10,9 @@
         flex-direction: column;
     }
     
+    /* Completely hide dashboard sidebar on mobile */
     .dashboard-sidebar {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 1rem !important;
-        margin-bottom: 1rem;
+        display: none !important;
     }
     
     .dashboard-main-content {
