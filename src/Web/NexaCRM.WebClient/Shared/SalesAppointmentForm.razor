@@ -1,10 +1,12 @@
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Models.Enums
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SalesAppointmentForm> Localizer
 
 <div class="appointment-form">
     <div class="form-header">
-        <h4>@(Appointment?.Id == 0 ? "New Appointment" : "Edit Appointment")</h4>
+        <h4>@(Appointment?.Id == 0 ? Localizer["NewAppointment"] : Localizer["EditAppointment"])</h4>
     </div>
 
     <EditForm Model="@Appointment" OnValidSubmit="@HandleValidSubmit" class="form-content">
@@ -13,7 +15,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="title">Title *</label>
+                <label for="title">@Localizer["Title"]</label>
                 <InputText id="title" class="form-control" @bind-Value="Appointment!.Title" />
                 <ValidationMessage For="@(() => Appointment.Title)" />
             </div>
@@ -21,9 +23,9 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="contact">Contact</label>
+                <label for="contact">@Localizer["Contact"]</label>
                 <InputSelect id="contact" class="form-control" @bind-Value="selectedContactId" @onchange="OnContactChanged">
-                    <option value="0">Select a contact...</option>
+                    <option value="0">@Localizer["SelectContact"]</option>
                     @foreach (var contact in Contacts)
                     {
                         <option value="@contact.Id">@contact.FirstName @contact.LastName - @contact.Email</option>
@@ -34,29 +36,29 @@
 
         <div class="form-row">
             <div class="form-group flex-half">
-                <label for="startdate">Start Date *</label>
+                <label for="startdate">@Localizer["StartDate"]</label>
                 <InputDate id="startdate" class="form-control" @bind-Value="startDate" />
             </div>
             <div class="form-group flex-half">
-                <label for="starttime">Start Time *</label>
+                <label for="starttime">@Localizer["StartTime"]</label>
                 <InputText id="starttime" type="time" class="form-control" @bind-Value="startTime" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group flex-half">
-                <label for="enddate">End Date *</label>
+                <label for="enddate">@Localizer["EndDate"]</label>
                 <InputDate id="enddate" class="form-control" @bind-Value="endDate" />
             </div>
             <div class="form-group flex-half">
-                <label for="endtime">End Time *</label>
+                <label for="endtime">@Localizer["EndTime"]</label>
                 <InputText id="endtime" type="time" class="form-control" @bind-Value="endTime" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group flex-half">
-                <label for="type">Type</label>
+                <label for="type">@Localizer["Type"]</label>
                 <InputSelect id="type" class="form-control" @bind-Value="Appointment.Type">
                     @foreach (var type in Enum.GetValues<AppointmentType>())
                     {
@@ -65,7 +67,7 @@
                 </InputSelect>
             </div>
             <div class="form-group flex-half">
-                <label for="status">Status</label>
+                <label for="status">@Localizer["Status"]</label>
                 <InputSelect id="status" class="form-control" @bind-Value="Appointment.Status">
                     @foreach (var status in Enum.GetValues<AppointmentStatus>())
                     {
@@ -77,31 +79,31 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="location">Location</label>
-                <InputText id="location" class="form-control" @bind-Value="Appointment.Location" placeholder="Meeting location or 'Virtual'" />
+                <label for="location">@Localizer["Location"]</label>
+                <InputText id="location" class="form-control" @bind-Value="Appointment.Location" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label for="description">Description</label>
-                <InputTextArea id="description" class="form-control" rows="3" @bind-Value="Appointment.Description" placeholder="Purpose and agenda for this appointment..." />
+                <label for="description">@Localizer["Description"]</label>
+                <InputTextArea id="description" class="form-control" rows="3" @bind-Value="Appointment.Description" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label for="notes">Notes</label>
-                <InputTextArea id="notes" class="form-control" rows="2" @bind-Value="Appointment.Notes" placeholder="Preparation notes..." />
+                <label for="notes">@Localizer["Notes"]</label>
+                <InputTextArea id="notes" class="form-control" rows="2" @bind-Value="Appointment.Notes" />
             </div>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-success">
-                <span class="oi oi-check"></span> Save
+                <span class="oi oi-check"></span> @Localizer["SaveAppointment"]
             </button>
             <button type="button" class="btn btn-secondary" @onclick="OnCancel">
-                <span class="oi oi-x"></span> Cancel
+                <span class="oi oi-x"></span> @Localizer["Cancel"]
             </button>
         </div>
     </EditForm>

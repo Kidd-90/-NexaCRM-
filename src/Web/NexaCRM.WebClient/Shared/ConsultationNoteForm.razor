@@ -1,10 +1,12 @@
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Models.Enums
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ConsultationNoteForm> Localizer
 
 <div class="consultation-note-form">
     <div class="form-header">
-        <h4>@(Note?.Id == 0 ? "New Consultation Note" : "Edit Consultation Note")</h4>
+        <h4>@(Note?.Id == 0 ? Localizer["NewConsultationNote"] : Localizer["EditConsultationNote"])</h4>
     </div>
 
     <EditForm Model="@Note" OnValidSubmit="@HandleValidSubmit" class="form-content">
@@ -13,17 +15,17 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="title">Title *</label>
-                <InputText id="title" class="form-control" @bind-Value="Note!.Title" placeholder="Brief description of the consultation..." />
+                <label for="title">@Localizer["Title"]</label>
+                <InputText id="title" class="form-control" @bind-Value="Note!.Title" placeholder="@Localizer["TitlePlaceholder"]" />
                 <ValidationMessage For="@(() => Note.Title)" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group flex-half">
-                <label for="contact">Contact</label>
+                <label for="contact">@Localizer["Contact"]</label>
                 <InputSelect id="contact" class="form-control" @bind-Value="selectedContactId" @onchange="OnContactChanged">
-                    <option value="0">Select a contact...</option>
+                    <option value="0">@Localizer["SelectContact"]</option>
                     @foreach (var contact in Contacts)
                     {
                         <option value="@contact.Id">@contact.FirstName @contact.LastName - @contact.Email</option>
@@ -31,7 +33,7 @@
                 </InputSelect>
             </div>
             <div class="form-group flex-half">
-                <label for="priority">Priority</label>
+                <label for="priority">@Localizer["Priority"]</label>
                 <InputSelect id="priority" class="form-control" @bind-Value="Note.Priority">
                     @foreach (var priority in Enum.GetValues<ConsultationPriority>())
                     {
@@ -43,19 +45,19 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="content">Consultation Details *</label>
+                <label for="content">@Localizer["ConsultationDetails"]</label>
                 <InputTextArea id="content" class="form-control" rows="8" @bind-Value="Note.Content" 
-                              placeholder="Detailed notes from the consultation including key points discussed, client requirements, concerns, and next steps..." />
+                              placeholder="@Localizer["DetailsPlaceholder"]" />
                 <ValidationMessage For="@(() => Note.Content)" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label for="tags">Tags</label>
+                <label for="tags">@Localizer["Tags"]</label>
                 <InputText id="tags" class="form-control" @bind-Value="Note.Tags" 
-                          placeholder="Comma-separated tags (e.g., pricing, demo, requirements, urgent)" />
-                <small class="form-text text-muted">Use commas to separate multiple tags</small>
+                          placeholder="@Localizer["TagsPlaceholder"]" />
+                <small class="form-text text-muted">@Localizer["TagsHelpText"]</small>
             </div>
         </div>
 
@@ -64,7 +66,7 @@
                 <div class="form-check">
                     <InputCheckbox id="followup" class="form-check-input" @bind-Value="Note.IsFollowUpRequired" />
                     <label class="form-check-label" for="followup">
-                        Follow-up required
+                        @Localizer["FollowUpRequired"]
                     </label>
                 </div>
             </div>
@@ -74,7 +76,7 @@
         {
             <div class="form-row follow-up-section">
                 <div class="form-group">
-                    <label for="followupdate">Follow-up Date</label>
+                    <label for="followupdate">@Localizer["FollowUpDate"]</label>
                     <InputDate id="followupdate" class="form-control" @bind-Value="followUpDate" />
                 </div>
             </div>
@@ -82,10 +84,10 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-success">
-                <span class="oi oi-check"></span> Save Note
+                <span class="oi oi-check"></span> @Localizer["SaveNote"]
             </button>
             <button type="button" class="btn btn-secondary" @onclick="OnCancel">
-                <span class="oi oi-x"></span> Cancel
+                <span class="oi oi-x"></span> @Localizer["Cancel"]
             </button>
         </div>
     </EditForm>
