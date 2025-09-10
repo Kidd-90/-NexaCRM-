@@ -277,6 +277,11 @@ a, .btn-link {
         right: 1rem;
         /* Ensure button is easily reachable on mobile */
     }
+    
+    /* Hide dashboard top navigation bar on mobile */
+    .dashboard-top-nav {
+        display: none !important;
+    }
 }
 
 /* 아주 작은 화면 (480px 이하) */
@@ -312,6 +317,11 @@ a, .btn-link {
     /* Remove unwanted padding on login page for mobile devices */
     .content:has(.relative.flex.size-full.min-h-screen) {
         padding-top: 0 !important;
+    }
+    
+    /* Hide dashboard top navigation bar on small mobile */
+    .dashboard-top-nav {
+        display: none !important;
     }
 }
 
