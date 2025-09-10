@@ -48,4 +48,10 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="SalesCalendar" xml:space="preserve">
+    <value>Sales Calendar</value>
+  </data>
+  <data name="ConsultationNotes" xml:space="preserve">
+    <value>Consultation Notes</value>
+  </data>
 </root>

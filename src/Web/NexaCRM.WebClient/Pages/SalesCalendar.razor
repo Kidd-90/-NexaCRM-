@@ -65,9 +65,10 @@
                                 <div class="day-appointments">
                                     @foreach (var appointment in GetAppointmentsForDay(day.Date))
                                     {
-                                        <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
+                                        <div class="appointment-item @GetAppointmentTypeClass(appointment.Type) @GetConflictClass(appointment)"
                                              @onclick="() => ShowAppointmentDetails(appointment)"
-                                             @onclick:stopPropagation="true">
+                                             @onclick:stopPropagation="true"
+                                             title="@GetAppointmentTooltip(appointment)">
                                             @appointment.Title
                                         </div>
                                     }
@@ -100,9 +101,10 @@
                                 <div class="time-slot" data-time="@($"{hour:00}:00")" @onclick="() => SelectTimeSlot(day, hour)">
                                     @foreach (var appointment in GetAppointmentsForHour(day, hour))
                                     {
-                                        <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
+                                        <div class="appointment-item @GetAppointmentTypeClass(appointment.Type) @GetConflictClass(appointment)"
                                              @onclick="() => ShowAppointmentDetails(appointment)"
-                                             @onclick:stopPropagation="true">
+                                             @onclick:stopPropagation="true"
+                                             title="@GetAppointmentTooltip(appointment)">
                                             @appointment.Title
                                         </div>
                                     }
@@ -127,9 +129,10 @@
                             <div class="time-slot" data-time="@($"{hour:00}:00")" @onclick="() => SelectTimeSlot(currentDate, hour)">
                                 @foreach (var appointment in GetAppointmentsForHour(currentDate, hour))
                                 {
-                                    <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
+                                    <div class="appointment-item @GetAppointmentTypeClass(appointment.Type) @GetConflictClass(appointment)"
                                          @onclick="() => ShowAppointmentDetails(appointment)"
-                                         @onclick:stopPropagation="true">
+                                         @onclick:stopPropagation="true"
+                                         title="@GetAppointmentTooltip(appointment)">
                                         <div class="appointment-title">@appointment.Title</div>
                                         <div class="appointment-time">@appointment.StartDateTime.ToString("HH:mm") - @appointment.EndDateTime.ToString("HH:mm")</div>
                                         <div class="appointment-contact">@appointment.ContactName</div>
@@ -364,6 +367,43 @@
     private string GetAppointmentTypeClass(AppointmentType type)
     {
         return $"appointment-{type.ToString().ToLower()}";
+    }
+
+    private string GetConflictClass(SalesAppointment appointment)
+    {
+        var hasConflict = appointments
+            .Where(a => a.Id != appointment.Id && a.UserId == appointment.UserId)
+            .Any(a => (a.StartDateTime < appointment.EndDateTime && a.EndDateTime > appointment.StartDateTime));
+        
+        return hasConflict ? "has-conflict" : "";
+    }
+
+    private string GetAppointmentTooltip(SalesAppointment appointment)
+    {
+        var tooltip = $"{appointment.Title}\n{appointment.StartDateTime.ToString("MMM dd, HH:mm")} - {appointment.EndDateTime.ToString("HH:mm")}";
+        
+        if (!string.IsNullOrEmpty(appointment.ContactName))
+        {
+            tooltip += $"\nContact: {appointment.ContactName}";
+        }
+        
+        if (!string.IsNullOrEmpty(appointment.Location))
+        {
+            tooltip += $"\nLocation: {appointment.Location}";
+        }
+
+        // Check for conflicts
+        var conflictingAppts = appointments
+            .Where(a => a.Id != appointment.Id && a.UserId == appointment.UserId)
+            .Where(a => a.StartDateTime < appointment.EndDateTime && a.EndDateTime > appointment.StartDateTime)
+            .ToList();
+
+        if (conflictingAppts.Any())
+        {
+            tooltip += $"\n⚠ Conflicts with: {string.Join(", ", conflictingAppts.Select(c => c.Title))}";
+        }
+
+        return tooltip;
     }
 
     private void SelectDate(DateTime date)

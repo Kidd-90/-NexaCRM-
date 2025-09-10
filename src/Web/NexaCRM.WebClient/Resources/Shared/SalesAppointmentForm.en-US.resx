@@ -106,4 +106,13 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="TimeConflictDetected" xml:space="preserve">
+    <value>Time Conflict Detected</value>
+  </data>
+  <data name="ConflictMessage" xml:space="preserve">
+    <value>This appointment time conflicts with existing appointments:</value>
+  </data>
+  <data name="OverrideConflict" xml:space="preserve">
+    <value>Override conflict and save anyway</value>
+  </data>
 </root>

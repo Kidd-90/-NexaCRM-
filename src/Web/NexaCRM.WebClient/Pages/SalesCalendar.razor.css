@@ -121,22 +121,61 @@
 .day-appointments {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    padding: 2px;
+    max-height: 80px;
+    overflow-y: auto;
 }
 
 .appointment-item {
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 11px;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: opacity 0.2s;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+    line-height: 1.2;
+    min-height: 18px;
+    display: flex;
+    align-items: center;
 }
 
 .appointment-item:hover {
-    opacity: 0.8;
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Conflict highlighting */
+.appointment-item.has-conflict {
+    border-left-color: #dc3545;
+    background: linear-gradient(90deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+}
+
+.appointment-item.has-conflict::after {
+    content: "⚠";
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #dc3545;
+    font-size: 10px;
+}
+
+/* Better visual separation for overlapping appointments */
+.time-slot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.appointment-item + .appointment-item {
+    margin-top: 1px;
 }
 
 /* Week View Styles */
@@ -541,17 +580,60 @@
         margin-bottom: 3px; /* More spacing */
         border-radius: 6px; /* More rounded corners */
         touch-action: manipulation;
-        min-height: 24px; /* Larger touch target */
+        min-height: 28px; /* Larger touch target */
         display: flex;
         align-items: center;
         font-weight: 500; /* Bolder text for better visibility */
         line-height: 1.2;
+        border-left: 4px solid transparent;
+        position: relative;
     }
-    
+
     .appointment-item:active {
         opacity: 0.7;
         transform: scale(0.98);
         transition-duration: 0.1s;
+    }
+
+    /* Enhanced conflict highlighting for mobile */
+    .appointment-item.has-conflict {
+        border-left-color: #dc3545;
+        background: linear-gradient(90deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.08) 100%);
+        animation: pulse-conflict 2s infinite;
+    }
+
+    @keyframes pulse-conflict {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
+    }
+
+    .appointment-item.has-conflict::after {
+        content: "⚠";
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #dc3545;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    /* Better day appointments container for mobile */
+    .day-appointments {
+        gap: 4px;
+        padding: 4px;
+        max-height: 100px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .day-appointments::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    .day-appointments::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.2);
+        border-radius: 3px;
     }
     
     /* Week view mobile optimization */
