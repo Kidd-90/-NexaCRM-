@@ -15,6 +15,83 @@
     display: none;
 }
 
+/* Mobile navigation styles for contacts page */
+.contacts-mobile-menu-button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.contacts-mobile-menu-button:hover {
+    background-color: #e7ecf3;
+}
+
+.contacts-mobile-nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+}
+
+.contacts-mobile-nav-overlay.active {
+    display: block;
+}
+
+.contacts-mobile-nav-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 280px;
+    background: white;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 51;
+    padding: 1rem;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.contacts-mobile-nav-menu.active {
+    transform: translateX(0);
+}
+
+.contacts-mobile-nav-close {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    margin-left: auto;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.contacts-mobile-nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contacts-mobile-nav-link {
+    display: block;
+    padding: 1rem 0;
+    color: #0e131b;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.contacts-mobile-nav-link:hover {
+    background: #f8faff;
+    border-radius: 8px;
+}
+
 /* Mobile-first responsive design */
 @media (max-width: 768px) {
     /* Hide table on mobile */
@@ -210,7 +287,8 @@
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
     .contact-card,
-    .contact-info-value a {
+    .contact-info-value a,
+    .contacts-mobile-nav-menu {
         transition: none;
         animation: none;
     }
