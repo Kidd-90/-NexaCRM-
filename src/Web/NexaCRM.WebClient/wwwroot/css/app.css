@@ -250,6 +250,11 @@ a, .btn-link {
     .content {
         padding-top: 5.5rem;
     }
+    
+    /* Remove unwanted padding on login page for mobile devices */
+    .content:has(.relative.flex.size-full.min-h-screen) {
+        padding-top: 0 !important;
+    }
 }
 
 .valid.modified:not([type=checkbox]) {
