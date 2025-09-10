@@ -1,5 +1,144 @@
 // Navigation menu functionality
 window.navigationHelper = {
+    // Navigation scroll and keyboard functionality
+    setupNavigationScrolling: () => {
+        const navContainer = document.querySelector('.nav-scroll-container');
+        if (!navContainer) return;
+        
+        // Setup keyboard navigation
+        window.navigationHelper.setupKeyboardNavigation(navContainer);
+        
+        // Setup scroll position indicators
+        window.navigationHelper.setupScrollIndicators(navContainer);
+        
+        // Setup smooth scrolling for menu items
+        window.navigationHelper.setupMenuItemScrolling(navContainer);
+    },
+    
+    // Enhanced keyboard navigation
+    setupKeyboardNavigation: (container) => {
+        const navItems = container.querySelectorAll('.nav-link, .nav-section-header');
+        let currentIndex = -1;
+        
+        // Focus management
+        const focusItem = (index) => {
+            navItems.forEach((item, i) => {
+                item.classList.toggle('keyboard-focused', i === index);
+            });
+            
+            if (index >= 0 && index < navItems.length) {
+                const item = navItems[index];
+                item.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'nearest'
+                });
+                
+                // Set focus for accessibility
+                item.focus();
+            }
+        };
+        
+        // Global keyboard event listener
+        document.addEventListener('keydown', (e) => {
+            // Only handle navigation when menu is open
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar || sidebar.classList.contains('collapse')) return;
+            
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    currentIndex = Math.min(currentIndex + 1, navItems.length - 1);
+                    focusItem(currentIndex);
+                    break;
+                    
+                case 'ArrowUp':
+                    e.preventDefault();
+                    currentIndex = Math.max(currentIndex - 1, 0);
+                    focusItem(currentIndex);
+                    break;
+                    
+                case 'Enter':
+                case ' ':
+                    e.preventDefault();
+                    if (currentIndex >= 0 && currentIndex < navItems.length) {
+                        navItems[currentIndex].click();
+                    }
+                    break;
+                    
+                case 'Escape':
+                    e.preventDefault();
+                    // Close menu
+                    window.navigationHelper.toggleMenu(true);
+                    break;
+                    
+                case 'Home':
+                    e.preventDefault();
+                    currentIndex = 0;
+                    focusItem(currentIndex);
+                    break;
+                    
+                case 'End':
+                    e.preventDefault();
+                    currentIndex = navItems.length - 1;
+                    focusItem(currentIndex);
+                    break;
+            }
+        });
+    },
+    
+    // Scroll position indicators
+    setupScrollIndicators: (container) => {
+        let scrollTimeout;
+        
+        container.addEventListener('scroll', () => {
+            // Add scrolling class for visual feedback
+            container.classList.add('scrolling');
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                container.classList.remove('scrolling');
+            }, 150);
+            
+            // Update scroll indicators
+            const scrollTop = container.scrollTop;
+            const scrollHeight = container.scrollHeight;
+            const clientHeight = container.clientHeight;
+            const scrollPercent = scrollTop / (scrollHeight - clientHeight);
+            
+            // Add data attribute for CSS styling
+            container.setAttribute('data-scroll-percent', Math.round(scrollPercent * 100));
+        });
+    },
+    
+    // Enhanced menu item scrolling
+    setupMenuItemScrolling: (container) => {
+        const navItems = container.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            const header = item.querySelector('.nav-section-header');
+            if (header) {
+                header.addEventListener('click', () => {
+                    // Smooth scroll to ensure expanded submenu is visible
+                    setTimeout(() => {
+                        const submenu = item.querySelector('.nav-submenu');
+                        if (submenu && submenu.offsetHeight > 0) {
+                            const itemBottom = item.offsetTop + item.offsetHeight;
+                            const containerBottom = container.scrollTop + container.clientHeight;
+                            
+                            if (itemBottom > containerBottom) {
+                                container.scrollTo({
+                                    top: item.offsetTop,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    }, 100);
+                });
+            }
+        });
+    },
+
     // 오버레이 클릭 시 메뉴 닫기
     setupOverlayHandler: () => {
         const overlay = document.querySelector('.mobile-overlay');
@@ -29,6 +168,9 @@ window.navigationHelper = {
         if (overlay) {
             overlay.classList.remove('show');
         }
+        
+        // Setup navigation scrolling functionality
+        window.navigationHelper.setupNavigationScrolling();
     },
 
     // Mobile dashboard navigation functionality
