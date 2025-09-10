@@ -87,6 +87,20 @@ namespace NexaCRM.WebClient.Services.Mock
             return System.Threading.Tasks.Task.FromResult(appointments);
         }
 
+        // Conflict Detection
+        public System.Threading.Tasks.Task<List<SalesAppointment>> CheckAppointmentConflictsAsync(string userId, DateTime startDateTime, DateTime endDateTime, int? excludeAppointmentId = null)
+        {
+            var conflictingAppointments = _appointments
+                .Where(a => a.UserId == userId && 
+                           (excludeAppointmentId == null || a.Id != excludeAppointmentId) &&
+                           ((a.StartDateTime < endDateTime && a.EndDateTime > startDateTime) ||  // Overlapping
+                            (startDateTime < a.EndDateTime && endDateTime > a.StartDateTime)))   // Alternative overlap check
+                .OrderBy(a => a.StartDateTime)
+                .ToList();
+            
+            return System.Threading.Tasks.Task.FromResult(conflictingAppointments);
+        }
+
         // Consultation Notes Management
         public System.Threading.Tasks.Task<List<ConsultationNote>> GetConsultationNotesAsync(string userId, int? contactId = null)
         {

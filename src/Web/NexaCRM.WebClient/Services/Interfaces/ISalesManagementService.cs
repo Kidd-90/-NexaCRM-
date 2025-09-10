@@ -11,6 +11,9 @@ namespace NexaCRM.WebClient.Services.Interfaces
         System.Threading.Tasks.Task<SalesAppointment> UpdateAppointmentAsync(SalesAppointment appointment);
         System.Threading.Tasks.Task<bool> DeleteAppointmentAsync(int id);
         System.Threading.Tasks.Task<List<SalesAppointment>> GetAppointmentsByDateRangeAsync(string userId, DateTime startDate, DateTime endDate);
+        
+        // Conflict Detection
+        System.Threading.Tasks.Task<List<SalesAppointment>> CheckAppointmentConflictsAsync(string userId, DateTime startDateTime, DateTime endDateTime, int? excludeAppointmentId = null);
 
         // Consultation Notes Management
         System.Threading.Tasks.Task<List<ConsultationNote>> GetConsultationNotesAsync(string userId, int? contactId = null);

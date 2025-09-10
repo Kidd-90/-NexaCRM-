@@ -2,7 +2,9 @@
 @using NexaCRM.WebClient.Models.Enums
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Services.Interfaces
 @inject IStringLocalizer<SalesAppointmentForm> Localizer
+@inject ISalesManagementService SalesService
 
 <div class="appointment-form">
     <div class="form-header">
@@ -12,6 +14,27 @@
     <EditForm Model="@Appointment" OnValidSubmit="@HandleValidSubmit" class="form-content">
         <DataAnnotationsValidator />
         <ValidationSummary class="validation-summary" />
+
+        @* Conflict Warning Display *@
+        @if (conflictingAppointments.Any())
+        {
+            <div class="alert alert-warning">
+                <h5><span class="oi oi-warning"></span> @Localizer["TimeConflictDetected"]</h5>
+                <p>@Localizer["ConflictMessage"]</p>
+                <ul>
+                    @foreach (var conflict in conflictingAppointments)
+                    {
+                        <li>@conflict.Title - @conflict.StartDateTime.ToString("MMM dd, yyyy HH:mm") to @conflict.EndDateTime.ToString("HH:mm")</li>
+                    }
+                </ul>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @bind="overrideConflict" id="overrideConflict">
+                    <label class="form-check-label" for="overrideConflict">
+                        @Localizer["OverrideConflict"]
+                    </label>
+                </div>
+            </div>
+        }
 
         <div class="form-row">
             <div class="form-group">
@@ -37,22 +60,22 @@
         <div class="form-row">
             <div class="form-group flex-half">
                 <label for="startdate">@Localizer["StartDate"]</label>
-                <InputDate id="startdate" class="form-control" @bind-Value="startDate" />
+                <InputDate id="startdate" class="form-control" @bind-Value="startDate" @bind-Value:after="OnDateTimeChanged" />
             </div>
             <div class="form-group flex-half">
                 <label for="starttime">@Localizer["StartTime"]</label>
-                <InputText id="starttime" type="time" class="form-control" @bind-Value="startTime" />
+                <InputText id="starttime" type="time" class="form-control" @bind-Value="startTime" @bind-Value:after="OnDateTimeChanged" />
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group flex-half">
                 <label for="enddate">@Localizer["EndDate"]</label>
-                <InputDate id="enddate" class="form-control" @bind-Value="endDate" />
+                <InputDate id="enddate" class="form-control" @bind-Value="endDate" @bind-Value:after="OnDateTimeChanged" />
             </div>
             <div class="form-group flex-half">
                 <label for="endtime">@Localizer["EndTime"]</label>
-                <InputText id="endtime" type="time" class="form-control" @bind-Value="endTime" />
+                <InputText id="endtime" type="time" class="form-control" @bind-Value="endTime" @bind-Value:after="OnDateTimeChanged" />
             </div>
         </div>
 
@@ -120,6 +143,11 @@
     private string startTime = "09:00";
     private DateTime endDate = DateTime.Today;
     private string endTime = "10:00";
+    
+    // Conflict detection
+    private List<SalesAppointment> conflictingAppointments = new();
+    private bool overrideConflict = false;
+    private string currentUserId = "user1"; // This should come from authentication
 
     protected override void OnInitialized()
     {
@@ -164,13 +192,60 @@
             Appointment.EndDateTime = endDate.Date.Add(endTimeSpan);
         }
 
-        // Validation
+        // Basic validation
         if (Appointment.StartDateTime >= Appointment.EndDateTime)
         {
             // Handle validation error - end time must be after start time
             return;
         }
 
+        // Check for conflicts before saving
+        await CheckConflicts();
+        
+        // If there are conflicts and user hasn't overridden, don't save
+        if (conflictingAppointments.Any() && !overrideConflict)
+        {
+            // Conflicts detected, form will show the conflict warning
+            return;
+        }
+
         await OnSave.InvokeAsync(Appointment);
+    }
+
+    private async System.Threading.Tasks.Task CheckConflicts()
+    {
+        if (Appointment == null) return;
+
+        // Create combined date/time for conflict checking
+        var checkStartDateTime = startDate.Date;
+        var checkEndDateTime = endDate.Date;
+        
+        if (TimeSpan.TryParse(startTime, out var startTimeSpan))
+        {
+            checkStartDateTime = startDate.Date.Add(startTimeSpan);
+        }
+
+        if (TimeSpan.TryParse(endTime, out var endTimeSpan))
+        {
+            checkEndDateTime = endDate.Date.Add(endTimeSpan);
+        }
+
+        // Check for conflicts, excluding current appointment if editing
+        conflictingAppointments = await SalesService.CheckAppointmentConflictsAsync(
+            currentUserId, 
+            checkStartDateTime, 
+            checkEndDateTime, 
+            Appointment.Id == 0 ? null : Appointment.Id);
+
+        StateHasChanged();
+    }
+
+    private async System.Threading.Tasks.Task OnDateTimeChanged()
+    {
+        // Clear override when date/time changes
+        overrideConflict = false;
+        
+        // Check for conflicts when date/time changes
+        await CheckConflicts();
     }
 }
