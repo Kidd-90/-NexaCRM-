@@ -97,7 +97,7 @@
                             <div class="time-label">@hour:00</div>
                             @foreach (var day in GetWeekDays())
                             {
-                                <div class="time-slot" @onclick="() => SelectTimeSlot(day, hour)">
+                                <div class="time-slot" data-time="@($"{hour:00}:00")" @onclick="() => SelectTimeSlot(day, hour)">
                                     @foreach (var appointment in GetAppointmentsForHour(day, hour))
                                     {
                                         <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
@@ -124,7 +124,7 @@
                     {
                         <div class="time-row">
                             <div class="time-label">@hour:00</div>
-                            <div class="time-slot" @onclick="() => SelectTimeSlot(currentDate, hour)">
+                            <div class="time-slot" data-time="@($"{hour:00}:00")" @onclick="() => SelectTimeSlot(currentDate, hour)">
                                 @foreach (var appointment in GetAppointmentsForHour(currentDate, hour))
                                 {
                                     <div class="appointment-item @GetAppointmentTypeClass(appointment.Type)"
