@@ -84,10 +84,26 @@
 
               <!-- 로그인 버튼 -->
               <div class="mb-4">
-                <button @onclick="Login" type="button"
-                  class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#2a74ea] hover:bg-[#1e5db8] transition-colors text-white text-base font-semibold leading-normal"
+                <button @onclick="Login" type="button" disabled="@isLoading"
+                  class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#2a74ea] hover:bg-[#1e5db8] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-white text-base font-semibold leading-normal"
                 >
-                  <span class="truncate">@Localizer["LogIn"]</span>
+                  @if (isLoading)
+                  {
+                    <!-- Loading Animation -->
+                    <div class="flex items-center gap-2">
+                      <div class="loading-spinner">
+                        <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      </div>
+                      <span class="truncate">@Localizer["LoggingIn"]</span>
+                    </div>
+                  }
+                  else
+                  {
+                    <span class="truncate">@Localizer["LogIn"]</span>
+                  }
                 </button>
               </div>
               
@@ -144,6 +160,7 @@
     private string username = string.Empty;
     private string password = string.Empty;
     private string? errorMessage;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,11 +203,16 @@
     private async Task Login()
     {
         errorMessage = null; // Reset error message on new login attempt
+        isLoading = true; // Start loading animation
+        StateHasChanged(); // Update UI to show loading state
         
         try
         {
             await JSRuntime.InvokeVoidAsync("console.log", "Login button clicked!");
             await JSRuntime.InvokeVoidAsync("console.log", $"Username: {username}, Password: {password}");
+            
+            // Simulate some processing time for better UX
+            await Task.Delay(800); // Reasonable delay to show loading animation
             
             if (username == "sales" && password == "sales")
             {
@@ -224,6 +246,11 @@
         {
             await JSRuntime.InvokeVoidAsync("console.error", $"Error during login: {ex.Message}");
             errorMessage = "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
+        }
+        finally
+        {
+            isLoading = false; // Stop loading animation
+            StateHasChanged(); // Update UI to hide loading state
         }
     }
 }

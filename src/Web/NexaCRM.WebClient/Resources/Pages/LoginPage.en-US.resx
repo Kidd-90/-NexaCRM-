@@ -36,4 +36,7 @@
   <data name="Microsoft" xml:space="preserve">
     <value>Microsoft</value>
   </data>
+  <data name="LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
 </root>
