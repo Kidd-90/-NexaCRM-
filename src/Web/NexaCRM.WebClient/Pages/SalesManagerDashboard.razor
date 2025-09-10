@@ -6,8 +6,8 @@
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-          <div class="flex items-center gap-8">
+        <header class="dashboard-header flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-4 sm:px-6 md:px-10 py-3">
+          <div class="flex items-center gap-4 sm:gap-8">
             <div class="flex items-center gap-4 text-[#0e131b]">
               <div class="size-4">
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,9 +19,9 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesCRM"]</h2>
+              <h2 class="text-[#0e131b] text-sm sm:text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesCRM"]</h2>
             </div>
-            <div class="flex items-center gap-9">
+            <div class="dashboard-nav hidden md:flex items-center gap-6 lg:gap-9">
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/main-dashboard">@Localizer["Dashboard"]</a>
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/sales-pipeline-page">@Localizer["Deals"]</a>
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/contacts">@Localizer["Contacts"]</a>
@@ -29,8 +29,8 @@
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tools">@Localizer["Tools"]</a>
             </div>
           </div>
-          <div class="flex flex-1 justify-end gap-8">
-            <label class="flex flex-col min-w-40 !h-10 max-w-64">
+          <div class="dashboard-controls flex flex-1 justify-end gap-4 sm:gap-8">
+            <label class="dashboard-search hidden sm:flex flex-col min-w-32 sm:min-w-40 !h-10 max-w-64">
               <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
                 <div
                   class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
@@ -62,156 +62,277 @@
                 </svg>
               </div>
             </button>
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-button" @onclick="ToggleMobileMenu">
+              <svg class="mobile-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
             <div
               class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
               style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3h94o6negA_azqf1Sd6Zk10lxjjOCkpvUgo5T5ta-tQ8gO2eIu6nTXzncWb-v-kWC7qgJgPC-Ikyam8M9zSllKz9T6t-KMp8zKdL2I_zolPBQa-sQ2Q5Sc7eFuQoz82t4L4_hSgpZiJh8jgsgAgKeAHrDbn0EbpHyR5iimdJjxEWSoG5LKtzj1nEbk0rBfytEmvpu_JnAI5-I9FDSad_QJXhJedXas0YopEKXpG9_mkZ3vOm76KDjNHfWNCxmaPwr3idKeJ98jN_M");'
             ></div>
           </div>
         </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay @(isMobileMenuOpen ? "active" : "")" @onclick="CloseMobileMenu">
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <nav class="mobile-nav-menu @(isMobileMenuOpen ? "active" : "")">
+          <button class="mobile-nav-close" @onclick="CloseMobileMenu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          <ul class="mobile-nav-links">
+            <li><a class="mobile-nav-link" href="/main-dashboard" @onclick="CloseMobileMenu">@Localizer["Dashboard"]</a></li>
+            <li><a class="mobile-nav-link" href="/sales-pipeline-page" @onclick="CloseMobileMenu">@Localizer["Deals"]</a></li>
+            <li><a class="mobile-nav-link" href="/contacts" @onclick="CloseMobileMenu">@Localizer["Contacts"]</a></li>
+            <li><a class="mobile-nav-link" href="/reports-page" @onclick="CloseMobileMenu">@Localizer["Reports"]</a></li>
+            <li><a class="mobile-nav-link" href="/tools" @onclick="CloseMobileMenu">@Localizer["Tools"]</a></li>
+          </ul>
+        </nav>
+        
+        <div class="dashboard-main-container px-4 sm:px-6 md:px-12 lg:px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col w-full max-w-none sm:max-w-full md:max-w-[960px] flex-1">
             <div class="flex flex-wrap justify-between gap-3 p-4">
-              <div class="flex min-w-72 flex-col gap-3">
+              <div class="flex w-full sm:min-w-72 flex-col gap-3">
                 <AuthorizeView>
                     <Authorized>
-                        <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["Welcome", @context.User.Identity?.Name ?? ""]</p>
+                        <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl lg:text-[32px] font-bold leading-tight">@Localizer["Welcome", @context.User.Identity?.Name ?? ""]</p>
                     </Authorized>
                 </AuthorizeView>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Overview"]</p>
               </div>
             </div>
-            <div class="flex gap-3 p-3 flex-wrap pr-4">
-              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-                <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Team"]</p>
-                <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+            <div class="flex gap-2 sm:gap-3 p-3 flex-wrap pr-4 overflow-x-auto">
+              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-3 sm:pl-4 pr-2 text-xs sm:text-sm">
+                <p class="text-[#0e131b] font-medium leading-normal">@Localizer["Team"]</p>
+                <div class="text-[#0e131b]" data-icon="CaretDown" data-size="16px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
                   </svg>
                 </div>
               </button>
-              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-                <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["TimePeriod"]</p>
-                <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-3 sm:pl-4 pr-2 text-xs sm:text-sm">
+                <p class="text-[#0e131b] font-medium leading-normal">@Localizer["TimePeriod"]</p>
+                <div class="text-[#0e131b]" data-icon="CaretDown" data-size="16px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
                   </svg>
                 </div>
               </button>
-              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-                <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Product"]</p>
-                <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+              <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-3 sm:pl-4 pr-2 text-xs sm:text-sm">
+                <p class="text-[#0e131b] font-medium leading-normal">@Localizer["Product"]</p>
+                <div class="text-[#0e131b]" data-icon="CaretDown" data-size="16px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
                   </svg>
                 </div>
               </button>
             </div>
-            <div class="flex flex-wrap gap-4 p-4">
-              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#e7ecf3]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TotalSales"]</p>
-                <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">$2.5M</p>
+            <div class="stats-container flex flex-wrap gap-3 sm:gap-4 p-4">
+              <div class="stat-card flex min-w-[140px] sm:min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-4 sm:p-6 bg-[#e7ecf3]">
+                <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["TotalSales"]</p>
+                <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl font-bold leading-tight">$2.5M</p>
               </div>
-              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#e7ecf3]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["SalesPipelineValue"]</p>
-                <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">$1.2M</p>
+              <div class="stat-card flex min-w-[140px] sm:min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-4 sm:p-6 bg-[#e7ecf3]">
+                <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["SalesPipelineValue"]</p>
+                <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl font-bold leading-tight">$1.2M</p>
               </div>
-              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#e7ecf3]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["WinRate"]</p>
-                <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">65%</p>
+              <div class="stat-card flex min-w-[140px] sm:min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-4 sm:p-6 bg-[#e7ecf3]">
+                <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["WinRate"]</p>
+                <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl font-bold leading-tight">65%</p>
               </div>
-              <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-6 bg-[#e7ecf3]">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["AverageDealSize"]</p>
-                <p class="text-[#0e131b] tracking-light text-2xl font-bold leading-tight">$15K</p>
+              <div class="stat-card flex min-w-[140px] sm:min-w-[158px] flex-1 flex-col gap-2 rounded-lg p-4 sm:p-6 bg-[#e7ecf3]">
+                <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["AverageDealSize"]</p>
+                <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl font-bold leading-tight">$15K</p>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TeamPerformance"]</h2>
+            <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TeamPerformance"]</h2>
             <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["SalesByTeamMember"]</p>
-                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
+              <div class="chart-container flex w-full md:min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 sm:p-6">
+                <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["SalesByTeamMember"]</p>
+                <div class="grid min-h-[150px] sm:min-h-[180px] grid-flow-col gap-3 sm:gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-1 sm:px-3">
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 50%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Alex"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Alex"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 100%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jordan"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Jordan"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 100%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Taylor"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Taylor"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 90%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Casey"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Casey"]</p>
                   <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 100%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Morgan"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Morgan"]</p>
                 </div>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["SalesPipeline"]</h2>
+            <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["SalesPipeline"]</h2>
             <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["PipelineStages"]</p>
-                <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3">
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Prospecting"]</p>
+              <div class="chart-container flex w-full md:min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 sm:p-6">
+                <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["PipelineStages"]</p>
+                <div class="grid min-h-[150px] sm:min-h-[180px] gap-x-2 sm:gap-x-4 gap-y-4 sm:gap-y-6 grid-cols-[auto_1fr] items-center py-3">
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Prospecting"]</p>
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 100%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Qualification"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Qualification"]</p>
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 20%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Proposal"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Proposal"]</p>
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 20%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Negotiation"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Negotiation"]</p>
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 30%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["ClosedWon"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["ClosedWon"]</p>
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 10%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["ClosedLost"]</p>
+                  <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["ClosedLost"]</p>
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 90%;"></div></div>
                 </div>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TopPerformers"]</h2>
-            <div class="px-4 py-3 container">
-              <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
-                <table class="flex-1">
+            <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TopPerformers"]</h2>
+            
+            <!-- Desktop/Tablet Table View -->
+            <div class="performance-table-container px-4 py-3 container">
+              <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50 overflow-x-auto">
+                <table class="flex-1 min-w-full">
                   <thead>
                     <tr class="bg-slate-50">
-                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Rank"]</th>
-                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Name"]</th>
-                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Sales"]</th>
-                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 px-2 sm:px-4 py-3 text-left text-[#0e131b] text-xs sm:text-sm font-medium leading-normal">@Localizer["Rank"]</th>
+                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 px-2 sm:px-4 py-3 text-left text-[#0e131b] text-xs sm:text-sm font-medium leading-normal">@Localizer["Name"]</th>
+                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 px-2 sm:px-4 py-3 text-left text-[#0e131b] text-xs sm:text-sm font-medium leading-normal">@Localizer["Sales"]</th>
+                      <th class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 px-2 sm:px-4 py-3 text-left text-[#0e131b] text-xs sm:text-sm font-medium leading-normal">
                         @Localizer["DealsWon"]
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">1</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Alex"]</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$600K</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">40</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">1</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#0e131b] text-xs sm:text-sm font-normal leading-normal">@Localizer["Alex"]</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">$600K</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">40</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">2</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Jordan"]</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$550K</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">35</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">2</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#0e131b] text-xs sm:text-sm font-normal leading-normal">@Localizer["Jordan"]</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">$550K</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">35</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">3</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Taylor"]</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$500K</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">30</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">3</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#0e131b] text-xs sm:text-sm font-normal leading-normal">@Localizer["Taylor"]</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">$500K</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">30</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">4</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Casey"]</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$450K</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">25</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">4</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#0e131b] text-xs sm:text-sm font-normal leading-normal">@Localizer["Casey"]</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">$450K</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">25</td>
                     </tr>
                     <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">5</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">@Localizer["Morgan"]</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$400K</td>
-                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">20</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">5</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#0e131b] text-xs sm:text-sm font-normal leading-normal">@Localizer["Morgan"]</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">$400K</td>
+                      <td class="table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 h-[60px] sm:h-[72px] px-2 sm:px-4 py-2 text-[#4d6a99] text-xs sm:text-sm font-normal leading-normal">20</td>
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="performance-mobile-view px-4 py-3">
+              <div class="performance-card">
+                <div class="performance-card-rank">#1</div>
+                <div class="performance-card-name">@Localizer["Alex"]</div>
+                <div class="performance-card-stats">
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["Sales"]</div>
+                    <div class="performance-stat-value">$600K</div>
+                  </div>
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["DealsWon"]</div>
+                    <div class="performance-stat-value">40</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="performance-card">
+                <div class="performance-card-rank">#2</div>
+                <div class="performance-card-name">@Localizer["Jordan"]</div>
+                <div class="performance-card-stats">
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["Sales"]</div>
+                    <div class="performance-stat-value">$550K</div>
+                  </div>
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["DealsWon"]</div>
+                    <div class="performance-stat-value">35</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="performance-card">
+                <div class="performance-card-rank">#3</div>
+                <div class="performance-card-name">@Localizer["Taylor"]</div>
+                <div class="performance-card-stats">
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["Sales"]</div>
+                    <div class="performance-stat-value">$500K</div>
+                  </div>
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["DealsWon"]</div>
+                    <div class="performance-stat-value">30</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="performance-card">
+                <div class="performance-card-rank">#4</div>
+                <div class="performance-card-name">@Localizer["Casey"]</div>
+                <div class="performance-card-stats">
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["Sales"]</div>
+                    <div class="performance-stat-value">$450K</div>
+                  </div>
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["DealsWon"]</div>
+                    <div class="performance-stat-value">25</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="performance-card">
+                <div class="performance-card-rank">#5</div>
+                <div class="performance-card-name">@Localizer["Morgan"]</div>
+                <div class="performance-card-stats">
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["Sales"]</div>
+                    <div class="performance-stat-value">$400K</div>
+                  </div>
+                  <div class="performance-stat">
+                    <div class="performance-stat-label">@Localizer["DealsWon"]</div>
+                    <div class="performance-stat-value">20</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+@code {
+    private bool isMobileMenuOpen = false;
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = false;
+    }
+}
