@@ -1,0 +1,174 @@
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="appointment-form">
+    <div class="form-header">
+        <h4>@(Appointment?.Id == 0 ? "New Appointment" : "Edit Appointment")</h4>
+    </div>
+
+    <EditForm Model="@Appointment" OnValidSubmit="@HandleValidSubmit" class="form-content">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <InputText id="title" class="form-control" @bind-Value="Appointment!.Title" />
+                <ValidationMessage For="@(() => Appointment.Title)" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="contact">Contact</label>
+                <InputSelect id="contact" class="form-control" @bind-Value="selectedContactId" @onchange="OnContactChanged">
+                    <option value="0">Select a contact...</option>
+                    @foreach (var contact in Contacts)
+                    {
+                        <option value="@contact.Id">@contact.FirstName @contact.LastName - @contact.Email</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="startdate">Start Date *</label>
+                <InputDate id="startdate" class="form-control" @bind-Value="startDate" />
+            </div>
+            <div class="form-group flex-half">
+                <label for="starttime">Start Time *</label>
+                <InputText id="starttime" type="time" class="form-control" @bind-Value="startTime" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="enddate">End Date *</label>
+                <InputDate id="enddate" class="form-control" @bind-Value="endDate" />
+            </div>
+            <div class="form-group flex-half">
+                <label for="endtime">End Time *</label>
+                <InputText id="endtime" type="time" class="form-control" @bind-Value="endTime" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group flex-half">
+                <label for="type">Type</label>
+                <InputSelect id="type" class="form-control" @bind-Value="Appointment.Type">
+                    @foreach (var type in Enum.GetValues<AppointmentType>())
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group flex-half">
+                <label for="status">Status</label>
+                <InputSelect id="status" class="form-control" @bind-Value="Appointment.Status">
+                    @foreach (var status in Enum.GetValues<AppointmentStatus>())
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="location">Location</label>
+                <InputText id="location" class="form-control" @bind-Value="Appointment.Location" placeholder="Meeting location or 'Virtual'" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="description">Description</label>
+                <InputTextArea id="description" class="form-control" rows="3" @bind-Value="Appointment.Description" placeholder="Purpose and agenda for this appointment..." />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <InputTextArea id="notes" class="form-control" rows="2" @bind-Value="Appointment.Notes" placeholder="Preparation notes..." />
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <span class="oi oi-check"></span> Save
+            </button>
+            <button type="button" class="btn btn-secondary" @onclick="OnCancel">
+                <span class="oi oi-x"></span> Cancel
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public SalesAppointment? Appointment { get; set; }
+    [Parameter] public List<Contact> Contacts { get; set; } = new();
+    [Parameter] public EventCallback<SalesAppointment> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private int selectedContactId = 0;
+    private DateTime startDate = DateTime.Today;
+    private string startTime = "09:00";
+    private DateTime endDate = DateTime.Today;
+    private string endTime = "10:00";
+
+    protected override void OnInitialized()
+    {
+        if (Appointment != null)
+        {
+            selectedContactId = Appointment.ContactId;
+            startDate = Appointment.StartDateTime.Date;
+            startTime = Appointment.StartDateTime.ToString("HH:mm");
+            endDate = Appointment.EndDateTime.Date;
+            endTime = Appointment.EndDateTime.ToString("HH:mm");
+        }
+    }
+
+    private void OnContactChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var contactId) && Appointment != null)
+        {
+            selectedContactId = contactId;
+            var contact = Contacts.FirstOrDefault(c => c.Id == contactId);
+            if (contact != null)
+            {
+                Appointment.ContactId = contactId;
+                Appointment.ContactName = $"{contact.FirstName} {contact.LastName}";
+                // Note: ContactCompany would need to be added to Contact model or derived from somewhere else
+                Appointment.ContactCompany = ""; // Placeholder
+            }
+        }
+    }
+
+    private async System.Threading.Tasks.Task HandleValidSubmit()
+    {
+        if (Appointment == null) return;
+
+        // Combine date and time
+        if (TimeSpan.TryParse(startTime, out var startTimeSpan))
+        {
+            Appointment.StartDateTime = startDate.Date.Add(startTimeSpan);
+        }
+
+        if (TimeSpan.TryParse(endTime, out var endTimeSpan))
+        {
+            Appointment.EndDateTime = endDate.Date.Add(endTimeSpan);
+        }
+
+        // Validation
+        if (Appointment.StartDateTime >= Appointment.EndDateTime)
+        {
+            // Handle validation error - end time must be after start time
+            return;
+        }
+
+        await OnSave.InvokeAsync(Appointment);
+    }
+}

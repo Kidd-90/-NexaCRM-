@@ -1,0 +1,379 @@
+@page "/customer-consultation-notes"
+@using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IStringLocalizer<CustomerConsultationNotes> Localizer
+@inject ISalesManagementService SalesService
+@inject IContactService ContactService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
+
+<div class="consultation-notes-container">
+    <div class="notes-header">
+        <div class="header-controls">
+            <h1 class="notes-title">
+                <span class="oi oi-document" aria-hidden="true"></span>
+                Customer Consultation Notes
+            </h1>
+            
+            <div class="search-controls">
+                <div class="search-box">
+                    <input type="text" class="form-control" placeholder="Search notes..." @bind="searchTerm" @oninput="OnSearchInput" />
+                    <span class="search-icon oi oi-magnifying-glass"></span>
+                </div>
+                <select class="form-select" @bind="selectedContactFilter">
+                    <option value="0">All Contacts</option>
+                    @foreach (var contact in contacts)
+                    {
+                        <option value="@contact.Id">@contact.FirstName @contact.LastName</option>
+                    }
+                </select>
+                <button class="btn btn-success" @onclick="ShowNewNoteModal">
+                    <span class="oi oi-plus"></span> New Note
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notes-content">
+        @if (filteredNotes.Any())
+        {
+            <div class="notes-grid">
+                @foreach (var note in filteredNotes)
+                {
+                    <div class="note-card @GetPriorityClass(note.Priority)">
+                        <div class="note-header">
+                            <div class="note-title-section">
+                                <h5 class="note-title">@note.Title</h5>
+                                <div class="note-meta">
+                                    <span class="contact-name">@note.ContactName</span>
+                                    <span class="note-date">@note.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="note-actions">
+                                <button class="btn btn-sm btn-outline-primary" @onclick="() => EditNote(note)">
+                                    <span class="oi oi-pencil"></span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteNote(note.Id)">
+                                    <span class="oi oi-trash"></span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="note-content" @onclick="() => ShowNoteDetails(note)">
+                            <p class="note-preview">@TruncateText(note.Content, 150)</p>
+                            
+                            @if (!string.IsNullOrEmpty(note.Tags))
+                            {
+                                <div class="note-tags">
+                                    @foreach (var tag in note.Tags.Split(','))
+                                    {
+                                        <span class="tag">@tag.Trim()</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="note-footer">
+                            <span class="priority-badge priority-@note.Priority.ToString().ToLower()">
+                                @note.Priority
+                            </span>
+                            @if (note.IsFollowUpRequired && note.FollowUpDate.HasValue)
+                            {
+                                <span class="follow-up-badge">
+                                    <span class="oi oi-clock"></span>
+                                    Follow-up: @note.FollowUpDate.Value.ToString("MMM dd")
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="oi oi-document empty-icon"></span>
+                <h3>No consultation notes found</h3>
+                <p>@(string.IsNullOrEmpty(searchTerm) ? "Start by creating your first consultation note." : "Try adjusting your search criteria.")</p>
+                <button class="btn btn-primary" @onclick="ShowNewNoteModal">
+                    <span class="oi oi-plus"></span> Create First Note
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- New/Edit Note Modal -->
+@if (showNoteModal)
+{
+    <div class="modal-backdrop" @onclick="CloseNoteModal">
+        <div class="modal-content note-modal" @onclick:stopPropagation="true">
+            <ConsultationNoteForm 
+                Note="selectedNote" 
+                Contacts="contacts"
+                OnSave="SaveNote"
+                OnCancel="CloseNoteModal" />
+        </div>
+    </div>
+}
+
+<!-- Note Details Modal -->
+@if (showDetailsModal)
+{
+    <div class="modal-backdrop" @onclick="CloseDetailsModal">
+        <div class="modal-content note-details-modal" @onclick:stopPropagation="true">
+            @if (selectedNote != null)
+            {
+                <div class="modal-header">
+                    <div class="note-title-section">
+                        <h4>@selectedNote.Title</h4>
+                        <div class="note-meta">
+                            <span class="contact-name">@selectedNote.ContactName</span>
+                            <span class="note-date">@selectedNote.CreatedAt.ToString("MMMM dd, yyyy 'at' HH:mm")</span>
+                        </div>
+                    </div>
+                    <button class="btn-close" @onclick="CloseDetailsModal">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="note-full-content">
+                        @((MarkupString)selectedNote.Content.Replace("\n", "<br>"))
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(selectedNote.Tags))
+                    {
+                        <div class="detail-section">
+                            <strong>Tags:</strong>
+                            <div class="note-tags">
+                                @foreach (var tag in selectedNote.Tags.Split(','))
+                                {
+                                    <span class="tag">@tag.Trim()</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                    
+                    <div class="detail-section">
+                        <strong>Priority:</strong>
+                        <span class="priority-badge priority-@selectedNote.Priority.ToString().ToLower()">
+                            @selectedNote.Priority
+                        </span>
+                    </div>
+                    
+                    @if (selectedNote.IsFollowUpRequired)
+                    {
+                        <div class="detail-section">
+                            <strong>Follow-up Required:</strong>
+                            @if (selectedNote.FollowUpDate.HasValue)
+                            {
+                                <span class="follow-up-badge">
+                                    <span class="oi oi-clock"></span>
+                                    @selectedNote.FollowUpDate.Value.ToString("MMMM dd, yyyy")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="follow-up-badge">
+                                    <span class="oi oi-clock"></span>
+                                    Date not set
+                                </span>
+                            }
+                        </div>
+                    }
+                    
+                    @if (selectedNote.UpdatedAt != selectedNote.CreatedAt)
+                    {
+                        <div class="detail-section">
+                            <strong>Last Updated:</strong>
+                            @selectedNote.UpdatedAt.ToString("MMMM dd, yyyy 'at' HH:mm")
+                        </div>
+                    }
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="() => EditNote(selectedNote)">
+                        <span class="oi oi-pencil"></span> Edit
+                    </button>
+                    <button class="btn btn-danger" @onclick="() => DeleteNote(selectedNote.Id)">
+                        <span class="oi oi-trash"></span> Delete
+                    </button>
+                    <button class="btn btn-secondary" @onclick="CloseDetailsModal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<ConsultationNote> consultationNotes = new();
+    private List<ConsultationNote> filteredNotes = new();
+    private List<Contact> contacts = new();
+    private string currentUserId = "user1"; // This should come from authentication
+    
+    private string searchTerm = "";
+    private int selectedContactFilter = 0;
+    
+    private bool showNoteModal = false;
+    private bool showDetailsModal = false;
+    private ConsultationNote? selectedNote;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        await LoadData();
+        FilterNotes();
+    }
+
+    private async System.Threading.Tasks.Task LoadData()
+    {
+        try
+        {
+            consultationNotes = await SalesService.GetConsultationNotesAsync(currentUserId);
+            contacts = (await ContactService.GetContactsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            // Handle error appropriately
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+    }
+
+    private void FilterNotes()
+    {
+        filteredNotes = consultationNotes.AsEnumerable().ToList();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            filteredNotes = filteredNotes.Where(n => 
+                n.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                n.Content.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (n.ContactName != null && n.ContactName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))).ToList();
+        }
+
+        if (selectedContactFilter > 0)
+        {
+            filteredNotes = filteredNotes.Where(n => n.ContactId == selectedContactFilter).ToList();
+        }
+
+        filteredNotes = filteredNotes.OrderByDescending(n => n.CreatedAt).ToList();
+    }
+
+    private async System.Threading.Tasks.Task OnSearchInput(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? "";
+        
+        if (string.IsNullOrEmpty(searchTerm))
+        {
+            FilterNotes();
+        }
+        else
+        {
+            // Debounce search
+            await System.Threading.Tasks.Task.Delay(300);
+            if (searchTerm == e.Value?.ToString())
+            {
+                FilterNotes();
+            }
+        }
+    }
+
+    private string TruncateText(string text, int maxLength)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+            return text;
+        
+        return text.Substring(0, maxLength) + "...";
+    }
+
+    private string GetPriorityClass(ConsultationPriority priority)
+    {
+        return priority switch
+        {
+            ConsultationPriority.High => "high-priority",
+            ConsultationPriority.Urgent => "urgent-priority",
+            _ => ""
+        };
+    }
+
+    private void ShowNewNoteModal()
+    {
+        selectedNote = new ConsultationNote
+        {
+            UserId = currentUserId,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
+        };
+        showNoteModal = true;
+    }
+
+    private void EditNote(ConsultationNote note)
+    {
+        if (showDetailsModal)
+            CloseDetailsModal();
+        
+        selectedNote = note;
+        showNoteModal = true;
+    }
+
+    private void CloseNoteModal()
+    {
+        showNoteModal = false;
+        selectedNote = null;
+    }
+
+    private void ShowNoteDetails(ConsultationNote note)
+    {
+        selectedNote = note;
+        showDetailsModal = true;
+    }
+
+    private void CloseDetailsModal()
+    {
+        showDetailsModal = false;
+        selectedNote = null;
+    }
+
+    private async System.Threading.Tasks.Task SaveNote(ConsultationNote note)
+    {
+        try
+        {
+            if (note.Id == 0)
+            {
+                await SalesService.CreateConsultationNoteAsync(note);
+            }
+            else
+            {
+                await SalesService.UpdateConsultationNoteAsync(note);
+            }
+            
+            await LoadData();
+            FilterNotes();
+            CloseNoteModal();
+        }
+        catch (Exception ex)
+        {
+            // Handle error appropriately
+            Console.WriteLine($"Error saving note: {ex.Message}");
+        }
+    }
+
+    private async System.Threading.Tasks.Task DeleteNote(int noteId)
+    {
+        try
+        {
+            await SalesService.DeleteConsultationNoteAsync(noteId);
+            await LoadData();
+            FilterNotes();
+            
+            if (showDetailsModal)
+                CloseDetailsModal();
+        }
+        catch (Exception ex)
+        {
+            // Handle error appropriately
+            Console.WriteLine($"Error deleting note: {ex.Message}");
+        }
+    }
+}
