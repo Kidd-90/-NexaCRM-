@@ -1,3 +1,92 @@
+/* Navigation scroll container */
+.nav-scroll-container {
+    max-height: 85vh; /* Desktop: 85% of viewport height */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding-right: 4px; /* Space for custom scrollbar */
+    margin-right: -4px; /* Compensate for padding */
+    
+    /* Touch scrolling optimization */
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    
+    /* Scroll snap for better UX */
+    scroll-snap-type: y proximity;
+}
+
+/* Custom scrollbar styling */
+.nav-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.nav-scroll-container::-webkit-scrollbar-track {
+    background: rgba(229, 231, 235, 0.3);
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.nav-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.6);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.nav-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.8);
+}
+
+.nav-scroll-container::-webkit-scrollbar-thumb:active {
+    background: rgba(75, 85, 99, 0.9);
+}
+
+/* Firefox scrollbar styling */
+.nav-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.6) rgba(229, 231, 235, 0.3);
+}
+
+/* Menu item scroll snap */
+.nav-item {
+    scroll-snap-align: start;
+}
+
+/* Keyboard navigation focus styling */
+.nav-link.keyboard-focused,
+.nav-section-header.keyboard-focused {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Scrolling state styling */
+.nav-scroll-container.scrolling {
+    scroll-snap-type: none; /* Disable snap while actively scrolling */
+}
+
+.nav-scroll-container.scrolling::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.8); /* Blue thumb while scrolling */
+}
+
+/* Scroll position indicator */
+.nav-scroll-container::before {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-scroll-container::after {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-scroll-container[data-scroll-percent]:not([data-scroll-percent="0"])::before {
+    opacity: 1;
+}
+
+.nav-scroll-container[data-scroll-percent]:not([data-scroll-percent="100"])::after {
+    opacity: 1;
+}
+
 .nav-section-header {
     display: flex;
     align-items: center;
@@ -65,6 +154,43 @@
 .submenu-link .oi {
     margin-right: 8px;
     font-size: 12px;
+}
+
+/* Responsive scroll container heights */
+@media (max-width: 1024px) and (min-width: 769px) {
+    /* Tablet: 75-85% of viewport height */
+    .nav-scroll-container {
+        max-height: 80vh;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile: 70-80% of viewport height */
+    .nav-scroll-container {
+        max-height: 75vh;
+    }
+    
+    /* Larger scrollbar for touch devices */
+    .nav-scroll-container::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .nav-scroll-container::-webkit-scrollbar-thumb {
+        background: rgba(156, 163, 175, 0.8);
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Very small screens: 70% of viewport height */
+    .nav-scroll-container {
+        max-height: 70vh;
+    }
+    
+    /* Even larger scrollbar for very small touch devices */
+    .nav-scroll-container::-webkit-scrollbar {
+        width: 14px;
+    }
 }
 
 /* 반응형 디자인 */
