@@ -290,7 +290,121 @@ a, .btn-link {
     }
 }
 
-/* 아주 작은 화면 (480px 이하) */
+/* Mobile dashboard enhancements */
+.dashboard-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card:active,
+.dashboard-card.clicked {
+    transform: scale(0.97) translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Touch-friendly button styling */
+.dashboard-button {
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px; /* Ensure adequate touch target size */
+    min-width: 44px;
+}
+
+.dashboard-button:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+/* Smooth scrolling enhancement */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Mobile dashboard responsive improvements */
+@media (max-width: 768px) {
+    .dashboard-card {
+        padding: 1.5rem 1rem;
+        margin: 0.5rem 0;
+        min-height: 60px;
+        border-radius: 12px;
+    }
+    
+    .dashboard-card h2 {
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+    
+    .dashboard-button {
+        padding: 0.875rem;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+    
+    /* Hide dashboard sidebar on mobile - handled by JS but fallback CSS */
+    .dashboard-sidebar {
+        display: none !important;
+    }
+    
+    /* Hide dashboard top navigation on mobile */
+    .dashboard-top-nav {
+        display: none !important;
+    }
+    
+    /* Adjust dashboard main content for mobile */
+    .dashboard-main-content {
+        max-width: 100% !important;
+        padding: 1rem !important;
+    }
+    
+    /* Improve dashboard grid layout on mobile */
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    
+    /* Mobile-optimized table container */
+    .dashboard-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Better touch scrolling for dashboard */
+    .dashboard-container {
+        -webkit-overflow-scrolling: touch;
+        overflow-scrolling: touch;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .dashboard-card {
+        padding: 1.25rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    /* Stack dashboard elements vertically on very small screens */
+    .dashboard-main-content .flex-wrap {
+        flex-direction: column;
+    }
+    
+    /* Improve search container on mobile */
+    .search-container {
+        min-width: 100%;
+        max-width: 100%;
+    }
+}
 @media (max-width: 480px) {
     .sidebar {
         width: min(100vw, 320px); /* Full width on very small screens, but capped */
