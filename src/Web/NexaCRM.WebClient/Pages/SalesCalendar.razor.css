@@ -400,25 +400,84 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .sales-calendar-container {
+        padding: 15px;
+    }
+    
+    .calendar-header {
+        padding: 15px;
+    }
+    
     .header-controls {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
+        gap: 15px;
     }
     
     .calendar-title {
         justify-content: center;
+        font-size: 1.3rem;
     }
     
-    .view-controls,
+    .view-controls {
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .view-controls .btn {
+        flex: 1;
+        min-height: 44px; /* Adequate touch target */
+        font-size: 16px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .view-controls .btn:active {
+        transform: scale(0.98);
+        transition-duration: 0.1s;
+    }
+    
     .date-navigation {
         justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .date-navigation .btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 16px;
     }
     
     .current-date {
         min-width: auto;
+        font-size: 16px;
+        padding: 8px 12px;
+        order: -1; /* Show date first on mobile */
+        width: 100%;
+        text-align: center;
+        margin-bottom: 8px;
     }
     
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+        font-size: 16px;
+        padding: 12px 20px;
+        transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    .btn:active {
+        transform: scale(0.98);
+        transition-duration: 0.1s;
+    }
+    
+    /* Calendar view optimizations */
     .month-grid,
     .week-header,
     .time-row {
@@ -435,14 +494,188 @@
     
     .time-row {
         grid-template-columns: repeat(7, 1fr);
+        min-height: 60px;
     }
     
     .day-cell {
         min-height: 80px;
+        padding: 12px 8px;
+        touch-action: manipulation;
+    }
+    
+    .day-cell:active {
+        background-color: #e3f2fd;
+        transition-duration: 0.1s;
+    }
+    
+    .day-number {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .appointment-item {
+        font-size: 11px;
+        padding: 4px 6px;
+        margin-bottom: 2px;
+        border-radius: 4px;
+        touch-action: manipulation;
+        min-height: 20px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .appointment-item:active {
+        opacity: 0.7;
+        transform: scale(0.98);
+        transition-duration: 0.1s;
+    }
+    
+    /* Week view mobile optimization */
+    .week-view {
+        height: auto;
+        max-height: 70vh;
+    }
+    
+    .week-day-header {
+        padding: 12px 4px;
+        font-size: 14px;
+    }
+    
+    .day-name {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+    
+    .day-number {
+        font-size: 16px;
+    }
+    
+    .time-slot {
+        min-height: 50px;
+        padding: 8px 4px;
+    }
+    
+    /* Day view mobile optimization */
+    .day-view {
+        height: auto;
+        max-height: 70vh;
+    }
+    
+    .day-header {
+        padding: 15px;
+    }
+    
+    .day-header h3 {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    /* Modal improvements */
+    .modal-content {
+        width: 95%;
+        max-width: 95vw;
+        padding: 20px;
+        margin: 20px auto;
+        border-radius: 12px;
+        max-height: 90vh;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+        font-weight: 500;
+    }
+    
+    .detail-row {
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .detail-row strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        margin-top: 4px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+/* Very small screens (phones in portrait) */
+@media (max-width: 480px) {
+    .sales-calendar-container {
+        padding: 10px;
+    }
+    
+    .calendar-header {
+        padding: 12px;
+    }
+    
+    .calendar-title {
+        font-size: 1.2rem;
+    }
+    
+    .view-controls .btn {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    
+    .current-date {
+        font-size: 14px;
+    }
+    
+    .day-cell {
+        min-height: 70px;
+        padding: 8px 4px;
+    }
+    
+    .day-number {
+        font-size: 14px;
+    }
+    
+    .appointment-item {
+        font-size: 10px;
+        padding: 2px 4px;
+        min-height: 18px;
     }
     
     .modal-content {
-        width: 95%;
-        padding: 15px;
+        width: 98%;
+        padding: 16px;
+        margin: 10px auto;
+    }
+    
+    .btn {
+        font-size: 15px;
+        padding: 14px 20px;
+    }
+    
+    .week-day-header {
+        padding: 8px 2px;
+    }
+    
+    .day-name {
+        font-size: 10px;
+    }
+    
+    .day-number {
+        font-size: 14px;
     }
 }

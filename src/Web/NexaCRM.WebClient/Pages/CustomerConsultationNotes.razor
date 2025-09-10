@@ -15,23 +15,23 @@
         <div class="header-controls">
             <h1 class="notes-title">
                 <span class="oi oi-document" aria-hidden="true"></span>
-                Customer Consultation Notes
+                @Localizer["PageTitle"]
             </h1>
             
             <div class="search-controls">
                 <div class="search-box">
-                    <input type="text" class="form-control" placeholder="Search notes..." @bind="searchTerm" @oninput="OnSearchInput" />
+                    <input type="text" class="form-control" placeholder="@Localizer["SearchPlaceholder"]" @bind="searchTerm" @oninput="OnSearchInput" />
                     <span class="search-icon oi oi-magnifying-glass"></span>
                 </div>
                 <select class="form-select" @bind="selectedContactFilter">
-                    <option value="0">All Contacts</option>
+                    <option value="0">@Localizer["AllContacts"]</option>
                     @foreach (var contact in contacts)
                     {
                         <option value="@contact.Id">@contact.FirstName @contact.LastName</option>
                     }
                 </select>
                 <button class="btn btn-success" @onclick="ShowNewNoteModal">
-                    <span class="oi oi-plus"></span> New Note
+                    <span class="oi oi-plus"></span> @Localizer["NewNote"]
                 </button>
             </div>
         </div>
@@ -84,7 +84,7 @@
                             {
                                 <span class="follow-up-badge">
                                     <span class="oi oi-clock"></span>
-                                    Follow-up: @note.FollowUpDate.Value.ToString("MMM dd")
+                                    @Localizer["FollowUp"] @note.FollowUpDate.Value.ToString("MMM dd")
                                 </span>
                             }
                         </div>
@@ -96,10 +96,10 @@
         {
             <div class="empty-state">
                 <span class="oi oi-document empty-icon"></span>
-                <h3>No consultation notes found</h3>
-                <p>@(string.IsNullOrEmpty(searchTerm) ? "Start by creating your first consultation note." : "Try adjusting your search criteria.")</p>
+                <h3>@Localizer["EmptyStateTitle"]</h3>
+                <p>@(string.IsNullOrEmpty(searchTerm) ? Localizer["EmptyStateMessage"] : Localizer["EmptyStateSearchMessage"])</p>
                 <button class="btn btn-primary" @onclick="ShowNewNoteModal">
-                    <span class="oi oi-plus"></span> Create First Note
+                    <span class="oi oi-plus"></span> @Localizer["CreateFirstNote"]
                 </button>
             </div>
         }
@@ -146,7 +146,7 @@
                     @if (!string.IsNullOrEmpty(selectedNote.Tags))
                     {
                         <div class="detail-section">
-                            <strong>Tags:</strong>
+                            <strong>@Localizer["Tags"]</strong>
                             <div class="note-tags">
                                 @foreach (var tag in selectedNote.Tags.Split(','))
                                 {
@@ -157,7 +157,7 @@
                     }
                     
                     <div class="detail-section">
-                        <strong>Priority:</strong>
+                        <strong>@Localizer["Priority"]</strong>
                         <span class="priority-badge priority-@selectedNote.Priority.ToString().ToLower()">
                             @selectedNote.Priority
                         </span>
@@ -166,7 +166,7 @@
                     @if (selectedNote.IsFollowUpRequired)
                     {
                         <div class="detail-section">
-                            <strong>Follow-up Required:</strong>
+                            <strong>@Localizer["FollowUpRequired"]</strong>
                             @if (selectedNote.FollowUpDate.HasValue)
                             {
                                 <span class="follow-up-badge">
@@ -178,7 +178,7 @@
                             {
                                 <span class="follow-up-badge">
                                     <span class="oi oi-clock"></span>
-                                    Date not set
+                                    @Localizer["DateNotSet"]
                                 </span>
                             }
                         </div>
@@ -187,7 +187,7 @@
                     @if (selectedNote.UpdatedAt != selectedNote.CreatedAt)
                     {
                         <div class="detail-section">
-                            <strong>Last Updated:</strong>
+                            <strong>@Localizer["LastUpdated"]</strong>
                             @selectedNote.UpdatedAt.ToString("MMMM dd, yyyy 'at' HH:mm")
                         </div>
                     }
@@ -195,12 +195,12 @@
                 
                 <div class="modal-footer">
                     <button class="btn btn-primary" @onclick="() => EditNote(selectedNote)">
-                        <span class="oi oi-pencil"></span> Edit
+                        <span class="oi oi-pencil"></span> @Localizer["Edit"]
                     </button>
                     <button class="btn btn-danger" @onclick="() => DeleteNote(selectedNote.Id)">
-                        <span class="oi oi-trash"></span> Delete
+                        <span class="oi oi-trash"></span> @Localizer["Delete"]
                     </button>
-                    <button class="btn btn-secondary" @onclick="CloseDetailsModal">Close</button>
+                    <button class="btn btn-secondary" @onclick="CloseDetailsModal">@Localizer["Close"]</button>
                 </div>
             }
         </div>
