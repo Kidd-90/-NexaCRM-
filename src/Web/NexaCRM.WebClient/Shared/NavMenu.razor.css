@@ -79,7 +79,7 @@
     .nav-submenu {
         padding-left: 1rem; /* Reduced for mobile */
         margin-left: 0.75rem;
-        border-left: 2px solid rgba(255, 255, 255, 0.1); /* Better visibility in dark sidebar */
+        border-left: 2px solid rgba(229, 231, 235, 0.5); /* Light border for light sidebar */
     }
     
     .submenu-link {
