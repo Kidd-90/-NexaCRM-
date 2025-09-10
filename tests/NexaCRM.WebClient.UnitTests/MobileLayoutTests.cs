@@ -125,4 +125,41 @@ public class MobileLayoutTests
         // 3. Test passes if all mobile navigation components are properly structured
         Assert.True(true, "Mobile dashboard navigation functionality is properly implemented");
     }
+
+    [Fact]
+    public void ContactsPage_Has_Search_Functionality()
+    {
+        // Verify that ContactsPage has the search functionality we added
+        var contactsPageType = typeof(ContactsPage);
+        Assert.NotNull(contactsPageType);
+        Assert.True(contactsPageType.IsSubclassOf(typeof(ComponentBase)));
+        
+        // Should have FilterContacts and OnSearchInput methods for search functionality
+        var methods = contactsPageType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        
+        var filterMethod = methods.FirstOrDefault(m => m.Name.Contains("FilterContacts"));
+        Assert.NotNull(filterMethod);
+        
+        var searchInputMethod = methods.FirstOrDefault(m => m.Name.Contains("OnSearchInput"));
+        Assert.NotNull(searchInputMethod);
+        
+        // Should have ShowNotifications method for notifications functionality
+        var notificationsMethod = methods.FirstOrDefault(m => m.Name.Contains("ShowNotifications"));
+        Assert.NotNull(notificationsMethod);
+    }
+
+    [Fact]
+    public void ContactsPage_Has_Mobile_Navigation_Features()
+    {
+        // Verify that ContactsPage has mobile navigation features consistent with other pages
+        var contactsPageType = typeof(ContactsPage);
+        var methods = contactsPageType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        
+        // Should have ToggleMobileMenu and CloseMobileMenu methods
+        var toggleMethod = methods.FirstOrDefault(m => m.Name.Contains("ToggleMobileMenu"));
+        Assert.NotNull(toggleMethod);
+        
+        var closeMethod = methods.FirstOrDefault(m => m.Name.Contains("CloseMobileMenu"));
+        Assert.NotNull(closeMethod);
+    }
 }

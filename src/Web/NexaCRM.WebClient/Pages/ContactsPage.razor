@@ -27,15 +27,40 @@
                     <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tools">@Localizer["Tools"]</a>
                 </div>
             </div>
-            <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Right side controls -->
+            <div class="header-controls flex flex-1 justify-end gap-4 sm:gap-8">
+                <!-- Search functionality -->
+                <label class="search-container flex flex-col min-w-40 !h-10 max-w-64">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                        <div class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                             data-icon="MagnifyingGlass" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                            </svg>
+                        </div>
+                        <input placeholder='@Localizer["Search"]'
+                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                               @bind="searchQuery"
+                               @oninput="OnSearchInput" />
+                    </div>
+                </label>
+                <!-- Notifications button -->
+                <button class="notifications-btn flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+                        @onclick="ShowNotifications">
+                    <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
+                        </svg>
+                    </div>
+                </button>
                 <!-- Mobile Menu Button -->
                 <button class="contacts-mobile-menu-button md:hidden" @onclick="ToggleMobileMenu">
                     <svg class="w-6 h-6 text-[#0e131b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-                <!-- User Profile -->
-                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10" 
+                <!-- User profile avatar -->
+                <div class="user-avatar bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10" 
                      style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3h94o6negA_azqf1Sd6Zk10lxjjOCkpvUgo5T5ta-tQ8gO2eIu6nTXzncWb-v-kWC7qgJgPC-Ikyam8M9zSllKz9T6t-KMp8zKdL2I_zolPBQa-sQ2Q5Sc7eFuQoz82t4L4_hSgpZiJh8jgsgAgKeAHrDbn0EbpHyR5iimdJjxEWSoG5LKtzj1nEbk0rBfytEmvpu_JnAI5-I9FDSad_QJXhJedXas0YopEKXpG9_mkZ3vOm76KDjNHfWNCxmaPwr3idKeJ98jN_M");'></div>
             </div>
         </header>
@@ -63,7 +88,7 @@
                 <div class="contacts-header">
                     <h1 class="contacts-title text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">@Localizer["Contacts"]</h1>
                 </div>
-                @if (contacts == null)
+                @if (filteredContacts == null)
                 {
                     <p class="contacts-loading text-center py-8"><em>@Localizer["Loading..."]</em></p>
                 }
@@ -93,7 +118,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach (var contact in contacts)
+                                    @foreach (var contact in filteredContacts)
                                     {
                                         <tr class="hover:bg-gray-50 transition-colors duration-200">
                                             <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -124,7 +149,7 @@
 
                     <!-- Mobile Card View -->
                     <div class="contacts-mobile-view">
-                        @foreach (var contact in contacts)
+                        @foreach (var contact in filteredContacts)
                         {
                             <div class="contact-card">
                                 <div class="contact-name">
@@ -181,11 +206,51 @@
 
 @code {
     private IEnumerable<Contact>? contacts;
+    private IEnumerable<Contact>? filteredContacts;
+    private string searchQuery = string.Empty;
     private bool isMobileMenuOpen = false;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         contacts = await ContactService.GetContactsAsync();
+        filteredContacts = contacts;
+    }
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? string.Empty;
+        FilterContacts();
+    }
+
+    private void FilterContacts()
+    {
+        if (contacts == null)
+        {
+            filteredContacts = null;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            filteredContacts = contacts;
+        }
+        else
+        {
+            var query = searchQuery.ToLowerInvariant();
+            filteredContacts = contacts.Where(c =>
+                (!string.IsNullOrEmpty(c.FirstName) && c.FirstName.ToLowerInvariant().Contains(query)) ||
+                (!string.IsNullOrEmpty(c.LastName) && c.LastName.ToLowerInvariant().Contains(query)) ||
+                (!string.IsNullOrEmpty(c.Email) && c.Email.ToLowerInvariant().Contains(query)) ||
+                (!string.IsNullOrEmpty(c.PhoneNumber) && c.PhoneNumber.Contains(query))
+            );
+        }
+        StateHasChanged();
+    }
+
+    private void ShowNotifications()
+    {
+        // Placeholder for notifications functionality
+        // This can be implemented later with a notification service
     }
 
     private void ToggleMobileMenu()
