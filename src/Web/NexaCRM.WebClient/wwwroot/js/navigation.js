@@ -6,15 +6,28 @@ window.navigationHelper = {
         const sidebar = document.querySelector('.sidebar');
         
         if (overlay && sidebar) {
-            overlay.addEventListener('click', () => {
+            overlay.addEventListener('click', (e) => {
+                // Prevent event bubbling
+                e.stopPropagation();
                 // 사이드바에 collapse 클래스 추가하여 메뉴 닫기
                 sidebar.classList.add('collapse');
+                overlay.classList.remove('show');
             });
+            
+            // Prevent scrolling when overlay is visible
+            overlay.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, { passive: false });
         }
         
         // 초기 상태에서 메뉴를 확실히 숨김
         if (sidebar && !sidebar.classList.contains('collapse')) {
             sidebar.classList.add('collapse');
+        }
+        
+        // Ensure overlay is hidden initially
+        if (overlay) {
+            overlay.classList.remove('show');
         }
     },
 
@@ -91,11 +104,21 @@ window.navigationHelper = {
     // 컴포넌트에서 호출할 수 있는 메뉴 토글 함수
     toggleMenu: (isCollapsed) => {
         const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.mobile-overlay');
+        
         if (sidebar) {
             if (isCollapsed) {
                 sidebar.classList.add('collapse');
+                // Hide overlay when menu is closed
+                if (overlay) {
+                    overlay.classList.remove('show');
+                }
             } else {
                 sidebar.classList.remove('collapse');
+                // Show overlay when menu is open
+                if (overlay) {
+                    overlay.classList.add('show');
+                }
             }
         }
     },
@@ -116,8 +139,15 @@ window.navigationHelper = {
         // 즉시 실행하여 초기 상태 보장
         setTimeout(() => {
             const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            
             if (sidebar && !sidebar.classList.contains('collapse')) {
                 sidebar.classList.add('collapse');
+            }
+            
+            // Ensure overlay is hidden on page load
+            if (overlay && overlay.classList.contains('show')) {
+                overlay.classList.remove('show');
             }
         }, 100);
     }

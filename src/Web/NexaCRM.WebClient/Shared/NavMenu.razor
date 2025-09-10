@@ -13,12 +13,7 @@
 @inject IJSRuntime JSRuntime
 @inject IRolePermissionService RolePermissionService
 
-<!-- 고정된 햄버거 버튼 -->
-<button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
-    <span class="navbar-toggler-icon"></span>
-</button> 
-
-<div class="@NavMenuCssClass" @onclick:stopPropagation="true">
+<div @onclick:stopPropagation="true">
     <nav class="flex-column">
         <!-- 항상 표시되는 기본 메뉴 -->
         <div class="nav-item px-3">
@@ -141,10 +136,8 @@
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
     private bool showCustomerSubmenu = false;
     private bool showSalesSubmenu = false;
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleCustomerSubmenu()
     {
@@ -156,18 +149,10 @@
         showSalesSubmenu = !showSalesSubmenu;
     }
 
-    private async Task ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-        // JavaScript 함수 호출하여 UI 업데이트
-        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", collapseNavMenu);
-    }
-
     private async Task CloseNavMenu()
     {
-        collapseNavMenu = true;
-        // JavaScript 함수 호출하여 메뉴 닫기
-        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", collapseNavMenu);
+        // JavaScript 함수 호출하여 메뉴 닫기  
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
     }
 
     private async Task Logout()
@@ -190,16 +175,5 @@
                 window.location.href = '/login';
             }
         ");
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // 초기 렌더링 후 JavaScript 초기화
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
-            // 초기 상태를 확실히 설정 (메뉴 닫힌 상태)
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
-        }
     }
 }
