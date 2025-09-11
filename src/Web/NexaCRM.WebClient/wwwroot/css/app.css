@@ -1005,8 +1005,8 @@ html {
 
 @media (max-width: 768px) {
     .theme-toggle-button {
-        top: 1rem;
-        right: 3.5rem; /* Adjust for mobile */
+        top: 4.25rem; /* Positioned below the menu toggle */
+        right: 1rem; /* Aligned with the menu toggle */
         width: 40px;
         height: 40px;
         font-size: 1rem;
