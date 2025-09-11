@@ -10,7 +10,7 @@
 .dashboard-section-nav {
     position: sticky;
     top: 0;
-    z-index: 90;
+    z-index: var(--z-sticky);
     background: rgba(248, 250, 252, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid #e5e7eb;
@@ -103,7 +103,7 @@
         border-bottom: none;
         padding: 0;
         margin: 0;
-        z-index: 100;
+        z-index: var(--z-fixed);
         box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
