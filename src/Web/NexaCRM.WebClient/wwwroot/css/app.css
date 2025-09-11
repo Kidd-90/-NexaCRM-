@@ -955,7 +955,7 @@ html {
 .theme-toggle-button {
     position: fixed;
     top: 1rem;
-    right: 4rem; /* Position next to hamburger menu */
+    right: 4.5rem; /* Position with adequate space from hamburger menu */
     width: var(--touch-target-min);
     height: var(--touch-target-min);
     border: 1px solid var(--border-color);
@@ -1006,9 +1006,17 @@ html {
 @media (max-width: 768px) {
     .theme-toggle-button {
         top: 1rem;
-        right: 3.5rem; /* Adjust for mobile */
+        right: 4.25rem; /* Adjust for mobile with adequate spacing */
         width: 40px;
         height: 40px;
         font-size: 1rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .theme-toggle-button {
+        top: 0.75rem;
+        right: 4.25rem; /* Maintain adequate spacing on very small screens */
     }
 }
