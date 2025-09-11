@@ -230,8 +230,8 @@ window.navigationHelper = {
         interactiveElements.forEach(element => {
             // Add touch start feedback
             element.addEventListener('touchstart', (e) => {
-                element.style.opacity = '0.7';
-                element.style.transform = 'scale(0.97)';
+                element.style.opacity = '0.85';
+                element.style.transform = 'scale(0.98)';
             }, { passive: true });
 
             // Remove touch feedback
@@ -239,7 +239,7 @@ window.navigationHelper = {
                 setTimeout(() => {
                     element.style.opacity = '';
                     element.style.transform = '';
-                }, 150);
+                }, 100);
             }, { passive: true });
 
             // Handle touch cancel
@@ -263,8 +263,10 @@ window.navigationHelper = {
         const dashboardCards = document.querySelectorAll('.dashboard-card');
         dashboardCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                const cardText = card.querySelector('h2')?.textContent;
-                console.log(`Dashboard card clicked: ${cardText}`);
+                const route = card.dataset.route;
+                if (!route) return;
+
+                console.log(`Dashboard card clicked, route: ${route}`);
                 
                 // Add visual feedback
                 card.classList.add('clicked');
@@ -272,8 +274,17 @@ window.navigationHelper = {
                     card.classList.remove('clicked');
                 }, 300);
 
-                // Navigate based on card content
-                window.navigationHelper.handleDashboardCardNavigation(cardText);
+                if (route.startsWith('#')) {
+                    // Handle smooth scrolling to section
+                    const sectionId = route.substring(1);
+                    const element = document.getElementById(sectionId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    // Navigate to new page
+                    window.location.href = route;
+                }
             });
         });
 
@@ -308,35 +319,6 @@ window.navigationHelper = {
                 }
             });
         });
-    },
-
-    // Handle dashboard card navigation
-    handleDashboardCardNavigation: (cardText) => {
-        const navigationMap = {
-            'Sales Pipeline': '/sales-pipeline',
-            'Quarterly Performance': '/reports',
-            'Tasks': '/tasks-page',
-            'Recent Activity': '/main-dashboard#recent-activity'
-        };
-
-        const route = navigationMap[cardText];
-        if (route) {
-            if (route.includes('#')) {
-                // Handle smooth scrolling to section
-                const [path, section] = route.split('#');
-                if (window.location.pathname === path || path === window.location.pathname) {
-                    const element = document.getElementById(section);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                    }
-                } else {
-                    window.location.href = route;
-                }
-            } else {
-                // Navigate to new page
-                window.location.href = route;
-            }
-        }
     },
 
     // Mobile responsiveness improvements
