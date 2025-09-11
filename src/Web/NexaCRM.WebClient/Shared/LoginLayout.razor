@@ -17,12 +17,94 @@
     <!-- JavaScript files are loaded globally from index.html -->
 </div>
 
+<script>
+    // Update theme toggle button icons based on current theme
+    function updateLoginThemeToggleIcon() {
+        const themeToggle = document.querySelector('.login-theme-toggle');
+        if (!themeToggle) return;
+        
+        const lightIcon = themeToggle.querySelector('.theme-light-icon');
+        const darkIcon = themeToggle.querySelector('.theme-dark-icon');
+        
+        if (!lightIcon || !darkIcon) return;
+        
+        // Get current theme from document attribute or localStorage
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                           localStorage.getItem('nexacrm-theme-preference') || 
+                           'light';
+        
+        // Get system theme if theme is set to auto
+        let effectiveTheme = currentTheme;
+        if (currentTheme === 'auto') {
+            effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        // Update icon visibility based on effective theme
+        if (effectiveTheme === 'dark') {
+            lightIcon.style.display = 'inline';
+            darkIcon.style.display = 'none';
+            themeToggle.setAttribute('aria-label', 'Switch to light theme');
+        } else {
+            lightIcon.style.display = 'none';
+            darkIcon.style.display = 'inline';
+            themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+        }
+        
+        console.log('Login theme toggle icon updated for theme:', effectiveTheme);
+    }
+    
+    // Ensure theme toggle works on login page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Immediately update theme icon
+        updateLoginThemeToggleIcon();
+        
+        // Wait a bit for all scripts to load, then setup listeners
+        setTimeout(function() {
+            if (window.themeManager && window.themeManager.setupThemeToggleListeners) {
+                window.themeManager.setupThemeToggleListeners();
+                console.log('Theme toggle listeners setup for login page');
+            }
+            
+            // Update icon again after theme manager is initialized
+            setTimeout(updateLoginThemeToggleIcon, 100);
+        }, 500);
+    });
+    
+    // Also setup on page show (for browser back/forward navigation)
+    window.addEventListener('pageshow', function() {
+        updateLoginThemeToggleIcon();
+        
+        setTimeout(function() {
+            if (window.themeManager && window.themeManager.setupThemeToggleListeners) {
+                window.themeManager.setupThemeToggleListeners();
+            }
+            updateLoginThemeToggleIcon();
+        }, 100);
+    });
+    
+    // Listen for theme changes to update icon
+    window.addEventListener('themeChanged', function() {
+        setTimeout(updateLoginThemeToggleIcon, 50);
+    });
+    
+    // Listen for system theme changes (for auto mode)
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            const currentTheme = localStorage.getItem('nexacrm-theme-preference') || 'auto';
+            if (currentTheme === 'auto') {
+                setTimeout(updateLoginThemeToggleIcon, 50);
+            }
+        });
+    }
+</script>
+
 <style>
 /* Login-specific layout styles - no navigation elements */
 .page {
     min-height: 100vh;
     width: 100%;
     margin-left: 0;
+    overflow-x: hidden;
 }
 
 .content {
@@ -49,24 +131,25 @@
 /* Login-specific theme toggle positioning */
 .login-theme-toggle {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
+    top: 1.5rem;
+    right: 1.5rem;
     width: var(--touch-target-min, 44px);
     height: var(--touch-target-min, 44px);
     border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 8px;
+    border-radius: 12px; /* 더 둥근 모서리 */
     background-color: var(--surface-color, #f9fafb);
     color: var(--text-primary, #111827);
     cursor: pointer;
-    z-index: 9999;
+    z-index: 10001; /* 높은 z-index로 항상 위에 표시 */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem; /* 조금 더 큰 아이콘 */
     transition: all var(--transition-fast, 0.15s ease);
-    box-shadow: 0 2px 8px var(--shadow-light, rgba(0, 0, 0, 0.08));
+    box-shadow: 0 4px 12px var(--shadow-light, rgba(0, 0, 0, 0.12));
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    backdrop-filter: blur(10px); /* 블러 효과 추가 */
 }
 
 .login-theme-toggle:hover {
@@ -89,20 +172,56 @@
     transition: all var(--transition-fast, 0.15s ease);
 }
 
+/* Theme icon visibility - default to light theme (show dark icon) */
+.login-theme-toggle .theme-light-icon {
+    display: none;
+}
+
+.login-theme-toggle .theme-dark-icon {
+    display: inline;
+}
+
 /* Hide appropriate icon based on theme */
 [data-theme="dark"] .login-theme-toggle .theme-dark-icon {
     display: none;
 }
 
-:not([data-theme="dark"]) .login-theme-toggle .theme-light-icon {
+[data-theme="dark"] .login-theme-toggle .theme-light-icon {
+    display: inline;
+}
+
+/* For elements that don't have data-theme attribute but body/html does */
+:root[data-theme="dark"] .login-theme-toggle .theme-dark-icon,
+html[data-theme="dark"] .login-theme-toggle .theme-dark-icon,
+body[data-theme="dark"] .login-theme-toggle .theme-dark-icon {
     display: none;
+}
+
+:root[data-theme="dark"] .login-theme-toggle .theme-light-icon,
+html[data-theme="dark"] .login-theme-toggle .theme-light-icon,
+body[data-theme="dark"] .login-theme-toggle .theme-light-icon {
+    display: inline;
 }
 
 @@media (max-width: 768px) {
     .login-theme-toggle {
-        width: 40px;
-        height: 40px;
+        top: 1rem;
+        right: 1rem;
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .login-theme-toggle {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 38px;
+        height: 38px;
         font-size: 1rem;
+        border-radius: 8px;
     }
 }
 
@@ -118,5 +237,112 @@
     background-color: var(--surface-color);
     color: var(--text-primary);
     border-color: var(--border-color);
+}
+
+/* 로그인 폼 크기 조정 - 웹사이트 모드에서 더 컴팩트하게 */
+@@media (min-width: 768px) {
+    /* 태블릿 이상에서 폼 크기 조정 */
+    .content :global(.login-card) {
+        max-width: 400px !important;
+        margin: 0 auto;
+    }
+    
+    /* 이미지 섹션 높이 조정 */
+    .content :global(.image-div-login-page) {
+        min-height: 120px !important;
+    }
+    
+    /* 폼 내부 패딩 조정 */
+    .content :global(.login-card > div:last-child) {
+        padding: 1.5rem 2rem 2rem 2rem !important;
+    }
+    
+    /* 헤더 텍스트 크기 조정 */
+    .content :global(.login-header) {
+        font-size: 1.5rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* 서브헤더 텍스트 크기 조정 */
+    .content :global(.login-subheader) {
+        font-size: 0.875rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* 폼 필드 간격 조정 */
+    .content :global(.login-card .mb-4) {
+        margin-bottom: 1rem !important;
+    }
+    
+    .content :global(.login-card .mb-6) {
+        margin-bottom: 1.25rem !important;
+    }
+    
+    .content :global(.login-card .mb-8) {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    /* 입력 필드 높이 조정 */
+    .content :global(.login-form-input) {
+        height: 2.75rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    /* 버튼 높이 조정 */
+    .content :global(.login-button) {
+        height: 2.75rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    /* 소셜 로그인 버튼 높이 조정 */
+    .content :global(.social-login-btn) {
+        height: 2.5rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* 전체 컨테이너 최대 높이 제한 */
+    .content :global(.login-container) {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+@@media (min-width: 1024px) {
+    /* 데스크톱에서 더 컴팩트하게 */
+    .content :global(.login-card) {
+        max-width: 380px !important;
+    }
+    
+    /* 전체 레이아웃을 더 컴팩트하게 */
+    .content :global(.flex-1) {
+        padding: 2rem 1rem !important;
+    }
+    
+    /* 이미지 섹션을 더 작게 */
+    .content :global(.image-div-login-page) {
+        min-height: 100px !important;
+    }
+    
+    /* 폼 패딩을 더 줄임 */
+    .content :global(.login-card > div:last-child) {
+        padding: 1.25rem 1.75rem 1.75rem 1.75rem !important;
+    }
+}
+
+@@media (min-width: 1280px) {
+    /* 큰 데스크톱에서도 폼 크기 유지 */
+    .content :global(.login-card) {
+        max-width: 400px !important;
+    }
+    
+    /* 세로 중앙 정렬을 위한 조정 */
+    .content :global(.flex-1) {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: calc(100vh - 4rem) !important;
+        padding: 1rem !important;
+    }
 }
 </style>
