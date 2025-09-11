@@ -1,0 +1,140 @@
+@using Microsoft.Extensions.Localization
+@using Microsoft.JSInterop
+@inject IStringLocalizer<QuickActionsComponent> Localizer
+@inject IJSRuntime JSRuntime
+
+<div class="quick-actions-container @CssClass">
+    <div class="quick-actions-wrapper">
+        @if (ShowCallAction && !string.IsNullOrEmpty(PhoneNumber))
+        {
+            <button class="quick-action-btn call-action" @onclick="HandleCallAction" title="@Localizer["CallCustomer"]">
+                <div class="action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path>
+                    </svg>
+                </div>
+                @if (ShowLabels)
+                {
+                    <span class="action-label">@Localizer["Call"]</span>
+                }
+            </button>
+        }
+
+        @if (ShowEmailAction && !string.IsNullOrEmpty(Email))
+        {
+            <button class="quick-action-btn email-action" @onclick="HandleEmailAction" title="@Localizer["EmailCustomer"]">
+                <div class="action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
+                    </svg>
+                </div>
+                @if (ShowLabels)
+                {
+                    <span class="action-label">@Localizer["Email"]</span>
+                }
+            </button>
+        }
+
+        @if (ShowMeetingAction)
+        {
+            <button class="quick-action-btn meeting-action" @onclick="HandleMeetingAction" title="@Localizer["ScheduleMeeting"]">
+                <div class="action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-68-76a12,12,0,1,1-12-12A12,12,0,0,1,140,132Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,132Zm-88,0a12,12,0,1,1-12-12A12,12,0,0,1,96,132Zm44,40a12,12,0,1,1-12-12A12,12,0,0,1,140,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Zm-88,0a12,12,0,1,1-12-12A12,12,0,0,1,96,172Z"></path>
+                    </svg>
+                </div>
+                @if (ShowLabels)
+                {
+                    <span class="action-label">@Localizer["Meeting"]</span>
+                }
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? PhoneNumber { get; set; }
+    [Parameter] public string? Email { get; set; }
+    [Parameter] public string? CustomerName { get; set; }
+    [Parameter] public string? CustomerId { get; set; }
+    [Parameter] public bool ShowCallAction { get; set; } = true;
+    [Parameter] public bool ShowEmailAction { get; set; } = true;
+    [Parameter] public bool ShowMeetingAction { get; set; } = true;
+    [Parameter] public bool ShowLabels { get; set; } = true;
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public EventCallback<string> OnActionCompleted { get; set; }
+
+    private async Task HandleCallAction()
+    {
+        if (string.IsNullOrEmpty(PhoneNumber)) return;
+
+        try
+        {
+            // Detect if we're on mobile or desktop
+            var isMobile = await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 768px)').matches");
+            
+            if (isMobile)
+            {
+                // On mobile, use tel: protocol to open phone app
+                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = 'tel:{PhoneNumber}'");
+            }
+            else
+            {
+                // On desktop, show options (could be VoIP integration in the future)
+                await JSRuntime.InvokeVoidAsync("alert", $"Call {CustomerName ?? "customer"} at {PhoneNumber}");
+                // TODO: Integrate with VoIP solution like Twilio, Zoom Phone, etc.
+            }
+
+            await OnActionCompleted.InvokeAsync("call");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling call action: {ex.Message}");
+        }
+    }
+
+    private async Task HandleEmailAction()
+    {
+        if (string.IsNullOrEmpty(Email)) return;
+
+        try
+        {
+            // Use mailto: protocol to open email client
+            var subject = $"Follow-up with {CustomerName ?? "Customer"}";
+            var body = $"Hello {CustomerName ?? ""},\n\nI wanted to follow up with you regarding...\n\nBest regards";
+            var mailtoUrl = $"mailto:{Email}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
+            
+            await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{mailtoUrl}'");
+            await OnActionCompleted.InvokeAsync("email");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling email action: {ex.Message}");
+        }
+    }
+
+    private async Task HandleMeetingAction()
+    {
+        try
+        {
+            // Create a calendar event - this could be enhanced to integrate with specific calendar systems
+            var startDate = DateTime.Now.AddDays(1).ToString("yyyyMMddTHHmmssZ");
+            var endDate = DateTime.Now.AddDays(1).AddHours(1).ToString("yyyyMMddTHHmmssZ");
+            var eventTitle = $"Meeting with {CustomerName ?? "Customer"}";
+            var eventDetails = $"Sales meeting with {CustomerName ?? "customer"}";
+            
+            // Create .ics file content for calendar integration
+            var icsContent = $"BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NexaCRM//EN\nBEGIN:VEVENT\nUID:{Guid.NewGuid()}\nDTSTART:{startDate}\nDTEND:{endDate}\nSUMMARY:{eventTitle}\nDESCRIPTION:{eventDetails}\nEND:VEVENT\nEND:VCALENDAR";
+            
+            // For now, we'll show a notification. In production, this could integrate with calendar APIs
+            await JSRuntime.InvokeVoidAsync("alert", $"Schedule meeting with {CustomerName ?? "customer"}. Calendar integration coming soon!");
+            
+            // TODO: Integrate with calendar systems (Google Calendar, Outlook, etc.)
+            await OnActionCompleted.InvokeAsync("meeting");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling meeting action: {ex.Message}");
+        }
+    }
+}

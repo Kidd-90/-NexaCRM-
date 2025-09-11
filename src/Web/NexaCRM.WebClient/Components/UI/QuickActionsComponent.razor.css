@@ -1,0 +1,129 @@
+.quick-actions-container {
+    @apply flex items-center gap-2;
+}
+
+.quick-actions-wrapper {
+    @apply flex items-center gap-2 flex-wrap;
+}
+
+.quick-action-btn {
+    @apply flex items-center justify-center gap-2 px-3 py-2 rounded-lg border-2 transition-all duration-200 cursor-pointer;
+    min-height: 44px; /* Touch-friendly minimum size */
+    min-width: 44px;
+}
+
+.quick-action-btn:hover {
+    @apply transform scale-105 shadow-lg;
+}
+
+.quick-action-btn:active {
+    @apply transform scale-95;
+}
+
+.action-icon {
+    @apply flex items-center justify-center;
+    flex-shrink: 0;
+}
+
+.action-label {
+    @apply text-sm font-medium;
+}
+
+/* Call Action Styling */
+.call-action {
+    @apply bg-green-500 border-green-500 text-white;
+}
+
+.call-action:hover {
+    @apply bg-green-600 border-green-600;
+}
+
+/* Email Action Styling */
+.email-action {
+    @apply bg-blue-500 border-blue-500 text-white;
+}
+
+.email-action:hover {
+    @apply bg-blue-600 border-blue-600;
+}
+
+/* Meeting Action Styling */
+.meeting-action {
+    @apply bg-purple-500 border-purple-500 text-white;
+}
+
+.meeting-action:hover {
+    @apply bg-purple-600 border-purple-600;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+    .quick-actions-container {
+        @apply flex-col gap-3;
+    }
+    
+    .quick-actions-wrapper {
+        @apply flex-row justify-center gap-4;
+        width: 100%;
+    }
+    
+    .quick-action-btn {
+        @apply flex-1 min-w-0;
+        min-height: 48px; /* Larger touch target on mobile */
+    }
+    
+    .action-label {
+        @apply text-xs;
+    }
+}
+
+/* Compact mode (no labels) */
+.quick-actions-container.compact .quick-action-btn {
+    @apply px-2 py-2;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.quick-actions-container.compact .action-label {
+    @apply hidden;
+}
+
+/* Inline mode for table rows */
+.quick-actions-container.inline {
+    @apply flex-row gap-1;
+}
+
+.quick-actions-container.inline .quick-action-btn {
+    @apply px-2 py-1 text-xs;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.quick-actions-container.inline .action-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Floating mode for overlay */
+.quick-actions-container.floating {
+    @apply fixed bottom-4 right-4 flex-col gap-2 z-50;
+}
+
+.quick-actions-container.floating .quick-action-btn {
+    @apply rounded-full shadow-lg w-12 h-12 p-0;
+}
+
+.quick-actions-container.floating .action-label {
+    @apply hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .quick-actions-container.floating {
+        @apply bottom-3 right-3;
+    }
+    
+    .quick-actions-container.floating .quick-action-btn {
+        @apply w-10 h-10;
+    }
+}
