@@ -7,6 +7,139 @@
 @attribute [Authorize(Roles = "Sales,Manager")]
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;' data-page="main-dashboard">
+    <!-- Mobile Header Bar -->
+    <div class="mobile-header">
+        <div class="mobile-header-content">
+            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
+                </svg>
+            </button>
+            
+            <div class="mobile-header-title">
+                <h1 class="mobile-title">@Localizer["CRM"]</h1>
+            </div>
+            
+            <div class="mobile-header-actions">
+                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                </button>
+                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Search Bar (collapsed by default) -->
+        <div class="mobile-search-bar @(showMobileSearch ? "expanded" : "collapsed")">
+            <div class="mobile-search-input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                </svg>
+                <input type="text" placeholder='@Localizer["Search"]' @bind="mobileSearchQuery" @onkeyup="HandleMobileSearch" />
+                <button class="mobile-search-close" @onclick="ToggleMobileSearch">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Quick Actions Bar -->
+    <div class="mobile-quick-actions">
+        <AuthorizeView>
+            <Authorized>
+                @{
+                    var salesLink = "/sales-pipeline-page";
+                    if (context.User.IsInRole("Manager"))
+                    {
+                        salesLink = "/sales-manager-dashboard";
+                    }
+                }
+                <button class="quick-action-btn" @onclick="@(() => NavigateToPage(salesLink))" title="@Localizer["Sales"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"></path>
+                    </svg>
+                    <span>@Localizer["Sales"]</span>
+                </button>
+                
+                <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/contacts"))" title="@Localizer["Contacts"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Z"></path>
+                    </svg>
+                    <span>@Localizer["Contacts"]</span>
+                </button>
+                
+                <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/tasks-page"))" title="@Localizer["Tasks"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
+                    </svg>
+                    <span>@Localizer["Tasks"]</span>
+                </button>
+                
+                <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/reports-page"))" title="@Localizer["Reports"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Z"></path>
+                    </svg>
+                    <span>@Localizer["Reports"]</span>
+                </button>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+
+    <!-- Mobile Notifications Panel (collapsed by default) -->
+    <div class="mobile-notifications-panel @(showMobileNotifications ? "expanded" : "collapsed")">
+        <div class="mobile-notifications-header">
+            <h3>@Localizer["Notifications"]</h3>
+            <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-notifications-content">
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">@Localizer["NewLead"]</div>
+                    <div class="notification-time">2 @Localizer["MinutesAgo"]</div>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">@Localizer["DealClosed"]</div>
+                    <div class="notification-time">15 @Localizer["MinutesAgo"]</div>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">@Localizer["TaskReminder"]</div>
+                    <div class="notification-time">1 @Localizer["HourAgo"]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="layout-container flex h-full grow flex-col">
     <div class="gap-1 px-6 flex flex-1 justify-center py-5 dashboard-container">
         <div class="layout-content-container flex flex-col w-80 dashboard-sidebar">
@@ -397,8 +530,15 @@
 </div>
 
 @code {
+    private bool showMobileSearch = false;
+    private bool showMobileNotifications = false;
+    private string mobileSearchQuery = "";
+
     private async Task NavigateToPage(string url)
     {
+        // Close any open mobile panels first
+        await CloseMobilePanels();
+        
         // Add visual feedback before navigation
         await Task.Delay(150);
         NavigationManager.NavigateTo(url);
@@ -406,6 +546,9 @@
 
     private async Task ScrollToSection(string sectionId)
     {
+        // Close any open mobile panels first
+        await CloseMobilePanels();
+        
         // Use JavaScript to smooth scroll to section
         await JSRuntime.InvokeVoidAsync("eval", $@"
             const element = document.getElementById('{sectionId}');
@@ -415,12 +558,133 @@
         ");
     }
 
+    private async Task ToggleMobileMenu()
+    {
+        // Close other mobile panels first
+        showMobileSearch = false;
+        showMobileNotifications = false;
+        StateHasChanged();
+        
+        // Toggle the main navigation menu
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", false);
+    }
+
+    private async Task ToggleMobileSearch()
+    {
+        showMobileSearch = !showMobileSearch;
+        
+        // Close notifications if search is opening
+        if (showMobileSearch)
+        {
+            showMobileNotifications = false;
+        }
+        
+        StateHasChanged();
+        
+        // Focus on search input if opening
+        if (showMobileSearch)
+        {
+            await Task.Delay(100); // Wait for animation
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                const searchInput = document.querySelector('.mobile-search-input input');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            ");
+        }
+    }
+
+    private async Task ToggleMobileNotifications()
+    {
+        showMobileNotifications = !showMobileNotifications;
+        
+        // Close search if notifications is opening
+        if (showMobileNotifications)
+        {
+            showMobileSearch = false;
+        }
+        
+        StateHasChanged();
+        await Task.Delay(50); // Small delay for smooth animation
+    }
+
+    private async Task CloseMobilePanels()
+    {
+        if (showMobileSearch || showMobileNotifications)
+        {
+            showMobileSearch = false;
+            showMobileNotifications = false;
+            StateHasChanged();
+            await Task.Delay(50);
+        }
+    }
+
+    private async Task HandleMobileSearch(KeyboardEventArgs e)
+    {
+        // Handle search on Enter key
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(mobileSearchQuery))
+        {
+            await PerformMobileSearch();
+        }
+    }
+
+    private async Task PerformMobileSearch()
+    {
+        // Close search panel
+        showMobileSearch = false;
+        StateHasChanged();
+        
+        // Perform search navigation
+        var searchUrl = $"/search?q={Uri.EscapeDataString(mobileSearchQuery)}";
+        NavigationManager.NavigateTo(searchUrl);
+        
+        // Clear search query
+        mobileSearchQuery = "";
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             // Initialize mobile dashboard navigation after render
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupMobileDashboardNavigation");
+            
+            // Setup mobile dashboard specific functionality
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                // Handle mobile panel backdrop clicks
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('mobile-search-bar') && e.target.classList.contains('expanded')) {
+                        // Click on backdrop should close search
+                        const closeBtn = document.querySelector('.mobile-search-close');
+                        if (closeBtn) closeBtn.click();
+                    }
+                    if (e.target.classList.contains('mobile-notifications-panel') && e.target.classList.contains('expanded')) {
+                        // Click on backdrop should close notifications
+                        const closeBtn = document.querySelector('.mobile-notifications-close');
+                        if (closeBtn) closeBtn.click();
+                    }
+                });
+                
+                // Setup swipe gestures for mobile panels
+                let touchStartY = 0;
+                document.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+                
+                document.addEventListener('touchend', (e) => {
+                    const touchEndY = e.changedTouches[0].clientY;
+                    const diff = touchStartY - touchEndY;
+                    
+                    // Swipe up to close panels
+                    if (diff > 50) {
+                        const expandedPanels = document.querySelectorAll('.mobile-search-bar.expanded, .mobile-notifications-panel.expanded');
+                        expandedPanels.forEach(panel => {
+                            const closeBtn = panel.querySelector('.mobile-search-close, .mobile-notifications-close');
+                            if (closeBtn) closeBtn.click();
+                        });
+                    }
+                }, { passive: true });
+            ");
         }
     }
 }
