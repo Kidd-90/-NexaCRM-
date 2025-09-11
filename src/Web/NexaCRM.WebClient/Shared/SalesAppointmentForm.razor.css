@@ -93,7 +93,7 @@ textarea.form-control {
 
 .form-actions {
     display: flex;
-    gap: 10px;
+    gap: 12px; /* Increased gap for better touch spacing */
     justify-content: flex-end;
     padding-top: 20px;
     border-top: 1px solid #dee2e6;
@@ -225,6 +225,51 @@ textarea.form-control {
     .validation-message {
         font-size: 14px;
         margin-top: 6px;
+    }
+}
+
+/* Tablet layout (768px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .appointment-form {
+        max-width: 550px;
+    }
+    
+    .form-row {
+        flex-direction: row; /* Keep side-by-side layout on tablet */
+        gap: 18px;
+    }
+    
+    .form-group.flex-half {
+        flex: 0 0 calc(50% - 9px); /* Restore two-column layout */
+    }
+    
+    .form-control {
+        font-size: 16px;
+        padding: 14px 18px;
+        min-height: 48px; /* Ensure consistent touch target */
+        border-radius: 8px;
+    }
+    
+    textarea.form-control {
+        min-height: 90px;
+    }
+    
+    .btn {
+        font-size: 16px;
+        padding: 14px 20px;
+        min-height: 48px;
+        border-radius: 8px;
+    }
+    
+    .form-actions {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+    
+    .btn {
+        width: auto; /* Don't force full width on tablet */
+        min-width: 120px;
     }
 }
 
