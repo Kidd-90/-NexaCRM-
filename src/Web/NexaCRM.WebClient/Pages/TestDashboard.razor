@@ -1,0 +1,315 @@
+@page "/test-dashboard"
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<MainDashboard> Localizer
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;' data-page="main-dashboard">
+    <!-- Mobile Header Bar -->
+    <div class="mobile-header">
+        <div class="mobile-header-content">
+            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
+                </svg>
+            </button>
+            
+            <div class="mobile-header-title">
+                <h1 class="mobile-title">@Localizer["CRM"]</h1>
+            </div>
+            
+            <div class="mobile-header-actions">
+                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                </button>
+                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Search Bar (collapsed by default) -->
+        <div class="mobile-search-bar @(showMobileSearch ? "expanded" : "collapsed")">
+            <div class="mobile-search-input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                </svg>
+                <input type="text" placeholder='@Localizer["Search"]' @bind="mobileSearchQuery" @onkeyup="HandleMobileSearch" />
+                <button class="mobile-search-close" @onclick="ToggleMobileSearch">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Quick Actions Bar -->
+    <div class="mobile-quick-actions">
+        <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/sales-pipeline-page"))" title="@Localizer["Sales"]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"></path>
+            </svg>
+            <span>@Localizer["Sales"]</span>
+        </button>
+        
+        <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/contacts"))" title="@Localizer["Contacts"]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Z"></path>
+            </svg>
+            <span>@Localizer["Contacts"]</span>
+        </button>
+        
+        <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/tasks-page"))" title="@Localizer["Tasks"]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
+            </svg>
+            <span>@Localizer["Tasks"]</span>
+        </button>
+        
+        <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/reports-page"))" title="@Localizer["Reports"]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Z"></path>
+            </svg>
+            <span>@Localizer["Reports"]</span>
+        </button>
+    </div>
+
+    <!-- Mobile Notifications Panel (collapsed by default) -->
+    <div class="mobile-notifications-panel @(showMobileNotifications ? "expanded" : "collapsed")">
+        <div class="mobile-notifications-header">
+            <h3>@Localizer["Notifications"]</h3>
+            <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-notifications-content">
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">@Localizer["NewLead"]</div>
+                    <div class="notification-time">2 @Localizer["MinutesAgo"]</div>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">@Localizer["DealClosed"]</div>
+                    <div class="notification-time">15 @Localizer["MinutesAgo"]</div>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">@Localizer["TaskReminder"]</div>
+                    <div class="notification-time">1 @Localizer["HourAgo"]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="layout-container flex h-full grow flex-col">
+        <div class="gap-1 px-6 flex flex-1 justify-center py-5 dashboard-container">
+            <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content">
+                <div class="flex flex-wrap justify-between gap-3 p-4">
+                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72 dashboard-welcome">Welcome back, Sales User!</p>
+                </div>
+                
+                <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["DashboardOverview"]</h2>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid">
+                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => NavigateToPage("/sales-pipeline"))">
+                        <div class="text-[#0e131b]" data-icon="Funnel" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPipeline"]</h2>
+                    </button>
+                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => NavigateToPage("/reports"))">
+                        <div class="text-[#0e131b]" data-icon="Target" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["QuarterlyPerformance"]</h2>
+                    </button>
+                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => NavigateToPage("/tasks-page"))">
+                        <div class="text-[#0e131b]" data-icon="ListBullets" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Tasks"]</h2>
+                    </button>
+                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => ScrollToSection("recent-activity"))">
+                        <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["RecentActivity"]</h2>
+                    </button>
+                </div>
+                
+                <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" id="recent-activity">@Localizer["RecentActivity"]</h2>
+                <div class="grid grid-cols-[40px_1fr] gap-x-2 px-4">
+                    <div class="flex flex-col items-center gap-1 pt-3">
+                        <div class="text-[#0e131b]" data-icon="UserPlus" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
+                            </svg>
+                        </div>
+                        <div class="w-[1.5px] bg-[#d0d9e7] h-2 grow"></div>
+                    </div>
+                    <div class="flex flex-1 flex-col py-3">
+                        <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["NewLead"]</p>
+                        <p class="text-[#4d6a99] text-base font-normal leading-normal">2024-07-10</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool showMobileSearch = false;
+    private bool showMobileNotifications = false;
+    private string mobileSearchQuery = "";
+
+    private async Task NavigateToPage(string url)
+    {
+        // Close any open mobile panels first
+        await CloseMobilePanels();
+        
+        // Add visual feedback before navigation
+        await Task.Delay(150);
+        NavigationManager.NavigateTo(url);
+    }
+
+    private async Task ScrollToSection(string sectionId)
+    {
+        // Close any open mobile panels first
+        await CloseMobilePanels();
+        
+        // Use JavaScript to smooth scroll to section
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            const element = document.getElementById('{sectionId}');
+            if (element) {{
+                element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+            }}
+        ");
+    }
+
+    private async Task ToggleMobileMenu()
+    {
+        // Close other mobile panels first
+        showMobileSearch = false;
+        showMobileNotifications = false;
+        StateHasChanged();
+        
+        // For demo purposes, show an alert
+        await JSRuntime.InvokeVoidAsync("alert", "Mobile menu would open the sidebar navigation here");
+    }
+
+    private async Task ToggleMobileSearch()
+    {
+        showMobileSearch = !showMobileSearch;
+        
+        // Close notifications if search is opening
+        if (showMobileSearch)
+        {
+            showMobileNotifications = false;
+        }
+        
+        StateHasChanged();
+        
+        // Focus on search input if opening
+        if (showMobileSearch)
+        {
+            await Task.Delay(100); // Wait for animation
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                const searchInput = document.querySelector('.mobile-search-input input');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            ");
+        }
+    }
+
+    private async Task ToggleMobileNotifications()
+    {
+        showMobileNotifications = !showMobileNotifications;
+        
+        // Close search if notifications is opening
+        if (showMobileNotifications)
+        {
+            showMobileSearch = false;
+        }
+        
+        StateHasChanged();
+        await Task.Delay(50); // Small delay for smooth animation
+    }
+
+    private async Task CloseMobilePanels()
+    {
+        if (showMobileSearch || showMobileNotifications)
+        {
+            showMobileSearch = false;
+            showMobileNotifications = false;
+            StateHasChanged();
+            await Task.Delay(50);
+        }
+    }
+
+    private async Task HandleMobileSearch(KeyboardEventArgs e)
+    {
+        // Handle search on Enter key
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(mobileSearchQuery))
+        {
+            await PerformMobileSearch();
+        }
+    }
+
+    private async Task PerformMobileSearch()
+    {
+        // Close search panel
+        showMobileSearch = false;
+        StateHasChanged();
+        
+        // Perform search navigation
+        var searchUrl = $"/search?q={Uri.EscapeDataString(mobileSearchQuery)}";
+        NavigationManager.NavigateTo(searchUrl);
+        
+        // Clear search query
+        mobileSearchQuery = "";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize mobile dashboard navigation after render
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupMobileDashboardNavigation");
+        }
+    }
+}

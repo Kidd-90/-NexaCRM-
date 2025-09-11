@@ -138,4 +138,26 @@
   <data name="EmailCampaign" xml:space="preserve">
     <value>Email Campaign</value>
   </data>
+  <!-- Mobile-specific localization keys -->
+  <data name="OpenMenu" xml:space="preserve">
+    <value>Open Menu</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="MinutesAgo" xml:space="preserve">
+    <value>minutes ago</value>
+  </data>
+  <data name="HourAgo" xml:space="preserve">
+    <value>hour ago</value>
+  </data>
+  <data name="DealClosed" xml:space="preserve">
+    <value>Deal closed successfully</value>
+  </data>
+  <data name="TaskReminder" xml:space="preserve">
+    <value>Task reminder: Follow up</value>
+  </data>
 </root>
