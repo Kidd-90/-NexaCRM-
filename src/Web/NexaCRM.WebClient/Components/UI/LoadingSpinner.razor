@@ -1,0 +1,218 @@
+@* LoadingSpinner Component - Enhanced loading states for NexaCRM *@
+
+<div class="loading-spinner-container @CssClass" style="@Style">
+    @if (ShowSkeleton)
+    {
+        <div class="skeleton-loader">
+            @for (int i = 0; i < SkeletonLines; i++)
+            {
+                <div class="skeleton skeleton-line" style="width: @(Random.Next(60, 100))%;"></div>
+            }
+        </div>
+    }
+    else if (ShowSpinner)
+    {
+        <div class="spinner-wrapper">
+            @if (ShowIcon)
+            {
+                <div class="spinner-icon @SpinnerType">
+                    @if (SpinnerType == "dots")
+                    {
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    }
+                    else
+                    {
+                        <div class="spinner-circle"></div>
+                    }
+                </div>
+            }
+            
+            @if (!string.IsNullOrEmpty(LoadingText))
+            {
+                <div class="loading-text">@LoadingText</div>
+            }
+            
+            @if (ShowProgress && Progress.HasValue)
+            {
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: @(Progress.Value)%;"></div>
+                    </div>
+                    <div class="progress-text">@Progress.Value%</div>
+                </div>
+            }
+        </div>
+    }
+    
+    @if (ChildContent != null)
+    {
+        <div class="loading-content @(IsLoading ? "loading-overlay" : "")">
+            @ChildContent
+        </div>
+    }
+</div>
+
+<style>
+    .loading-spinner-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-md);
+        min-height: @(MinHeight)px;
+    }
+    
+    .spinner-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-md);
+    }
+    
+    .spinner-icon.circle .spinner-circle {
+        width: @(Size)px;
+        height: @(Size)px;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    .spinner-icon.dots {
+        display: flex;
+        gap: var(--spacing-xs);
+    }
+    
+    .spinner-icon.dots .dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        animation: dotPulse 1.4s infinite ease-in-out both;
+    }
+    
+    .spinner-icon.dots .dot:nth-child(1) { animation-delay: -0.32s; }
+    .spinner-icon.dots .dot:nth-child(2) { animation-delay: -0.16s; }
+    
+    @@keyframes dotPulse {
+        0%, 80%, 100% {
+            transform: scale(0);
+            opacity: 0.5;
+        }
+        40% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .loading-text {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        text-align: center;
+        animation: pulse 2s infinite;
+    }
+    
+    .progress-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-xs);
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 4px;
+        background-color: var(--border-color);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 2px;
+        transition: width var(--transition-normal);
+    }
+    
+    .progress-text {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    
+    .skeleton-loader {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .skeleton-line {
+        height: 16px;
+        background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 4px;
+    }
+    
+    .loading-content {
+        position: relative;
+        width: 100%;
+    }
+    
+    .loading-content.loading-overlay {
+        opacity: 0.6;
+        pointer-events: none;
+        transition: opacity var(--transition-normal);
+    }
+    
+    @@media (max-width: 768px) {
+        .loading-spinner-container {
+            min-height: @(MinHeight / 2)px;
+            padding: var(--spacing-sm);
+        }
+        
+        .spinner-icon.circle .spinner-circle {
+            width: @(Math.Max(Size - 10, 20))px;
+            height: @(Math.Max(Size - 10, 20))px;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string LoadingText { get; set; } = "";
+    [Parameter] public bool IsLoading { get; set; } = true;
+    [Parameter] public bool ShowSpinner { get; set; } = true;
+    [Parameter] public bool ShowIcon { get; set; } = true;
+    [Parameter] public bool ShowProgress { get; set; } = false;
+    [Parameter] public bool ShowSkeleton { get; set; } = false;
+    [Parameter] public int? Progress { get; set; }
+    [Parameter] public int Size { get; set; } = 40;
+    [Parameter] public int MinHeight { get; set; } = 100;
+    [Parameter] public int SkeletonLines { get; set; } = 3;
+    [Parameter] public string SpinnerType { get; set; } = "circle"; // "circle" or "dots"
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    private Random Random = new Random();
+    
+    protected override void OnParametersSet()
+    {
+        // Ensure only one loading type is active
+        if (ShowSkeleton)
+        {
+            ShowSpinner = false;
+        }
+        
+        // Validate progress value
+        if (Progress.HasValue)
+        {
+            Progress = Math.Max(0, Math.Min(100, Progress.Value));
+        }
+    }
+}
