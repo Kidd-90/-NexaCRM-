@@ -5,19 +5,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
-		
-		<!-- 디버깅 설정 -->
-		<BlazorEnableCompression>false</BlazorEnableCompression>
-		<BlazorCacheBootResources>false</BlazorCacheBootResources>
-		<RuntimeDebuggerEnabled>true</RuntimeDebuggerEnabled>
-		<DebuggerSupport>true</DebuggerSupport>
-		<IsDebuggable>true</IsDebuggable>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<DebugType>portable</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<Optimize>false</Optimize>
 	</PropertyGroup>
 
 	<!-- net8.0 타겟에만 Blazor WebAssembly 8.0 패키지 참조 -->

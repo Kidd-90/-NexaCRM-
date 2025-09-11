@@ -1,34 +1,18 @@
 @inherits LayoutComponentBase
 @using NexaCRM.WebClient.Shared
 @inject IJSRuntime JSRuntime
-@inject NavigationManager NavigationManager
 
 <div class="page">
-    <!-- 고정된 햄버거 버튼 - 모바일에서만 보이도록 -->
-    <button title="Navigation menu" class="floating-menu-toggle mobile-only" @onclick="ToggleNavMenu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+    <!-- 고정된 햄버거 버튼 - sidebar 밖에 배치 -->
+    <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
     </button>
     
-    <!-- Theme Toggle Button - 로그인 페이지에서만 보이도록 -->
-    @if (IsLoginPage())
-    {
-        <button title="Toggle theme" class="theme-toggle-button mobile-login-only" data-theme-toggle aria-label="Switch theme">
-            <span class="theme-light-icon">🌞</span>
-            <span class="theme-dark-icon">🌙</span>
-        </button>
-    }
-    else
-    {
-        <!-- 다른 페이지에서는 데스크톱에서만 테마 버튼 표시 -->
-        <button title="Toggle theme" class="theme-toggle-button desktop-only" data-theme-toggle aria-label="Switch theme">
-            <span class="theme-light-icon">🌞</span>
-            <span class="theme-dark-icon">🌙</span>
-        </button>
-    }
+    <!-- Theme Toggle Button -->
+    <button title="Toggle theme" class="theme-toggle-button" data-theme-toggle aria-label="Switch theme">
+        <span class="theme-light-icon">🌞</span>
+        <span class="theme-dark-icon">🌙</span>
+    </button>
     
     <div class="sidebar">
         <NavMenu />
@@ -45,12 +29,6 @@
 
 @code {
     private bool collapseNavMenu = true;
-
-    private bool IsLoginPage()
-    {
-        var uri = NavigationManager.Uri;
-        return uri.Contains("/login") || uri.Contains("/Login") || uri.EndsWith("/");
-    }
 
     private async Task ToggleNavMenu()
     {
@@ -167,132 +145,3 @@
         window.themeManager.updateMainThemeToggleIcon = updateMainThemeToggleIcon;
     }
 </script>
-
-<style>
-/* Mobile/Desktop visibility classes */
-@@media (max-width: 768px) {
-    /* Hide on mobile */
-    .desktop-only {
-        display: none !important;
-    }
-    
-    /* Show on mobile */
-    .mobile-only {
-        display: block !important;
-    }
-    
-    /* Show only on mobile for login page */
-    .mobile-login-only {
-        display: block !important;
-    }
-}
-
-@@media (min-width: 769px) {
-    /* Show on desktop */
-    .desktop-only {
-        display: block !important;
-    }
-    
-    /* Hide on desktop */
-    .mobile-only {
-        display: none !important;
-    }
-    
-    /* Hide on desktop for login-only theme button */
-    .mobile-login-only {
-        display: none !important;
-    }
-}
-
-/* Ensure theme toggle button positioning works on desktop - positioned top right but lower than mobile hamburger */
-.theme-toggle-button.desktop-only {
-    position: fixed;
-    top: 4rem;
-    right: 1.5rem;
-    width: var(--touch-target-min, 44px);
-    height: var(--touch-target-min, 44px);
-    border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 12px;
-    background-color: var(--surface-color, #f9fafb);
-    color: var(--text-primary, #111827);
-    cursor: pointer;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    transition: all var(--transition-fast, 0.15s ease);
-    box-shadow: 0 4px 12px var(--shadow-light, rgba(0, 0, 0, 0.12));
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    backdrop-filter: blur(10px);
-}
-
-.theme-toggle-button.desktop-only:hover {
-    background-color: var(--hover-overlay, rgba(59, 130, 246, 0.15));
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px var(--shadow-medium, rgba(0, 0, 0, 0.12));
-}
-
-/* Theme toggle button for mobile login page only */
-.theme-toggle-button.mobile-login-only {
-    position: fixed;
-    top: 4rem;
-    right: 1.5rem;
-    width: var(--touch-target-min, 44px);
-    height: var(--touch-target-min, 44px);
-    border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 12px;
-    background-color: var(--surface-color, #f9fafb);
-    color: var(--text-primary, #111827);
-    cursor: pointer;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    transition: all var(--transition-fast, 0.15s ease);
-    box-shadow: 0 4px 12px var(--shadow-light, rgba(0, 0, 0, 0.12));
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    backdrop-filter: blur(10px);
-}
-
-.theme-toggle-button.mobile-login-only:hover {
-    background-color: var(--hover-overlay, rgba(59, 130, 246, 0.15));
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px var(--shadow-medium, rgba(0, 0, 0, 0.12));
-}
-
-/* Navigation menu button styling for mobile - positioned on the right */
-.floating-menu-toggle.mobile-only {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    width: var(--touch-target-min, 48px);
-    height: var(--touch-target-min, 48px);
-    border: none;
-    border-radius: 12px;
-    background-color: var(--surface-color, #ffffff);
-    color: var(--text-primary, #111827);
-    cursor: pointer;
-    z-index: 10002;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-fast, 0.15s ease);
-    box-shadow: 0 4px 12px var(--shadow-light, rgba(0, 0, 0, 0.12));
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    backdrop-filter: blur(10px);
-}
-
-.floating-menu-toggle.mobile-only:hover {
-    background-color: var(--hover-overlay, rgba(59, 130, 246, 0.15));
-    transform: scale(1.05);
-}
-
-.floating-menu-toggle.mobile-only:active {
-    transform: scale(0.98);
-}
-</style>

@@ -36,75 +36,14 @@
                 <!-- 👥 고객관리 -->
                 <AuthorizeView Roles="Sales,Manager">
                     <Authorized Context="customerContext">
-                        <!-- DB 고객관리 - 역할별 메뉴 -->
-                        @if (customerContext.User.IsInRole("Sales"))
-                        {
-                            <!-- Sales 담당자용 DB 고객관리 메뉴 -->
-                            <div class="nav-item px-3">
-                                <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
-                                    <span class="oi oi-people" aria-hidden="true"></span> 
-                                    DB 고객관리
-                                    <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
-                                </div>
-                                
-                                @if (showCustomerSubmenu)
-                                {
-                                    <div class="nav-submenu">
-                                        <NavLink class="nav-link submenu-link" href="my-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-person" aria-hidden="true"></span> 내 DB 목록
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="new-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-plus" aria-hidden="true"></span> 신규 DB 목록
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="favorite-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-star" aria-hidden="true"></span> 관심 DB 목록
-                                        </NavLink>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        else if (customerContext.User.IsInRole("Manager"))
-                        {
-                            <!-- Manager용 DB 고객관리 메뉴 -->
-                            <div class="nav-item px-3">
-                                <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
-                                    <span class="oi oi-people" aria-hidden="true"></span> 
-                                    DB 고객관리
-                                    <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
-                                </div>
-                                
-                                @if (showCustomerSubmenu)
-                                {
-                                    <div class="nav-submenu">
-                                        <NavLink class="nav-link submenu-link" href="all-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-people" aria-hidden="true"></span> 전체 DB 목록
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="team-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-group" aria-hidden="true"></span> 팀 DB 현황
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="unassigned-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-minus" aria-hidden="true"></span> 미분배 DB 목록
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="today-assigned-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-calendar" aria-hidden="true"></span> 오늘 분배된 DB
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="my-customers" @onclick="CloseNavMenu">
-                                            <span class="oi oi-person" aria-hidden="true"></span> 내 DB 목록
-                                        </NavLink>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        
-                        <!-- 기존 고객관리 메뉴들 -->
                         <div class="nav-item px-3">
-                            <div class="nav-section-header" @onclick="ToggleExistingCustomerSubmenu" style="cursor: pointer;">
-                                <span class="oi oi-graph" aria-hidden="true"></span> 
+                            <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-people" aria-hidden="true"></span> 
                                 @Localizer["CustomerManagement"]
-                                <span class="submenu-toggle @(showExistingCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
+                                <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
                             
-                            @if (showExistingCustomerSubmenu)
+                            @if (showCustomerSubmenu)
                             {
                                 <div class="nav-submenu">
                                     <NavLink class="nav-link submenu-link" href="customer-segmentation-tool" @onclick="CloseNavMenu">
@@ -206,17 +145,11 @@
 
 @code {
     private bool showCustomerSubmenu = false;
-    private bool showExistingCustomerSubmenu = false;
     private bool showSalesSubmenu = false;
 
     private void ToggleCustomerSubmenu()
     {
         showCustomerSubmenu = !showCustomerSubmenu;
-    }
-    
-    private void ToggleExistingCustomerSubmenu()
-    {
-        showExistingCustomerSubmenu = !showExistingCustomerSubmenu;
     }
 
     private void ToggleSalesSubmenu()

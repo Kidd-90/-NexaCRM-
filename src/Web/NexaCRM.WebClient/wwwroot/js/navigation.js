@@ -68,6 +68,7 @@ window.navigationHelper = {
                     
                 case 'Escape':
                     e.preventDefault();
+                    // Close menu
                     window.navigationHelper.toggleMenu(true);
                     break;
                     
@@ -118,20 +119,21 @@ window.navigationHelper = {
             const header = item.querySelector('.nav-section-header');
             if (header) {
                 header.addEventListener('click', () => {
-                    const content = item.querySelector('.nav-section-content');
-                    if (content) {
-                        const isExpanded = !content.classList.contains('collapsed');
-                        content.classList.toggle('collapsed', isExpanded);
-                        
-                        if (!isExpanded) {
-                            setTimeout(() => {
-                                header.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'nearest'
+                    // Smooth scroll to ensure expanded submenu is visible
+                    setTimeout(() => {
+                        const submenu = item.querySelector('.nav-submenu');
+                        if (submenu && submenu.offsetHeight > 0) {
+                            const itemBottom = item.offsetTop + item.offsetHeight;
+                            const containerBottom = container.scrollTop + container.clientHeight;
+                            
+                            if (itemBottom > containerBottom) {
+                                container.scrollTo({
+                                    top: item.offsetTop,
+                                    behavior: 'smooth'
                                 });
-                            }, 100);
+                            }
                         }
-                    }
+                    }, 100);
                 });
             }
         });
@@ -209,16 +211,11 @@ window.navigationHelper = {
         const dashboardCards = document.querySelectorAll('.dashboard-card');
         dashboardCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                const targetSection = card.dataset.targetSection;
-                if (targetSection) {
-                    const targetElement = document.querySelector(targetSection);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
+                // Add smooth transition effect
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 150);
             });
         });
     },
@@ -233,19 +230,22 @@ window.navigationHelper = {
         interactiveElements.forEach(element => {
             // Add touch start feedback
             element.addEventListener('touchstart', (e) => {
-                element.classList.add('touch-active');
+                element.style.opacity = '0.85';
+                element.style.transform = 'scale(0.98)';
             }, { passive: true });
 
             // Remove touch feedback
             element.addEventListener('touchend', (e) => {
                 setTimeout(() => {
-                    element.classList.remove('touch-active');
-                }, 150);
+                    element.style.opacity = '';
+                    element.style.transform = '';
+                }, 100);
             }, { passive: true });
 
             // Handle touch cancel
             element.addEventListener('touchcancel', (e) => {
-                element.classList.remove('touch-active');
+                element.style.opacity = '';
+                element.style.transform = '';
             }, { passive: true });
         });
 
@@ -263,17 +263,27 @@ window.navigationHelper = {
         const dashboardCards = document.querySelectorAll('.dashboard-card');
         dashboardCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                // Add click animation
+                const route = card.dataset.route;
+                if (!route) return;
+
+                console.log(`Dashboard card clicked, route: ${route}`);
+                
+                // Add visual feedback
                 card.classList.add('clicked');
                 setTimeout(() => {
                     card.classList.remove('clicked');
-                }, 200);
-                
-                // Handle card action
-                const action = card.dataset.action;
-                if (action) {
-                    // Execute card action
-                    console.log('Dashboard card action:', action);
+                }, 300);
+
+                if (route.startsWith('#')) {
+                    // Handle smooth scrolling to section
+                    const sectionId = route.substring(1);
+                    const element = document.getElementById(sectionId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else {
+                    // Navigate to new page
+                    window.location.href = route;
                 }
             });
         });
@@ -282,11 +292,16 @@ window.navigationHelper = {
         const dashboardButtons = document.querySelectorAll('.dashboard-button');
         dashboardButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                // Add click feedback
-                button.classList.add('clicked');
+                e.stopPropagation();
+                
+                // Add click animation
+                button.style.transform = 'scale(0.95)';
                 setTimeout(() => {
-                    button.classList.remove('clicked');
-                }, 200);
+                    button.style.transform = '';
+                }, 100);
+
+                // Handle button functionality
+                console.log('Dashboard button clicked');
             });
         });
 
@@ -294,9 +309,14 @@ window.navigationHelper = {
         const dashboardSidebarLinks = document.querySelectorAll('.dashboard-sidebar a');
         dashboardSidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                // Add active state
-                dashboardSidebarLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
+                // Close mobile navigation when dashboard sidebar link is clicked
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.mobile-overlay');
+                
+                if (window.innerWidth <= 768) {
+                    if (sidebar) sidebar.classList.add('collapse');
+                    if (overlay) overlay.classList.remove('show');
+                }
             });
         });
     },
@@ -310,17 +330,17 @@ window.navigationHelper = {
             const isMobile = window.innerWidth <= 768;
 
             if (dashboardSidebar) {
-                dashboardSidebar.style.display = isMobile ? 'none' : 'block';
+                dashboardSidebar.style.display = isMobile ? 'none' : '';
             }
             if (dashboardTopNav) {
-                dashboardTopNav.style.display = isMobile ? 'none' : 'flex';
+                dashboardTopNav.style.display = isMobile ? 'none' : '';
             }
 
             // Adjust main content spacing on mobile
             const dashboardMainContent = document.querySelector('.dashboard-main-content');
             if (dashboardMainContent && isMobile) {
-                dashboardMainContent.style.paddingLeft = '0';
-                dashboardMainContent.style.paddingTop = '0';
+                dashboardMainContent.style.maxWidth = '100%';
+                dashboardMainContent.style.padding = '1rem';
             }
         };
 
@@ -351,12 +371,13 @@ window.navigationHelper = {
         window.addEventListener('load', () => {
             const wasUnloading = sessionStorage.getItem('isUnloading');
             if (!wasUnloading) {
-                // 브라우저 종료 후 재시작: 로그아웃 처리
+                // 브라우저가 완전히 종료되었다가 다시 시작된 경우
+                // localStorage의 인증 정보 제거
                 const username = localStorage.getItem('username');
-                if (username && username !== 'null') {
+                if (username) {
+                    console.log('Browser was closed, clearing authentication data');
                     localStorage.removeItem('username');
                     localStorage.removeItem('roles');
-                    window.location.href = '/login';
                 }
             }
             // cleanup
@@ -369,14 +390,16 @@ window.navigationHelper = {
 
         const resetTimeout = () => {
             lastActiveTime = Date.now();
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-            }
+            if (timeoutId) clearTimeout(timeoutId);
             
             timeoutId = setTimeout(() => {
-                localStorage.removeItem('username');
-                localStorage.removeItem('roles');
-                window.location.href = '/login';
+                const username = localStorage.getItem('username');
+                if (username) {
+                    console.log('Session timeout, clearing authentication data');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('roles');
+                    window.location.href = '/login';
+                }
             }, 30 * 60 * 1000); // 30분
         };
 
@@ -388,18 +411,12 @@ window.navigationHelper = {
         // 페이지 포커스/블러 이벤트
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                // 페이지가 백그라운드로 갔을 때
-                lastActiveTime = Date.now();
+                // 탭이 비활성화됨
+                console.log('Tab became inactive');
             } else {
-                // 페이지가 다시 활성화되었을 때
-                const timeDiff = Date.now() - lastActiveTime;
-                if (timeDiff > 30 * 60 * 1000) { // 30분 이상 지났으면
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('roles');
-                    window.location.href = '/login';
-                } else {
-                    resetTimeout();
-                }
+                // 탭이 활성화됨
+                console.log('Tab became active');
+                resetTimeout();
             }
         });
 
@@ -415,10 +432,16 @@ window.navigationHelper = {
         if (sidebar) {
             if (isCollapsed) {
                 sidebar.classList.add('collapse');
-                if (overlay) overlay.classList.remove('show');
+                // Hide overlay when menu is closed
+                if (overlay) {
+                    overlay.classList.remove('show');
+                }
             } else {
                 sidebar.classList.remove('collapse');
-                if (overlay) overlay.classList.add('show');
+                // Show overlay when menu is open
+                if (overlay) {
+                    overlay.classList.add('show');
+                }
             }
         }
     },
@@ -457,11 +480,21 @@ window.navigationHelper = {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    // Re-setup interactions for new elements
-                    setTimeout(() => {
-                        window.navigationHelper.setupTouchInteractions();
-                        window.navigationHelper.setupDashboardClickHandlers();
-                    }, 100);
+                    // Check if dashboard content was added
+                    const dashboardAdded = Array.from(mutation.addedNodes).some(node => 
+                        node.nodeType === 1 && (
+                            node.querySelector && (
+                                node.querySelector('[data-page="main-dashboard"]') ||
+                                node.classList && node.classList.contains('dashboard-card')
+                            )
+                        )
+                    );
+                    
+                    if (dashboardAdded) {
+                        setTimeout(() => {
+                            window.navigationHelper.setupMobileDashboardNavigation();
+                        }, 100);
+                    }
                 }
             });
         });
