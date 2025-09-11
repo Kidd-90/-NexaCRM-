@@ -12,7 +12,7 @@
 @inject IJSRuntime JSRuntime
 
 <div
-      class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden"
+      class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden login-container"
       style="--checkbox-tick-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(248,250,252)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e'); font-family: Inter, &quot;Noto Sans&quot;, sans-serif;"
     >
       <div class="layout-container flex h-full grow flex-col">
@@ -67,7 +67,8 @@
                   <div class="flex size-6 items-center justify-center">
                     <input
                       type="checkbox"
-                      class="h-4 w-4 rounded border-[#d0d9e7] border-2 bg-transparent text-[#2a74ea] checked:bg-[#2a74ea] checked:border-[#2a74ea] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#d0d9e7] focus:outline-none"
+                      style="width: 20px; height: 20px;"
+                      class="h-5 w-5 rounded border-[#d0d9e7] border-2 bg-transparent text-[#2a74ea] checked:bg-[#2a74ea] checked:border-[#2a74ea] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#d0d9e7] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -254,3 +255,74 @@
         }
     }
 }
+
+<style>
+/* Light mode (default) */
+.login-container {
+    background-color: #f8fafc;
+    color: #0e131b;
+}
+
+/* Dark mode styles */
+[data-theme="dark"] .login-container {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .login-container .bg-white {
+    background-color: #2d2d2d !important;
+    border-color: #444444 !important;
+}
+
+[data-theme="dark"] .login-container .text-\[\#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .login-container .text-\[\#4d6a99\] {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .login-container .border-\[\#e5e7eb\] {
+    border-color: #444444 !important;
+}
+
+[data-theme="dark"] .login-container .bg-slate-50 {
+    background-color: #333333 !important;
+    border-color: #555555 !important;
+}
+
+[data-theme="dark"] .login-container .focus\:border-\[\#2a74ea\]:focus {
+    border-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .login-container .bg-\[\#2a74ea\] {
+    background-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .login-container .hover\:bg-\[\#1e5db8\]:hover {
+    background-color: #2563eb !important;
+}
+
+[data-theme="dark"] .login-container .border-\[\#d0d9e7\] {
+    border-color: #555555 !important;
+}
+
+[data-theme="dark"] .login-container .checked\:bg-\[\#2a74ea\]:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .login-container .text-\[\#2a74ea\] {
+    color: #60a5fa !important;
+}
+
+[data-theme="dark"] .login-container .social-login-btn {
+    background-color: #333333 !important;
+    border-color: #555555 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .login-container .social-login-btn:hover {
+    background-color: #444444 !important;
+}
+</style>

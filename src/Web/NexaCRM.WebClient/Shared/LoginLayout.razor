@@ -14,8 +14,8 @@
     </main>
     
     <!-- Include JavaScript files for theme and interactions -->
-    <script src="~/js/theme-manager.js"></script>
-    <script src="~/js/interactions.js"></script>
+    <script src="js/theme-manager.js"></script>
+    <script src="js/interactions.js"></script>
 </div>
 
 <style>
@@ -105,5 +105,30 @@
         height: 40px;
         font-size: 1rem;
     }
+}
+
+/* Dark mode styles for login page */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-card: #333333;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #444444;
+    --input-bg: #2d2d2d;
+    --shadow-light: rgba(255, 255, 255, 0.1);
+    --shadow-medium: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .page {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Dark mode button styling */
+[data-theme="dark"] .login-theme-toggle {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
 }
 </style>
