@@ -189,7 +189,7 @@ a:hover, .btn-link:hover {
 .floating-menu-toggle {
     position: fixed !important;
     top: 1rem !important;
-    right: 1rem !important;
+    right: 4.5rem !important; /* 테마 토글 버튼 왼쪽에 배치 */
     background: rgba(255, 255, 255, 0.95) !important; /* Light theme background */
     border: 2px solid rgba(229, 231, 235, 0.8) !important; /* Light border */
     color: #374151 !important; /* Dark text for light background */
@@ -955,7 +955,7 @@ html {
 .theme-toggle-button {
     position: fixed;
     top: 1rem;
-    right: 4rem; /* Position next to hamburger menu */
+    right: 1rem; /* 더 접근하기 쉬운 우측 끝 위치 */
     width: var(--touch-target-min);
     height: var(--touch-target-min);
     border: 1px solid var(--border-color);
@@ -963,7 +963,7 @@ html {
     background-color: var(--surface-color);
     color: var(--text-primary);
     cursor: pointer;
-    z-index: 9999;
+    z-index: 10000; /* 햄버거 메뉴보다 높은 z-index */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -994,19 +994,41 @@ html {
     transition: all var(--transition-fast);
 }
 
-/* Hide appropriate icon based on theme */
-[data-theme="dark"] .theme-dark-icon {
+/* Theme icon visibility - default to light theme (show dark icon) */
+.theme-toggle-button .theme-light-icon {
     display: none;
 }
 
-:not([data-theme="dark"]) .theme-light-icon {
+.theme-toggle-button .theme-dark-icon {
+    display: inline;
+}
+
+/* Hide appropriate icon based on theme */
+[data-theme="dark"] .theme-toggle-button .theme-dark-icon {
     display: none;
+}
+
+[data-theme="dark"] .theme-toggle-button .theme-light-icon {
+    display: inline;
+}
+
+/* For elements that don't have data-theme attribute but body/html does */
+:root[data-theme="dark"] .theme-toggle-button .theme-dark-icon,
+html[data-theme="dark"] .theme-toggle-button .theme-dark-icon,
+body[data-theme="dark"] .theme-toggle-button .theme-dark-icon {
+    display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle-button .theme-light-icon,
+html[data-theme="dark"] .theme-toggle-button .theme-light-icon,
+body[data-theme="dark"] .theme-toggle-button .theme-light-icon {
+    display: inline;
 }
 
 @media (max-width: 768px) {
     .theme-toggle-button {
-        top: 4.25rem; /* Positioned below the menu toggle */
-        right: 1rem; /* Aligned with the menu toggle */
+        top: 1rem; /* 햄버거 메뉴와 같은 높이에 배치 */
+        right: 4rem; /* 햄버거 메뉴 왼쪽에 배치 */
         width: 40px;
         height: 40px;
         font-size: 1rem;

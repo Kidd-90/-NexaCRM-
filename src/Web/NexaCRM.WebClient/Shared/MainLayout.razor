@@ -45,6 +45,103 @@
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
             // 초기 상태를 확실히 설정 (메뉴 닫힌 상태)
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+            
+            // 테마 토글 아이콘 초기화
+            await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
         }
     }
 }
+
+<script>
+    // Update main theme toggle button icons based on current theme
+    function updateMainThemeToggleIcon() {
+        const themeToggle = document.querySelector('.theme-toggle-button');
+        if (!themeToggle) return;
+        
+        const lightIcon = themeToggle.querySelector('.theme-light-icon');
+        const darkIcon = themeToggle.querySelector('.theme-dark-icon');
+        
+        if (!lightIcon || !darkIcon) return;
+        
+        // Get current theme from document attribute or localStorage
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                           localStorage.getItem('nexacrm-theme-preference') || 
+                           'light';
+        
+        // Get system theme if theme is set to auto
+        let effectiveTheme = currentTheme;
+        if (currentTheme === 'auto') {
+            effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        // Update icon visibility based on effective theme
+        if (effectiveTheme === 'dark') {
+            lightIcon.style.display = 'inline';
+            darkIcon.style.display = 'none';
+            themeToggle.setAttribute('aria-label', 'Switch to light theme');
+        } else {
+            lightIcon.style.display = 'none';
+            darkIcon.style.display = 'inline';
+            themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+        }
+        
+        console.log('Main theme toggle icon updated for theme:', effectiveTheme);
+    }
+
+    // Ensure theme toggle works on main layout
+    document.addEventListener('DOMContentLoaded', function() {
+        // Immediately update theme icon
+        updateMainThemeToggleIcon();
+        
+        // Wait a bit for all scripts to load, then setup listeners
+        setTimeout(function() {
+            if (window.themeManager && window.themeManager.setupThemeToggleListeners) {
+                window.themeManager.setupThemeToggleListeners();
+                console.log('Theme toggle listeners setup for main layout');
+            }
+            
+            // Update icon again after theme manager is initialized
+            setTimeout(updateMainThemeToggleIcon, 100);
+        }, 500);
+    });
+    
+    // Also setup on page show (for browser back/forward navigation)
+    window.addEventListener('pageshow', function() {
+        updateMainThemeToggleIcon();
+        
+        setTimeout(function() {
+            if (window.themeManager && window.themeManager.setupThemeToggleListeners) {
+                window.themeManager.setupThemeToggleListeners();
+            }
+            updateMainThemeToggleIcon();
+        }, 100);
+    });
+    
+    // Listen for theme changes to update icon
+    window.addEventListener('themeChanged', function() {
+        setTimeout(updateMainThemeToggleIcon, 50);
+    });
+    
+    // Listen for system theme changes (for auto mode)
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            const currentTheme = localStorage.getItem('nexacrm-theme-preference') || 'auto';
+            if (currentTheme === 'auto') {
+                setTimeout(updateMainThemeToggleIcon, 50);
+            }
+        });
+    }
+    
+    // Listen for Blazor navigation events to re-update theme toggle icons
+    window.addEventListener('blazorNavigated', function() {
+        setTimeout(updateMainThemeToggleIcon, 100);
+    });
+    
+    // Make function globally available
+    window.updateMainThemeToggleIcon = updateMainThemeToggleIcon;
+
+    // Also make it available through theme manager
+    if (window.themeManager) {
+        window.themeManager.updateMainThemeToggleIcon = updateMainThemeToggleIcon;
+    }
+</script>
