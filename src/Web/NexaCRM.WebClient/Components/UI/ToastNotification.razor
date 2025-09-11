@@ -1,0 +1,351 @@
+@* ToastNotification Component - Non-intrusive notifications for NexaCRM *@
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+@if (IsVisible)
+{
+    <div class="toast toast-@Type.ToString().ToLower() @(IsVisible ? "toast-enter" : "toast-exit")" 
+         style="@GetToastStyle()" 
+         @onclick="HandleToastClick"
+         role="alert" 
+         aria-live="@(Type == ToastType.Error ? "assertive" : "polite")"
+         aria-atomic="true">
+        
+        <div class="toast-content">
+            @if (ShowIcon)
+            {
+                <div class="toast-icon">
+                    @switch (Type)
+                    {
+                        case ToastType.Success:
+                            <span class="oi oi-check" aria-hidden="true"></span>
+                            break;
+                        case ToastType.Error:
+                            <span class="oi oi-x" aria-hidden="true"></span>
+                            break;
+                        case ToastType.Warning:
+                            <span class="oi oi-warning" aria-hidden="true"></span>
+                            break;
+                        case ToastType.Info:
+                        default:
+                            <span class="oi oi-info" aria-hidden="true"></span>
+                            break;
+                    }
+                </div>
+            }
+            
+            <div class="toast-body">
+                @if (!string.IsNullOrEmpty(Title))
+                {
+                    <div class="toast-title">@Title</div>
+                }
+                
+                <div class="toast-message">
+                    @if (ChildContent != null)
+                    {
+                        @ChildContent
+                    }
+                    else
+                    {
+                        @Message
+                    }
+                </div>
+                
+                @if (ShowAction && !string.IsNullOrEmpty(ActionText))
+                {
+                    <button class="toast-action" @onclick="HandleActionClick" @onclick:stopPropagation="true">
+                        @ActionText
+                    </button>
+                }
+            </div>
+            
+            @if (ShowCloseButton)
+            {
+                <button class="toast-close" @onclick="Hide" @onclick:stopPropagation="true" aria-label="Close notification">
+                    <span class="oi oi-x" aria-hidden="true"></span>
+                </button>
+            }
+        </div>
+        
+        @if (ShowProgress && AutoHide)
+        {
+            <div class="toast-progress">
+                <div class="toast-progress-bar" style="animation-duration: @(Duration)ms;"></div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .toast {
+        position: fixed;
+        top: @(Position.Contains("top") ? TopOffset : "auto");
+        bottom: @(Position.Contains("bottom") ? BottomOffset : "auto");
+        left: @(Position.Contains("left") ? LeftOffset : "auto");
+        right: @(Position.Contains("right") ? RightOffset : "auto");
+        z-index: 10000;
+        min-width: 300px;
+        max-width: 500px;
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 8px 32px var(--shadow-medium);
+        overflow: hidden;
+        cursor: @(IsClickable ? "pointer" : "default");
+        transform: translateX(@(Position.Contains("right") ? "100%" : Position.Contains("left") ? "-100%" : "0"));
+        animation: toastSlideIn var(--transition-normal) ease-out forwards;
+    }
+    
+    .toast.toast-exit {
+        animation: toastSlideOut var(--transition-normal) ease-in forwards;
+    }
+    
+    .toast-success {
+        border-left: 4px solid #10b981;
+    }
+    
+    .toast-error {
+        border-left: 4px solid #ef4444;
+    }
+    
+    .toast-warning {
+        border-left: 4px solid #f59e0b;
+    }
+    
+    .toast-info {
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .toast-content {
+        display: flex;
+        align-items: flex-start;
+        padding: var(--spacing-md);
+        gap: var(--spacing-sm);
+    }
+    
+    .toast-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+    }
+    
+    .toast-success .toast-icon {
+        color: #10b981;
+    }
+    
+    .toast-error .toast-icon {
+        color: #ef4444;
+    }
+    
+    .toast-warning .toast-icon {
+        color: #f59e0b;
+    }
+    
+    .toast-info .toast-icon {
+        color: var(--primary-color);
+    }
+    
+    .toast-body {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .toast-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .toast-message {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+    
+    .toast-action {
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        padding: var(--spacing-xs) 0;
+        margin-top: var(--spacing-xs);
+        text-decoration: underline;
+        transition: color var(--transition-fast);
+    }
+    
+    .toast-action:hover {
+        color: var(--primary-hover);
+    }
+    
+    .toast-close {
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: var(--spacing-xs);
+        border-radius: 4px;
+        transition: all var(--transition-fast);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .toast-close:hover {
+        background-color: var(--hover-overlay);
+        color: var(--text-primary);
+    }
+    
+    .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--border-color);
+        overflow: hidden;
+    }
+    
+    .toast-progress-bar {
+        width: 100%;
+        height: 100%;
+        background-color: var(--primary-color);
+        transform-origin: left;
+        animation: toastProgress linear;
+    }
+    
+    @@keyframes toastProgress {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(0); }
+    }
+    
+    @@media (max-width: 768px) {
+        .toast {
+            left: var(--spacing-md) !important;
+            right: var(--spacing-md) !important;
+            min-width: auto;
+            max-width: none;
+        }
+        
+        .toast-content {
+            padding: var(--spacing-sm);
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public ToastType Type { get; set; } = ToastType.Info;
+    [Parameter] public int Duration { get; set; } = 5000; // milliseconds
+    [Parameter] public bool AutoHide { get; set; } = true;
+    [Parameter] public bool ShowIcon { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowProgress { get; set; } = true;
+    [Parameter] public bool ShowAction { get; set; } = false;
+    [Parameter] public string ActionText { get; set; } = "";
+    [Parameter] public string Position { get; set; } = "top-right"; // top-right, top-left, bottom-right, bottom-left
+    [Parameter] public bool IsClickable { get; set; } = false;
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public EventCallback OnActionClick { get; set; }
+    [Parameter] public EventCallback OnHide { get; set; }
+
+    private bool IsVisible { get; set; } = false;
+    private Timer? autoHideTimer;
+    
+    // Position calculations
+    private string TopOffset => Position.Contains("top") ? "20px" : "auto";
+    private string BottomOffset => Position.Contains("bottom") ? "20px" : "auto";
+    private string LeftOffset => Position.Contains("left") ? "20px" : "auto";
+    private string RightOffset => Position.Contains("right") ? "20px" : "auto";
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsVisible = true;
+        StateHasChanged();
+        
+        if (AutoHide && Duration > 0)
+        {
+            autoHideTimer = new Timer(async _ => await Hide(), null, Duration, Timeout.Infinite);
+        }
+        
+        await base.OnInitializedAsync();
+    }
+
+    public async Task Show()
+    {
+        IsVisible = true;
+        StateHasChanged();
+        
+        if (AutoHide && Duration > 0)
+        {
+            autoHideTimer?.Dispose();
+            autoHideTimer = new Timer(async _ => await Hide(), null, Duration, Timeout.Infinite);
+        }
+        
+        await Task.CompletedTask;
+    }
+
+    public async Task Hide()
+    {
+        IsVisible = false;
+        StateHasChanged();
+        
+        autoHideTimer?.Dispose();
+        
+        if (OnHide.HasDelegate)
+        {
+            await OnHide.InvokeAsync();
+        }
+        
+        // Wait for exit animation before removing from DOM
+        await Task.Delay(300);
+    }
+
+    private async Task HandleToastClick()
+    {
+        if (IsClickable && OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
+
+    private async Task HandleActionClick()
+    {
+        if (OnActionClick.HasDelegate)
+        {
+            await OnActionClick.InvokeAsync();
+        }
+    }
+
+    private string GetToastStyle()
+    {
+        return $"--toast-duration: {Duration}ms;";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        autoHideTimer?.Dispose();
+        await Task.CompletedTask;
+    }
+
+    public enum ToastType
+    {
+        Info,
+        Success,
+        Warning,
+        Error
+    }
+}
