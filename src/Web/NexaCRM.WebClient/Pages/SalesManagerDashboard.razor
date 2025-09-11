@@ -3,6 +3,7 @@
 @using Microsoft.Extensions.Localization
 @attribute [Authorize(Roles = "Manager")]
 @inject IStringLocalizer<SalesManagerDashboard> Localizer
+@inject IJSRuntime JSRuntime
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
@@ -96,9 +97,56 @@
           </ul>
         </nav>
         
+        <!-- Dashboard Section Navigation -->
+        <div class="dashboard-section-nav">
+          <div class="section-nav-container">
+            <button class="section-nav-btn @(currentSection == "overview" ? "active" : "")" 
+                    @onclick="@(() => ScrollToSection("overview"))">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M104,40H152a8,8,0,0,1,0,16H104a8,8,0,0,1,0-16Zm144,64v96a16,16,0,0,1-16,16H24a16,16,0,0,1-16-16V104A16,16,0,0,1,24,88H232A16,16,0,0,1,248,104ZM232,104H24v96H232Z"></path>
+              </svg>
+              <span>@Localizer["Overview"]</span>
+            </button>
+            
+            <button class="section-nav-btn @(currentSection == "tasks" ? "active" : "")" 
+                    @onclick="@(() => ScrollToSection("tasks"))">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
+              </svg>
+              <span>@Localizer["Tasks"]</span>
+            </button>
+            
+            <button class="section-nav-btn @(currentSection == "pipeline" ? "active" : "")" 
+                    @onclick="@(() => ScrollToSection("pipeline"))">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69L100.34,96.35a8,8,0,0,1,11.32,0L153.37,138,219.31,72.69A8,8,0,0,1,230.69,84l-72,72a8,8,0,0,1-11.32,0L106.69,114.34,40,181V200H224A8,8,0,0,1,232,208Z"></path>
+              </svg>
+              <span>@Localizer["Pipeline"]</span>
+            </button>
+            
+            <button class="section-nav-btn @(currentSection == "reports" ? "active" : "")" 
+                    @onclick="@(() => ScrollToSection("reports"))">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M224,200h-8V40a8,8,0,0,0-8-8H152a8,8,0,0,0-8,8V80H96a8,8,0,0,0-8,8v40H48a8,8,0,0,0-8,8v64H32a8,8,0,0,0,0,16H224a8,8,0,0,0,0-16ZM160,48h40V200H160ZM104,96h40V200H104ZM56,144H88v56H56Z"></path>
+              </svg>
+              <span>@Localizer["Reports"]</span>
+            </button>
+            
+            <button class="section-nav-btn @(currentSection == "analytics" ? "active" : "")" 
+                    @onclick="@(() => ScrollToSection("analytics"))">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69L100.34,96.35a8,8,0,0,1,11.32,0L153.37,138,219.31,72.69A8,8,0,0,1,230.69,84l-72,72a8,8,0,0,1-11.32,0L106.69,114.34,40,181V200H224A8,8,0,0,1,232,208Z"></path>
+              </svg>
+              <span>@Localizer["Analytics"]</span>
+            </button>
+          </div>
+        </div>
+        
         <div class="dashboard-main-container px-4 sm:px-6 md:px-12 lg:px-40 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-full max-w-none sm:max-w-full md:max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
+            <!-- Overview Section -->
+            <div id="overview" class="dashboard-section">
+              <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex w-full sm:min-w-72 flex-col gap-3">
                 <AuthorizeView>
                     <Authorized>
@@ -151,8 +199,12 @@
                 <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["AverageDealSize"]</p>
                 <p class="text-[#0e131b] tracking-light text-xl sm:text-2xl font-bold leading-tight">$15K</p>
               </div>
+              </div>
             </div>
-            <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TeamPerformance"]</h2>
+            
+            <!-- Tasks Section -->
+            <div id="tasks" class="dashboard-section">
+              <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TeamPerformance"]</h2>
             <div class="flex flex-wrap gap-4 px-4 py-6">
               <div class="chart-container flex w-full md:min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 sm:p-6">
                 <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["SalesByTeamMember"]</p>
@@ -169,8 +221,12 @@
                   <p class="text-[#4d6a99] text-xs font-bold leading-normal tracking-[0.015em]">@Localizer["Morgan"]</p>
                 </div>
               </div>
+              </div>
             </div>
-            <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["SalesPipeline"]</h2>
+            
+            <!-- Pipeline Section -->
+            <div id="pipeline" class="dashboard-section">
+              <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["SalesPipeline"]</h2>
             <div class="flex flex-wrap gap-4 px-4 py-6">
               <div class="chart-container flex w-full md:min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 sm:p-6">
                 <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["PipelineStages"]</p>
@@ -189,8 +245,12 @@
                   <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 90%;"></div></div>
                 </div>
               </div>
+              </div>
             </div>
-            <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TopPerformers"]</h2>
+            
+            <!-- Reports Section -->
+            <div id="reports" class="dashboard-section">
+              <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["TopPerformers"]</h2>
             
             <!-- Desktop/Tablet Table View -->
             <div class="performance-table-container px-4 py-3 container">
@@ -318,6 +378,20 @@
                   </div>
                 </div>
               </div>
+              </div>
+            </div>
+            
+            <!-- Analytics Section -->
+            <div id="analytics" class="dashboard-section">
+              <h2 class="text-[#0e131b] text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Analytics"]</h2>
+              <div class="flex flex-wrap gap-4 px-4 py-6">
+                <div class="chart-container flex w-full md:min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 sm:p-6">
+                  <p class="text-[#0e131b] text-sm sm:text-base font-medium leading-normal">@Localizer["MonthlyTrends"]</p>
+                  <div class="analytics-placeholder text-center py-8 text-[#4d6a99]">
+                    <p>@Localizer["AnalyticsContent"]</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -326,6 +400,36 @@
 
 @code {
     private bool isMobileMenuOpen = false;
+    private string currentSection = "overview";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                // Setup intersection observer for section highlighting
+                const sections = document.querySelectorAll('.dashboard-section');
+                const navBtns = document.querySelectorAll('.section-nav-btn');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const sectionId = entry.target.id;
+                            
+                            // Update active button
+                            navBtns.forEach(btn => btn.classList.remove('active'));
+                            const activeBtn = document.querySelector(`[onclick*='${sectionId}']`);
+                            if (activeBtn) {
+                                activeBtn.classList.add('active');
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                sections.forEach(section => observer.observe(section));
+            ");
+        }
+    }
 
     private void ToggleMobileMenu()
     {
@@ -335,5 +439,18 @@
     private void CloseMobileMenu()
     {
         isMobileMenuOpen = false;
+    }
+
+    private async Task ScrollToSection(string sectionId)
+    {
+        currentSection = sectionId;
+        StateHasChanged();
+        
+        await JSRuntime.InvokeVoidAsync("eval", $@"
+            const element = document.getElementById('{sectionId}');
+            if (element) {{
+                element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+            }}
+        ");
     }
 }
