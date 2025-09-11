@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @using NexaCRM.WebClient.Shared
+@using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
 
 <div class="page">
@@ -19,7 +20,7 @@
     </div>
     <div class="mobile-overlay" @onclick="() => {}"></div>
     <main>
-        <article class="content px-4 page-fade-enter">
+        <article class="conxtent px-4 page-fade-enter">
             @Body
         </article>
     </main>

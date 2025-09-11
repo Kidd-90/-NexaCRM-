@@ -23,6 +23,16 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <script>
+    window.isDarkMode = function() {
+        const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('nexacrm-theme-preference') || 'light';
+        if (theme === 'dark') return true;
+        if (theme === 'auto') {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        return false;
+    };
+    </script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="js/auth-manager.js"></script>
     <script src="js/navigation.js"></script>

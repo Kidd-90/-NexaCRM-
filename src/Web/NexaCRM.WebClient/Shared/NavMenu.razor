@@ -18,6 +18,12 @@
     .nav-section-header {
         color: var(--text-primary);
     }
+    /* 다크모드에서 DB 고객관리 텍스트 밝게 */
+    .dark-mode .nav-section-header {
+        color: #f5f5f5 !important;
+        font-weight: 600;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
 
     .submenu-link {
         color: var(--text-secondary);
@@ -44,7 +50,7 @@
             </div>
 
             <!-- Menus for authenticated users -->
-            <AuthorizeView>
+            <AuthorizeView Context="mainContext">
                 <Authorized>
                     <!-- 📊 Dashboard -->
                     <div class="nav-item px-3">
@@ -54,9 +60,9 @@
                     </div>
 
                     <!-- 🗃️ DB Customer Management -->
-                    <AuthorizeView Roles="Sales,Manager">
+                    <AuthorizeView Roles="Sales,Manager" Context="salesManagerContext">
                         <div class="nav-item px-3">
-                            <div class="nav-section-header" @onclick="ToggleDbCustomerSubmenu" style="cursor: pointer;">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbCustomerSubmenu" style="cursor: pointer;">
                                 <span class="oi oi-folder" aria-hidden="true"></span>
                                 @Localizer["DbCustomerManagement"]
                                 <span class="submenu-toggle @(showDbCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
@@ -66,7 +72,7 @@
                             {
                                 <div class="nav-submenu">
                                     <!-- Manager-specific links -->
-                                    <AuthorizeView Roles="Manager">
+                                    <AuthorizeView Roles="Manager" Context="managerDbContext">
                                         <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
                                             <span class="oi oi-spreadsheet" aria-hidden="true"></span> @Localizer["AllDbList"]
                                         </NavLink>
@@ -84,7 +90,7 @@
                                     </NavLink>
 
                                     <!-- Sales-specific links -->
-                                    <AuthorizeView Roles="Sales">
+                                    <AuthorizeView Roles="Sales" Context="salesDbContext">
                                         <NavLink class="nav-link submenu-link" href="db/customer/new" @onclick="CloseNavMenu">
                                             <span class="oi oi-bell" aria-hidden="true"></span> @Localizer["NewDbList"]
                                         </NavLink>
@@ -98,9 +104,9 @@
                     </AuthorizeView>
 
                     <!-- 🔄 DB Distribution Management -->
-                    <AuthorizeView Roles="Sales,Manager">
+                    <AuthorizeView Roles="Sales,Manager" Context="salesManagerDistContext">
                         <div class="nav-item px-3">
-                            <div class="nav-section-header" @onclick="ToggleDbDistributionSubmenu" style="cursor: pointer;">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbDistributionSubmenu" style="cursor: pointer;">
                                 <span class="oi oi-fork" aria-hidden="true"></span>
                                 @Localizer["DbDistributionManagement"]
                                 <span class="submenu-toggle @(showDbDistributionSubmenu ? "expanded" : "collapsed")">▼</span>
@@ -110,7 +116,7 @@
                             {
                                 <div class="nav-submenu">
                                     <!-- Manager-specific links -->
-                                    <AuthorizeView Roles="Manager">
+                                    <AuthorizeView Roles="Manager" Context="managerDistContext">
                                         <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
                                             <span class="oi oi-inbox" aria-hidden="true"></span> @Localizer["UnassignedDbList"]
                                         </NavLink>
@@ -120,9 +126,9 @@
                                     </AuthorizeView>
 
                                     <!-- Sales-specific links -->
-                                    <AuthorizeView Roles="Sales">
+                                    <AuthorizeView Roles="Sales" Context="salesDistContext">
                                         <NavLink class="nav-link submenu-link" href="db/distribution/newly-assigned" @onclick="CloseNavMenu">
-                                            <span class="oi oi-envelope-new" aria-hidden="true"></span> @Localizer["NewlyAssignedDb"]
+                                            <span class="oi oi-envelope-open" aria-hidden="true"></span> @Localizer["NewlyAssignedDb"]
                                         </NavLink>
                                         <NavLink class="nav-link submenu-link" href="db/distribution/my-history" @onclick="CloseNavMenu">
                                             <span class="oi oi-task" aria-hidden="true"></span> @Localizer["MyAssignmentHistory"]
@@ -181,6 +187,20 @@
 @code {
     private bool showDbCustomerSubmenu = false;
     private bool showDbDistributionSubmenu = false;
+
+    private bool isDarkMode = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // JS에서 현재 테마 상태를 받아옴
+            isDarkMode = await JSRuntime.InvokeAsync<bool>("isDarkMode");
+            StateHasChanged();
+        }
+    }
+
+    private bool IsDarkMode() => isDarkMode;
 
     private void ToggleDbCustomerSubmenu()
     {

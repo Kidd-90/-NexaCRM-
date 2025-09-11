@@ -126,16 +126,16 @@ window.themeManager = {
         
         console.log(`Found ${themeToggleButtons.length} theme toggle buttons`);
         
-        // Setup keyboard shortcut (Ctrl/Cmd + Shift + T)
-        if (!document.hasAttribute('data-theme-keyboard-listener')) {
-            document.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
-                    e.preventDefault();
-                    window.themeManager.toggleTheme();
-                }
-            });
-            document.setAttribute('data-theme-keyboard-listener', 'true');
-        }
+            // Setup keyboard shortcut (Ctrl/Cmd + Shift + T)
+            if (!document.documentElement.hasAttribute('data-theme-keyboard-listener')) {
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                        e.preventDefault();
+                        window.themeManager.toggleTheme();
+                    }
+                });
+                document.documentElement.setAttribute('data-theme-keyboard-listener', 'true');
+            }
         
         // Set up MutationObserver to watch for dynamically added theme toggle buttons
         if (!window.themeManager.themeObserver) {
