@@ -1,11 +1,21 @@
 @inherits LayoutComponentBase
 
 <div class="page">
+    <!-- Theme Toggle Button - positioned for login page -->
+    <button title="Toggle theme" class="login-theme-toggle" data-theme-toggle aria-label="Switch theme">
+        <span class="theme-light-icon">🌞</span>
+        <span class="theme-dark-icon">🌙</span>
+    </button>
+    
     <main>
-        <article class="content px-4">
+        <article class="content px-4 page-fade-enter">
             @Body
         </article>
     </main>
+    
+    <!-- Include JavaScript files for theme and interactions -->
+    <script src="~/js/theme-manager.js"></script>
+    <script src="~/js/interactions.js"></script>
 </div>
 
 <style>
@@ -35,5 +45,65 @@
 /* No mobile overlay needed */
 .mobile-overlay {
     display: none !important;
+}
+
+/* Login-specific theme toggle positioning */
+.login-theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: var(--touch-target-min, 44px);
+    height: var(--touch-target-min, 44px);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    background-color: var(--surface-color, #f9fafb);
+    color: var(--text-primary, #111827);
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all var(--transition-fast, 0.15s ease);
+    box-shadow: 0 2px 8px var(--shadow-light, rgba(0, 0, 0, 0.08));
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.login-theme-toggle:hover {
+    background-color: var(--hover-overlay, rgba(59, 130, 246, 0.15));
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px var(--shadow-medium, rgba(0, 0, 0, 0.12));
+}
+
+.login-theme-toggle:active {
+    transform: scale(0.98);
+}
+
+.login-theme-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring, rgba(59, 130, 246, 0.25));
+}
+
+.login-theme-toggle .theme-light-icon,
+.login-theme-toggle .theme-dark-icon {
+    transition: all var(--transition-fast, 0.15s ease);
+}
+
+/* Hide appropriate icon based on theme */
+[data-theme="dark"] .login-theme-toggle .theme-dark-icon {
+    display: none;
+}
+
+:not([data-theme="dark"]) .login-theme-toggle .theme-light-icon {
+    display: none;
+}
+
+@@media (max-width: 768px) {
+    .login-theme-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
 }
 </style>
