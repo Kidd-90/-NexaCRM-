@@ -1,0 +1,194 @@
+@using NexaCRM.WebClient.Services
+@using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components
+
+@inject IStringLocalizer<NavMenu> Localizer
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject IRolePermissionService RolePermissionService
+
+<div @onclick:stopPropagation="true">
+    <nav class="flex-column">
+        <div class="nav-scroll-container">
+        <!-- 항상 표시되는 기본 메뉴 -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
+                <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
+            </NavLink>
+        </div>
+
+        <!-- 인증된 사용자만 볼 수 있는 메뉴 -->
+        <AuthorizeView>
+            <Authorized>
+                <!-- 📊 대시보드 -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
+                        <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]
+                    </NavLink>
+                </div>
+
+                <!-- 👥 고객관리 -->
+                <AuthorizeView Roles="Sales,Manager">
+                    <Authorized Context="customerContext">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-people" aria-hidden="true"></span>
+                                @Localizer["CustomerManagement"]
+                                <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
+                            </div>
+
+                            @if (showCustomerSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <NavLink class="nav-link submenu-link" href="customer-segmentation-tool" @onclick="CloseNavMenu">
+                                        <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["CustomerSegmentation"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-support-dashboard" @onclick="CloseNavMenu">
+                                        <span class="oi oi-headphones" aria-hidden="true"></span> @Localizer["CustomerSupportDashboard"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-support-knowledge-base" @onclick="CloseNavMenu">
+                                        <span class="oi oi-book" aria-hidden="true"></span> @Localizer["KnowledgeBase"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-support-ticket-management-interface" @onclick="CloseNavMenu">
+                                        <span class="oi oi-task" aria-hidden="true"></span> @Localizer["TicketManagement"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-feedback-and-survey-management-tool" @onclick="CloseNavMenu">
+                                        <span class="oi oi-clipboard" aria-hidden="true"></span> @Localizer["FeedbackSurvey"]
+                                    </NavLink>
+                                </div>
+                            }
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
+                <!-- 📈 영업관리 (기존 Sales 메뉴들을 여기로 통합) -->
+                <AuthorizeView Roles="Sales,Manager" Context="salesContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header" @onclick="ToggleSalesSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-graph" aria-hidden="true"></span>
+                                @Localizer["SalesManagement"]
+                                <span class="submenu-toggle @(showSalesSubmenu ? "expanded" : "collapsed")">▼</span>
+                            </div>
+
+                            @if (showSalesSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
+                                        <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["SalesCalendar"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="customer-consultation-notes" @onclick="CloseNavMenu">
+                                        <span class="oi oi-document" aria-hidden="true"></span> @Localizer["ConsultationNotes"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="sales-pipeline" @onclick="CloseNavMenu">
+                                        <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["SalesPipeline"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="contacts" @onclick="CloseNavMenu">
+                                        <span class="oi oi-people" aria-hidden="true"></span> @Localizer["Contacts"]
+                                    </NavLink>
+                                </div>
+                            }
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
+                <!-- 📋 리포트 (Manager만) -->
+                <AuthorizeView Roles="Manager" Context="managerContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
+                                <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
+                                <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
+                <!-- ⚙️ 설정 (Admin만) -->
+                <AuthorizeView Roles="Admin" Context="adminContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
+                                <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["Settings"]
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
+                <div class="nav-item px-3 mt-auto">
+                    <button class="nav-link btn btn-link" @onclick="Logout">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> @Localizer["Logout"]
+                    </button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login" @onclick="CloseNavMenu">
+                        <span class="oi oi-account-login" aria-hidden="true"></span> @Localizer["Login"]
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool showCustomerSubmenu = false;
+    private bool showSalesSubmenu = false;
+
+    private void ToggleCustomerSubmenu()
+    {
+        showCustomerSubmenu = !showCustomerSubmenu;
+    }
+
+    private void ToggleSalesSubmenu()
+    {
+        showSalesSubmenu = !showSalesSubmenu;
+    }
+
+    private async Task CloseNavMenu()
+    {
+        // JavaScript 함수 호출하여 메뉴 닫기
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+    }
+
+    private async Task NavigateAndCloseMenu(string url)
+    {
+        // Close navigation menu and navigate
+        await CloseNavMenu();
+        NavigationManager.NavigateTo(url);
+    }
+
+    private async Task Logout()
+    {
+        await CloseNavMenu(); // 로그아웃 시에도 메뉴 닫기
+
+        // CustomAuthStateProvider로 캐스팅하여 Logout 메서드 호출
+        if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
+        {
+            customAuthProvider.Logout();
+        }
+
+        // auth manager를 통한 완전한 로그아웃 처리
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            if (window.authManager && window.authManager.logout) {
+                window.authManager.logout('manual_logout');
+            } else {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login';
+            }
+        ");
+    }
+}

@@ -1,0 +1,64 @@
+@page "/db/customer/starred"
+@attribute [Authorize(Roles = "Sales")]
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using NexaCRM.WebClient.Models.Db
+@using NexaCRM.WebClient.Services.Interfaces
+
+@inject IDbDataService DbDataService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">관심 DB 목록</h1>
+    <p class="text-muted mb-4">중요 표시한 고객 DB 목록입니다.</p>
+
+    @if (customers == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>고객명</th>
+                        <th>연락처</th>
+                        <th>DB 상태</th>
+                        <th>최종 컨택일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in customers)
+                    {
+                        <tr>
+                            <td>@customer.CustomerName</td>
+                            <td>@customer.ContactNumber</td>
+                            <td>@customer.Status</td>
+                            <td>@customer.LastContactDate.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private IEnumerable<DbCustomer> customers;
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+        // In a real app, you'd use user.Identity.Name, but for mock, we hardcode it.
+        var agentName = "이영업";
+        customers = await DbDataService.GetStarredDbListAsync(agentName);
+    }
+}

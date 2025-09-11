@@ -54,48 +54,4 @@
   <data name="ConsultationNotes" xml:space="preserve">
     <value>상담 노트</value>
   </data>
-
-  <!-- New Keys for DB Management -->
-  <data name="DbCustomerManagement" xml:space="preserve">
-    <value>DB 고객관리</value>
-  </data>
-  <data name="DbDistributionManagement" xml:space="preserve">
-    <value>DB 분배 관리</value>
-  </data>
-
-  <!-- Manager Menu Items -->
-  <data name="AllDbList" xml:space="preserve">
-    <value>전체 DB 목록</value>
-  </data>
-  <data name="TeamDbStatus" xml:space="preserve">
-    <value>팀 DB 현황</value>
-  </data>
-  <data name="UnassignedDbList" xml:space="preserve">
-    <value>미분배 DB 목록</value>
-  </data>
-  <data name="TodaysAssignedDb" xml:space="preserve">
-    <value>오늘 분배된 DB</value>
-  </data>
-  <data name="DbDistributionStatus" xml:space="preserve">
-    <value>DB 분배 현황</value>
-  </data>
-
-  <!-- Sales Menu Items -->
-  <data name="NewDbList" xml:space="preserve">
-    <value>신규 DB 목록</value>
-  </data>
-  <data name="StarredDbList" xml:space="preserve">
-    <value>관심 DB 목록</value>
-  </data>
-  <data name="NewlyAssignedDb" xml:space="preserve">
-    <value>신규 분배 DB</value>
-  </data>
-  <data name="MyAssignmentHistory" xml:space="preserve">
-    <value>내 분배 이력</value>
-  </data>
-
-  <!-- Common Menu Item -->
-  <data name="MyDbList" xml:space="preserve">
-    <value>내 DB 목록</value>
-  </data>
 </root>
