@@ -1,0 +1,191 @@
+.fab-container {
+    @apply fixed bottom-6 right-6 z-50;
+}
+
+.fab-main {
+    @apply w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-none;
+    @apply flex items-center justify-center;
+}
+
+.fab-main:hover {
+    @apply bg-blue-700 transform scale-110;
+}
+
+.fab-main:active {
+    @apply transform scale-95;
+}
+
+.fab-icon {
+    @apply transition-transform duration-300;
+}
+
+.fab-icon.rotated {
+    @apply rotate-45;
+}
+
+/* Action Buttons Container */
+.fab-actions {
+    @apply absolute bottom-16 right-0 flex flex-col items-end gap-3;
+    @apply transition-all duration-300 origin-bottom-right;
+}
+
+.fab-actions.hidden {
+    @apply opacity-0 scale-0 pointer-events-none;
+}
+
+.fab-actions.visible {
+    @apply opacity-100 scale-100 pointer-events-auto;
+}
+
+/* Individual Action Buttons */
+.fab-action {
+    @apply flex items-center justify-end gap-3 cursor-pointer border-none;
+    @apply transition-all duration-200;
+}
+
+.fab-action-icon {
+    @apply w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white;
+    @apply transition-all duration-200;
+}
+
+.fab-action-label {
+    @apply bg-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg;
+    @apply opacity-0 transform translate-x-2 transition-all duration-200;
+}
+
+.fab-action:hover .fab-action-label {
+    @apply opacity-100 translate-x-0;
+}
+
+.fab-action:hover .fab-action-icon {
+    @apply transform scale-110;
+}
+
+.fab-action:active .fab-action-icon {
+    @apply transform scale-95;
+}
+
+/* Color variations for different actions */
+.call-fab .fab-action-icon {
+    @apply bg-green-500;
+}
+
+.call-fab:hover .fab-action-icon {
+    @apply bg-green-600;
+}
+
+.email-fab .fab-action-icon {
+    @apply bg-blue-500;
+}
+
+.email-fab:hover .fab-action-icon {
+    @apply bg-blue-600;
+}
+
+.meeting-fab .fab-action-icon {
+    @apply bg-purple-500;
+}
+
+.meeting-fab:hover .fab-action-icon {
+    @apply bg-purple-600;
+}
+
+.add-fab .fab-action-icon {
+    @apply bg-orange-500;
+}
+
+.add-fab:hover .fab-action-icon {
+    @apply bg-orange-600;
+}
+
+/* Background Overlay */
+.fab-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-20 transition-all duration-300;
+    z-index: -1;
+}
+
+.fab-overlay.hidden {
+    @apply opacity-0 pointer-events-none;
+}
+
+.fab-overlay.visible {
+    @apply opacity-100 pointer-events-auto;
+}
+
+/* Animation delays for staggered effect */
+.fab-actions .fab-action:nth-child(1) {
+    transition-delay: 0ms;
+}
+
+.fab-actions .fab-action:nth-child(2) {
+    transition-delay: 50ms;
+}
+
+.fab-actions .fab-action:nth-child(3) {
+    transition-delay: 100ms;
+}
+
+.fab-actions .fab-action:nth-child(4) {
+    transition-delay: 150ms;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .fab-container {
+        @apply bottom-4 right-4;
+    }
+    
+    .fab-main {
+        @apply w-12 h-12;
+    }
+    
+    .fab-action-icon {
+        @apply w-10 h-10;
+    }
+    
+    .fab-action-label {
+        @apply text-xs px-2 py-1;
+    }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+    .fab-container {
+        @apply bottom-3 right-3;
+    }
+    
+    .fab-main {
+        @apply w-11 h-11;
+    }
+    
+    .fab-action-icon {
+        @apply w-9 h-9;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .fab-main,
+    .fab-actions,
+    .fab-action,
+    .fab-action-icon,
+    .fab-action-label,
+    .fab-overlay {
+        transition: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .fab-main {
+        @apply border-2 border-white;
+    }
+    
+    .fab-action-icon {
+        @apply border-2 border-white;
+    }
+    
+    .fab-action-label {
+        @apply border border-white;
+    }
+}

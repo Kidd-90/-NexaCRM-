@@ -527,6 +527,14 @@
         </div>
     </div>
     </div>
+    
+    <!-- Mobile Quick Actions Floating Button -->
+    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
+        ShowCallAction="true" 
+        ShowEmailAction="true" 
+        ShowMeetingAction="true" 
+        ShowAddAction="true"
+        OnActionClicked="HandleFloatingAction" />
 </div>
 
 @code {
@@ -685,6 +693,29 @@
                     }
                 }, { passive: true });
             ");
+        }
+    }
+
+    private async System.Threading.Tasks.Task HandleFloatingAction(string action)
+    {
+        switch (action)
+        {
+            case "call":
+                // Navigate to contacts page to select a contact to call
+                NavigationManager.NavigateTo("/contacts");
+                break;
+            case "email":
+                // Navigate to contacts page to select a contact to email
+                NavigationManager.NavigateTo("/contacts");
+                break;
+            case "meeting":
+                // Navigate to calendar/meeting scheduling
+                NavigationManager.NavigateTo("/sales-calendar");
+                break;
+            case "add":
+                // Navigate to add new contact/lead page
+                NavigationManager.NavigateTo("/contacts");
+                break;
         }
     }
 }

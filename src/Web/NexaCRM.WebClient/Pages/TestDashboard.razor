@@ -189,6 +189,14 @@
             </div>
         </div>
     </div>
+    
+    <!-- Mobile Quick Actions Floating Button -->
+    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
+        ShowCallAction="true" 
+        ShowEmailAction="true" 
+        ShowMeetingAction="true" 
+        ShowAddAction="true"
+        OnActionClicked="HandleFloatingAction" />
 </div>
 
 @code {
@@ -310,6 +318,25 @@
         {
             // Initialize mobile dashboard navigation after render
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupMobileDashboardNavigation");
+        }
+    }
+
+    private async System.Threading.Tasks.Task HandleFloatingAction(string action)
+    {
+        switch (action)
+        {
+            case "call":
+                await JSRuntime.InvokeVoidAsync("alert", $"Call action selected! On mobile, this would open the phone app.");
+                break;
+            case "email":
+                await JSRuntime.InvokeVoidAsync("alert", $"Email action selected! On mobile, this would open the email app.");
+                break;
+            case "meeting":
+                await JSRuntime.InvokeVoidAsync("alert", $"Meeting action selected! This would open calendar integration.");
+                break;
+            case "add":
+                await JSRuntime.InvokeVoidAsync("alert", $"Add new action selected! This would open a form to add new customer/lead.");
+                break;
         }
     }
 }

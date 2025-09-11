@@ -4,6 +4,8 @@
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
 @inject IDealService DealService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -169,6 +171,14 @@
         </div>
     </div>
     </div>
+    
+    <!-- Mobile Quick Actions Floating Button -->
+    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
+        ShowCallAction="true" 
+        ShowEmailAction="true" 
+        ShowMeetingAction="true" 
+        ShowAddAction="true"
+        OnActionClicked="HandleFloatingAction" />
 </div>
 
 @code {
@@ -178,5 +188,28 @@
     {
         var deals = await DealService.GetDealsAsync();
         dealsByStage = deals.Where(d => !string.IsNullOrEmpty(d.Stage)).GroupBy(d => d.Stage!).ToArray();
+    }
+
+    private async System.Threading.Tasks.Task HandleFloatingAction(string action)
+    {
+        switch (action)
+        {
+            case "call":
+                // Navigate to contacts page to select a contact to call
+                NavigationManager.NavigateTo("/contacts");
+                break;
+            case "email":
+                // Navigate to contacts page to select a contact to email
+                NavigationManager.NavigateTo("/contacts");
+                break;
+            case "meeting":
+                // Navigate to calendar/meeting scheduling
+                NavigationManager.NavigateTo("/sales-calendar");
+                break;
+            case "add":
+                // Show add deal functionality
+                await JSRuntime.InvokeVoidAsync("alert", "Add new deal functionality - to be implemented");
+                break;
+        }
     }
 }

@@ -1,0 +1,150 @@
+@using Microsoft.Extensions.Localization
+@using Microsoft.JSInterop
+@inject IStringLocalizer<FloatingActionButton> Localizer
+@inject IJSRuntime JSRuntime
+
+<div class="fab-container @(IsExpanded ? "expanded" : "") @CssClass">
+    <!-- Main FAB Button -->
+    <button class="fab-main" @onclick="ToggleExpanded" title="@Localizer["QuickActions"]">
+        <div class="fab-icon @(IsExpanded ? "rotated" : "")">
+            @if (IsExpanded)
+            {
+                <!-- Close icon when expanded -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                </svg>
+            }
+            else
+            {
+                <!-- Plus icon when collapsed -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
+                </svg>
+            }
+        </div>
+    </button>
+
+    <!-- Action Buttons -->
+    <div class="fab-actions @(IsExpanded ? "visible" : "hidden")">
+        @if (ShowCallAction)
+        {
+            <button class="fab-action call-fab" @onclick="@(() => HandleActionClick("call"))" title="@Localizer["MakeCall"]">
+                <div class="fab-action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"></path>
+                    </svg>
+                </div>
+                <span class="fab-action-label">@Localizer["Call"]</span>
+            </button>
+        }
+
+        @if (ShowEmailAction)
+        {
+            <button class="fab-action email-fab" @onclick="@(() => HandleActionClick("email"))" title="@Localizer["SendEmail"]">
+                <div class="fab-action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
+                    </svg>
+                </div>
+                <span class="fab-action-label">@Localizer["Email"]</span>
+            </button>
+        }
+
+        @if (ShowMeetingAction)
+        {
+            <button class="fab-action meeting-fab" @onclick="@(() => HandleActionClick("meeting"))" title="@Localizer["ScheduleMeeting"]">
+                <div class="fab-action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-68-76a12,12,0,1,1-12-12A12,12,0,0,1,140,132Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,132Zm-88,0a12,12,0,1,1-12-12A12,12,0,0,1,96,132Zm44,40a12,12,0,1,1-12-12A12,12,0,0,1,140,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Zm-88,0a12,12,0,1,1-12-12A12,12,0,0,1,96,172Z"></path>
+                    </svg>
+                </div>
+                <span class="fab-action-label">@Localizer["Meeting"]</span>
+            </button>
+        }
+
+        @if (ShowAddAction)
+        {
+            <button class="fab-action add-fab" @onclick="@(() => HandleActionClick("add"))" title="@Localizer["AddNew"]">
+                <div class="fab-action-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Zm-57.87,58.85a8,8,0,0,1-12.26,10.3C165.75,181.19,138.09,168,108,168s-57.75,13.19-77.87,37.15a8,8,0,0,1-12.25-10.3c14.94-17.78,33.52-30.41,54.17-37.17a68,68,0,1,1,71.9,0C164.6,164.44,183.18,177.07,198.13,194.85ZM108,152a52,52,0,1,0-52-52A52.06,52.06,0,0,0,108,152Z"></path>
+                    </svg>
+                </div>
+                <span class="fab-action-label">@Localizer["Add"]</span>
+            </button>
+        }
+    </div>
+
+    <!-- Background overlay when expanded -->
+    <div class="fab-overlay @(IsExpanded ? "visible" : "hidden")" @onclick="CollapseActions"></div>
+</div>
+
+@code {
+    [Parameter] public bool ShowCallAction { get; set; } = true;
+    [Parameter] public bool ShowEmailAction { get; set; } = true;
+    [Parameter] public bool ShowMeetingAction { get; set; } = true;
+    [Parameter] public bool ShowAddAction { get; set; } = false;
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public EventCallback<string> OnActionClicked { get; set; }
+
+    private bool IsExpanded = false;
+
+    private async Task ToggleExpanded()
+    {
+        IsExpanded = !IsExpanded;
+        StateHasChanged();
+        
+        // Add haptic feedback on mobile
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
+            ");
+        }
+        catch
+        {
+            // Vibration not supported, ignore
+        }
+    }
+
+    private async Task CollapseActions()
+    {
+        IsExpanded = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleActionClick(string action)
+    {
+        // Collapse the FAB first
+        await CollapseActions();
+        
+        // Add small delay for better UX
+        await Task.Delay(100);
+        
+        // Invoke callback
+        await OnActionClicked.InvokeAsync(action);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Add click outside handler to close FAB when clicking elsewhere
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                document.addEventListener('click', function(e) {
+                    const fabContainer = e.target.closest('.fab-container');
+                    if (!fabContainer) {
+                        // Click was outside FAB, collapse it
+                        const fabElement = document.querySelector('.fab-container.expanded');
+                        if (fabElement) {
+                            const closeBtn = fabElement.querySelector('.fab-main');
+                            if (closeBtn) closeBtn.click();
+                        }
+                    }
+                });
+            ");
+        }
+    }
+}
