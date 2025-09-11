@@ -1012,3 +1012,164 @@ html {
         font-size: 1rem;
     }
 }
+
+/* ============================================
+   THEME-AWARE UTILITY CLASSES
+   ============================================ */
+
+/* Background utilities */
+.bg-theme-surface {
+    background-color: var(--surface-color) !important;
+}
+
+.bg-theme-background {
+    background-color: var(--background-color) !important;
+}
+
+.bg-theme-primary {
+    background-color: var(--primary-color) !important;
+}
+
+/* Text color utilities */
+.text-theme-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-theme-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.text-theme-white {
+    color: #ffffff !important;
+}
+
+/* Border utilities */
+.border-theme {
+    border-color: var(--border-color) !important;
+}
+
+.border-theme-primary {
+    border-color: var(--primary-color) !important;
+}
+
+/* Common component classes for consistent theming */
+.theme-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all var(--transition-normal);
+}
+
+.theme-card:hover {
+    box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+.theme-button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: 1px solid var(--primary-color);
+    transition: all var(--transition-fast);
+}
+
+.theme-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px var(--shadow-medium);
+}
+
+.theme-input {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.theme-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.theme-input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Override common hardcoded Tailwind classes with theme-aware versions */
+.bg-white {
+    background-color: var(--surface-color) !important;
+}
+
+.text-gray-900,
+.text-black {
+    color: var(--text-primary) !important;
+}
+
+.text-gray-600,
+.text-gray-500 {
+    color: var(--text-secondary) !important;
+}
+
+.border-gray-300,
+.border-gray-200 {
+    border-color: var(--border-color) !important;
+}
+
+/* Specific color overrides for commonly used hex colors in the app */
+[class*="text-[#0e131b]"] {
+    color: var(--text-primary) !important;
+}
+
+[class*="text-[#4d6a99]"] {
+    color: var(--text-secondary) !important;
+}
+
+[class*="bg-[#ffffff]"],
+[class*="bg-white"] {
+    background-color: var(--surface-color) !important;
+}
+
+[class*="border-[#d0d9e7]"],
+[class*="border-[#e5e7eb]"] {
+    border-color: var(--border-color) !important;
+}
+
+/* Dashboard specific overrides */
+.dashboard-card {
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Stats and metric cards */
+.stat-card,
+.metric-card {
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Form element improvements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-secondary);
+}
