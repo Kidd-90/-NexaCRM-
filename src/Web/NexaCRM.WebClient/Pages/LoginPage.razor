@@ -20,7 +20,7 @@
         <div class="flex flex-1 items-center justify-center py-8 px-4">
           <div class="w-full max-w-md mx-auto">
             <!-- 통합된 로그인 카드 -->
-            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#e5e7eb]">
+            <div class="login-card rounded-2xl overflow-hidden border">
               <!-- 상단 이미지 섹션 -->
               <div
                 class="w-full bg-center bg-no-repeat bg-cover image-div-login-page min-h-[180px] relative"
@@ -33,19 +33,19 @@
               <div class="px-8 pb-8 pt-6">
                 <!-- 헤더 텍스트 -->
                 <div class="text-center mb-8">
-                  <h2 class="text-[#0e131b] tracking-light text-[22px] sm:text-[28px] font-bold leading-tight mb-2 whitespace-nowrap">@Localizer["WelcomeBack"]</h2>
-                  <p class="text-[#4d6a99] text-base font-medium mb-4">@Localizer["SignInToYourAccount"]</p>
-                  <div class="w-12 h-0.5 bg-gradient-to-r from-[#2a74ea] to-[#4d6a99] rounded-full mx-auto"></div>
+                  <h2 class="login-header tracking-light text-[22px] sm:text-[28px] font-bold leading-tight mb-2 whitespace-nowrap">@Localizer["WelcomeBack"]</h2>
+                  <p class="login-subheader text-base font-medium mb-4">@Localizer["SignInToYourAccount"]</p>
+                  <div class="w-12 h-0.5 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-full mx-auto"></div>
                 </div>
                 
                 <!-- 로그인 폼 필드들 -->
               <!-- Username 필드 -->
               <div class="mb-4">
                 <label class="flex flex-col">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["Username"]</p>
+                  <p class="login-form-label text-base font-medium leading-normal pb-2">@Localizer["Username"]</p>
                   <input @bind="username"
                     placeholder="@Localizer["EnterYourUsername"]"
-                    class="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#2a74ea] h-12 placeholder:text-[#4d6a99] px-4 text-base font-normal leading-normal"
+                    class="login-form-input flex w-full resize-none overflow-hidden rounded-lg focus:outline-0 focus:ring-0 border h-12 px-4 text-base font-normal leading-normal"
                   />
                 </label>
               </div>
@@ -53,10 +53,10 @@
               <!-- Password 필드 -->
               <div class="mb-4">
                 <label class="flex flex-col">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["Password"]</p>
+                  <p class="login-form-label text-base font-medium leading-normal pb-2">@Localizer["Password"]</p>
                   <input @bind="password" type="password"
                     placeholder="@Localizer["EnterYourPassword"]"
-                    class="form-input flex w-full resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#2a74ea] h-12 placeholder:text-[#4d6a99] px-4 text-base font-normal leading-normal"
+                    class="login-form-input flex w-full resize-none overflow-hidden rounded-lg focus:outline-0 focus:ring-0 border h-12 px-4 text-base font-normal leading-normal"
                   />
                 </label>
               </div>
@@ -67,18 +67,18 @@
                   <div class="flex size-6 items-center justify-center">
                     <input
                       type="checkbox"
-                      style="width: 20px; height: 20px;"
-                      class="h-5 w-5 rounded border-[#d0d9e7] border-2 bg-transparent text-[#2a74ea] checked:bg-[#2a74ea] checked:border-[#2a74ea] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#d0d9e7] focus:outline-none"
+                      class="login-checkbox h-5 w-5 rounded border-2 focus:ring-0 focus:ring-offset-0 focus:outline-none"
+                      style="width: 20px; height: 20px; accent-color: var(--primary-color);"
                     />
                   </div>
                 </div>
-                <p class="text-[#0e131b] text-sm font-normal leading-normal">@Localizer["RememberMe"]</p>
+                <p class="login-checkbox-label text-sm font-normal leading-normal">@Localizer["RememberMe"]</p>
               </div>
               
               <!-- 에러 메시지 표시 -->
               @if (!string.IsNullOrEmpty(errorMessage))
               {
-                  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                  <div class="login-error-message border px-4 py-3 rounded relative mb-4" role="alert">
                       <span class="block sm:inline">@errorMessage</span>
                   </div>
               }
@@ -86,7 +86,7 @@
               <!-- 로그인 버튼 -->
               <div class="mb-4">
                 <button @onclick="Login" type="button" disabled="@isLoading"
-                  class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#2a74ea] hover:bg-[#1e5db8] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-white text-base font-semibold leading-normal"
+                  class="login-button flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 disabled:opacity-50 disabled:cursor-not-allowed text-white text-base font-semibold leading-normal"
                 >
                   @if (isLoading)
                   {
@@ -110,16 +110,16 @@
               
               <!-- Forgot password 링크 -->
               <div class="text-center mb-6">
-                <a href="#" class="text-[#2a74ea] text-sm font-normal leading-normal hover:underline">@Localizer["ForgotPassword"]</a>
+                <a href="#" class="login-link text-sm font-normal leading-normal hover:underline">@Localizer["ForgotPassword"]</a>
               </div>
               
               <!-- 구분선 -->
               <div class="relative mb-6">
                 <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-[#d0d9e7]"></div>
+                  <div class="w-full border-t" style="border-color: var(--border-color);"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                  <span class="bg-white px-4 text-[#4d6a99] font-medium">@Localizer["OrLogInWith"]</span>
+                  <span class="login-divider-text px-4 font-medium" style="background-color: var(--surface-color);">@Localizer["OrLogInWith"]</span>
                 </div>
               </div>
               
