@@ -13,174 +13,197 @@
 @inject IJSRuntime JSRuntime
 @inject IRolePermissionService RolePermissionService
 
+<style>
+    /* Override hardcoded colors to support dark mode theming */
+    .nav-section-header {
+        color: var(--text-primary);
+    }
+
+    .submenu-link {
+        color: var(--text-secondary);
+    }
+
+    .submenu-link:hover {
+        color: var(--text-primary);
+    }
+
+    .submenu-link.active {
+        background-color: var(--primary-color);
+        color: white !important; /* Ensure text is white on active background */
+    }
+</style>
+
 <div @onclick:stopPropagation="true">
     <nav class="flex-column">
         <div class="nav-scroll-container">
-        <!-- 항상 표시되는 기본 메뉴 -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
-                <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
-            </NavLink>
-        </div>
+            <!-- Always visible base menu -->
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
+                    <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
+                </NavLink>
+            </div>
 
-        <!-- 인증된 사용자만 볼 수 있는 메뉴 -->
-        <AuthorizeView>
-            <Authorized>
-                <!-- 📊 대시보드 -->
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
-                        <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]
-                    </NavLink>
-                </div>
+            <!-- Menus for authenticated users -->
+            <AuthorizeView>
+                <Authorized>
+                    <!-- 📊 Dashboard -->
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
+                            <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]
+                        </NavLink>
+                    </div>
 
-                <!-- 👥 고객관리 -->
-                <AuthorizeView Roles="Sales,Manager">
-                    <Authorized Context="customerContext">
+                    <!-- 🗃️ DB Customer Management -->
+                    <AuthorizeView Roles="Sales,Manager">
                         <div class="nav-item px-3">
-                            <div class="nav-section-header" @onclick="ToggleCustomerSubmenu" style="cursor: pointer;">
-                                <span class="oi oi-people" aria-hidden="true"></span> 
-                                @Localizer["CustomerManagement"]
-                                <span class="submenu-toggle @(showCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
+                            <div class="nav-section-header" @onclick="ToggleDbCustomerSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-folder" aria-hidden="true"></span>
+                                @Localizer["DbCustomerManagement"]
+                                <span class="submenu-toggle @(showDbCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
                             
-                            @if (showCustomerSubmenu)
+                            @if (showDbCustomerSubmenu)
                             {
                                 <div class="nav-submenu">
-                                    <NavLink class="nav-link submenu-link" href="customer-segmentation-tool" @onclick="CloseNavMenu">
-                                        <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["CustomerSegmentation"]
+                                    <!-- Manager-specific links -->
+                                    <AuthorizeView Roles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
+                                            <span class="oi oi-spreadsheet" aria-hidden="true"></span> @Localizer["AllDbList"]
+                                        </NavLink>
+                                        <NavLink class="nav-link submenu-link" href="db/customer/team-status" @onclick="CloseNavMenu">
+                                            <span class="oi oi-people" aria-hidden="true"></span> @Localizer["TeamDbStatus"]
+                                        </NavLink>
+                                        <NavLink class="nav-link submenu-link" href="db/customer/assigned-today" @onclick="CloseNavMenu">
+                                            <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["TodaysAssignedDb"]
+                                        </NavLink>
+                                    </AuthorizeView>
+
+                                    <!-- Common link for Sales and Manager -->
+                                    <NavLink class="nav-link submenu-link" href="db/customer/my-list" @onclick="CloseNavMenu">
+                                        <span class="oi oi-person" aria-hidden="true"></span> @Localizer["MyDbList"]
                                     </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="customer-support-dashboard" @onclick="CloseNavMenu">
-                                        <span class="oi oi-headphones" aria-hidden="true"></span> @Localizer["CustomerSupportDashboard"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="customer-support-knowledge-base" @onclick="CloseNavMenu">
-                                        <span class="oi oi-book" aria-hidden="true"></span> @Localizer["KnowledgeBase"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="customer-support-ticket-management-interface" @onclick="CloseNavMenu">
-                                        <span class="oi oi-task" aria-hidden="true"></span> @Localizer["TicketManagement"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="customer-feedback-and-survey-management-tool" @onclick="CloseNavMenu">
-                                        <span class="oi oi-clipboard" aria-hidden="true"></span> @Localizer["FeedbackSurvey"]
-                                    </NavLink>
+
+                                    <!-- Sales-specific links -->
+                                    <AuthorizeView Roles="Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/new" @onclick="CloseNavMenu">
+                                            <span class="oi oi-bell" aria-hidden="true"></span> @Localizer["NewDbList"]
+                                        </NavLink>
+                                        <NavLink class="nav-link submenu-link" href="db/customer/starred" @onclick="CloseNavMenu">
+                                            <span class="oi oi-star" aria-hidden="true"></span> @Localizer["StarredDbList"]
+                                        </NavLink>
+                                    </AuthorizeView>
                                 </div>
                             }
                         </div>
-                    </Authorized>
-                </AuthorizeView>
+                    </AuthorizeView>
 
-                <!-- 📈 영업관리 (기존 Sales 메뉴들을 여기로 통합) -->
-                <AuthorizeView Roles="Sales,Manager" Context="salesContext">
-                    <Authorized>
+                    <!-- 🔄 DB Distribution Management -->
+                    <AuthorizeView Roles="Sales,Manager">
                         <div class="nav-item px-3">
-                            <div class="nav-section-header" @onclick="ToggleSalesSubmenu" style="cursor: pointer;">
-                                <span class="oi oi-graph" aria-hidden="true"></span> 
-                                @Localizer["SalesManagement"]
-                                <span class="submenu-toggle @(showSalesSubmenu ? "expanded" : "collapsed")">▼</span>
+                            <div class="nav-section-header" @onclick="ToggleDbDistributionSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-fork" aria-hidden="true"></span>
+                                @Localizer["DbDistributionManagement"]
+                                <span class="submenu-toggle @(showDbDistributionSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                            
-                            @if (showSalesSubmenu)
+
+                            @if (showDbDistributionSubmenu)
                             {
                                 <div class="nav-submenu">
-                                    <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
-                                        <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["SalesCalendar"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="customer-consultation-notes" @onclick="CloseNavMenu">
-                                        <span class="oi oi-document" aria-hidden="true"></span> @Localizer["ConsultationNotes"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="sales-pipeline" @onclick="CloseNavMenu">
-                                        <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["SalesPipeline"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="contacts" @onclick="CloseNavMenu">
-                                        <span class="oi oi-people" aria-hidden="true"></span> @Localizer["Contacts"]
-                                    </NavLink>
+                                    <!-- Manager-specific links -->
+                                    <AuthorizeView Roles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
+                                            <span class="oi oi-inbox" aria-hidden="true"></span> @Localizer["UnassignedDbList"]
+                                        </NavLink>
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
+                                            <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["DbDistributionStatus"]
+                                        </NavLink>
+                                    </AuthorizeView>
+
+                                    <!-- Sales-specific links -->
+                                    <AuthorizeView Roles="Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/newly-assigned" @onclick="CloseNavMenu">
+                                            <span class="oi oi-envelope-new" aria-hidden="true"></span> @Localizer["NewlyAssignedDb"]
+                                        </NavLink>
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/my-history" @onclick="CloseNavMenu">
+                                            <span class="oi oi-task" aria-hidden="true"></span> @Localizer["MyAssignmentHistory"]
+                                        </NavLink>
+                                    </AuthorizeView>
                                 </div>
                             }
                         </div>
-                    </Authorized>
-                </AuthorizeView>
+                    </AuthorizeView>
 
-                <!-- 📋 리포트 (Manager만) -->
-                <AuthorizeView Roles="Manager" Context="managerContext">
-                    <Authorized>
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
-                                <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
-                            </NavLink>
-                        </div>
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
-                                <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
-                            </NavLink>
-                        </div>
-                    </Authorized>
-                </AuthorizeView>
+                    <!-- Other original menus -->
+                    <AuthorizeView Roles="Manager" Context="managerContext">
+                        <Authorized>
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
+                                    <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
+                                </NavLink>
+                            </div>
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
+                                    <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
+                                </NavLink>
+                            </div>
+                        </Authorized>
+                    </AuthorizeView>
 
-                <!-- ⚙️ 설정 (Admin만) -->
-                <AuthorizeView Roles="Admin" Context="adminContext">
-                    <Authorized>
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
-                                <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["Settings"]
-                            </NavLink>
-                        </div>
-                    </Authorized>
-                </AuthorizeView>
+                    <AuthorizeView Roles="Admin" Context="adminContext">
+                        <Authorized>
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
+                                    <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["Settings"]
+                                </NavLink>
+                            </div>
+                        </Authorized>
+                    </AuthorizeView>
 
-                <div class="nav-item px-3 mt-auto">
-                    <button class="nav-link btn btn-link" @onclick="Logout">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> @Localizer["Logout"]
-                    </button>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="login" @onclick="CloseNavMenu">
-                        <span class="oi oi-account-login" aria-hidden="true"></span> @Localizer["Login"]
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
+                    <!-- Logout button -->
+                    <div class="nav-item px-3 mt-auto">
+                        <button class="nav-link btn btn-link" @onclick="Logout">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> @Localizer["Logout"]
+                        </button>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="login" @onclick="CloseNavMenu">
+                            <span class="oi oi-account-login" aria-hidden="true"></span> @Localizer["Login"]
+                        </NavLink>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>
 
 @code {
-    private bool showCustomerSubmenu = false;
-    private bool showSalesSubmenu = false;
+    private bool showDbCustomerSubmenu = false;
+    private bool showDbDistributionSubmenu = false;
 
-    private void ToggleCustomerSubmenu()
+    private void ToggleDbCustomerSubmenu()
     {
-        showCustomerSubmenu = !showCustomerSubmenu;
+        showDbCustomerSubmenu = !showDbCustomerSubmenu;
     }
 
-    private void ToggleSalesSubmenu()
+    private void ToggleDbDistributionSubmenu()
     {
-        showSalesSubmenu = !showSalesSubmenu;
+        showDbDistributionSubmenu = !showDbDistributionSubmenu;
     }
 
     private async Task CloseNavMenu()
     {
-        // JavaScript 함수 호출하여 메뉴 닫기  
         await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
-    }
-
-    private async Task NavigateAndCloseMenu(string url)
-    {
-        // Close navigation menu and navigate
-        await CloseNavMenu();
-        NavigationManager.NavigateTo(url);
     }
 
     private async Task Logout()
     {
-        await CloseNavMenu(); // 로그아웃 시에도 메뉴 닫기
-        
-        // CustomAuthStateProvider로 캐스팅하여 Logout 메서드 호출
+        await CloseNavMenu();
         if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
         {
             customAuthProvider.Logout();
         }
-        
-        // auth manager를 통한 완전한 로그아웃 처리
         await JSRuntime.InvokeVoidAsync("eval", @"
             if (window.authManager && window.authManager.logout) {
                 window.authManager.logout('manual_logout');

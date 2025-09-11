@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;
 using NexaCRM.WebClient.Services.Mock;
+using NexaCRM.WebClient.Models.Db;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -36,6 +37,7 @@ builder.Services.AddScoped<IReportService, MockReportService>();
 builder.Services.AddScoped<IActivityService, MockActivityService>();
 builder.Services.AddScoped<ISalesManagementService, MockSalesManagementService>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
+builder.Services.AddScoped<IDbDataService, MockDbDataService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;
