@@ -40,7 +40,7 @@
     margin-bottom: 8px; /* Increased spacing */
     font-weight: 600;
     color: #555;
-    font-size: 15px; /* Better readability on mobile */
+    font-size: 16px; /* Better readability on mobile - prevent zoom */
     line-height: 1.3;
 }
 
