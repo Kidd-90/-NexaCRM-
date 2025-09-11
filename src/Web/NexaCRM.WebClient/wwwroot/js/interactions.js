@@ -42,33 +42,25 @@ window.interactionManager = {
             
             // Enhanced touch start feedback
             element.addEventListener('touchstart', (e) => {
-                element.style.setProperty('--touch-scale', '0.97');
-                element.style.setProperty('--touch-opacity', '0.8');
-                element.style.transform = 'scale(var(--touch-scale, 1))';
-                element.style.opacity = 'var(--touch-opacity, 1)';
-                
-                // Add active class for CSS animations
-                element.classList.add('touch-active');
+                element.classList.add('touch-feedback');
+                element.style.transform = 'scale(0.98)';
+                element.style.opacity = '0.8';
             }, { passive: true });
 
             // Enhanced touch end feedback
             element.addEventListener('touchend', (e) => {
                 setTimeout(() => {
-                    element.style.removeProperty('--touch-scale');
-                    element.style.removeProperty('--touch-opacity');
+                    element.classList.remove('touch-feedback');
                     element.style.transform = '';
                     element.style.opacity = '';
-                    element.classList.remove('touch-active');
                 }, 150);
             }, { passive: true });
 
             // Handle touch cancel
             element.addEventListener('touchcancel', (e) => {
-                element.style.removeProperty('--touch-scale');
-                element.style.removeProperty('--touch-opacity');
+                element.classList.remove('touch-feedback');
                 element.style.transform = '';
                 element.style.opacity = '';
-                element.classList.remove('touch-active');
             }, { passive: true });
         });
     },
@@ -96,28 +88,24 @@ window.interactionManager = {
             // Set ripple styles
             ripple.style.cssText = `
                 position: absolute;
-                width: ${size}px;
-                height: ${size}px;
                 left: ${x}px;
                 top: ${y}px;
-                background: var(--focus-ring);
+                width: ${size}px;
+                height: ${size}px;
                 border-radius: 50%;
+                background: rgba(255, 255, 255, 0.6);
                 transform: scale(0);
                 animation: ripple-animation 0.6s linear;
                 pointer-events: none;
                 z-index: 1;
             `;
             
-            // Ensure element has relative positioning
-            if (getComputedStyle(element).position === 'static') {
-                element.style.position = 'relative';
-            }
-            
-            // Add ripple to element
             element.appendChild(ripple);
             
             // Remove ripple after animation
-            setTimeout(() => ripple.remove(), 600);
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
         });
         
         // Add ripple animation CSS
@@ -130,6 +118,7 @@ window.interactionManager = {
             }
             
             .ripple {
+                position: relative;
                 overflow: hidden;
             }
         `;
@@ -146,48 +135,46 @@ window.interactionManager = {
         let isSwipingHorizontally = false;
         
         document.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
             isSwipingHorizontally = false;
         }, { passive: true });
         
         document.addEventListener('touchmove', (e) => {
-            if (!e.touches[0]) return;
+            if (!startX || !startY) return;
             
-            const touch = e.touches[0];
-            const deltaX = touch.clientX - startX;
-            const deltaY = touch.clientY - startY;
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            const deltaX = Math.abs(currentX - startX);
+            const deltaY = Math.abs(currentY - startY);
             
-            // Determine if this is a horizontal swipe
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+            // Determine swipe direction
+            if (deltaX > deltaY && deltaX > 10) {
                 isSwipingHorizontally = true;
-                
-                // Handle sidebar swipe gestures
-                const sidebar = document.querySelector('.sidebar');
-                if (sidebar) {
-                    // Swipe right to open menu (when starting from left edge)
-                    if (startX < 50 && deltaX > 100) {
-                        window.navigationHelper?.toggleMenu?.(false);
-                    }
-                    // Swipe left to close menu (when menu is open)
-                    else if (!sidebar.classList.contains('collapse') && deltaX < -100) {
-                        window.navigationHelper?.toggleMenu?.(true);
-                    }
-                }
             }
         }, { passive: true });
         
         document.addEventListener('touchend', (e) => {
-            // Handle swipe actions for cards
-            if (isSwipingHorizontally) {
-                const card = e.target.closest('.dashboard-card, .card');
-                if (card) {
-                    card.style.transform = '';
-                    card.style.transition = 'transform 0.3s ease';
+            if (!startX || !startY || !isSwipingHorizontally) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const deltaX = endX - startX;
+            
+            // Handle swipe actions
+            if (Math.abs(deltaX) > 50) {
+                const swipeTarget = e.target.closest('.swipeable, .dashboard-card, .nav-item');
+                if (swipeTarget) {
+                    if (deltaX > 0) {
+                        // Swipe right
+                        swipeTarget.dispatchEvent(new CustomEvent('swipeRight'));
+                    } else {
+                        // Swipe left
+                        swipeTarget.dispatchEvent(new CustomEvent('swipeLeft'));
+                    }
                 }
             }
             
+            // Reset values
             startX = 0;
             startY = 0;
             isSwipingHorizontally = false;
@@ -236,30 +223,24 @@ window.interactionManager = {
         }, { passive: true });
         
         mainContent.addEventListener('touchmove', (e) => {
-            if (!isPulling || mainContent.scrollTop > 0) return;
+            if (!isPulling) return;
             
             currentY = e.touches[0].clientY;
             const pullDistance = Math.max(0, currentY - startY);
             
             if (pullDistance > 0) {
                 e.preventDefault();
+                const translateY = Math.min(pullDistance * 0.5, refreshThreshold);
+                mainContent.style.transform = `translateY(${translateY}px)`;
                 
-                // Update indicator position and appearance
-                const progress = Math.min(pullDistance / refreshThreshold, 1);
-                refreshIndicator.style.top = `${-60 + (pullDistance * 0.5)}px`;
-                refreshIndicator.style.opacity = progress;
+                // Update indicator
+                refreshIndicator.style.top = `${translateY - 60}px`;
+                refreshIndicator.style.opacity = Math.min(translateY / refreshThreshold, 1);
                 
-                const icon = refreshIndicator.querySelector('.refresh-icon');
-                const text = refreshIndicator.querySelector('.refresh-text');
-                
-                if (pullDistance >= refreshThreshold) {
-                    icon.style.transform = 'rotate(180deg)';
-                    text.textContent = 'Release to refresh';
-                    refreshIndicator.style.color = 'var(--primary-color)';
+                if (translateY >= refreshThreshold) {
+                    refreshIndicator.innerHTML = '<div class="refresh-icon">↑</div><div class="refresh-text">Release to refresh</div>';
                 } else {
-                    icon.style.transform = `rotate(${progress * 180}deg)`;
-                    text.textContent = 'Pull to refresh';
-                    refreshIndicator.style.color = 'var(--text-secondary)';
+                    refreshIndicator.innerHTML = '<div class="refresh-icon">↓</div><div class="refresh-text">Pull to refresh</div>';
                 }
             }
         }, { passive: false });
@@ -267,22 +248,28 @@ window.interactionManager = {
         mainContent.addEventListener('touchend', (e) => {
             if (!isPulling) return;
             
-            const pullDistance = currentY - startY;
+            const pullDistance = Math.max(0, currentY - startY);
             
             if (pullDistance >= refreshThreshold) {
                 // Trigger refresh
-                refreshIndicator.querySelector('.refresh-text').textContent = 'Refreshing...';
-                refreshIndicator.querySelector('.refresh-icon').style.animation = 'spin 1s linear infinite';
+                refreshIndicator.innerHTML = '<div class="refresh-icon spinning">⟳</div><div class="refresh-text">Refreshing...</div>';
                 
-                // Simulate refresh (replace with actual refresh logic)
+                // Dispatch refresh event
+                window.dispatchEvent(new CustomEvent('pullToRefresh'));
+                
                 setTimeout(() => {
-                    window.location.reload();
+                    mainContent.style.transform = '';
+                    refreshIndicator.style.top = '-60px';
+                    refreshIndicator.style.opacity = '0';
+                    refreshIndicator.innerHTML = '<div class="refresh-icon">↓</div><div class="refresh-text">Pull to refresh</div>';
                 }, 1000);
+            } else {
+                // Reset
+                mainContent.style.transform = '';
+                refreshIndicator.style.top = '-60px';
+                refreshIndicator.style.opacity = '0';
             }
             
-            // Reset
-            refreshIndicator.style.top = '-60px';
-            refreshIndicator.style.opacity = '0';
             isPulling = false;
             startY = 0;
             currentY = 0;
@@ -345,27 +332,26 @@ window.interactionManager = {
         const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
         
         document.addEventListener('keydown', (e) => {
-            // Enhanced keyboard shortcuts
+            const focusableElementsList = document.querySelectorAll(focusableElements);
+            const currentIndex = Array.from(focusableElementsList).indexOf(document.activeElement);
+            
             switch (e.key) {
-                case '/':
-                    // Focus search if available
-                    e.preventDefault();
-                    const searchInput = document.querySelector('input[type="search"], input[placeholder*="search" i]');
-                    if (searchInput) {
-                        searchInput.focus();
+                case 'Tab':
+                    // Enhanced tab navigation with visual feedback
+                    if (document.activeElement) {
+                        document.activeElement.classList.add('keyboard-focused');
+                        setTimeout(() => {
+                            if (document.activeElement) {
+                                document.activeElement.classList.remove('keyboard-focused');
+                            }
+                        }, 2000);
                     }
                     break;
                     
-                case 'Escape':
-                    // Close modals, menus, etc.
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar && !sidebar.classList.contains('collapse')) {
-                        window.navigationHelper?.toggleMenu?.(true);
-                    }
-                    
-                    // Blur current element
-                    if (document.activeElement) {
-                        document.activeElement.blur();
+                case 'Enter':
+                    // Enhanced enter key handling
+                    if (document.activeElement && document.activeElement.classList.contains('keyboard-focused')) {
+                        document.activeElement.click();
                     }
                     break;
             }
@@ -389,10 +375,10 @@ window.interactionManager = {
             const inputs = form.querySelectorAll('input, select, textarea');
             
             inputs.forEach(input => {
-                // Add floating label effect
+                // Setup floating labels
                 window.interactionManager.setupFloatingLabel(input);
                 
-                // Add real-time validation
+                // Setup real-time validation
                 window.interactionManager.setupRealTimeValidation(input);
             });
         });
@@ -481,21 +467,13 @@ window.interactionManager = {
         
         input.addEventListener('input', () => {
             clearTimeout(validationTimeout);
-            
-            // Remove existing validation classes
-            input.classList.remove('validation-success', 'validation-error');
-            
-            // Debounce validation
             validationTimeout = setTimeout(() => {
                 const isValid = input.checkValidity();
+                input.classList.toggle('validation-success', isValid);
+                input.classList.toggle('validation-error', !isValid);
                 
-                if (input.value.trim()) {
-                    input.classList.add(isValid ? 'validation-success' : 'validation-error');
-                    
-                    // Show validation message
-                    window.interactionManager.showValidationFeedback(input, isValid);
-                }
-            }, 300);
+                window.interactionManager.showValidationFeedback(input, isValid);
+            }, 500);
         });
         
         // Add validation CSS

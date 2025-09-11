@@ -68,7 +68,6 @@ window.navigationHelper = {
                     
                 case 'Escape':
                     e.preventDefault();
-                    // Close menu
                     window.navigationHelper.toggleMenu(true);
                     break;
                     
@@ -119,21 +118,20 @@ window.navigationHelper = {
             const header = item.querySelector('.nav-section-header');
             if (header) {
                 header.addEventListener('click', () => {
-                    // Smooth scroll to ensure expanded submenu is visible
-                    setTimeout(() => {
-                        const submenu = item.querySelector('.nav-submenu');
-                        if (submenu && submenu.offsetHeight > 0) {
-                            const itemBottom = item.offsetTop + item.offsetHeight;
-                            const containerBottom = container.scrollTop + container.clientHeight;
-                            
-                            if (itemBottom > containerBottom) {
-                                container.scrollTo({
-                                    top: item.offsetTop,
-                                    behavior: 'smooth'
+                    const content = item.querySelector('.nav-section-content');
+                    if (content) {
+                        const isExpanded = !content.classList.contains('collapsed');
+                        content.classList.toggle('collapsed', isExpanded);
+                        
+                        if (!isExpanded) {
+                            setTimeout(() => {
+                                header.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'nearest'
                                 });
-                            }
+                            }, 100);
                         }
-                    }, 100);
+                    }
                 });
             }
         });
@@ -211,11 +209,16 @@ window.navigationHelper = {
         const dashboardCards = document.querySelectorAll('.dashboard-card');
         dashboardCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                // Add smooth transition effect
-                card.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    card.style.transform = 'scale(1)';
-                }, 150);
+                const targetSection = card.dataset.targetSection;
+                if (targetSection) {
+                    const targetElement = document.querySelector(targetSection);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
             });
         });
     },
@@ -230,22 +233,19 @@ window.navigationHelper = {
         interactiveElements.forEach(element => {
             // Add touch start feedback
             element.addEventListener('touchstart', (e) => {
-                element.style.opacity = '0.85';
-                element.style.transform = 'scale(0.98)';
+                element.classList.add('touch-active');
             }, { passive: true });
 
             // Remove touch feedback
             element.addEventListener('touchend', (e) => {
                 setTimeout(() => {
-                    element.style.opacity = '';
-                    element.style.transform = '';
-                }, 100);
+                    element.classList.remove('touch-active');
+                }, 150);
             }, { passive: true });
 
             // Handle touch cancel
             element.addEventListener('touchcancel', (e) => {
-                element.style.opacity = '';
-                element.style.transform = '';
+                element.classList.remove('touch-active');
             }, { passive: true });
         });
 
@@ -263,27 +263,17 @@ window.navigationHelper = {
         const dashboardCards = document.querySelectorAll('.dashboard-card');
         dashboardCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                const route = card.dataset.route;
-                if (!route) return;
-
-                console.log(`Dashboard card clicked, route: ${route}`);
-                
-                // Add visual feedback
+                // Add click animation
                 card.classList.add('clicked');
                 setTimeout(() => {
                     card.classList.remove('clicked');
-                }, 300);
-
-                if (route.startsWith('#')) {
-                    // Handle smooth scrolling to section
-                    const sectionId = route.substring(1);
-                    const element = document.getElementById(sectionId);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                    }
-                } else {
-                    // Navigate to new page
-                    window.location.href = route;
+                }, 200);
+                
+                // Handle card action
+                const action = card.dataset.action;
+                if (action) {
+                    // Execute card action
+                    console.log('Dashboard card action:', action);
                 }
             });
         });
@@ -292,16 +282,11 @@ window.navigationHelper = {
         const dashboardButtons = document.querySelectorAll('.dashboard-button');
         dashboardButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                e.stopPropagation();
-                
-                // Add click animation
-                button.style.transform = 'scale(0.95)';
+                // Add click feedback
+                button.classList.add('clicked');
                 setTimeout(() => {
-                    button.style.transform = '';
-                }, 100);
-
-                // Handle button functionality
-                console.log('Dashboard button clicked');
+                    button.classList.remove('clicked');
+                }, 200);
             });
         });
 
@@ -309,14 +294,9 @@ window.navigationHelper = {
         const dashboardSidebarLinks = document.querySelectorAll('.dashboard-sidebar a');
         dashboardSidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                // Close mobile navigation when dashboard sidebar link is clicked
-                const sidebar = document.querySelector('.sidebar');
-                const overlay = document.querySelector('.mobile-overlay');
-                
-                if (window.innerWidth <= 768) {
-                    if (sidebar) sidebar.classList.add('collapse');
-                    if (overlay) overlay.classList.remove('show');
-                }
+                // Add active state
+                dashboardSidebarLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
             });
         });
     },
@@ -330,17 +310,17 @@ window.navigationHelper = {
             const isMobile = window.innerWidth <= 768;
 
             if (dashboardSidebar) {
-                dashboardSidebar.style.display = isMobile ? 'none' : '';
+                dashboardSidebar.style.display = isMobile ? 'none' : 'block';
             }
             if (dashboardTopNav) {
-                dashboardTopNav.style.display = isMobile ? 'none' : '';
+                dashboardTopNav.style.display = isMobile ? 'none' : 'flex';
             }
 
             // Adjust main content spacing on mobile
             const dashboardMainContent = document.querySelector('.dashboard-main-content');
             if (dashboardMainContent && isMobile) {
-                dashboardMainContent.style.maxWidth = '100%';
-                dashboardMainContent.style.padding = '1rem';
+                dashboardMainContent.style.paddingLeft = '0';
+                dashboardMainContent.style.paddingTop = '0';
             }
         };
 
@@ -371,13 +351,12 @@ window.navigationHelper = {
         window.addEventListener('load', () => {
             const wasUnloading = sessionStorage.getItem('isUnloading');
             if (!wasUnloading) {
-                // 브라우저가 완전히 종료되었다가 다시 시작된 경우
-                // localStorage의 인증 정보 제거
+                // 브라우저 종료 후 재시작: 로그아웃 처리
                 const username = localStorage.getItem('username');
-                if (username) {
-                    console.log('Browser was closed, clearing authentication data');
+                if (username && username !== 'null') {
                     localStorage.removeItem('username');
                     localStorage.removeItem('roles');
+                    window.location.href = '/login';
                 }
             }
             // cleanup
@@ -390,16 +369,14 @@ window.navigationHelper = {
 
         const resetTimeout = () => {
             lastActiveTime = Date.now();
-            if (timeoutId) clearTimeout(timeoutId);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
             
             timeoutId = setTimeout(() => {
-                const username = localStorage.getItem('username');
-                if (username) {
-                    console.log('Session timeout, clearing authentication data');
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('roles');
-                    window.location.href = '/login';
-                }
+                localStorage.removeItem('username');
+                localStorage.removeItem('roles');
+                window.location.href = '/login';
             }, 30 * 60 * 1000); // 30분
         };
 
@@ -411,12 +388,18 @@ window.navigationHelper = {
         // 페이지 포커스/블러 이벤트
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                // 탭이 비활성화됨
-                console.log('Tab became inactive');
+                // 페이지가 백그라운드로 갔을 때
+                lastActiveTime = Date.now();
             } else {
-                // 탭이 활성화됨
-                console.log('Tab became active');
-                resetTimeout();
+                // 페이지가 다시 활성화되었을 때
+                const timeDiff = Date.now() - lastActiveTime;
+                if (timeDiff > 30 * 60 * 1000) { // 30분 이상 지났으면
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('roles');
+                    window.location.href = '/login';
+                } else {
+                    resetTimeout();
+                }
             }
         });
 
@@ -432,16 +415,10 @@ window.navigationHelper = {
         if (sidebar) {
             if (isCollapsed) {
                 sidebar.classList.add('collapse');
-                // Hide overlay when menu is closed
-                if (overlay) {
-                    overlay.classList.remove('show');
-                }
+                if (overlay) overlay.classList.remove('show');
             } else {
                 sidebar.classList.remove('collapse');
-                // Show overlay when menu is open
-                if (overlay) {
-                    overlay.classList.add('show');
-                }
+                if (overlay) overlay.classList.add('show');
             }
         }
     },
@@ -480,21 +457,11 @@ window.navigationHelper = {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    // Check if dashboard content was added
-                    const dashboardAdded = Array.from(mutation.addedNodes).some(node => 
-                        node.nodeType === 1 && (
-                            node.querySelector && (
-                                node.querySelector('[data-page="main-dashboard"]') ||
-                                node.classList && node.classList.contains('dashboard-card')
-                            )
-                        )
-                    );
-                    
-                    if (dashboardAdded) {
-                        setTimeout(() => {
-                            window.navigationHelper.setupMobileDashboardNavigation();
-                        }, 100);
-                    }
+                    // Re-setup interactions for new elements
+                    setTimeout(() => {
+                        window.navigationHelper.setupTouchInteractions();
+                        window.navigationHelper.setupDashboardClickHandlers();
+                    }, 100);
                 }
             });
         });
