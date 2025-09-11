@@ -30,7 +30,7 @@
 
 .view-controls {
     display: flex;
-    gap: 5px;
+    gap: 8px; /* Ensure minimum 8px spacing between buttons */
 }
 
 .view-controls .btn {
@@ -48,7 +48,7 @@
 .date-navigation {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px; /* Increased for better touch spacing */
 }
 
 .current-date {
@@ -121,8 +121,8 @@
 .day-appointments {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    padding: 2px;
+    gap: 4px; /* Increased gap to prevent overlapping */
+    padding: 4px; /* Increased padding */
     max-height: 80px;
     overflow-y: auto;
 }
@@ -410,7 +410,7 @@
 
 .modal-footer {
     display: flex;
-    gap: 10px;
+    gap: 12px; /* Increased gap for better touch spacing */
     justify-content: flex-end;
     border-top: 1px solid #dee2e6;
     padding-top: 15px;
@@ -788,6 +788,122 @@
         margin-top: 4px;
         font-size: 12px;
         padding: 6px 10px;
+    }
+}
+
+/* Tablet layout (768px to 1024px) - Optimized for landscape and portrait */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sales-calendar-container {
+        padding: 18px;
+    }
+    
+    .calendar-header {
+        padding: 18px;
+    }
+    
+    .header-controls {
+        flex-direction: row; /* Side-by-side layout on tablet */
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .calendar-title {
+        font-size: 1.4rem;
+        order: 1;
+        flex: 0 0 auto;
+    }
+    
+    .view-controls {
+        order: 2;
+        gap: 8px;
+    }
+    
+    .view-controls .btn {
+        min-height: 48px;
+        font-size: 15px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        flex: 0 0 auto;
+        min-width: 80px;
+    }
+    
+    .date-navigation {
+        order: 3;
+        gap: 12px;
+        flex: 1;
+        justify-content: flex-end;
+    }
+    
+    .date-navigation .btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+    
+    .current-date {
+        font-size: 16px;
+        font-weight: 600;
+        min-width: 160px;
+        text-align: center;
+    }
+    
+    /* Optimized calendar grid for tablet */
+    .day-cell {
+        min-height: 100px;
+        padding: 12px 8px;
+    }
+    
+    .day-number {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .appointment-item {
+        font-size: 12px;
+        padding: 5px 8px;
+        margin-bottom: 2px;
+        min-height: 24px;
+        border-radius: 5px;
+    }
+    
+    /* Week view optimizations for tablet */
+    .week-view {
+        height: 500px;
+    }
+    
+    .week-day-header {
+        padding: 10px 6px;
+        font-size: 13px;
+    }
+    
+    .time-slot {
+        min-height: 50px;
+        padding: 8px 6px;
+    }
+    
+    /* Modal optimizations for tablet */
+    .modal-content {
+        width: 85%;
+        max-width: 600px;
+        padding: 24px;
+        border-radius: 10px;
+    }
+    
+    .modal-footer {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+    
+    .modal-footer .btn {
+        width: auto;
+        min-width: 120px;
+        font-size: 15px;
+        padding: 12px 18px;
     }
 }
 

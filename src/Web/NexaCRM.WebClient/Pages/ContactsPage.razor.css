@@ -325,15 +325,15 @@
     }
 }
 
-/* Tablet view (769px to 1024px) */
+/* Tablet view (769px to 1024px) - Enhanced layout */
 @media (min-width: 769px) and (max-width: 1024px) {
     .header-controls {
-        gap: 1rem;
+        gap: 1.25rem;
     }
 
     .search-container {
-        min-width: 8rem;
-        max-width: 14rem;
+        min-width: 12rem;
+        max-width: 16rem;
     }
 
     .contacts-table th,
@@ -344,6 +344,39 @@
     
     .contacts-table th {
         font-size: 0.75rem;
+    }
+    
+    /* Improved table interaction for tablet touch */
+    .contacts-table tbody tr {
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .contacts-table tbody tr:hover {
+        background-color: #f8faff;
+    }
+    
+    .contacts-table tbody tr:active {
+        background-color: #e0e7ff;
+        transition-duration: 0.1s;
+    }
+    
+    /* Better button sizing for tablet */
+    .contacts-table .btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    /* Enhanced header for tablet */
+    .contacts-header {
+        padding: 1.25rem 0 1.5rem 0;
+    }
+    
+    .contacts-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
     }
 }
 
