@@ -113,6 +113,9 @@
     {
         IsExpanded = false;
         StateHasChanged();
+        
+        // Add a small delay to ensure state changes are processed
+        await Task.Delay(10);
     }
 
     private async Task HandleActionClick(string action)

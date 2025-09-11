@@ -537,7 +537,6 @@ input, select, textarea {
     /* Better touch scrolling for dashboard */
     .dashboard-container {
         -webkit-overflow-scrolling: touch;
-        overflow-scrolling: touch;
     }
 }
 

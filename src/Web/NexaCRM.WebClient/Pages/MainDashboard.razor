@@ -8,29 +8,29 @@
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;' data-page="main-dashboard">
     <!-- Mobile Header Bar -->
-    <div class="mobile-header">
-        <div class="mobile-header-content">
-            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]">
+    <div class="mobile-header" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 999999 !important; background-color: #ffffff !important; border-bottom: 1px solid #e5e7eb !important; height: 60px !important; width: 100vw !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;">
+        <div class="mobile-header-content" style="display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; padding: 0 1rem !important;">
+            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]" style="display: flex !important; align-items: center !important; justify-content: center !important; padding: 0.5rem !important; background: none !important; border: none !important; color: #374151 !important;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
                 </svg>
             </button>
             
-            <div class="mobile-header-title">
-                <h1 class="mobile-title">@Localizer["CRM"]</h1>
+            <div class="mobile-header-title" style="display: flex !important; flex: 1 !important; justify-content: center !important;">
+                <h1 class="mobile-title" style="display: block !important; font-size: 1.25rem !important; font-weight: 700 !important; color: #374151 !important; margin: 0 !important;">@Localizer["CRM"]</h1>
             </div>
             
-            <div class="mobile-header-actions">
-                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]">
+            <div class="mobile-header-actions" style="display: flex !important; gap: 0.5rem !important; align-items: center !important;">
+                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]" style="display: flex !important; align-items: center !important; justify-content: center !important; padding: 0.5rem !important; background: none !important; border: none !important; color: #374151 !important;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                     </svg>
                 </button>
-                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]">
+                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]" style="display: flex !important; align-items: center !important; justify-content: center !important; padding: 0.5rem !important; background: none !important; border: none !important; color: #374151 !important; position: relative !important;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
                     </svg>
-                    <span class="notification-badge">3</span>
+                    <span class="notification-badge" style="display: block !important; position: absolute !important; top: -2px !important; right: -2px !important; background-color: #ef4444 !important; color: white !important; font-size: 0.75rem !important; padding: 0.125rem 0.375rem !important; border-radius: 0.5rem !important; min-width: 1rem !important; text-align: center !important;">3</span>
                 </button>
             </div>
         </div>
@@ -169,63 +169,73 @@
                                 salesLink = "/sales-manager-dashboard";
                             }
                         }
-                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2">
-                            <div class="text-[#0e131b]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                            <div class="text-[#0e131b]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                                 <path
                                     d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"
                                 ></path>
                                 </svg>
                             </div>
-                            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Sales"]</p>
+                            <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Sales"]</p>
+                        </a>
+                        <a href="/contacts" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                            <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
+                                <path
+                                    d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
+                                ></path>
+                                </svg>
+                            </div>
+                            <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Contacts"]</p>
                         </a>
                     </Authorized>
                 </AuthorizeView>
-                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                    <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                         <path
                             d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48.07,48.07,0,0,0,240,120ZM40,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C126.65,155,82.84,164.07,40,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Marketing"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Marketing"]</p>
                 </a>
-                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="Headset" data-size="24px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                    <div class="text-[#0e131b]" data-icon="Headset" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                         <path
                             d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88.12,88.12,0,0,1,190.54,65.93,87.39,87.39,0,0,1,215.65,120H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h24a24,24,0,0,1-24,24H136a8,8,0,0,0,0,16h56a40,40,0,0,0,40-40V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm128,56a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24v56Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Service"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Service"]</p>
                 </a>
-                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                    <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                         <path
                             d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Reports"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Reports"]</p>
                 </a>
-                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="Gear" data-size="24px" data-weight="regular">
+                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2" style="color: #0e131b !important;">
+                    <div class="text-[#0e131b]" data-icon="Gear" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                             d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Settings"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Settings"]</p>
                 </a>
             </div>
             </div>
         </div>
         </div>
-        <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content" style="padding-top: 70px;">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3 dashboard-header dashboard-top-nav">
             <div class="flex items-center gap-4 text-[#0e131b]">
             <div class="size-4">
@@ -320,9 +330,9 @@
             </div>
             </label>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["DashboardOverview"]</h2>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid">
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/sales-pipeline">
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" style="display: block !important; visibility: visible !important;">@Localizer["DashboardOverview"]</h2>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid" style="display: grid !important; visibility: visible !important;">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/sales-pipeline" style="display: flex !important; visibility: visible !important;">
             <div class="text-[#0e131b]" data-icon="Funnel" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -332,7 +342,7 @@
             </div>
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPipeline"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/reports">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/reports" style="display: flex !important; visibility: visible !important;">
             <div class="text-[#0e131b]" data-icon="Target" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -342,7 +352,7 @@
             </div>
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["QuarterlyPerformance"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/tasks-page">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/tasks-page" style="display: flex !important; visibility: visible !important;">
             <div class="text-[#0e131b]" data-icon="ListBullets" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -352,7 +362,7 @@
             </div>
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Tasks"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="#recent-activity">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="#recent-activity" style="display: flex !important; visibility: visible !important;">
             <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -363,11 +373,11 @@
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["RecentActivity"]</h2>
             </button>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["SalesPipelineSummary"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["DealsByStage"]</p>
-            <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3">
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" style="display: block !important; visibility: visible !important;">@Localizer["SalesPipelineSummary"]</h2>
+        <div class="flex flex-wrap gap-4 px-4 py-6" style="display: flex !important; visibility: visible !important;">
+            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6" style="display: flex !important; visibility: visible !important; width: 100%; min-width: auto;">
+            <p class="text-[#0e131b] text-base font-medium leading-normal" style="display: block !important; visibility: visible !important;">@Localizer["DealsByStage"]</p>
+            <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3" style="display: grid !important; visibility: visible !important; min-height: 120px;">
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Prospecting"]</p>
                 <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 60%;"></div></div>
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Qualification"]</p>
@@ -383,11 +393,11 @@
             </div>
             </div>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["QuarterlyPerformance"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["RevenueByQuarter"]</p>
-            <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" style="display: block !important; visibility: visible !important;">@Localizer["QuarterlyPerformance"]</h2>
+        <div class="flex flex-wrap gap-4 px-4 py-6" style="display: flex !important; visibility: visible !important;">
+            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6" style="display: flex !important; visibility: visible !important; width: 100%; min-width: auto;">
+            <p class="text-[#0e131b] text-base font-medium leading-normal" style="display: block !important; visibility: visible !important;">@Localizer["RevenueByQuarter"]</p>
+            <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3" style="display: grid !important; visibility: visible !important; min-height: 120px;">
                 <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Q1"]</p>
                 <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 90%;"></div>
@@ -401,7 +411,7 @@
         </div>
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Tasks"]</h2>
         <div class="px-4 py-3 container">
-            <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50 dashboard-table-container">
+            <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50 dashboard-table-container" style="visibility: visible !important;">
             <table class="flex-1">
                 <thead>
                 <tr class="bg-slate-50">
@@ -422,9 +432,10 @@
                     </td>
                     <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                     <button
-                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
+                        style="background-color: #e7ecf3 !important; color: #0e131b !important;"
                     >
-                        <span class="truncate">@Localizer["High"]</span>
+                        <span class="truncate" style="color: #0e131b !important;">@Localizer["High"]</span>
                     </button>
                     </td>
                 </tr>
@@ -437,9 +448,10 @@
                     </td>
                     <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                     <button
-                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
+                        style="background-color: #e7ecf3 !important; color: #0e131b !important;"
                     >
-                        <span class="truncate">@Localizer["Medium"]</span>
+                        <span class="truncate" style="color: #0e131b !important;">@Localizer["Medium"]</span>
                     </button>
                     </td>
                 </tr>
@@ -452,9 +464,10 @@
                     </td>
                     <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                     <button
-                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
+                        style="background-color: #e7ecf3 !important; color: #0e131b !important;"
                     >
-                        <span class="truncate">@Localizer["Low"]</span>
+                        <span class="truncate" style="color: #0e131b !important;">@Localizer["Low"]</span>
                     </button>
                     </td>
                 </tr>
@@ -573,8 +586,20 @@
         showMobileNotifications = false;
         StateHasChanged();
         
-        // Toggle the main navigation menu
-        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", false);
+        // Toggle the main navigation menu - with error handling
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                if (window.navigationHelper && window.navigationHelper.toggleMenu) {
+                    window.navigationHelper.toggleMenu(false);
+                }
+            ");
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't break functionality
+            Console.WriteLine($"Navigation helper error: {ex.Message}");
+        }
     }
 
     private async Task ToggleMobileSearch()
@@ -589,16 +614,27 @@
         
         StateHasChanged();
         
-        // Focus on search input if opening
+        // Focus on search input if opening - with error handling
         if (showMobileSearch)
         {
             await Task.Delay(100); // Wait for animation
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                const searchInput = document.querySelector('.mobile-search-input input');
-                if (searchInput) {
-                    searchInput.focus();
-                }
-            ");
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    try {
+                        const searchInput = document.querySelector('.mobile-search-input input');
+                        if (searchInput) {
+                            searchInput.focus();
+                        }
+                    } catch (e) {
+                        console.warn('Search input focus failed:', e);
+                    }
+                ");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Search input focus error: {ex.Message}");
+            }
         }
     }
 
@@ -648,55 +684,226 @@
         
         // Clear search query
         mobileSearchQuery = "";
+        
+        // Add a small delay to ensure state changes are processed
+        await Task.Delay(10);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // Initialize mobile dashboard navigation after render
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupMobileDashboardNavigation");
+            // Initialize mobile dashboard navigation after render - with error handling
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    try {
+                        if (window.navigationHelper && window.navigationHelper.setupMobileDashboardNavigation) {
+                            window.navigationHelper.setupMobileDashboardNavigation();
+                        }
+                    } catch (e) {
+                        console.warn('Navigation helper setup failed:', e);
+                    }
+                ");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Navigation helper setup error: {ex.Message}");
+            }
             
-            // Setup mobile dashboard specific functionality
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                // Handle mobile panel backdrop clicks
-                document.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('mobile-search-bar') && e.target.classList.contains('expanded')) {
-                        // Click on backdrop should close search
-                        const closeBtn = document.querySelector('.mobile-search-close');
-                        if (closeBtn) closeBtn.click();
-                    }
-                    if (e.target.classList.contains('mobile-notifications-panel') && e.target.classList.contains('expanded')) {
-                        // Click on backdrop should close notifications
-                        const closeBtn = document.querySelector('.mobile-notifications-close');
-                        if (closeBtn) closeBtn.click();
-                    }
-                });
-                
-                // Setup swipe gestures for mobile panels
-                let touchStartY = 0;
-                document.addEventListener('touchstart', (e) => {
-                    touchStartY = e.touches[0].clientY;
-                }, { passive: true });
-                
-                document.addEventListener('touchend', (e) => {
-                    const touchEndY = e.changedTouches[0].clientY;
-                    const diff = touchStartY - touchEndY;
-                    
-                    // Swipe up to close panels
-                    if (diff > 50) {
-                        const expandedPanels = document.querySelectorAll('.mobile-search-bar.expanded, .mobile-notifications-panel.expanded');
-                        expandedPanels.forEach(panel => {
-                            const closeBtn = panel.querySelector('.mobile-search-close, .mobile-notifications-close');
-                            if (closeBtn) closeBtn.click();
+            // Setup mobile dashboard specific functionality - with error handling
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    try {
+                        // Force mobile header to be visible
+                        const mobileHeader = document.querySelector('.mobile-header');
+                        if (mobileHeader && window.innerWidth <= 768) {
+                            mobileHeader.style.display = 'flex';
+                            mobileHeader.style.visibility = 'visible';
+                            mobileHeader.style.opacity = '1';
+                            mobileHeader.style.position = 'fixed';
+                            mobileHeader.style.top = '0';
+                            mobileHeader.style.left = '0';
+                            mobileHeader.style.right = '0';
+                            mobileHeader.style.zIndex = '999999';
+                            mobileHeader.style.backgroundColor = '#ffffff';
+                            mobileHeader.style.height = '60px';
+                            mobileHeader.style.width = '100vw';
+                            mobileHeader.style.borderBottom = '1px solid #e5e7eb';
+                            mobileHeader.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                            
+                            // Ensure all child elements are visible
+                            const headerContent = mobileHeader.querySelector('.mobile-header-content');
+                            if (headerContent) {
+                                headerContent.style.display = 'flex';
+                                headerContent.style.width = '100%';
+                                headerContent.style.alignItems = 'center';
+                                headerContent.style.justifyContent = 'space-between';
+                                headerContent.style.padding = '0 16px';
+                            }
+                            
+                            const mobileTitle = mobileHeader.querySelector('.mobile-title');
+                            if (mobileTitle) {
+                                mobileTitle.style.display = 'block';
+                                mobileTitle.style.color = '#000000';
+                                mobileTitle.style.fontSize = '20px';
+                                mobileTitle.style.fontWeight = '700';
+                            }
+                            
+                            // Check for dark mode and adjust colors
+                            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                            if (isDarkMode) {
+                                mobileHeader.style.backgroundColor = '#1f2937';
+                                mobileHeader.style.borderBottomColor = '#374151';
+                                if (mobileTitle) {
+                                    mobileTitle.style.color = '#ffffff';
+                                }
+                                const buttons = mobileHeader.querySelectorAll('button');
+                                buttons.forEach(btn => {
+                                    btn.style.color = '#ffffff';
+                                });
+                            }
+                        }
+                        
+                        // Fix dark mode button text colors
+                        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                        if (isDarkMode) {
+                            if (window.innerWidth <= 768) {
+                                const dashboardCards = document.querySelectorAll('.dashboard-card');
+                                dashboardCards.forEach(card => {
+                                    card.style.backgroundColor = '#374151';
+                                    card.style.borderColor = '#4b5563';
+                                    card.style.color = '#ffffff';
+                                    
+                                    const textElements = card.querySelectorAll('h2, span, .text-\\[#0e131b\\]');
+                                    textElements.forEach(el => {
+                                        el.style.color = '#ffffff';
+                                    });
+                                });
+                            }
+                            
+                            // Fix priority button text colors in dark mode
+                            const priorityButtons = document.querySelectorAll('.priority-button');
+                            priorityButtons.forEach(button => {
+                                button.style.backgroundColor = '#374151';
+                                button.style.color = '#ffffff';
+                                button.style.borderColor = '#4b5563';
+                                
+                                const span = button.querySelector('span');
+                                if (span) {
+                                    span.style.color = '#ffffff';
+                                }
+                            });
+                            
+                            // Fix sidebar navigation links in dark mode
+                            const sidebarLinks = document.querySelectorAll('.dashboard-sidebar a');
+                            sidebarLinks.forEach(link => {
+                                link.style.color = '#ffffff !important';
+                                link.style.setProperty('color', '#ffffff', 'important');
+                                
+                                const allElements = link.querySelectorAll('*');
+                                allElements.forEach(el => {
+                                    el.style.color = '#ffffff !important';
+                                    el.style.setProperty('color', '#ffffff', 'important');
+                                });
+                                
+                                const textElements = link.querySelectorAll('p, div[data-icon], svg');
+                                textElements.forEach(el => {
+                                    el.style.color = '#ffffff !important';
+                                    el.style.setProperty('color', '#ffffff', 'important');
+                                    if (el.tagName === 'SVG') {
+                                        el.style.fill = '#ffffff !important';
+                                        el.style.setProperty('fill', '#ffffff', 'important');
+                                    }
+                                });
+                            });
+                            
+                            // Fix sidebar background in dark mode
+                            const sidebar = document.querySelector('.dashboard-sidebar');
+                            if (sidebar) {
+                                sidebar.style.backgroundColor = '#1f2937';
+                                
+                                // Apply to all nested elements
+                                const allSidebarElements = sidebar.querySelectorAll('*');
+                                allSidebarElements.forEach(el => {
+                                    if (el.tagName === 'A' || el.tagName === 'P' || el.tagName === 'DIV') {
+                                        el.style.color = '#ffffff !important';
+                                        el.style.setProperty('color', '#ffffff', 'important');
+                                    }
+                                    if (el.tagName === 'SVG') {
+                                        el.style.fill = '#ffffff !important';
+                                        el.style.setProperty('fill', '#ffffff', 'important');
+                                    }
+                                });
+                            }
+                        }
+                        // Handle mobile panel backdrop clicks
+                        document.addEventListener('click', (e) => {
+                            try {
+                                if (e.target && e.target.classList) {
+                                    if (e.target.classList.contains('mobile-search-bar') && e.target.classList.contains('expanded')) {
+                                        // Click on backdrop should close search
+                                        const closeBtn = document.querySelector('.mobile-search-close');
+                                        if (closeBtn) closeBtn.click();
+                                    }
+                                    if (e.target.classList.contains('mobile-notifications-panel') && e.target.classList.contains('expanded')) {
+                                        // Click on backdrop should close notifications
+                                        const closeBtn = document.querySelector('.mobile-notifications-close');
+                                        if (closeBtn) closeBtn.click();
+                                    }
+                                }
+                            } catch (clickError) {
+                                console.warn('Click handler error:', clickError);
+                            }
                         });
+                        
+                        // Setup swipe gestures for mobile panels
+                        let touchStartY = 0;
+                        document.addEventListener('touchstart', (e) => {
+                            try {
+                                if (e.touches && e.touches[0]) {
+                                    touchStartY = e.touches[0].clientY;
+                                }
+                            } catch (touchError) {
+                                console.warn('Touch start error:', touchError);
+                            }
+                        }, { passive: true });
+                        
+                        document.addEventListener('touchend', (e) => {
+                            try {
+                                if (e.changedTouches && e.changedTouches[0]) {
+                                    const touchEndY = e.changedTouches[0].clientY;
+                                    const diff = touchStartY - touchEndY;
+                                    
+                                    // Swipe up to close panels
+                                    if (diff > 50) {
+                                        const expandedPanels = document.querySelectorAll('.mobile-search-bar.expanded, .mobile-notifications-panel.expanded');
+                                        if (expandedPanels) {
+                                            expandedPanels.forEach(panel => {
+                                                const closeBtn = panel.querySelector('.mobile-search-close, .mobile-notifications-close');
+                                                if (closeBtn) closeBtn.click();
+                                            });
+                                        }
+                                    }
+                                }
+                            } catch (touchError) {
+                                console.warn('Touch end error:', touchError);
+                            }
+                        }, { passive: true });
+                    } catch (setupError) {
+                        console.warn('Mobile dashboard setup failed:', setupError);
                     }
-                }, { passive: true });
-            ");
+                ");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Mobile dashboard setup error: {ex.Message}");
+            }
         }
     }
 
-    private async System.Threading.Tasks.Task HandleFloatingAction(string action)
+    private async Task HandleFloatingAction(string action)
     {
         switch (action)
         {
@@ -717,5 +924,509 @@
                 NavigationManager.NavigateTo("/contacts");
                 break;
         }
+        
+        // Add a small delay to ensure navigation is processed
+        await Task.Delay(10);
     }
 }
+
+<style>
+/* 다크 모드에서 텍스트 색상 수정 */
+[data-theme="dark"] .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .text-\[#4d6a99\] {
+    color: #b0b0b0 !important;
+}
+
+/* 다크 모드에서 아이콘 색상 수정 */
+[data-theme="dark"] .text-\[#0e131b\][data-icon] {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 배경과 텍스트 조합 */
+[data-theme="dark"] .bg-\[#e7ecf3\] {
+    background-color: #374151 !important;
+}
+
+[data-theme="dark"] .bg-\[#e7ecf3\].text-\[#0e131b\] {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .bg-\[#e7ecf3\].text-\[#4d6a99\] {
+    background-color: #374151 !important;
+    color: #d1d5db !important;
+}
+
+/* 다크 모드에서 플레이스홀더 텍스트 색상 */
+[data-theme="dark"] .placeholder\:text-\[#4d6a99\]::placeholder {
+    color: #9ca3af !important;
+}
+
+/* 다크 모드에서 사이드바 배경 */
+[data-theme="dark"] .bg-slate-50 {
+    background-color: #1f2937 !important;
+}
+
+/* 다크 모드에서 메인 컨테이너 배경 */
+[data-theme="dark"] .group\/design-root.bg-slate-50 {
+    background-color: #111827 !important;
+}
+
+/* 다크 모드에서 대시보드 카드 배경과 텍스트 */
+[data-theme="dark"] .dashboard-card {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .dashboard-card .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .dashboard-card h2 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .dashboard-card span {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 모든 버튼과 링크 텍스트 */
+[data-theme="dark"] button {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] button .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] button h2 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .bg-slate-50 {
+    background-color: #374151 !important;
+}
+
+/* 다크 모드에서 헤더 배경과 텍스트 */
+[data-theme="dark"] .dashboard-header {
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+}
+
+[data-theme="dark"] .dashboard-header .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 버튼 색상 */
+[data-theme="dark"] .dashboard-button {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .dashboard-button:hover {
+    background-color: #4b5563 !important;
+}
+
+/* 다크 모드에서 입력 필드 */
+[data-theme="dark"] .form-input {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+    border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .form-input:focus {
+    border-color: #6b7280 !important;
+}
+
+/* 다크 모드에서 웰컴 텍스트 */
+[data-theme="dark"] .dashboard-welcome {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 네비게이션 링크 */
+[data-theme="dark"] a .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 선택된 네비게이션 아이템 */
+[data-theme="dark"] .bg-\[#e7ecf3\] {
+    background-color: #374151 !important;
+}
+
+[data-theme="dark"] .bg-\[#e7ecf3\] .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 제목과 헤딩 */
+[data-theme="dark"] h1.text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] h2.text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] h3.text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 단락 텍스트 */
+[data-theme="dark"] p.text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] p.text-\[#4d6a99\] {
+    color: #d1d5db !important;
+}
+
+/* 다크 모드에서 테이블과 그리드 */
+[data-theme="dark"] .dashboard-grid .text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+/* 다크 모드에서 모든 div 요소의 텍스트 색상 */
+[data-theme="dark"] div.text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] div.text-\[#4d6a99\] {
+    color: #d1d5db !important;
+}
+
+/* 다크 모드에서 스팬 요소 */
+[data-theme="dark"] span.text-\[#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] span.text-\[#4d6a99\] {
+    color: #d1d5db !important;
+}
+
+/* 다크 모드에서 보더 색상 */
+[data-theme="dark"] .border-\[#d0d9e7\] {
+    border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .border-b-\[#e7ecf3\] {
+    border-bottom-color: #374151 !important;
+}
+
+/* 다크 모드에서 사용자 아바타 영역 주변 요소들 */
+[data-theme="dark"] .dashboard-header div {
+    color: #ffffff !important;
+}
+
+/* 모바일 헤더 기본 스타일 */
+.mobile-header {
+    display: none !important;
+}
+
+@@media (max-width: 768px) {
+    .mobile-header {
+        display: flex !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 9999 !important;
+        background-color: #ffffff !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        height: 60px !important;
+        width: 100vw !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .mobile-header-content {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        padding: 0 1rem !important;
+    }
+    
+    .mobile-menu-toggle,
+    .mobile-action-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.5rem !important;
+        background: none !important;
+        border: none !important;
+        color: #374151 !important;
+        cursor: pointer !important;
+    }
+    
+    .mobile-header-title {
+        display: flex !important;
+        flex: 1 !important;
+        justify-content: center !important;
+    }
+    
+    .mobile-title {
+        display: block !important;
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        color: #374151 !important;
+        margin: 0 !important;
+    }
+    
+    .mobile-header-actions {
+        display: flex !important;
+        gap: 0.5rem !important;
+        align-items: center !important;
+    }
+    
+    /* 모바일에서 사이드바 숨기기 */
+    .dashboard-sidebar {
+        display: none !important;
+    }
+    
+    /* 모바일에서 메인 컨텐츠 전체 너비 사용 */
+    .dashboard-main-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-top: 70px !important;
+    }
+}
+
+/* 모바일에서 확실히 보이도록 추가 스타일 */
+@@media screen and (max-width: 768px) {
+    .mobile-header {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 999999 !important;
+        background: white !important;
+        width: 100% !important;
+        height: 60px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    }
+    
+    .mobile-header * {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    .mobile-header-content {
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 16px !important;
+    }
+    
+    .mobile-title {
+        color: #000000 !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+    
+    .mobile-menu-toggle,
+    .mobile-action-btn {
+        background: none !important;
+        border: none !important;
+        color: #000000 !important;
+        cursor: pointer !important;
+        padding: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* 반응형 다크 모드 지원 */
+@@media (max-width: 768px) {
+    [data-theme="dark"] .mobile-header {
+        background-color: #1f2937 !important;
+        border-bottom-color: #374151 !important;
+    }
+    
+    [data-theme="dark"] .mobile-header .mobile-title {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .mobile-header button {
+        color: #ffffff !important;
+    }
+    
+    /* 다크 모드에서 대시보드 카드 버튼 텍스트 */
+    [data-theme="dark"] .dashboard-card {
+        background-color: #374151 !important;
+        border-color: #4b5563 !important;
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-card h2 {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-card svg {
+        color: #ffffff !important;
+    }
+    
+    /* 다크 모드에서 모든 버튼 텍스트 */
+    [data-theme="dark"] button .text-\[#0e131b\] {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .bg-slate-50 {
+        background-color: #374151 !important;
+    }
+    
+    /* 다크 모드에서 우선순위 버튼 */
+    [data-theme="dark"] .priority-button {
+        background-color: #374151 !important;
+        color: #ffffff !important;
+        border-color: #4b5563 !important;
+    }
+    
+    [data-theme="dark"] .priority-button span {
+        color: #ffffff !important;
+    }
+    
+    /* 다크 모드에서 테이블 스타일 */
+    [data-theme="dark"] .dashboard-table-container {
+        background-color: #374151 !important;
+        border-color: #4b5563 !important;
+    }
+    
+    [data-theme="dark"] .dashboard-table-container table {
+        background-color: #374151 !important;
+    }
+    
+    [data-theme="dark"] .dashboard-table-container th {
+        background-color: #374151 !important;
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-table-container td {
+        background-color: #374151 !important;
+        color: #ffffff !important;
+        border-color: #4b5563 !important;
+    }
+    
+    [data-theme="dark"] .dashboard-table-container .text-\[#4d6a99\] {
+        color: #d1d5db !important;
+    }
+    
+    /* 다크 모드에서 사이드바 네비게이션 링크 */
+    [data-theme="dark"] .dashboard-sidebar {
+        background-color: #1f2937 !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar a {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar a p {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar a .text-\[#0e131b\] {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar a div[data-icon] {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar a svg {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar a:hover {
+        background-color: #374151 !important;
+    }
+    
+    [data-theme="dark"] .dashboard-sidebar .bg-\[#e7ecf3\] {
+        background-color: #374151 !important;
+    }
+    
+    /* 더 강력한 다크 모드 텍스트 색상 적용 */
+    [data-theme="dark"] .dashboard-sidebar * {
+        color: #ffffff !important;
+    }
+    
+    /* 네비게이션 링크 다크 모드 강화 */
+    [data-theme="dark"] .nav-link {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .nav-link * {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .nav-link p {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .nav-link div {
+        color: #ffffff !important;
+    }
+    
+    [data-theme="dark"] .nav-link svg {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+    }
+    
+    /* 모바일에서 대시보드 섹션 표시 */
+    .dashboard-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 0.75rem !important;
+        padding: 1rem !important;
+    }
+    
+    .dashboard-card {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        padding: 0.75rem !important;
+        min-height: auto !important;
+    }
+    
+    /* 모바일에서 SalesPipelineSummary 섹션 표시 */
+    h2.text-\[#0e131b\] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* 모바일에서 차트와 콘텐츠 영역 표시 */
+    .flex.flex-wrap.gap-4.px-4.py-6 {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    .flex.min-w-72.flex-1.flex-col.gap-2.rounded-lg.border {
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: auto !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
+        padding: 1rem !important;
+    }
+    
+    /* 모바일에서 그리드 차트 표시 */
+    .grid.min-h-\[180px\] {
+        display: grid !important;
+        min-height: 120px !important;
+    }
+}
+</style>
