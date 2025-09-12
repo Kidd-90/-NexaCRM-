@@ -1,0 +1,5 @@
+name = "nexacrm"
+compatibility_date = "2025-09-12"
+
+[env.production]
+name = "nexacrm-production"
