@@ -1,6 +1,6 @@
 name = "nexacrm"
 compatibility_date = "2025-09-12"
-pages_build_output_dir = "wwwroot"
+pages_build_output_dir = "build/wwwroot"
 
 [env.production]
 name = "nexacrm-production"
