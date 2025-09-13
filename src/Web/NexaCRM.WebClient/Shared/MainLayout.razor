@@ -12,9 +12,9 @@
     <div class="sidebar">
         <NavMenu />
     </div>
-    <div class="mobile-overlay" @onclick="() => {}"></div>
+    <div class="mobile-overlay"></div>
     <main>
-        <article class="conxtent px-4 page-fade-enter">
+        <article class="content px-4 page-fade-enter">
             @Body
         </article>
     </main>
@@ -23,13 +23,10 @@
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
-
     private async Task ToggleNavMenu()
     {
-        collapseNavMenu = !collapseNavMenu;
-        // JavaScript 함수 호출하여 UI 업데이트
-        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", collapseNavMenu);
+        // JavaScript 함수 호출하여 메뉴 상태 토글
+        await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

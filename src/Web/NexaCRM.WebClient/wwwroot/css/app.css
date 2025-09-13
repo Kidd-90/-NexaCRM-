@@ -1196,3 +1196,28 @@ input::placeholder,
 textarea::placeholder {
     color: var(--text-secondary);
 }
+
+/* Generic responsive helpers for DB list pages */
+.desktop-table-view {
+    overflow-x: auto;
+}
+
+.mobile-card-view {
+    display: none;
+    padding: 0 12px;
+}
+
+.customer-card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 767.98px) {
+    .desktop-table-view {
+        display: none;
+    }
+
+    .mobile-card-view {
+        display: block;
+    }
+}
