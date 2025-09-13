@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.tracking-light {
+    letter-spacing: -0.01em;
+}
+
 .forecast-item {
     @apply relative flex w-full flex-col items-start justify-between gap-3 p-4 @[480px]:flex-row @[480px]:items-center;
 }
