@@ -50,6 +50,31 @@ namespace NexaCRM.WebClient.Services.Mock
         public Task<IEnumerable<DbCustomer>> GetTodaysAssignedDbAsync() => FilterData(c => c.AssignedDate.Date == DateTime.Today);
         public Task<IEnumerable<DbCustomer>> GetDbDistributionStatusAsync() => FilterData(c => !string.IsNullOrEmpty(c.AssignedTo)); // Same as Team Status for this mock
 
+        public Task AssignDbToAgentAsync(int contactId, string agentName)
+        {
+            var customer = _dbCustomers.FirstOrDefault(c => c.ContactId == contactId);
+            if (customer != null)
+            {
+                customer.AssignedTo = agentName;
+                customer.AssignedDate = DateTime.Now;
+                customer.Assigner = ManagerName;
+            }
+            return Task.CompletedTask;
+        }
+
+        public Task ReassignDbAsync(int contactId, string agentName)
+            => AssignDbToAgentAsync(contactId, agentName);
+
+        public Task RecallDbAsync(int contactId)
+        {
+            var customer = _dbCustomers.FirstOrDefault(c => c.ContactId == contactId);
+            if (customer != null)
+            {
+                customer.AssignedTo = null;
+            }
+            return Task.CompletedTask;
+        }
+
         // Sales Methods
         public Task<IEnumerable<DbCustomer>> GetNewDbListAsync(string salesAgentName) => FilterData(c => c.AssignedTo == salesAgentName && c.Status == DbStatus.New);
         public Task<IEnumerable<DbCustomer>> GetStarredDbListAsync(string salesAgentName) => FilterData(c => c.AssignedTo == salesAgentName && c.IsStarred);

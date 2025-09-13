@@ -1,52 +1,82 @@
-    .table-hover tbody tr:hover {
-        cursor: pointer;
+ .table-hover tbody tr {
+     transition: background-color 0.3s ease;
+ }
+
+ .table-hover tbody tr:hover {
+     cursor: pointer;
+     background-color: #f8f9fa;
+ }
+
+ .desktop-table-view {
+     overflow-x: auto;
+ }
+
+ .desktop-table-view table {
+     min-width: 800px;
+ }
+
+ .mobile-card-view {
+     display: none;
+ }
+
+ .customer-card {
+     background-color: #fff;
+     border: 1px solid #e7ecf3;
+     border-radius: 8px;
+     padding: 16px;
+     margin-bottom: 16px;
+     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+     cursor: pointer;
+     transition: transform 0.3s ease, box-shadow 0.3s ease;
+     animation: fadeIn 0.4s ease-in;
+ }
+
+ .customer-card:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+ }
+
+ .customer-card h5 {
+     margin-bottom: 12px;
+     font-weight: 600;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+ }
+
+ .card-info-row {
+     display: flex;
+     justify-content: space-between;
+     font-size: 0.9rem;
+     margin-bottom: 8px;
+ }
+
+ .card-info-label {
+     color: #6c757d;
+ }
+
+ .card-info-value {
+     font-weight: 500;
+ }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-
-    .mobile-card-view {
-        display: none;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    .customer-card {
-        background-color: #fff;
-        border: 1px solid #e7ecf3;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 16px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        cursor: pointer;
-    }
+ /* Show card view on mobile, hide table */
+ @media (max-width: 767.98px) {
+     .desktop-table-view {
+         display: none;
+     }
 
-    .customer-card h5 {
-        margin-bottom: 12px;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .card-info-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9rem;
-        margin-bottom: 8px;
-    }
-
-    .card-info-label {
-        color: #6c757d;
-    }
-
-    .card-info-value {
-        font-weight: 500;
-    }
-
-
-    /* Show card view on mobile, hide table */
-    @media (max-width: 767.98px) {
-        .desktop-table-view {
-            display: none;
-        }
-
-        .mobile-card-view {
-            display: block;
-        }
-    }
+     .mobile-card-view {
+         display: block;
+     }
+ }

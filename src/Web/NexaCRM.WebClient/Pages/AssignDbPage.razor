@@ -1,0 +1,59 @@
+@page "/db/distribution/assign/{ContactId:int}"
+@attribute [Authorize(Roles = "Manager")]
+
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Services.Interfaces
+@using System.Linq
+
+@inject IDbDataService DbDataService
+@inject IAgentService AgentService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<AssignDbPage> Localizer
+
+<div class="page-container">
+    <h1 class="mb-4">@Localizer["Title"]</h1>
+
+    @if (agents == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <label class="form-label">@Localizer["SelectAgentLabel"]</label>
+            <select class="form-select" @bind="selectedAgentName">
+                <option value="">@Localizer["SelectAgentPlaceholder"]</option>
+                @foreach (var agent in agents)
+                {
+                    <option value="@agent.Name">@agent.Name</option>
+                }
+            </select>
+        </div>
+        <button class="btn btn-primary btn-assign" @onclick="AssignAsync">@Localizer["AssignButton"]</button>
+    }
+</div>
+
+@code {
+    [Parameter] public int ContactId { get; set; }
+    private IEnumerable<Agent> agents;
+    private string selectedAgentName;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        var allAgents = await AgentService.GetAgentsAsync();
+        agents = allAgents.Where(a => a.Role == "Sales");
+    }
+
+    private async System.Threading.Tasks.Task AssignAsync()
+    {
+        if (!string.IsNullOrEmpty(selectedAgentName))
+        {
+            await DbDataService.AssignDbToAgentAsync(ContactId, selectedAgentName);
+            NavigationManager.NavigateTo("/db/distribution/status");
+        }
+    }
+}

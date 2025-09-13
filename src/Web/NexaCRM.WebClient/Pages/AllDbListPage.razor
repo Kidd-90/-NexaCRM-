@@ -7,9 +7,10 @@
 @inject IDbDataService DbDataService
 @inject IStringLocalizer<AllDbListPage> Localizer
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthenticationStateProvider 
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IStringLocalizer<DbStatus> StatusLocalizer
 <div class="container-fluid mt-4">
-    <h1 class="mb-4">전체 DB 목록</h1>
+    <h1 class="mb-4">@Localizer["Title"]</h1>
 
     @if (customers == null)
     {
@@ -26,14 +27,14 @@
             <table class="table table-striped table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th>고객명</th>
-                        <th>연락처</th>
-                        <th>담당자</th>
-                        <th>분배일</th>
-                        <th>DB 상태</th>
-                        <th>최종 컨택일</th>
-                        <th>관심</th>
-                        <th>전달자</th>
+                        <th>@Localizer["CustomerName"]</th>
+                        <th>@Localizer["Contact"]</th>
+                        <th>@Localizer["AssignedTo"]</th>
+                        <th>@Localizer["AssignedDate"]</th>
+                        <th>@Localizer["Status"]</th>
+                        <th>@Localizer["LastContact"]</th>
+                        <th>@Localizer["Starred"]</th>
+                        <th>@Localizer["Assigner"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,7 +45,7 @@
                             <td>@customer.ContactNumber</td>
                             <td>@customer.AssignedTo</td>
                             <td>@customer.AssignedDate.ToShortDateString()</td>
-                            <td>@customer.Status</td>
+                            <td>@StatusLocalizer[customer.Status.ToString()]</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
                             <td>@(customer.IsStarred ? "★" : "")</td>
                             <td>@customer.Assigner</td>
@@ -67,19 +68,19 @@
                         }
                     </h5>
                     <div class="card-info-row">
-                        <span class="card-info-label">연락처</span>
+                        <span class="card-info-label">@Localizer["Contact"]</span>
                         <span class="card-info-value">@customer.ContactNumber</span>
                     </div>
                      <div class="card-info-row">
-                        <span class="card-info-label">담당자</span>
+                        <span class="card-info-label">@Localizer["AssignedTo"]</span>
                         <span class="card-info-value">@customer.AssignedTo</span>
                     </div>
                     <div class="card-info-row">
-                        <span class="card-info-label">DB 상태</span>
-                        <span class="card-info-value">@customer.Status</span>
+                        <span class="card-info-label">@Localizer["Status"]</span>
+                        <span class="card-info-value">@StatusLocalizer[customer.Status.ToString()]</span>
                     </div>
                     <div class="card-info-row">
-                        <span class="card-info-label">최종 컨택일</span>
+                        <span class="card-info-label">@Localizer["LastContact"]</span>
                         <span class="card-info-value">@customer.LastContactDate.ToShortDateString()</span>
                     </div>
                 </div>
