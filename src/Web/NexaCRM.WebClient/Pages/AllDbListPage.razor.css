@@ -2,6 +2,14 @@
         cursor: pointer;
     }
 
+    .desktop-table-view {
+        overflow-x: auto;
+    }
+
+    .desktop-table-view table {
+        min-width: 800px;
+    }
+
     .mobile-card-view {
         display: none;
     }

@@ -5,6 +5,7 @@
 @using NexaCRM.WebClient.Services.Interfaces
 
 @inject IDbDataService DbDataService
+@inject NavigationManager NavigationManager
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">미분배 DB 목록</h1>
@@ -38,7 +39,7 @@
                             <td>@customer.ContactNumber</td>
                             <td>@customer.Status</td>
                             <td>
-                                <button class="btn btn-primary btn-sm">분배하기</button>
+                                <button class="btn btn-primary btn-sm" @onclick="() => NavigateToAssign(customer.ContactId)">분배하기</button>
                             </td>
                         </tr>
                     }
@@ -54,5 +55,10 @@
     protected override async Task OnInitializedAsync()
     {
         customers = await DbDataService.GetUnassignedDbListAsync();
+    }
+
+    private void NavigateToAssign(int contactId)
+    {
+        NavigationManager.NavigateTo($"/db/distribution/assign/{contactId}");
     }
 }

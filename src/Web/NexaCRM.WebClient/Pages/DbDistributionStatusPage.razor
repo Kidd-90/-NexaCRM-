@@ -5,6 +5,7 @@
 @using NexaCRM.WebClient.Services.Interfaces
 
 @inject IDbDataService DbDataService
+@inject NavigationManager NavigationManager
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">DB 분배 현황</h1>
@@ -61,8 +62,8 @@
                             <td>@customer.Status</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
                             <td>
-                                <button class="btn btn-secondary btn-sm me-1">재분배</button>
-                                <button class="btn btn-danger btn-sm">회수</button>
+                                <button class="btn btn-secondary btn-sm me-1" @onclick="() => Redistribute(customer.ContactId)">재분배</button>
+                                <button class="btn btn-danger btn-sm" @onclick="() => Recall(customer.ContactId)">회수</button>
                             </td>
                         </tr>
                     }
@@ -90,5 +91,17 @@
         statusCounts = customers
             .GroupBy(c => c.Status)
             .ToDictionary(g => g.Key, g => g.Count());
+    }
+
+    private void Redistribute(int contactId)
+    {
+        NavigationManager.NavigateTo($"/db/distribution/assign/{contactId}");
+    }
+
+    private async Task Recall(int contactId)
+    {
+        await DbDataService.RecallDbAsync(contactId);
+        customers = await DbDataService.GetDbDistributionStatusAsync();
+        ProcessDataForChart();
     }
 }

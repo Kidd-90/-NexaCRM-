@@ -17,8 +17,8 @@ window.themeManager = {
     
     // Initialize theme system
     init: () => {
-        // Get saved preference or default to auto
-        const savedTheme = localStorage.getItem(window.themeManager.STORAGE_KEY) || window.themeManager.THEMES.AUTO;
+        // Get saved preference or default to light theme
+        const savedTheme = localStorage.getItem(window.themeManager.STORAGE_KEY) || window.themeManager.THEMES.LIGHT;
         
         // Set up system theme detection
         window.themeManager.setupSystemThemeDetection();

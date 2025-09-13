@@ -1,0 +1,54 @@
+@page "/db/distribution/assign/{contactId:int}"
+@attribute [Authorize(Roles = "Manager")]
+
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Services.Interfaces
+
+@inject IDbDataService DbDataService
+@inject IAgentService AgentService
+@inject NavigationManager NavigationManager
+
+<h1 class="mb-4">DB 분배</h1>
+
+@if (agents == null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <label class="form-label">담당자 선택</label>
+        <select class="form-select" @bind="selectedAgentName">
+            <option value="">담당자를 선택하세요</option>
+            @foreach (var agent in agents)
+            {
+                <option value="@agent.Name">@agent.Name</option>
+            }
+        </select>
+    </div>
+    <button class="btn btn-primary" @onclick="Assign">분배</button>
+}
+
+@code {
+    [Parameter] public int contactId { get; set; }
+    private IEnumerable<Agent> agents;
+    private string selectedAgentName;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        agents = await AgentService.GetAgentsAsync();
+    }
+
+    private async System.Threading.Tasks.Task Assign()
+    {
+        if (!string.IsNullOrEmpty(selectedAgentName))
+        {
+            await DbDataService.AssignDbToAgentAsync(contactId, selectedAgentName);
+            NavigationManager.NavigateTo("/db/distribution/status");
+        }
+    }
+}

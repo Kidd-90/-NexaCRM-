@@ -13,6 +13,10 @@ namespace NexaCRM.WebClient.Services.Interfaces
         Task<IEnumerable<DbCustomer>> GetTodaysAssignedDbAsync();
         Task<IEnumerable<DbCustomer>> GetDbDistributionStatusAsync();
 
+        Task AssignDbToAgentAsync(int contactId, string agentName);
+        Task ReassignDbAsync(int contactId, string agentName);
+        Task RecallDbAsync(int contactId);
+
         // Methods for Sales
         Task<IEnumerable<DbCustomer>> GetNewDbListAsync(string salesAgentName);
         Task<IEnumerable<DbCustomer>> GetStarredDbListAsync(string salesAgentName);
