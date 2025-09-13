@@ -12,6 +12,10 @@
 <div class="container-fluid mt-4">
     <h1 class="mb-4">@Localizer["Title"]</h1>
 
+    <div class="mb-3">
+        <input type="text" class="form-control" placeholder='@Localizer["Search"]' @bind="searchTerm" @oninput="OnFilterInput" />
+    </div>
+
     @if (customers == null)
     {
         <div class="d-flex justify-content-center">
@@ -38,7 +42,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var customer in customers)
+                    @foreach (var customer in filteredCustomers)
                     {
                         <tr @onclick="() => NavigateToContact(customer.ContactId)">
                             <td>@customer.CustomerName</td>
@@ -57,7 +61,7 @@
 
         <!-- Mobile View -->
         <div class="mobile-card-view">
-            @foreach (var customer in customers)
+            @foreach (var customer in filteredCustomers)
             {
                 <div class="customer-card" @onclick="() => NavigateToContact(customer.ContactId)">
                     <h5>
@@ -91,10 +95,31 @@
 
 @code {
     private IEnumerable<DbCustomer> customers;
+    private IEnumerable<DbCustomer> filteredCustomers;
+    private string searchTerm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         customers = await DbDataService.GetAllDbListAsync();
+        filteredCustomers = customers;
+    }
+
+    private void OnFilterInput(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? string.Empty;
+        FilterCustomers();
+    }
+
+    private void FilterCustomers()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredCustomers = customers;
+        }
+        else
+        {
+            filteredCustomers = customers.Where(c => c.CustomerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
     }
 
     private void NavigateToContact(int contactId)
