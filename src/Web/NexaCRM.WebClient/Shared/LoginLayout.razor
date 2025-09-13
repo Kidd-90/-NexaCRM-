@@ -105,6 +105,8 @@
     width: 100%;
     margin-left: 0;
     overflow-x: hidden;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .content {
@@ -131,7 +133,7 @@
 /* Login-specific theme toggle positioning */
 .login-theme-toggle {
     position: fixed;
-    top: 1.5rem;
+    top: calc(env(safe-area-inset-top) + 1.5rem);
     right: 1.5rem;
     width: var(--touch-target-min, 44px);
     height: var(--touch-target-min, 44px);

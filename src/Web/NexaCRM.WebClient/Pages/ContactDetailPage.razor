@@ -51,6 +51,11 @@
     }
     else
     {
+        <!-- Mobile Back Button -->
+        <div class="d-md-none mb-3">
+            <button class="btn btn-outline-secondary" @onclick="GoBack">&larr; Back</button>
+        </div>
+
         <!-- Header with Contact Name and Main Actions -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3">@contact.FirstName @contact.LastName</h1>
@@ -195,7 +200,12 @@
         activities = await ActivityService.GetActivitiesByContactIdAsync(contact.Id);
         StateHasChanged();
     }
-    
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/db/customer/all");
+    }
+
     private string GetIconForActivity(ActivityType type)
     {
         return type switch
