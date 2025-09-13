@@ -25,3 +25,38 @@
         padding: 2rem;
     }
 }
+
+/* Fixed header for mobile */
+@media (max-width: 768px) {
+    .mobile-layout .mobile-fixed-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3.5rem;
+        background-color: var(--surface-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        z-index: 1100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .mobile-layout .mobile-fixed-header .page-title {
+        flex: 1;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .mobile-layout .mobile-fixed-header .nav-menu-button,
+    .mobile-layout .mobile-fixed-header .user-info-button {
+        background: none;
+        border: none;
+    }
+
+    .mobile-layout main {
+        padding-top: 3.5rem;
+    }
+}
