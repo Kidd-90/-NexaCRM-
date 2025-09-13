@@ -6,6 +6,7 @@ namespace NexaCRM.WebClient.Services.Interfaces
 {
     public interface IActivityService
     {
-        Task<IEnumerable<Activity>> GetRecentActivitiesAsync();
+        Task<IEnumerable<Activity>> GetActivitiesByContactIdAsync(int contactId);
+        Task AddActivityAsync(Activity activity);
     }
 }
