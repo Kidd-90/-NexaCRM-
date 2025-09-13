@@ -54,4 +54,7 @@
   <data name="ConsultationNotes" xml:space="preserve">
     <value>Consultation Notes</value>
   </data>
+  <data name="AssignDb" xml:space="preserve">
+    <value>Assign DB</value>
+  </data>
 </root>
