@@ -98,4 +98,7 @@
   <data name="MyDbList" xml:space="preserve">
     <value>내 DB 목록</value>
   </data>
+  <data name="AssignDb" xml:space="preserve">
+    <value>DB 배정</value>
+  </data>
 </root>

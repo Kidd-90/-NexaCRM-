@@ -120,6 +120,9 @@
                                         <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
                                             <span class="oi oi-inbox" aria-hidden="true"></span> @Localizer["UnassignedDbList"]
                                         </NavLink>
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/assign/{ContactId:int}" @onclick="CloseNavMenu">
+                                            <span class="oi oi-transfer" aria-hidden="true"></span> @Localizer["AssignDb"]
+                                        </NavLink>
                                         <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
                                             <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["DbDistributionStatus"]
                                         </NavLink>
@@ -139,6 +142,29 @@
                         </div>
                     </AuthorizeView>
 
+                    <!-- 📈 Sales Management -->
+                    <AuthorizeView Roles="Sales,Manager" Context="salesManagerToolsContext">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSalesManagementSubmenu" style="cursor: pointer;">
+                                <span class="oi oi-graph" aria-hidden="true"></span>
+                                @Localizer["SalesManagement"]
+                                <span class="submenu-toggle @(showSalesManagementSubmenu ? "expanded" : "collapsed")">▼</span>
+                            </div>
+
+                            @if (showSalesManagementSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <NavLink class="nav-link submenu-link" href="customer-management" @onclick="CloseNavMenu">
+                                        <span class="oi oi-people" aria-hidden="true"></span> @Localizer["CustomerManagement"]
+                                    </NavLink>
+                                    <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
+                                        <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["SalesCalendar"]
+                                    </NavLink>
+                                </div>
+                            }
+                        </div>
+                    </AuthorizeView>
+
                     <!-- Other original menus -->
                     <AuthorizeView Roles="Manager" Context="managerContext">
                         <Authorized>
@@ -148,7 +174,7 @@
                                 </NavLink>
                             </div>
                             <div class="nav-item px-3">
-                                <NavLink class="nav-link" href="reports" @onclick="CloseNavMenu">
+                                <NavLink class="nav-link" href="reports-page" @onclick="CloseNavMenu">
                                     <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
                                 </NavLink>
                             </div>
@@ -158,7 +184,7 @@
                     <AuthorizeView Roles="Admin" Context="adminContext">
                         <Authorized>
                             <div class="nav-item px-3">
-                                <NavLink class="nav-link" href="admin-dashboard" @onclick="CloseNavMenu">
+                                <NavLink class="nav-link" href="settings-page" @onclick="CloseNavMenu">
                                     <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["Settings"]
                                 </NavLink>
                             </div>
@@ -187,6 +213,7 @@
 @code {
     private bool showDbCustomerSubmenu = false;
     private bool showDbDistributionSubmenu = false;
+    private bool showSalesManagementSubmenu = false;
 
     private bool isDarkMode = false;
 
@@ -210,6 +237,11 @@
     private void ToggleDbDistributionSubmenu()
     {
         showDbDistributionSubmenu = !showDbDistributionSubmenu;
+    }
+
+    private void ToggleSalesManagementSubmenu()
+    {
+        showSalesManagementSubmenu = !showSalesManagementSubmenu;
     }
 
     private async Task CloseNavMenu()
