@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.WebClient.Models.Db
 @using NexaCRM.WebClient.Services.Interfaces
+@using System.Linq
 @inject IDbDataService DbDataService
 @inject IStringLocalizer<AllDbListPage> Localizer
 @inject NavigationManager NavigationManager
@@ -12,8 +13,19 @@
 <div class="container-fluid mt-4">
     <h1 class="mb-4">@Localizer["Title"]</h1>
 
-    <div class="mb-3">
-        <input type="text" class="form-control" placeholder='@Localizer["Search"]' @bind="searchTerm" @oninput="OnFilterInput" />
+    <div class="row mb-3">
+        <div class="col">
+            <input type="text" class="form-control" placeholder='@Localizer["Search"]' @bind="searchTerm" @oninput="OnFilterInput" />
+        </div>
+        <div class="col">
+            <select class="form-select" value="@selectedGroup" @onchange="OnGroupFilterChanged">
+                <option value="">@Localizer["AllGroups"]</option>
+                @foreach (var group in groupOptions)
+                {
+                    <option value="@group">@group</option>
+                }
+            </select>
+        </div>
     </div>
 
     @if (customers == null)
@@ -33,6 +45,7 @@
                     <tr>
                         <th>@Localizer["CustomerName"]</th>
                         <th>@Localizer["Contact"]</th>
+                        <th>@Localizer["Group"]</th>
                         <th>@Localizer["AssignedTo"]</th>
                         <th>@Localizer["AssignedDate"]</th>
                         <th>@Localizer["Status"]</th>
@@ -47,6 +60,7 @@
                         <tr @onclick="() => NavigateToContact(customer.ContactId)">
                             <td>@customer.CustomerName</td>
                             <td>@customer.ContactNumber</td>
+                            <td>@customer.Group</td>
                             <td>@customer.AssignedTo</td>
                             <td>@customer.AssignedDate.ToShortDateString()</td>
                             <td>@StatusLocalizer[customer.Status.ToString()]</td>
@@ -75,6 +89,10 @@
                         <span class="card-info-label">@Localizer["Contact"]</span>
                         <span class="card-info-value">@customer.ContactNumber</span>
                     </div>
+                    <div class="card-info-row">
+                        <span class="card-info-label">@Localizer["Group"]</span>
+                        <span class="card-info-value">@customer.Group</span>
+                    </div>
                      <div class="card-info-row">
                         <span class="card-info-label">@Localizer["AssignedTo"]</span>
                         <span class="card-info-value">@customer.AssignedTo</span>
@@ -96,11 +114,14 @@
 @code {
     private IEnumerable<DbCustomer> customers;
     private IEnumerable<DbCustomer> filteredCustomers;
+    private IEnumerable<string> groupOptions = Enumerable.Empty<string>();
     private string searchTerm = string.Empty;
+    private string selectedGroup = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         customers = await DbDataService.GetAllDbListAsync();
+        groupOptions = customers.Select(c => c.Group).Where(g => !string.IsNullOrEmpty(g)).Distinct().OrderBy(g => g);
         filteredCustomers = customers;
     }
 
@@ -112,14 +133,15 @@
 
     private void FilterCustomers()
     {
-        if (string.IsNullOrWhiteSpace(searchTerm))
-        {
-            filteredCustomers = customers;
-        }
-        else
-        {
-            filteredCustomers = customers.Where(c => c.CustomerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
-        }
+        filteredCustomers = customers.Where(c =>
+            (string.IsNullOrWhiteSpace(searchTerm) || c.CustomerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrWhiteSpace(selectedGroup) || string.Equals(c.Group, selectedGroup, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private void OnGroupFilterChanged(ChangeEventArgs e)
+    {
+        selectedGroup = e.Value?.ToString() ?? string.Empty;
+        FilterCustomers();
     }
 
     private void NavigateToContact(int contactId)

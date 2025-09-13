@@ -42,4 +42,10 @@
   <data name="Search" xml:space="preserve">
     <value>검색</value>
   </data>
+  <data name="Group" xml:space="preserve">
+    <value>그룹</value>
+  </data>
+  <data name="AllGroups" xml:space="preserve">
+    <value>모든 그룹</value>
+  </data>
 </root>

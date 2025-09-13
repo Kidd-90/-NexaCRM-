@@ -16,6 +16,16 @@ public class AllDbListPageTests
     }
 
     [Fact]
+    public void AllDbListPage_Has_Group_Filter()
+    {
+        var pageType = typeof(AllDbListPage);
+        var fields = pageType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.Contains(fields, f => f.Name.Contains("selectedGroup"));
+        var methods = pageType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        Assert.Contains(methods, m => m.Name.Contains("OnGroupFilterChanged"));
+    }
+
+    [Fact]
     public void ContactDetailPage_Has_RelatedDeals_Field()
     {
         var pageType = typeof(ContactDetailPage);
