@@ -147,7 +147,7 @@ a:hover, .btn-link:hover {
 .sidebar {
     background-color: var(--surface-color); /* Use theme surface color */
     border-right: 1px solid var(--border-color); /* Use theme border color */
-    width: 250px;
+    width: min(80%, 250px); /* Use fluid width on small screens */
     min-height: 100vh;
     position: fixed;
     top: 0;

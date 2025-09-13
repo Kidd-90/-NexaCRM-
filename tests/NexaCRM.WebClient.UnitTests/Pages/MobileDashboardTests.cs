@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using NexaCRM.WebClient.Pages;
+using NexaCRM.WebClient.Components.UI;
 using Xunit;
 using Microsoft.AspNetCore.Components;
 using Moq;
@@ -18,6 +19,7 @@ namespace NexaCRM.WebClient.UnitTests.Pages
             Services.AddSingleton<NavigationManager>(new MockNavigationManager());
             Services.AddSingleton(Mock.Of<IJSRuntime>());
             Services.AddSingleton<IStringLocalizer<MainDashboard>>(new MockStringLocalizer());
+            Services.AddSingleton<IStringLocalizer<FloatingActionButton>>(new MockStringLocalizer());
         }
 
         [Fact]
@@ -193,7 +195,7 @@ namespace NexaCRM.WebClient.UnitTests.Pages
             }
         }
 
-        private class MockStringLocalizer : IStringLocalizer<MainDashboard>
+        private class MockStringLocalizer : IStringLocalizer<MainDashboard>, IStringLocalizer<FloatingActionButton>
         {
             public LocalizedString this[string name] => new(name, GetMockTranslation(name));
             public LocalizedString this[string name, params object[] arguments] => new(name, string.Format(GetMockTranslation(name), arguments));
