@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using NexaCRM.WebClient.Pages;
 using NexaCRM.WebClient.Components.UI;
+using System;
 using Xunit;
 using Microsoft.AspNetCore.Components;
 using Moq;
@@ -18,8 +19,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
             // Setup services
             Services.AddSingleton<NavigationManager>(new MockNavigationManager());
             Services.AddSingleton(Mock.Of<IJSRuntime>());
-            Services.AddSingleton<IStringLocalizer<MainDashboard>>(new MockStringLocalizer());
-            Services.AddSingleton<IStringLocalizer<FloatingActionButton>>(new MockStringLocalizer());
+            Services.AddSingleton<IStringLocalizer<MainDashboard>>(new MockStringLocalizer<MainDashboard>());
+            Services.AddSingleton<IStringLocalizer<FloatingActionButton>>(new MockStringLocalizer<FloatingActionButton>());
         }
 
         [Fact]
@@ -195,37 +196,43 @@ namespace NexaCRM.WebClient.UnitTests.Pages
             }
         }
 
-        private class MockStringLocalizer : IStringLocalizer<MainDashboard>, IStringLocalizer<FloatingActionButton>
+        private class MockStringLocalizer<T> : IStringLocalizer<T>
         {
             public LocalizedString this[string name] => new(name, GetMockTranslation(name));
             public LocalizedString this[string name, params object[] arguments] => new(name, string.Format(GetMockTranslation(name), arguments));
 
-            public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => new LocalizedString[0];
+            public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => Array.Empty<LocalizedString>();
 
-            private string GetMockTranslation(string key)
+            private string GetMockTranslation(string key) => key switch
             {
-                return key switch
-                {
-                    "CRM" => "CRM",
-                    "Search" => "검색",
-                    "Notifications" => "알림",
-                    "Sales" => "영업",
-                    "Contacts" => "연락처",
-                    "Tasks" => "작업",
-                    "Reports" => "보고서",
-                    "SalesPipeline" => "영업 파이프라인",
-                    "QuarterlyPerformance" => "분기별 실적",
-                    "RecentActivity" => "최근 활동",
-                    "DashboardOverview" => "대시보드 개요",
-                    "NewLead" => "웹사이트에서 새로운 리드",
-                    "DealClosed" => "거래가 성공적으로 성사되었습니다",
-                    "TaskReminder" => "작업 알림: 후속 조치",
-                    "MinutesAgo" => "분 전",
-                    "HourAgo" => "시간 전",
-                    "OpenMenu" => "메뉴 열기",
-                    _ => key
-                };
-            }
+                "CRM" => "CRM",
+                "Search" => "검색",
+                "Notifications" => "알림",
+                "Sales" => "영업",
+                "Contacts" => "연락처",
+                "Tasks" => "작업",
+                "Reports" => "보고서",
+                "SalesPipeline" => "영업 파이프라인",
+                "QuarterlyPerformance" => "분기별 실적",
+                "RecentActivity" => "최근 활동",
+                "DashboardOverview" => "대시보드 개요",
+                "NewLead" => "웹사이트에서 새로운 리드",
+                "DealClosed" => "거래가 성공적으로 성사되었습니다",
+                "TaskReminder" => "작업 알림: 후속 조치",
+                "MinutesAgo" => "분 전",
+                "HourAgo" => "시간 전",
+                "OpenMenu" => "메뉴 열기",
+                "QuickActions" => "빠른 작업",
+                "MakeCall" => "전화 걸기",
+                "Call" => "전화",
+                "SendEmail" => "이메일 보내기",
+                "Email" => "이메일",
+                "ScheduleMeeting" => "회의 일정",
+                "Meeting" => "회의",
+                "AddNew" => "새로 추가",
+                "Add" => "추가",
+                _ => key
+            };
         }
     }
 }
