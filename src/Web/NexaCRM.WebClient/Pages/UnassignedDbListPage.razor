@@ -39,7 +39,7 @@
                             <td>@customer.ContactNumber</td>
                             <td>@customer.Status</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" @onclick="() => NavigateToAssign(customer.ContactId)">분배하기</button>
+                                <button class="btn btn-primary btn-sm btn-assign" @onclick="() => NavigateToAssign(customer.ContactId)">분배하기</button>
                             </td>
                         </tr>
                     }

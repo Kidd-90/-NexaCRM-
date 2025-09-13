@@ -62,8 +62,8 @@
                             <td>@customer.Status</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
                             <td>
-                                <button class="btn btn-secondary btn-sm me-1" @onclick="() => Redistribute(customer.ContactId)">재분배</button>
-                                <button class="btn btn-danger btn-sm" @onclick="() => Recall(customer.ContactId)">회수</button>
+                                <button class="btn btn-secondary btn-sm me-1 action-btn" @onclick="() => Redistribute(customer.ContactId)">재분배</button>
+                                <button class="btn btn-danger btn-sm action-btn" @onclick="() => Recall(customer.ContactId)">회수</button>
                             </td>
                         </tr>
                     }

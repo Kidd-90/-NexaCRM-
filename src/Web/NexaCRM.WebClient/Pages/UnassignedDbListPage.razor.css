@@ -1,0 +1,25 @@
+.table-responsive {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.btn-assign {
+    transition: transform 0.2s ease;
+}
+
+.btn-assign:hover {
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

@@ -9,30 +9,32 @@
 @inject IAgentService AgentService
 @inject NavigationManager NavigationManager
 
-<h1 class="mb-4">DB 분배</h1>
+<div class="page-container">
+    <h1 class="mb-4">DB 분배</h1>
 
-@if (agents == null)
-{
-    <div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
+    @if (agents == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-    </div>
-}
-else
-{
-    <div class="mb-3">
-        <label class="form-label">담당자 선택</label>
-        <select class="form-select" @bind="selectedAgentName">
-            <option value="">담당자를 선택하세요</option>
-            @foreach (var agent in agents)
-            {
-                <option value="@agent.Name">@agent.Name</option>
-            }
-        </select>
-    </div>
-    <button class="btn btn-primary" @onclick="AssignAsync">분배</button>
-}
+    }
+    else
+    {
+        <div class="mb-3">
+            <label class="form-label">담당자 선택</label>
+            <select class="form-select" @bind="selectedAgentName">
+                <option value="">담당자를 선택하세요</option>
+                @foreach (var agent in agents)
+                {
+                    <option value="@agent.Name">@agent.Name</option>
+                }
+            </select>
+        </div>
+        <button class="btn btn-primary btn-assign" @onclick="AssignAsync">분배</button>
+    }
+</div>
 
 @code {
     [Parameter] public int ContactId { get; set; }
