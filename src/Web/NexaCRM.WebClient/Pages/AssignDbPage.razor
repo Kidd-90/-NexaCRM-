@@ -1,8 +1,9 @@
-@page "/db/distribution/assign/{contactId:int}"
+@page "/db/distribution/assign/{ContactId:int}"
 @attribute [Authorize(Roles = "Manager")]
 
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
+@using System.Linq
 
 @inject IDbDataService DbDataService
 @inject IAgentService AgentService
@@ -30,24 +31,25 @@ else
             }
         </select>
     </div>
-    <button class="btn btn-primary" @onclick="Assign">분배</button>
+    <button class="btn btn-primary" @onclick="AssignAsync">분배</button>
 }
 
 @code {
-    [Parameter] public int contactId { get; set; }
+    [Parameter] public int ContactId { get; set; }
     private IEnumerable<Agent> agents;
     private string selectedAgentName;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
-        agents = await AgentService.GetAgentsAsync();
+        var allAgents = await AgentService.GetAgentsAsync();
+        agents = allAgents.Where(a => a.Role == "Sales");
     }
 
-    private async System.Threading.Tasks.Task Assign()
+    private async System.Threading.Tasks.Task AssignAsync()
     {
         if (!string.IsNullOrEmpty(selectedAgentName))
         {
-            await DbDataService.AssignDbToAgentAsync(contactId, selectedAgentName);
+            await DbDataService.AssignDbToAgentAsync(ContactId, selectedAgentName);
             NavigationManager.NavigateTo("/db/distribution/status");
         }
     }
