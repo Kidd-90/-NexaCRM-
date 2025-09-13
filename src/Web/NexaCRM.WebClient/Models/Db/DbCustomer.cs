@@ -8,6 +8,9 @@ namespace NexaCRM.WebClient.Models.Db
         [Display(Name = "ID")]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
+        // This is the foreign key to the Contact model
+        public int ContactId { get; set; }
+
         [Required(ErrorMessage = "고객명은 필수입니다.")]
         [Display(Name = "고객명")]
         public string CustomerName { get; set; }

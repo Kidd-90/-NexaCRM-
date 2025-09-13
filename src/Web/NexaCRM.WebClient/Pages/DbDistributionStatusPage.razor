@@ -20,6 +20,23 @@
     }
     else
     {
+        <!-- Chart Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">DB 상태별 현황</h5>
+                <div class="d-flex justify-content-around p-3">
+                    @foreach (var status in statusCounts)
+                    {
+                        <div class="text-center">
+                            <h6 class="mb-0">@status.Key</h6>
+                            <div class="fs-2 fw-bold">@status.Value</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <h3 class="h5 mb-3">전체 목록</h3>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead class="table-light">
@@ -57,9 +74,21 @@
 
 @code {
     private IEnumerable<DbCustomer> customers;
+    private Dictionary<DbStatus, int> statusCounts = new Dictionary<DbStatus, int>();
 
     protected override async Task OnInitializedAsync()
     {
         customers = await DbDataService.GetDbDistributionStatusAsync();
+        if (customers != null)
+        {
+            ProcessDataForChart();
+        }
+    }
+
+    private void ProcessDataForChart()
+    {
+        statusCounts = customers
+            .GroupBy(c => c.Status)
+            .ToDictionary(g => g.Key, g => g.Count());
     }
 }

@@ -5,9 +5,61 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.WebClient.Models.Db
 @using NexaCRM.WebClient.Services.Interfaces
-
 @inject IDbDataService DbDataService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<style>
+    .table-hover tbody tr:hover {
+        cursor: pointer;
+    }
+
+    .mobile-card-view {
+        display: none;
+    }
+
+    .customer-card {
+        background-color: #fff;
+        border: 1px solid #e7ecf3;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        cursor: pointer;
+    }
+
+    .customer-card h5 {
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .card-info-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .card-info-label {
+        color: #6c757d;
+    }
+
+    .card-info-value {
+        font-weight: 500;
+    }
+
+
+    /* Show card view on mobile, hide table */
+    @media (max-width: 767.98px) {
+        .desktop-table-view {
+            display: none;
+        }
+
+        .mobile-card-view {
+            display: block;
+        }
+    }
+</style>
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">신규 DB 목록</h1>
@@ -23,7 +75,8 @@
     }
     else
     {
-        <div class="table-responsive">
+        <!-- Desktop View -->
+        <div class="table-responsive desktop-table-view">
             <table class="table table-striped table-hover">
                 <thead class="table-light">
                     <tr>
@@ -36,7 +89,7 @@
                 <tbody>
                     @foreach (var customer in customers)
                     {
-                        <tr>
+                        <tr @onclick="() => NavigateToContact(customer.ContactId)">
                             <td>@customer.CustomerName</td>
                             <td>@customer.ContactNumber</td>
                             <td>@customer.AssignedDate.ToShortDateString()</td>
@@ -45,6 +98,28 @@
                     }
                 </tbody>
             </table>
+        </div>
+
+        <!-- Mobile View -->
+        <div class="mobile-card-view">
+            @foreach (var customer in customers)
+            {
+                <div class="customer-card" @onclick="() => NavigateToContact(customer.ContactId)">
+                    <h5>@customer.CustomerName</h5>
+                    <div class="card-info-row">
+                        <span class="card-info-label">연락처</span>
+                        <span class="card-info-value">@customer.ContactNumber</span>
+                    </div>
+                    <div class="card-info-row">
+                        <span class="card-info-label">분배일</span>
+                        <span class="card-info-value">@customer.AssignedDate.ToShortDateString()</span>
+                    </div>
+                    <div class="card-info-row">
+                        <span class="card-info-label">전달자</span>
+                        <span class="card-info-value">@customer.Assigner</span>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>
@@ -60,5 +135,10 @@
         // In a real app, you'd use user.Identity.Name, but for mock, we hardcode it.
         var agentName = "이영업";
         customers = await DbDataService.GetNewDbListAsync(agentName);
+    }
+
+    private void NavigateToContact(int contactId)
+    {
+        NavigationManager.NavigateTo($"/contacts/{contactId}");
     }
 }

@@ -1,0 +1,209 @@
+@page "/contacts/{ContactId}"
+@attribute [Authorize(Roles = "Manager, Sales")]
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Models.Enums
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IContactService ContactService
+@inject IActivityService ActivityService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<style>
+    .history-item {
+        position: relative;
+        padding: 10px 10px 10px 40px;
+        border-left: 2px solid #e7ecf3;
+    }
+    .history-icon {
+        position: absolute;
+        left: -12px;
+        top: 12px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .history-item-body {
+        font-size: 0.95rem;
+    }
+    .history-item-meta {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    @if (contact == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Header with Contact Name and Main Actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">@contact.FirstName @contact.LastName</h1>
+            <div>
+                <button class="btn btn-secondary me-2">Edit</button>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4" id="contactDetailTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Details</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="related-tab" data-bs-toggle="tab" data-bs-target="#related" type="button" role="tab" aria-controls="related" aria-selected="false">Related Items</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="contactDetailTabContent">
+            <!-- Details Tab Pane -->
+            <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Contact Information</h5>
+                        <p><strong>Email:</strong> @contact.Email</p>
+                        <p><strong>Phone:</strong> @contact.PhoneNumber</p>
+                        <p><strong>Company:</strong> @(contact.Company ?? "N/A")</p>
+                        <p><strong>Title:</strong> @(contact.Title ?? "N/A")</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab Pane -->
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <!-- Add Activity Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Add New Activity</h5>
+                        <div class="mb-3">
+                            <textarea class="form-control" @bind="newActivityContent" rows="3" placeholder="Log a call, email, or note..."></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary" @onclick="HandleAddActivity">Add Activity</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Timeline -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Interaction History</h5>
+                        @if (activities == null || !activities.Any())
+                        {
+                            <p class="text-muted">No history recorded yet.</p>
+                        }
+                        else
+                        {
+                            <div class="history-timeline">
+                                @foreach (var activity in activities)
+                                {
+                                    <div class="history-item">
+                                        <div class="history-icon">
+                                            @GetIconForActivity(activity.Type)
+                                        </div>
+                                        <div class="history-item-body">
+                                            <p class="mb-1">@activity.Content</p>
+                                            <p class="history-item-meta">
+                                                Logged by <strong>@activity.CreatedBy</strong> on @activity.Timestamp.ToShortDateString()
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Items Tab Pane -->
+            <div class="tab-pane fade" id="related" role="tabpanel" aria-labelledby="related-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Related Items</h5>
+                        <p class="text-muted">No related items found.</p>
+                        <!-- Related deals, tickets, etc. will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string ContactId { get; set; }
+
+    private Contact? contact;
+    private IEnumerable<Activity> activities;
+    private string newActivityContent;
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (int.TryParse(ContactId, out var contactId))
+        {
+            var contacts = await ContactService.GetContactsAsync();
+            contact = contacts.FirstOrDefault(c => c.Id == contactId);
+
+            if (contact != null)
+            {
+                activities = await ActivityService.GetActivitiesByContactIdAsync(contact.Id);
+            }
+        }
+    }
+
+    private async Task HandleAddActivity()
+    {
+        if (string.IsNullOrWhiteSpace(newActivityContent) || contact == null)
+        {
+            return;
+        }
+
+        var newActivity = new Activity
+        {
+            ContactId = contact.Id,
+            Content = newActivityContent,
+            Type = ActivityType.Note, // Default to Note for now
+            CreatedBy = user.Identity?.Name ?? "Unknown"
+        };
+
+        await ActivityService.AddActivityAsync(newActivity);
+
+        // Refresh the list
+        newActivityContent = string.Empty;
+        activities = await ActivityService.GetActivitiesByContactIdAsync(contact.Id);
+        StateHasChanged();
+    }
+
+    private string GetIconForActivity(ActivityType type)
+    {
+        return type switch
+        {
+            ActivityType.Call => "📞",
+            ActivityType.Email => "✉️",
+            ActivityType.Meeting => "🤝",
+            ActivityType.Note => "📝",
+            _ => "📌"
+        };
+    }
+}
