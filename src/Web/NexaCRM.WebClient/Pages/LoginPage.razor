@@ -66,11 +66,11 @@
               <!-- Remember me 체크박스 -->
               <div class="flex items-center gap-3 mb-6">
                 <div class="shrink-0">
-                  <div class="flex size-6 items-center justify-center">
+                  <div class="flex items-center justify-center">
                     <input
                       type="checkbox"
-                      class="login-checkbox h-5 w-5 rounded border-2 focus:ring-0 focus:ring-offset-0 focus:outline-none"
-                      style="width: 20px; height: 20px; accent-color: var(--primary-color);"
+                      class="login-checkbox rounded border-2 focus:ring-0 focus:ring-offset-0 focus:outline-none"
+                      style="accent-color: var(--primary-color);"
                     />
                   </div>
                 </div>
@@ -265,7 +265,7 @@
 <style>
 /* Light mode (default) */
 .login-container {
-    background-color: #f8fafc;
+    background-color: #ffffff;
     color: #0e131b;
 }
 
@@ -349,6 +349,12 @@
     filter: brightness(1.1);
 }
 
+
+.login-checkbox {
+    width: 20px;
+    height: 20px;
+}
+
 @@media (max-width: 640px) {
     .login-header {
         font-size: 24px;
@@ -366,8 +372,8 @@
         font-size: 16px;
     }
     .login-checkbox {
-        width: 24px;
-        height: 24px;
+        width: 16px;
+        height: 16px;
     }
     .login-helper-links a {
         font-size: 14px;
