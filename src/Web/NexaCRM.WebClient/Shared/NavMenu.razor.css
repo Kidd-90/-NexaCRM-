@@ -103,7 +103,7 @@
 }
 
 .nav-section-header:hover {
-    background-color: #f8f9fa;
+    background-color: var(--color-secondary);
 }
 
 .submenu-toggle {
@@ -122,9 +122,11 @@
 
 .nav-submenu {
     padding-left: 20px;
-    border-left: 2px solid #e9ecef;
+    border-left: 2px solid var(--primary-color);
     margin-left: 16px;
     margin-bottom: 8px;
+    background-color: var(--color-secondary);
+    border-radius: 8px;
 }
 
 .submenu-link {
@@ -140,14 +142,15 @@
 }
 
 .submenu-link:hover {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: var(--color-secondary);
+    color: var(--text-primary);
     text-decoration: none;
 }
 
 .submenu-link.active {
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .submenu-link .oi {
