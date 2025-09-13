@@ -5,15 +5,16 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<Index> Localizer
 
 @if (!_hasNavigated)
 {
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="text-center">
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">로딩 중...</span>
+                <span class="sr-only">@Localizer["Loading"]</span>
             </div>
-            <p class="mt-3">애플리케이션을 로딩하고 있습니다...</p>
+            <p class="mt-3">@Localizer["LoadingApp"]</p>
         </div>
     </div>
 }

@@ -8,9 +8,10 @@
 @inject IDbDataService DbDataService
 @inject IAgentService AgentService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<AssignDbPage> Localizer
 
 <div class="page-container">
-    <h1 class="mb-4">DB 분배</h1>
+    <h1 class="mb-4">@Localizer["Title"]</h1>
 
     @if (agents == null)
     {
@@ -23,16 +24,16 @@
     else
     {
         <div class="mb-3">
-            <label class="form-label">담당자 선택</label>
+            <label class="form-label">@Localizer["SelectAgentLabel"]</label>
             <select class="form-select" @bind="selectedAgentName">
-                <option value="">담당자를 선택하세요</option>
+                <option value="">@Localizer["SelectAgentPlaceholder"]</option>
                 @foreach (var agent in agents)
                 {
                     <option value="@agent.Name">@agent.Name</option>
                 }
             </select>
         </div>
-        <button class="btn btn-primary btn-assign" @onclick="AssignAsync">분배</button>
+        <button class="btn btn-primary btn-assign" @onclick="AssignAsync">@Localizer["AssignButton"]</button>
     }
 </div>
 

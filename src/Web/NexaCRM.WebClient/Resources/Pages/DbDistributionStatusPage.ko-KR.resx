@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>DB 분배 현황</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>팀 전체의 DB 분배 이력 및 현황을 조회합니다.</value>
+  </data>
+  <data name="StatusSummaryTitle" xml:space="preserve">
+    <value>DB 상태별 현황</value>
+  </data>
+  <data name="AllListTitle" xml:space="preserve">
+    <value>전체 목록</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>고객명</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>연락처</value>
+  </data>
+  <data name="AssignedTo" xml:space="preserve">
+    <value>담당자</value>
+  </data>
+  <data name="AssignedDate" xml:space="preserve">
+    <value>분배일</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>DB 상태</value>
+  </data>
+  <data name="LastContact" xml:space="preserve">
+    <value>최종 컨택일</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>액션</value>
+  </data>
+  <data name="Redistribute" xml:space="preserve">
+    <value>재분배</value>
+  </data>
+  <data name="Recall" xml:space="preserve">
+    <value>회수</value>
+  </data>
+</root>

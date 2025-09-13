@@ -11,29 +11,29 @@ namespace NexaCRM.WebClient.Models.Db
         // This is the foreign key to the Contact model
         public int ContactId { get; set; }
 
-        [Required(ErrorMessage = "고객명은 필수입니다.")]
-        [Display(Name = "고객명")]
+        [Required(ErrorMessage = "Customer name is required.")]
+        [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
 
-        [Display(Name = "연락처")]
+        [Display(Name = "Contact")]
         public string ContactNumber { get; set; }
 
-        [Display(Name = "담당자")]
+        [Display(Name = "Assigned To")]
         public string AssignedTo { get; set; }
 
-        [Display(Name = "분배일")]
+        [Display(Name = "Assigned Date")]
         public DateTime AssignedDate { get; set; }
 
-        [Display(Name = "DB 상태")]
+        [Display(Name = "Status")]
         public DbStatus Status { get; set; }
 
-        [Display(Name = "최종 컨택일")]
+        [Display(Name = "Last Contact Date")]
         public DateTime LastContactDate { get; set; }
 
-        [Display(Name = "관심(중요) 표시")]
+        [Display(Name = "Starred")]
         public bool IsStarred { get; set; }
 
-        [Display(Name = "전달자")]
+        [Display(Name = "Assigned By")]
         public string Assigner { get; set; }
     }
 }
