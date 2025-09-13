@@ -12,7 +12,7 @@
 @inject IJSRuntime JSRuntime
 
 <div
-      class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden login-container"
+      class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden overflow-y-auto login-container"
       style="--checkbox-tick-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(248,250,252)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e'); font-family: Inter, &quot;Noto Sans&quot;, sans-serif;"
     >
       <div class="layout-container flex h-full grow flex-col">
@@ -110,9 +110,13 @@
                 </button>
               </div>
               
-              <!-- Forgot password 링크 -->
-              <div class="text-center mb-6">
-                <a href="#" class="login-link text-sm font-normal leading-normal hover:underline">@Localizer["ForgotPassword"]</a>
+              <!-- Helper links -->
+              <div class="login-helper-links flex justify-center items-center gap-2 text-sm mb-6">
+                <a href="/find-id-page" class="login-link hover:underline">@Localizer["FindId"]</a>
+                <span class="text-gray-400">|</span>
+                <a href="/password-reset-page" class="login-link hover:underline">@Localizer["ResetPassword"]</a>
+                <span class="text-gray-400">|</span>
+                <a href="/user-registration-page" class="login-link hover:underline">@Localizer["SignUp"]</a>
               </div>
               
               <!-- 구분선 -->
@@ -343,5 +347,28 @@
 
 .login-button:hover {
     filter: brightness(1.1);
+}
+
+@@media (max-width: 640px) {
+    .login-header {
+        font-size: 24px;
+    }
+    .login-subheader,
+    .login-form-label,
+    .login-checkbox-label {
+        font-size: 16px;
+    }
+    .login-form-input,
+    .login-button {
+        height: 48px;
+        font-size: 16px;
+    }
+    .login-checkbox {
+        width: 24px;
+        height: 24px;
+    }
+    .login-helper-links a {
+        font-size: 14px;
+    }
 }
 </style>

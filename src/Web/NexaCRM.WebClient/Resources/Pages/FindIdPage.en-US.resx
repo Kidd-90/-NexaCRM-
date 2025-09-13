@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="FindId" xml:space="preserve">
+    <value>Find ID</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Enter your email to retrieve your ID</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="EmailPlaceholder" xml:space="preserve">
+    <value>Email address</value>
+  </data>
+  <data name="FindIdButton" xml:space="preserve">
+    <value>Find ID</value>
+  </data>
+</root>
