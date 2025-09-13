@@ -2,6 +2,7 @@
 @attribute [Authorize(Roles = "Manager, Sales")]
 
 @using System.Security.Claims
+@using System.Linq
 @using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Models.Enums
@@ -9,6 +10,7 @@
 
 @inject IContactService ContactService
 @inject IActivityService ActivityService
+@inject IDealService DealService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
@@ -143,8 +145,22 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Related Items</h5>
-                        <p class="text-muted">No related items found.</p>
-                        <!-- Related deals, tickets, etc. will be rendered here -->
+                        @if (relatedDeals == null || !relatedDeals.Any())
+                        {
+                            <p class="text-muted">No related items found.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var deal in relatedDeals)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>@deal.Name (@deal.Stage)</span>
+                                        <span class="badge bg-primary rounded-pill">@deal.Amount.ToString("C")</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
                     </div>
                 </div>
             </div>
@@ -159,6 +175,7 @@
     private Contact? contact;
     private IEnumerable<Activity> activities;
     private string newActivityContent;
+    private IEnumerable<Deal> relatedDeals;
     private ClaimsPrincipal user;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
@@ -174,6 +191,9 @@
             if (contact != null)
             {
                 activities = await ActivityService.GetActivitiesByContactIdAsync(contact.Id);
+                var deals = await DealService.GetDealsAsync();
+                var fullName = $"{contact.FirstName} {contact.LastName}";
+                relatedDeals = deals.Where(d => string.Equals(d.ContactPerson, fullName, StringComparison.OrdinalIgnoreCase));
             }
         }
     }

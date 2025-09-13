@@ -18,6 +18,9 @@ namespace NexaCRM.WebClient.Models.Db
         [Display(Name = "Contact")]
         public string ContactNumber { get; set; }
 
+        [Display(Name = "Group")]
+        public string? Group { get; set; }
+
         [Display(Name = "Assigned To")]
         public string AssignedTo { get; set; }
 
