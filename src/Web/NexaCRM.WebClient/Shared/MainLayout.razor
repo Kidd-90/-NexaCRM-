@@ -4,12 +4,28 @@
 @using Microsoft.JSInterop
 @inject IDeviceService DeviceService
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <div class="page @(isMobile ? "mobile-layout" : "desktop-layout")">
-    <!-- 고정된 햄버거 버튼 - sidebar 밖에 배치 -->
-    <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    @if (isMobile)
+    {
+        <header class="mobile-fixed-header">
+            <button class="nav-menu-button" title="Navigation menu" @onclick="ToggleNavMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="page-title">@currentPageTitle</div>
+            <button class="user-info-button" title="User profile" @onclick="GoToProfile">
+                <span class="oi oi-person" aria-hidden="true"></span>
+            </button>
+        </header>
+    }
+    else
+    {
+        <!-- 고정된 햄버거 버튼 - sidebar 밖에 배치 -->
+        <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    }
     
     <div class="sidebar">
         <NavMenu />
@@ -26,10 +42,23 @@
 
 @code {
     private bool isMobile;
+    private string currentPageTitle = string.Empty;
     private async Task ToggleNavMenu()
     {
         // JavaScript 함수 호출하여 메뉴 상태 토글
         await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu");
+    }
+
+    private void GoToProfile()
+    {
+        NavigationManager.NavigateTo("profile-settings-page");
+    }
+
+    private async Task UpdatePageTitle()
+    {
+        var title = await JSRuntime.InvokeAsync<string>("eval", "document.title");
+        currentPageTitle = title.Contains('-') ? title.Split('-')[0].Trim() : title;
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -40,12 +69,18 @@
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
             // 초기 상태를 확실히 설정 (메뉴 닫힌 상태)
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
-            
+
             // 테마 토글 아이콘 초기화
             await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
             isMobile = await DeviceService.IsMobileAsync();
+            await UpdatePageTitle();
             StateHasChanged();
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += async (_, __) => await UpdatePageTitle();
     }
 }
 
