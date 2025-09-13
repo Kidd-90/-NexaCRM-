@@ -473,6 +473,7 @@ window.navigationHelper = {
     toggleMenu: (isCollapsed) => {
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.querySelector('.mobile-overlay');
+        const toggleBtn = document.querySelector('.floating-menu-toggle');
 
         if (!sidebar) return;
 
@@ -490,6 +491,10 @@ window.navigationHelper = {
             if (overlay) {
                 overlay.classList.add('show');
             }
+        }
+
+        if (toggleBtn) {
+            toggleBtn.style.display = isCollapsed ? 'flex' : 'none';
         }
 
         return isCollapsed;

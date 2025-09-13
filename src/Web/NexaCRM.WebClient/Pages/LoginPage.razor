@@ -20,7 +20,7 @@
         <div class="flex flex-1 items-center justify-center py-8 px-4">
           <div class="w-full max-w-md mx-auto">
             <!-- 통합된 로그인 카드 -->
-            <div class="login-card rounded-2xl overflow-hidden border">
+            <div class="login-card rounded-2xl overflow-hidden border shadow-lg backdrop-blur-md">
               <!-- 상단 이미지 섹션 -->
               <div
                 class="w-full bg-center bg-no-repeat bg-cover image-div-login-page min-h-[180px] relative"
@@ -45,6 +45,7 @@
                   <p class="login-form-label text-base font-medium leading-normal pb-2">@Localizer["Username"]</p>
                   <input @bind="username"
                     placeholder="@Localizer["EnterYourUsername"]"
+                    autocomplete="username"
                     class="login-form-input flex w-full resize-none overflow-hidden rounded-lg focus:outline-0 focus:ring-0 border h-12 px-4 text-base font-normal leading-normal"
                   />
                 </label>
@@ -56,6 +57,7 @@
                   <p class="login-form-label text-base font-medium leading-normal pb-2">@Localizer["Password"]</p>
                   <input @bind="password" type="password"
                     placeholder="@Localizer["EnterYourPassword"]"
+                    autocomplete="current-password"
                     class="login-form-input flex w-full resize-none overflow-hidden rounded-lg focus:outline-0 focus:ring-0 border h-12 px-4 text-base font-normal leading-normal"
                   />
                 </label>
@@ -324,5 +326,22 @@
 
 [data-theme="dark"] .login-container .social-login-btn:hover {
     background-color: #444444 !important;
+}
+
+.login-card {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] .login-card {
+    background-color: rgba(45, 45, 45, 0.8);
+}
+
+.login-button {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transition: filter 0.2s ease;
+}
+
+.login-button:hover {
+    filter: brightness(1.1);
 }
 </style>

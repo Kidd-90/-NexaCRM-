@@ -59,137 +59,200 @@
                         </NavLink>
                     </div>
 
-                    <!-- 🗃️ DB Customer Management -->
-                    <AuthorizeView Roles="Sales,Manager" Context="salesManagerContext">
-                        <div class="nav-item px-3">
-                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbCustomerSubmenu" style="cursor: pointer;">
-                                <span class="oi oi-folder" aria-hidden="true"></span>
-                                @Localizer["DbCustomerManagement"]
-                                <span class="submenu-toggle @(showDbCustomerSubmenu ? "expanded" : "collapsed")">▼</span>
-                            </div>
-                            
-                            @if (showDbCustomerSubmenu)
-                            {
-                                <div class="nav-submenu">
-                                    <!-- Manager-specific links -->
-                                    <AuthorizeView Roles="Manager" Context="managerDbContext">
-                                        <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
-                                            <span class="oi oi-spreadsheet" aria-hidden="true"></span> @Localizer["AllDbList"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="db/customer/team-status" @onclick="CloseNavMenu">
-                                            <span class="oi oi-people" aria-hidden="true"></span> @Localizer["TeamDbStatus"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="db/customer/assigned-today" @onclick="CloseNavMenu">
-                                            <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["TodaysAssignedDb"]
-                                        </NavLink>
-                                    </AuthorizeView>
-
-                                    <!-- Common link for Sales and Manager -->
-                                    <NavLink class="nav-link submenu-link" href="db/customer/my-list" @onclick="CloseNavMenu">
-                                        <span class="oi oi-person" aria-hidden="true"></span> @Localizer["MyDbList"]
-                                    </NavLink>
-
-                                    <!-- Sales-specific links -->
-                                    <AuthorizeView Roles="Sales" Context="salesDbContext">
-                                        <NavLink class="nav-link submenu-link" href="db/customer/new" @onclick="CloseNavMenu">
-                                            <span class="oi oi-bell" aria-hidden="true"></span> @Localizer["NewDbList"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="db/customer/starred" @onclick="CloseNavMenu">
-                                            <span class="oi oi-star" aria-hidden="true"></span> @Localizer["StarredDbList"]
-                                        </NavLink>
-                                    </AuthorizeView>
-                                </div>
-                            }
+                    <!-- 1. Basic Settings -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleBasicSettingsSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-cog" aria-hidden="true"></span>
+                            @Localizer["BasicSettings"]
+                            <span class="submenu-toggle @(showBasicSettingsSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
-                    </AuthorizeView>
 
-                    <!-- 🔄 DB Distribution Management -->
-                    <AuthorizeView Roles="Sales,Manager" Context="salesManagerDistContext">
-                        <div class="nav-item px-3">
-                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbDistributionSubmenu" style="cursor: pointer;">
-                                <span class="oi oi-fork" aria-hidden="true"></span>
-                                @Localizer["DbDistributionManagement"]
-                                <span class="submenu-toggle @(showDbDistributionSubmenu ? "expanded" : "collapsed")">▼</span>
-                            </div>
-
-                            @if (showDbDistributionSubmenu)
-                            {
-                                <div class="nav-submenu">
-                                    <!-- Manager-specific links -->
-                                    <AuthorizeView Roles="Manager" Context="managerDistContext">
-                                        <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
-                                            <span class="oi oi-inbox" aria-hidden="true"></span> @Localizer["UnassignedDbList"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="db/distribution/assign/{ContactId:int}" @onclick="CloseNavMenu">
-                                            <span class="oi oi-transfer" aria-hidden="true"></span> @Localizer["AssignDb"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
-                                            <span class="oi oi-graph" aria-hidden="true"></span> @Localizer["DbDistributionStatus"]
-                                        </NavLink>
-                                    </AuthorizeView>
-
-                                    <!-- Sales-specific links -->
-                                    <AuthorizeView Roles="Sales" Context="salesDistContext">
-                                        <NavLink class="nav-link submenu-link" href="db/distribution/newly-assigned" @onclick="CloseNavMenu">
-                                            <span class="oi oi-envelope-open" aria-hidden="true"></span> @Localizer["NewlyAssignedDb"]
-                                        </NavLink>
-                                        <NavLink class="nav-link submenu-link" href="db/distribution/my-history" @onclick="CloseNavMenu">
-                                            <span class="oi oi-task" aria-hidden="true"></span> @Localizer["MyAssignmentHistory"]
-                                        </NavLink>
-                                    </AuthorizeView>
-                                </div>
-                            }
-                        </div>
-                    </AuthorizeView>
-
-                    <!-- 📈 Sales Management -->
-                    <AuthorizeView Roles="Sales,Manager" Context="salesManagerToolsContext">
-                        <div class="nav-item px-3">
-                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSalesManagementSubmenu" style="cursor: pointer;">
-                                <span class="oi oi-graph" aria-hidden="true"></span>
-                                @Localizer["SalesManagement"]
-                                <span class="submenu-toggle @(showSalesManagementSubmenu ? "expanded" : "collapsed")">▼</span>
-                            </div>
-
-                            @if (showSalesManagementSubmenu)
-                            {
-                                <div class="nav-submenu">
-                                    <NavLink class="nav-link submenu-link" href="customer-management" @onclick="CloseNavMenu">
-                                        <span class="oi oi-people" aria-hidden="true"></span> @Localizer["CustomerManagement"]
-                                    </NavLink>
-                                    <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
-                                        <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["SalesCalendar"]
-                                    </NavLink>
-                                </div>
-                            }
-                        </div>
-                    </AuthorizeView>
-
-                    <!-- Other original menus -->
-                    <AuthorizeView Roles="Manager" Context="managerContext">
-                        <Authorized>
-                            <div class="nav-item px-3">
-                                <NavLink class="nav-link" href="sales-manager-dashboard" @onclick="CloseNavMenu">
-                                    <span class="oi oi-person" aria-hidden="true"></span> @Localizer["ManagerDashboard"]
+                        @if (showBasicSettingsSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="settings/company-info" @onclick="CloseNavMenu">
+                                    <span class="oi oi-briefcase" aria-hidden="true"></span> @Localizer["CompanyInfo"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="profile-settings-page" @onclick="CloseNavMenu">
+                                    <span class="oi oi-person" aria-hidden="true"></span> @Localizer["PersonalInfo"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="settings-page" @onclick="CloseNavMenu">
+                                    <span class="oi oi-brush" aria-hidden="true"></span> @Localizer["ThemeSettings"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="settings/security" @onclick="CloseNavMenu">
+                                    <span class="oi oi-lock-locked" aria-hidden="true"></span> @Localizer["SecuritySettings"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="settings/sms" @onclick="CloseNavMenu">
+                                    <span class="oi oi-chat" aria-hidden="true"></span> @Localizer["SmsSettings"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="sms/senders" @onclick="CloseNavMenu">
+                                    <span class="oi oi-phone" aria-hidden="true"></span> @Localizer["SenderNumbers"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="email-template-builder" @onclick="CloseNavMenu">
+                                    <span class="oi oi-document" aria-hidden="true"></span> @Localizer["TemplateManagement"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="notification-settings-page" @onclick="CloseNavMenu">
+                                    <span class="oi oi-bell" aria-hidden="true"></span> @Localizer["NotificationSettings"]
                                 </NavLink>
                             </div>
-                            <div class="nav-item px-3">
-                                <NavLink class="nav-link" href="reports-page" @onclick="CloseNavMenu">
+                        }
+                    </div>
+
+                    <!-- 2. Organization Management -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleOrganizationSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-people" aria-hidden="true"></span>
+                            @Localizer["OrganizationManagement"]
+                            <span class="submenu-toggle @(showOrganizationSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showOrganizationSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="organization/structure" @onclick="CloseNavMenu">
+                                    <span class="oi oi-spreadsheet" aria-hidden="true"></span> @Localizer["OrganizationStructure"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="user-registration-page" @onclick="CloseNavMenu">
+                                    <span class="oi oi-plus" aria-hidden="true"></span> @Localizer["UserManagement"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="organization/stats" @onclick="CloseNavMenu">
+                                    <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["OrganizationStats"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="organization/system-admin" @onclick="CloseNavMenu">
+                                    <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["SystemAdmin"]
+                                </NavLink>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 3. DB Management -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbManagementSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-folder" aria-hidden="true"></span>
+                            @Localizer["DbManagement"]
+                            <span class="submenu-toggle @(showDbManagementSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showDbManagementSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
+                                    <span class="oi oi-database" aria-hidden="true"></span> @Localizer["DbIntegration"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
+                                    <span class="oi oi-transfer" aria-hidden="true"></span> @Localizer["DbDistribution"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/advanced" @onclick="CloseNavMenu">
+                                    <span class="oi oi-wrench" aria-hidden="true"></span> @Localizer["DbAdvanced"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/customer/my-list" @onclick="CloseNavMenu">
+                                    <span class="oi oi-person" aria-hidden="true"></span> @Localizer["MyDbList"]
+                                </NavLink>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 4. Statistics -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleStatisticsSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-graph" aria-hidden="true"></span>
+                            @Localizer["Statistics"]
+                            <span class="submenu-toggle @(showStatisticsSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showStatisticsSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="statistics/dashboard" @onclick="CloseNavMenu">
+                                    <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localizer["StatisticsDashboard"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="reports-page" @onclick="CloseNavMenu">
                                     <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
                                 </NavLink>
                             </div>
-                        </Authorized>
-                    </AuthorizeView>
+                        }
+                    </div>
 
-                    <AuthorizeView Roles="Admin" Context="adminContext">
-                        <Authorized>
-                            <div class="nav-item px-3">
-                                <NavLink class="nav-link" href="settings-page" @onclick="CloseNavMenu">
-                                    <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["Settings"]
+                    <!-- 5. Customer Center -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleCustomerCenterSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-question-mark" aria-hidden="true"></span>
+                            @Localizer["CustomerCenter"]
+                            <span class="submenu-toggle @(showCustomerCenterSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showCustomerCenterSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="support/notices" @onclick="CloseNavMenu">
+                                    <span class="oi oi-bullhorn" aria-hidden="true"></span> @Localizer["Notices"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="support/faq" @onclick="CloseNavMenu">
+                                    <span class="oi oi-book" aria-hidden="true"></span> @Localizer["Faq"]
                                 </NavLink>
                             </div>
-                        </Authorized>
-                    </AuthorizeView>
+                        }
+                    </div>
+
+                    <!-- 6. Schedule Management -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleScheduleSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-calendar" aria-hidden="true"></span>
+                            @Localizer["ScheduleManagement"]
+                            <span class="submenu-toggle @(showScheduleSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showScheduleSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
+                                    <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["SalesCalendar"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="schedule/sms" @onclick="CloseNavMenu">
+                                    <span class="oi oi-envelope-closed" aria-hidden="true"></span> @Localizer["SmsSchedule"]
+                                </NavLink>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 7. SMS -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSmsSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-chat" aria-hidden="true"></span>
+                            @Localizer["Sms"]
+                            <span class="submenu-toggle @(showSmsSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showSmsSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="sms/bulk" @onclick="CloseNavMenu">
+                                    <span class="oi oi-envelope-closed" aria-hidden="true"></span> @Localizer["BulkSms"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="sms/history" @onclick="CloseNavMenu">
+                                    <span class="oi oi-history" aria-hidden="true"></span> @Localizer["SmsHistory"]
+                                </NavLink>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- 8. System Info -->
+                    <div class="nav-item px-3">
+                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSystemSubmenu" style="cursor: pointer;">
+                            <span class="oi oi-info" aria-hidden="true"></span>
+                            @Localizer["SystemInfo"]
+                            <span class="submenu-toggle @(showSystemSubmenu ? "expanded" : "collapsed")">▼</span>
+                        </div>
+
+                        @if (showSystemSubmenu)
+                        {
+                            <div class="nav-submenu">
+                                <NavLink class="nav-link submenu-link" href="system/info" @onclick="CloseNavMenu">
+                                    <span class="oi oi-document" aria-hidden="true"></span> @Localizer["SystemInformation"]
+                                </NavLink>
+                            </div>
+                        }
+                    </div>
 
                     <!-- Logout button -->
                     <div class="nav-item px-3 mt-auto">
@@ -211,9 +274,14 @@
 </div>
 
 @code {
-    private bool showDbCustomerSubmenu = false;
-    private bool showDbDistributionSubmenu = false;
-    private bool showSalesManagementSubmenu = false;
+    private bool showBasicSettingsSubmenu = false;
+    private bool showOrganizationSubmenu = false;
+    private bool showDbManagementSubmenu = false;
+    private bool showStatisticsSubmenu = false;
+    private bool showCustomerCenterSubmenu = false;
+    private bool showScheduleSubmenu = false;
+    private bool showSmsSubmenu = false;
+    private bool showSystemSubmenu = false;
 
     private bool isDarkMode = false;
 
@@ -229,20 +297,14 @@
 
     private bool IsDarkMode() => isDarkMode;
 
-    private void ToggleDbCustomerSubmenu()
-    {
-        showDbCustomerSubmenu = !showDbCustomerSubmenu;
-    }
-
-    private void ToggleDbDistributionSubmenu()
-    {
-        showDbDistributionSubmenu = !showDbDistributionSubmenu;
-    }
-
-    private void ToggleSalesManagementSubmenu()
-    {
-        showSalesManagementSubmenu = !showSalesManagementSubmenu;
-    }
+    private void ToggleBasicSettingsSubmenu() => showBasicSettingsSubmenu = !showBasicSettingsSubmenu;
+    private void ToggleOrganizationSubmenu() => showOrganizationSubmenu = !showOrganizationSubmenu;
+    private void ToggleDbManagementSubmenu() => showDbManagementSubmenu = !showDbManagementSubmenu;
+    private void ToggleStatisticsSubmenu() => showStatisticsSubmenu = !showStatisticsSubmenu;
+    private void ToggleCustomerCenterSubmenu() => showCustomerCenterSubmenu = !showCustomerCenterSubmenu;
+    private void ToggleScheduleSubmenu() => showScheduleSubmenu = !showScheduleSubmenu;
+    private void ToggleSmsSubmenu() => showSmsSubmenu = !showSmsSubmenu;
+    private void ToggleSystemSubmenu() => showSystemSubmenu = !showSystemSubmenu;
 
     private async Task CloseNavMenu()
     {
