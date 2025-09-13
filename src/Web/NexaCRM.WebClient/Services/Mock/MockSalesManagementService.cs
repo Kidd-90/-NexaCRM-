@@ -12,9 +12,16 @@ namespace NexaCRM.WebClient.Services.Mock
         private int _noteIdCounter = 1;
 
         public MockSalesManagementService()
+            : this(null, null)
         {
-            _appointments = GenerateSampleAppointments();
-            _consultationNotes = GenerateSampleConsultationNotes();
+        }
+
+        public MockSalesManagementService(List<SalesAppointment>? appointments, List<ConsultationNote>? consultationNotes = null)
+        {
+            _appointments = appointments ?? GenerateSampleAppointments();
+            _consultationNotes = consultationNotes ?? GenerateSampleConsultationNotes();
+            _appointmentIdCounter = _appointments.Count + 1;
+            _noteIdCounter = _consultationNotes.Count + 1;
         }
 
         // Appointment Management
@@ -182,13 +189,12 @@ namespace NexaCRM.WebClient.Services.Mock
         private List<SalesAppointment> GenerateSampleAppointments()
         {
             var appointments = new List<SalesAppointment>();
-            var random = new Random();
             var appointmentTypes = Enum.GetValues<AppointmentType>();
             var statuses = Enum.GetValues<AppointmentStatus>();
 
             for (int i = 1; i <= 10; i++)
             {
-                var startDate = DateTime.Today.AddDays(random.Next(-7, 14)).AddHours(random.Next(9, 17));
+                var startDate = DateTime.Today.AddDays(i - 7).AddHours(9 + (i % 8));
                 appointments.Add(new SalesAppointment
                 {
                     Id = i,
@@ -199,24 +205,22 @@ namespace NexaCRM.WebClient.Services.Mock
                     ContactId = i,
                     ContactName = $"John Client {i}",
                     ContactCompany = $"Company {i} Ltd",
-                    Type = appointmentTypes[random.Next(appointmentTypes.Length)],
-                    Status = statuses[random.Next(statuses.Length)],
+                    Type = appointmentTypes[i % appointmentTypes.Length],
+                    Status = statuses[i % statuses.Length],
                     UserId = "user1",
                     Location = i % 2 == 0 ? "Office Conference Room" : "Client Site",
                     Notes = $"Preparation notes for meeting {i}",
-                    CreatedAt = DateTime.Now.AddDays(-random.Next(1, 30)),
-                    UpdatedAt = DateTime.Now.AddDays(-random.Next(0, 5))
+                    CreatedAt = DateTime.Now.AddDays(-i),
+                    UpdatedAt = DateTime.Now.AddDays(-(i % 5))
                 });
             }
 
-            _appointmentIdCounter = appointments.Count + 1;
             return appointments;
         }
 
         private List<ConsultationNote> GenerateSampleConsultationNotes()
         {
             var notes = new List<ConsultationNote>();
-            var random = new Random();
             var priorities = Enum.GetValues<ConsultationPriority>();
 
             for (int i = 1; i <= 15; i++)
@@ -228,17 +232,16 @@ namespace NexaCRM.WebClient.Services.Mock
                     ContactName = $"John Client {(i % 10) + 1}",
                     Title = $"Consultation Note {i}",
                     Content = $"Detailed consultation notes for client meeting {i}. Discussed product requirements, budget constraints, and timeline expectations. Client showed interest in premium features.",
-                    CreatedAt = DateTime.Now.AddDays(-random.Next(1, 60)),
-                    UpdatedAt = DateTime.Now.AddDays(-random.Next(0, 30)),
+                    CreatedAt = DateTime.Now.AddDays(-i),
+                    UpdatedAt = DateTime.Now.AddDays(-(i % 30)),
                     UserId = "user1",
                     Tags = i % 3 == 0 ? "important,follow-up" : i % 2 == 0 ? "pricing,negotiation" : "requirements,demo",
-                    Priority = priorities[random.Next(priorities.Length)],
+                    Priority = priorities[i % priorities.Length],
                     IsFollowUpRequired = i % 4 == 0,
-                    FollowUpDate = i % 4 == 0 ? DateTime.Today.AddDays(random.Next(1, 14)) : null
+                    FollowUpDate = i % 4 == 0 ? DateTime.Today.AddDays(i) : null
                 });
             }
 
-            _noteIdCounter = notes.Count + 1;
             return notes;
         }
     }

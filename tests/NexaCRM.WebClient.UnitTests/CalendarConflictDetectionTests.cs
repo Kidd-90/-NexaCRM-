@@ -5,6 +5,7 @@ using NexaCRM.WebClient.Services.Mock;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace NexaCRM.WebClient.UnitTests
 {
@@ -15,7 +16,7 @@ namespace NexaCRM.WebClient.UnitTests
 
         public CalendarConflictDetectionTests()
         {
-            _salesService = new MockSalesManagementService();
+            _salesService = new MockSalesManagementService(new List<SalesAppointment>());
         }
 
         [Fact]
