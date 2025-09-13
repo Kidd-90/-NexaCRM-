@@ -81,7 +81,7 @@ graph TD
 
 🏁 시작하기
 ### 필수 요소
-- .NET SDK (6.0, 7.0, 8.0)
+- .NET SDK 8.0
 - Docker & Docker Compose
 
 ### 클론 및 설정
