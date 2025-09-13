@@ -160,7 +160,7 @@ a:hover, .btn-link:hover {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 9998; /* High z-index but below the hamburger button */
+    z-index: 10001; /* Ensure menu stays above overlay */
     transition: transform var(--transition-normal); /* Use theme transition */
     will-change: transform; /* Hint for smoother animation */
     box-shadow: 0 4px 20px var(--shadow-light); /* Use theme shadow */
@@ -324,7 +324,7 @@ a:hover, .btn-link:hover {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9997; /* High z-index but below sidebar and hamburger button */
+    z-index: 10000; /* Layer below sidebar but above content */
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
