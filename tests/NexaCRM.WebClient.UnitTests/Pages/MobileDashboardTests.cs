@@ -1,12 +1,14 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
-using NexaCRM.WebClient.Pages;
-using Xunit;
-using Microsoft.AspNetCore.Components;
 using Moq;
+using NexaCRM.WebClient.Pages;
+using System.Globalization;
 using AngleSharp.Dom;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace NexaCRM.WebClient.UnitTests.Pages
 {
@@ -17,7 +19,7 @@ namespace NexaCRM.WebClient.UnitTests.Pages
             // Setup services
             Services.AddSingleton<NavigationManager>(new MockNavigationManager());
             Services.AddSingleton(Mock.Of<IJSRuntime>());
-            Services.AddSingleton<IStringLocalizer<MainDashboard>>(new MockStringLocalizer());
+            Services.AddSingleton(typeof(IStringLocalizer<>), typeof(MockStringLocalizer<>));
         }
 
         [Fact]
@@ -193,37 +195,39 @@ namespace NexaCRM.WebClient.UnitTests.Pages
             }
         }
 
-        private class MockStringLocalizer : IStringLocalizer<MainDashboard>
+        private class MockStringLocalizer<T> : IStringLocalizer<T>
         {
-            public LocalizedString this[string name] => new(name, GetMockTranslation(name));
-            public LocalizedString this[string name, params object[] arguments] => new(name, string.Format(GetMockTranslation(name), arguments));
-
-            public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => new LocalizedString[0];
-
-            private string GetMockTranslation(string key)
+            private static readonly Dictionary<string, string> _translations = new()
             {
-                return key switch
-                {
-                    "CRM" => "CRM",
-                    "Search" => "검색",
-                    "Notifications" => "알림",
-                    "Sales" => "영업",
-                    "Contacts" => "연락처",
-                    "Tasks" => "작업",
-                    "Reports" => "보고서",
-                    "SalesPipeline" => "영업 파이프라인",
-                    "QuarterlyPerformance" => "분기별 실적",
-                    "RecentActivity" => "최근 활동",
-                    "DashboardOverview" => "대시보드 개요",
-                    "NewLead" => "웹사이트에서 새로운 리드",
-                    "DealClosed" => "거래가 성공적으로 성사되었습니다",
-                    "TaskReminder" => "작업 알림: 후속 조치",
-                    "MinutesAgo" => "분 전",
-                    "HourAgo" => "시간 전",
-                    "OpenMenu" => "메뉴 열기",
-                    _ => key
-                };
-            }
+                ["CRM"] = "CRM",
+                ["Search"] = "검색",
+                ["Notifications"] = "알림",
+                ["Sales"] = "영업",
+                ["Contacts"] = "연락처",
+                ["Tasks"] = "작업",
+                ["Reports"] = "보고서",
+                ["SalesPipeline"] = "영업 파이프라인",
+                ["QuarterlyPerformance"] = "분기별 실적",
+                ["RecentActivity"] = "최근 활동",
+                ["DashboardOverview"] = "대시보드 개요",
+                ["NewLead"] = "웹사이트에서 새로운 리드",
+                ["DealClosed"] = "거래가 성공적으로 성사되었습니다",
+                ["TaskReminder"] = "작업 알림: 후속 조치",
+                ["MinutesAgo"] = "분 전",
+                ["HourAgo"] = "시간 전",
+                ["OpenMenu"] = "메뉴 열기"
+            };
+
+            public LocalizedString this[string name] => new(name, Get(name));
+
+            public LocalizedString this[string name, params object[] arguments] => new(name, Get(name));
+
+            public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
+                _translations.Select(kv => new LocalizedString(kv.Key, kv.Value));
+
+            public IStringLocalizer WithCulture(CultureInfo culture) => this;
+
+            private static string Get(string key) => _translations.TryGetValue(key, out var value) ? value : key;
         }
     }
 }

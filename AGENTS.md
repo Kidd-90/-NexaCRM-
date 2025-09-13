@@ -15,9 +15,9 @@
   .NET 8 이상
 
 ## 테스트 지침
-- 테스트 프로젝트 경로: `./tests/BlazorWebApp.Tests`
-- 테스트 실행 명령:  
-  `dotnet test ./tests/BlazorWebApp.Tests --configuration Release`
+- 테스트 프로젝트 경로: `./tests/` 디렉터리 내 각 테스트 프로젝트
+- 테스트 실행 명령:
+  `dotnet test NexaCrmSolution.sln --configuration Release`
 - 모든 유닛 테스트가 통과해야 함.
 
 ## 코드 스타일/정책
