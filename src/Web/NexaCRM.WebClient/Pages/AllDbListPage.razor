@@ -13,12 +13,12 @@
 <div class="container-fluid mt-4">
     <h1 class="mb-4">@Localizer["Title"]</h1>
 
-    <div class="row mb-3">
-        <div class="col">
-            <input type="text" class="form-control" placeholder='@Localizer["Search"]' @bind="searchTerm" @oninput="OnFilterInput" />
+    <div class="row g-2 mb-3">
+        <div class="col-12 col-md-6">
+            <input type="text" class="form-control w-100" placeholder='@Localizer["Search"]' @bind="searchTerm" @oninput="OnFilterInput" />
         </div>
-        <div class="col">
-            <select class="form-select" value="@selectedGroup" @onchange="OnGroupFilterChanged">
+        <div class="col-12 col-md-6">
+            <select class="form-select w-100" value="@selectedGroup" @onchange="OnGroupFilterChanged">
                 <option value="">@Localizer["AllGroups"]</option>
                 @foreach (var group in groupOptions)
                 {

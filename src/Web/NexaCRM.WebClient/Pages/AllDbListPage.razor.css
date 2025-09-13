@@ -7,18 +7,9 @@
      background-color: #f8f9fa;
  }
 
- .desktop-table-view {
-     overflow-x: auto;
- }
-
  .desktop-table-view table {
      min-width: 800px;
  }
-
-.mobile-card-view {
-    display: none;
-    padding: 0 12px;
-}
 
 .customer-card {
     background-color: #fff;
@@ -72,14 +63,3 @@
         transform: translateY(0);
     }
 }
-
- /* Show card view on mobile, hide table */
- @media (max-width: 767.98px) {
-     .desktop-table-view {
-         display: none;
-     }
-
-     .mobile-card-view {
-         display: block;
-     }
- }
