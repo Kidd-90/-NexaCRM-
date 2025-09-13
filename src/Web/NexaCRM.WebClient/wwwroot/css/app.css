@@ -178,6 +178,8 @@ a:hover, .btn-link:hover {
     /* 기본적으로 전체 화면 사용 */
     margin-left: 0;
     width: 100%;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* 기존 top-row 숨김 - 더 이상 사용하지 않음 */
@@ -188,8 +190,8 @@ a:hover, .btn-link:hover {
 /* 플로팅 햄버거 메뉴 버튼 */
 .floating-menu-toggle {
     position: fixed !important;
-    top: 1rem !important;
-    right: 4.5rem !important; /* 테마 토글 버튼 왼쪽에 배치 */
+    top: calc(env(safe-area-inset-top) + 1rem) !important;
+    right: 1.5rem !important;
     background: rgba(255, 255, 255, 0.95) !important; /* Light theme background */
     border: 2px solid rgba(229, 231, 235, 0.8) !important; /* Light border */
     color: #374151 !important; /* Dark text for light background */
@@ -341,7 +343,7 @@ a:hover, .btn-link:hover {
     }
     
     .floating-menu-toggle {
-        top: 1.5rem;
+        top: calc(env(safe-area-inset-top) + 1.5rem);
         right: 1.5rem;
     }
 }
@@ -389,7 +391,7 @@ a:hover, .btn-link:hover {
     }
     
     .floating-menu-toggle {
-        top: 1rem;
+        top: calc(env(safe-area-inset-top) + 1rem);
         right: 1rem;
         /* Ensure button is easily reachable on mobile */
     }
@@ -585,7 +587,7 @@ input, select, textarea {
     }
     
     .floating-menu-toggle {
-        top: 0.75rem;
+        top: calc(env(safe-area-inset-top) + 0.75rem);
         right: 0.75rem;
         min-width: 3rem; /* Larger on very small screens */
         min-height: 3rem;
