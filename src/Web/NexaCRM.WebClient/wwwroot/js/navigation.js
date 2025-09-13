@@ -143,16 +143,15 @@ window.navigationHelper = {
     setupOverlayHandler: () => {
         const overlay = document.querySelector('.mobile-overlay');
         const sidebar = document.querySelector('.sidebar');
-        
+
         if (overlay && sidebar) {
             overlay.addEventListener('click', (e) => {
                 // Prevent event bubbling
                 e.stopPropagation();
-                // 사이드바에 collapse 클래스 추가하여 메뉴 닫기
-                sidebar.classList.add('collapse');
-                overlay.classList.remove('show');
+                // 공용 토글 함수 사용하여 메뉴 닫기
+                window.navigationHelper.toggleMenu(true);
             });
-            
+
             // Prevent scrolling when overlay is visible
             overlay.addEventListener('touchmove', (e) => {
                 e.preventDefault();
@@ -428,22 +427,26 @@ window.navigationHelper = {
     toggleMenu: (isCollapsed) => {
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.querySelector('.mobile-overlay');
-        
-        if (sidebar) {
-            if (isCollapsed) {
-                sidebar.classList.add('collapse');
-                // Hide overlay when menu is closed
-                if (overlay) {
-                    overlay.classList.remove('show');
-                }
-            } else {
-                sidebar.classList.remove('collapse');
-                // Show overlay when menu is open
-                if (overlay) {
-                    overlay.classList.add('show');
-                }
+
+        if (!sidebar) return;
+
+        if (typeof isCollapsed === 'undefined') {
+            isCollapsed = !sidebar.classList.contains('collapse');
+        }
+
+        if (isCollapsed) {
+            sidebar.classList.add('collapse');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+        } else {
+            sidebar.classList.remove('collapse');
+            if (overlay) {
+                overlay.classList.add('show');
             }
         }
+
+        return isCollapsed;
     },
     
     // 페이지 로드 시 초기화
