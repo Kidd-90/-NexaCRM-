@@ -24,8 +24,14 @@
   <data name="LogIn" xml:space="preserve">
     <value>로그인</value>
   </data>
-  <data name="ForgotPassword" xml:space="preserve">
-    <value>비밀번호를 잊으셨나요?</value>
+  <data name="FindId" xml:space="preserve">
+    <value>아이디 찾기</value>
+  </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>비밀번호 재설정</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>회원가입</value>
   </data>
   <data name="OrLogInWith" xml:space="preserve">
     <value>또는 다음으로 로그인</value>
