@@ -422,7 +422,53 @@ window.navigationHelper = {
         // 초기 타임아웃 설정
         resetTimeout();
     },
-    
+
+    // Page transition handler for smoother navigation
+    setupPageTransitions: () => {
+        const content = document.querySelector('article.content');
+        if (!content) return;
+
+        // Remove enter class after animation completes
+        content.addEventListener('animationend', (e) => {
+            if (e.animationName === 'fadeInUp') {
+                content.classList.remove('page-fade-enter');
+            }
+
+            if (e.animationName === 'fadeOutDown') {
+                const target = content.dataset.navigateTo;
+                content.classList.remove('page-fade-exit');
+                content.dataset.navigateTo = '';
+                if (target) {
+                    // Navigate after fade-out completes
+                    Blazor.navigateTo(target);
+                    requestAnimationFrame(() => {
+                        content.classList.add('page-fade-enter');
+                    });
+                }
+            }
+        });
+
+        // Intercept navigation link clicks
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const hrefValue = link.getAttribute('href');
+                if (hrefValue === null || hrefValue.startsWith('#') || link.target === '_blank') return;
+
+                const href = hrefValue === '' ? '/' : hrefValue;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                content.dataset.navigateTo = href;
+                content.classList.remove('page-fade-enter');
+                content.classList.add('page-fade-exit');
+
+                // Close the menu with animation
+                window.navigationHelper.toggleMenu(true);
+            }, { capture: true });
+        });
+    },
+
     // 컴포넌트에서 호출할 수 있는 메뉴 토글 함수
     toggleMenu: (isCollapsed) => {
         const sidebar = document.querySelector('.sidebar');
@@ -457,11 +503,13 @@ window.navigationHelper = {
                 window.navigationHelper.setupOverlayHandler();
                 window.navigationHelper.setupAutoLogout();
                 window.navigationHelper.setupMobileDashboardNavigation();
+                window.navigationHelper.setupPageTransitions();
             });
         } else {
             window.navigationHelper.setupOverlayHandler();
             window.navigationHelper.setupAutoLogout();
             window.navigationHelper.setupMobileDashboardNavigation();
+            window.navigationHelper.setupPageTransitions();
         }
         
         // 즉시 실행하여 초기 상태 보장

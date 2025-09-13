@@ -1,11 +1,17 @@
 /* CSS Custom Properties for Theme Management */
 :root {
+    /* Design system colors */
+    --color-primary: #2153C8;
+    --color-secondary: #E3F2FD;
+    --color-background: #ffffff;
+    --color-dark-bg: #1a1e3c;
+
     /* Light Theme Colors */
-    --primary-color: #1b6ec2;
-    --primary-hover: #1861ac;
-    --secondary-color: #0071c1;
-    --background-color: #ffffff;
-    --surface-color: #f9fafb;
+    --primary-color: var(--color-primary);
+    --primary-hover: #1a4bb5;
+    --secondary-color: var(--color-primary);
+    --background-color: var(--color-background);
+    --surface-color: var(--color-secondary);
     --text-primary: #111827;
     --text-secondary: #6b7280;
     --border-color: #e5e7eb;
@@ -34,11 +40,13 @@
 
 /* Dark Theme Support */
 [data-theme="dark"] {
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
+    --color-secondary: #252a4a;
+    --color-background: var(--color-dark-bg);
+    --primary-color: var(--color-primary);
+    --primary-hover: #1a4bb5;
     --secondary-color: #60a5fa;
-    --background-color: #0f172a;
-    --surface-color: #1e293b;
+    --background-color: var(--color-background);
+    --surface-color: var(--color-secondary);
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --border-color: #334155;
@@ -154,6 +162,7 @@ a:hover, .btn-link:hover {
     left: 0;
     z-index: 9998; /* High z-index but below the hamburger button */
     transition: transform var(--transition-normal); /* Use theme transition */
+    will-change: transform; /* Hint for smoother animation */
     box-shadow: 0 4px 20px var(--shadow-light); /* Use theme shadow */
     /* 기본적으로 모든 화면에서 숨김 */
     transform: translateX(-100%);
@@ -667,6 +676,12 @@ input, select, textarea {
    ============================================ */
 
 /* Page transition animations */
+.page-fade-enter,
+.page-fade-exit {
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+}
+
 .page-fade-enter {
     opacity: 0;
     transform: translateY(10px);
@@ -686,6 +701,15 @@ input, select, textarea {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-fade-enter,
+    .page-fade-exit {
+        animation: none;
+        opacity: 1;
+        transform: none;
     }
 }
 
