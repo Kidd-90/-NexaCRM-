@@ -1,0 +1,27 @@
+/* Basic responsive tweaks for mobile layout */
+@media (max-width: 768px) {
+    .mobile-layout .sidebar {
+        width: 100%;
+        position: fixed;
+        height: 100%;
+        z-index: 1000;
+    }
+    .mobile-layout main {
+        padding: 0.5rem;
+    }
+    .mobile-layout .floating-menu-toggle {
+        top: 0.5rem;
+        left: 0.5rem;
+    }
+}
+/* Responsive page container */
+.responsive-page {
+    padding: 1rem;
+}
+@media (min-width: 768px) {
+    .responsive-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+}

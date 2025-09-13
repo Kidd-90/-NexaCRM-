@@ -1,0 +1,13 @@
+@using Microsoft.AspNetCore.Components
+<div class="responsive-page">
+    <div class="row">
+        <div class="col-12">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

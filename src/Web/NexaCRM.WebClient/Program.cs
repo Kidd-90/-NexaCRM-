@@ -38,6 +38,14 @@ builder.Services.AddScoped<IActivityService, MockActivityService>();
 builder.Services.AddScoped<ISalesManagementService, MockSalesManagementService>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 builder.Services.AddScoped<IDbDataService, MockDbDataService>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<IDbAdminService, DbAdminService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<ICustomerCenterService, CustomerCenterService>();
+builder.Services.AddScoped<ISmsService, SmsService>();
+builder.Services.AddScoped<ISystemInfoService, SystemInfoService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;

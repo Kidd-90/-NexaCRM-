@@ -1,9 +1,11 @@
 @inherits LayoutComponentBase
 @using NexaCRM.WebClient.Shared
+@using NexaCRM.WebClient.Services.Interfaces
 @using Microsoft.JSInterop
+@inject IDeviceService DeviceService
 @inject IJSRuntime JSRuntime
 
-<div class="page">
+<div class="page @(isMobile ? "mobile-layout" : "desktop-layout")">
     <!-- 고정된 햄버거 버튼 - sidebar 밖에 배치 -->
     <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -23,6 +25,7 @@
 </div>
 
 @code {
+    private bool isMobile;
     private async Task ToggleNavMenu()
     {
         // JavaScript 함수 호출하여 메뉴 상태 토글
@@ -40,6 +43,8 @@
             
             // 테마 토글 아이콘 초기화
             await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
+            isMobile = await DeviceService.IsMobileAsync();
+            StateHasChanged();
         }
     }
 }
