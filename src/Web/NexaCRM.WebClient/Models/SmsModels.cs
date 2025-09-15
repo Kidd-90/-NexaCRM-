@@ -15,3 +15,5 @@ public record SmsScheduleItem(Guid Id, DateTime ScheduledAt, BulkSmsRequest Requ
     public SmsScheduleItem() : this(Guid.NewGuid(), DateTime.UtcNow, new BulkSmsRequest()) { }
 }
 
+public record SmsTemplate(string Id, string Content);
+
