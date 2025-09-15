@@ -1,4 +1,5 @@
 using NexaCRM.WebClient.Models.Sms;
+using NexaCRM.WebClient.Models.Settings;
 using NexaCRM.WebClient.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,6 +21,12 @@ public class SmsService : ISmsService
         Task.FromResult<IEnumerable<SmsHistoryItem>>(new List<SmsHistoryItem>());
 
     public Task ScheduleSmsAsync(SmsScheduleItem schedule) =>
+        Task.CompletedTask;
+
+    public Task<SmsSettings> GetSettingsAsync() =>
+        Task.FromResult(new SmsSettings());
+
+    public Task SaveSettingsAsync(SmsSettings settings) =>
         Task.CompletedTask;
 }
 
