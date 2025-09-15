@@ -59,7 +59,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var units = (await OrganizationService.GetStructureAsync()).ToList();
+        var units = (await OrganizationService.GetOrganizationStructureAsync()).ToList();
         var lookup = units.ToLookup(u => u.ParentId);
         _nodes = BuildTree(null);
 
