@@ -1,0 +1,41 @@
+/* SystemInfoPage responsive styles */
+
+.system-info-section {
+    background-color: var(--surface-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-content {
+    margin-bottom: 0.5rem;
+}
+
+.section-list {
+    margin-left: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.download-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .system-info-section {
+        padding: 1.5rem;
+    }
+
+    .download-link {
+        width: auto;
+        display: inline-block;
+    }
+}
+
