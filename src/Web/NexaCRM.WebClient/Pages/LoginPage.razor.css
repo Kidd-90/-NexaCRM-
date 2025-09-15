@@ -1,191 +1,117 @@
-.container-login-page {
-    container-type: inline-size;
+/* Light mode (default) */
+.login-container {
+    background-color: #ffffff;
+    color: #0e131b;
 }
 
-/* Theme-aware login card styles */
+/* Dark mode styles */
+[data-theme="dark"] .login-container {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .login-container .bg-white {
+    background-color: #2d2d2d !important;
+    border-color: #444444 !important;
+}
+
+[data-theme="dark"] .login-container .text-\[\#0e131b\] {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .login-container .text-\[\#4d6a99\] {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .login-container .border-\[\#e5e7eb\] {
+    border-color: #444444 !important;
+}
+
+[data-theme="dark"] .login-container .bg-slate-50 {
+    background-color: #333333 !important;
+    border-color: #555555 !important;
+}
+
+[data-theme="dark"] .login-container .focus\:border-\[\#2a74ea\]:focus {
+    border-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .login-container .bg-\[\#2a74ea\] {
+    background-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .login-container .hover\:bg-\[\#1e5db8\]:hover {
+    background-color: #2563eb !important;
+}
+
+[data-theme="dark"] .login-container .border-\[\#d0d9e7\] {
+    border-color: #555555 !important;
+}
+
+[data-theme="dark"] .login-container .checked\:bg-\[\#2a74ea\]:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .login-container .text-\[\#2a74ea\] {
+    color: #60a5fa !important;
+}
+
+[data-theme="dark"] .login-container .social-login-btn {
+    background-color: #333333 !important;
+    border-color: #555555 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .login-container .social-login-btn:hover {
+    background-color: #444444 !important;
+}
+
 .login-card {
-    background-color: var(--surface-color);
-    border-color: var(--border-color);
-    box-shadow: 0 25px 50px var(--shadow-strong);
-    transition: all var(--transition-normal);
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
-.login-header {
-    color: var(--text-primary);
-}
-
-.login-subheader {
-    color: var(--text-secondary);
-}
-
-.login-form-input {
-    background-color: var(--surface-color);
-    border-color: var(--border-color);
-    color: var(--text-primary);
-    transition: all var(--transition-fast);
-}
-
-.login-form-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-}
-
-.login-form-input::placeholder {
-    color: var(--text-secondary);
-}
-
-.login-form-label {
-    color: var(--text-primary);
+[data-theme="dark"] .login-card {
+    background-color: rgba(45, 45, 45, 0.8);
 }
 
 .login-button {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    transition: all var(--transition-fast);
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transition: filter 0.2s ease;
 }
 
 .login-button:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--shadow-medium);
+    filter: brightness(1.1);
 }
 
-.login-link {
-    color: var(--secondary-color);
-    transition: color var(--transition-fast);
-}
 
-.login-link:hover {
-    color: var(--primary-hover);
-}
-
-.login-checkbox-label {
-    color: var(--text-primary);
-}
-
-.login-divider-text {
-    color: var(--text-secondary);
-}
-
-/* Error message styling */
-.login-error-message {
-    background-color: var(--error-bg, #fef2f2);
-    border-color: var(--error-border, #fecaca);
-    color: var(--error-text, #dc2626);
-    transition: all var(--transition-fast);
-}
-
-[data-theme="dark"] .login-error-message {
-    --error-bg: #7f1d1d;
-    --error-border: #dc2626;
-    --error-text: #fca5a5;
-}
-
-/* Checkbox theme-aware styling */
 .login-checkbox {
-    border-color: var(--border-color);
-    background-color: var(--surface-color);
-    transition: all var(--transition-fast);
+    width: 20px;
+    height: 20px;
 }
 
-.login-checkbox:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.login-checkbox:focus {
-    box-shadow: 0 0 0 3px var(--focus-ring);
-}
-
-/* 소셜 로그인 버튼 스타일 - theme aware */
-.social-login-btn {
-    transition: all var(--transition-fast);
-    position: relative;
-    overflow: hidden;
-    border: 2px solid var(--border-color);
-    color: var(--text-primary);
-}
-
-.social-login-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, var(--hover-overlay), transparent);
-    transition: left 0.5s;
-}
-
-.social-login-btn:hover::before {
-    left: 100%;
-}
-
-.google-btn {
-    background-color: var(--surface-color);
-    border-color: var(--border-color);
-}
-
-.google-btn:hover {
-    background-color: var(--hover-overlay);
-    box-shadow: 0 2px 8px var(--shadow-light);
-}
-
-.microsoft-btn {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-}
-
-.microsoft-btn:hover {
-    background-color: var(--primary-hover);
-    box-shadow: 0 4px 12px var(--shadow-medium);
-}
-
-@container (min-width: 480px) {
-    .inner-div-login-page {
-        padding-left: 1rem;
-        padding-right: 1rem;
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
+@media (max-width: 640px) {
+    .login-header {
+        font-size: 24px;
+        letter-spacing: -0.02em;
     }
-    .image-div-login-page {
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
+    .login-subheader,
+    .login-form-label,
+    .login-checkbox-label {
+        font-size: 16px;
+        letter-spacing: -0.01em;
     }
-    
-    .image-div-login-page:hover {
-        transform: scale(1.02);
+    .login-form-input,
+    .login-button {
+        height: 48px;
+        font-size: 16px;
     }
-    
-    .image-div-login-page::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(42, 116, 234, 0.05) 0%, rgba(77, 106, 153, 0.05) 100%);
-        pointer-events: none;
+    .login-checkbox {
+        width: 16px;
+        height: 16px;
     }
-}
-
-/* Loading animation styles */
-.loading-spinner {
-    display: inline-flex;
-    align-items: center;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
+    .login-helper-links a {
+        font-size: 14px;
+        letter-spacing: -0.01em;
     }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.animate-spin {
-    animation: spin 1s linear infinite;
 }

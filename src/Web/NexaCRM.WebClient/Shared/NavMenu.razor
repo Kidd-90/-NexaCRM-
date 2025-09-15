@@ -13,32 +13,6 @@
 @inject IJSRuntime JSRuntime
 @inject IRolePermissionService RolePermissionService
 
-<style>
-    /* Override hardcoded colors to support dark mode theming */
-    .nav-section-header {
-        color: var(--text-primary);
-    }
-    /* 다크모드에서 DB 고객관리 텍스트 밝게 */
-    .dark-mode .nav-section-header {
-        color: #f5f5f5 !important;
-        font-weight: 600;
-        text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-    }
-
-    .submenu-link {
-        color: var(--text-secondary);
-    }
-
-    .submenu-link:hover {
-        color: var(--text-primary);
-    }
-
-    .submenu-link.active {
-        background-color: var(--primary-color);
-        color: white !important; /* Ensure text is white on active background */
-    }
-</style>
-
 <div @onclick:stopPropagation="true">
     <nav class="flex-column">
         <div class="nav-scroll-container">
