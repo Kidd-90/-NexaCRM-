@@ -111,4 +111,7 @@
   <data name="SaveSettings" xml:space="preserve">
     <value>Save Settings</value>
   </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Settings saved successfully.</value>
+  </data>
 </root>
