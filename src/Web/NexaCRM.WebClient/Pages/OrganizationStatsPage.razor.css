@@ -1,0 +1,40 @@
+.desktop-table-view {
+}
+
+.mobile-card-view {
+    display: none;
+}
+
+.stat-card {
+    background-color: #fff;
+    border: 1px solid #e7ecf3;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.card-info-label {
+    color: #6c757d;
+}
+
+.card-info-value {
+    font-weight: 500;
+}
+
+@media (max-width: 767.98px) {
+    .desktop-table-view {
+        display: none;
+    }
+
+    .mobile-card-view {
+        display: block;
+    }
+}
