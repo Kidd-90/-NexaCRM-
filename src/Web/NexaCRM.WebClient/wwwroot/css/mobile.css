@@ -1,13 +1,14 @@
 /* Enhanced responsive layout for handheld devices */
 @media (max-width: 768px) {
     .mobile-layout {
+        --sidebar-width: min(90vw, 320px);
         background: var(--app-background-gradient, var(--background-color));
         min-height: 100vh;
     }
 
     .mobile-layout .sidebar {
-        width: min(90%, 320px);
-        max-width: 320px;
+        width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
         position: fixed;
         height: 100%;
         z-index: 1000;

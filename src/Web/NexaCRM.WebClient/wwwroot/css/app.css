@@ -186,10 +186,22 @@ a:hover, .btn-link:hover {
 }
 
 /* Navigation styles - 반응형 디자인 */
+.page {
+    --sidebar-width: min(80vw, 250px);
+    min-height: 100vh;
+    transition: margin-left 0.3s ease-in-out;
+    /* 기본적으로 전체 화면 사용 */
+    margin-left: 0;
+    width: 100%;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Navigation styles - 반응형 디자인 */
 .sidebar {
     background: var(--surface-gradient, var(--surface-color)); /* Use theme surface color */
     border-right: 1px solid var(--divider-color); /* Use theme border color */
-    width: min(80%, 250px); /* Use fluid width on small screens */
+    width: var(--sidebar-width); /* Use fluid width on small screens */
     min-height: 100vh;
     position: fixed;
     top: 0;
@@ -215,16 +227,6 @@ a:hover, .btn-link:hover {
 /* collapse 클래스가 있을 때는 강제로 숨김 (메뉴 닫힘) */
 .sidebar.collapse {
     transform: translateX(-100%) !important;
-}
-
-.page {
-    min-height: 100vh;
-    transition: margin-left 0.3s ease-in-out;
-    /* 기본적으로 전체 화면 사용 */
-    margin-left: 0;
-    width: 100%;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* 기존 top-row 숨김 - 더 이상 사용하지 않음 */
@@ -364,6 +366,7 @@ a:hover, .btn-link:hover {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     opacity: 0;
+    left: var(--sidebar-width, 0);
 }
 
 /* JavaScript will handle the overlay visibility instead of :has() for better browser support */
@@ -375,8 +378,12 @@ a:hover, .btn-link:hover {
 
 /* 태블릿 환경 (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
+    .page {
+        --sidebar-width: 250px; /* 태블릿에서도 동일한 크기 */
+    }
+
     .sidebar {
-        width: 250px; /* 태블릿에서도 동일한 크기 */
+        width: var(--sidebar-width); /* 태블릿에서도 동일한 크기 */
     }
     
     .nav-link {
@@ -397,8 +404,12 @@ a:hover, .btn-link:hover {
 
 /* 모바일 환경 (768px 이하) */
 @media (max-width: 768px) {
+    .page {
+        --sidebar-width: min(80vw, 280px); /* Mobile sidebar width */
+    }
+
     .sidebar {
-        width: min(280px, 80vw); /* Responsive width, max 80% of viewport */
+        width: var(--sidebar-width); /* Responsive width, max 80% of viewport */
     }
     
     .nav-link {
@@ -621,8 +632,12 @@ input, select, textarea {
     }
 }
 @media (max-width: 480px) {
+    .page {
+        --sidebar-width: min(100vw, 320px); /* Full width on very small screens, but capped */
+    }
+
     .sidebar {
-        width: min(100vw, 320px); /* Full width on very small screens, but capped */
+        width: var(--sidebar-width); /* Full width on very small screens, but capped */
     }
     
     .nav-link {
