@@ -1,0 +1,16 @@
+/* SystemAdminSettingsPage Mobile Responsive Styles */
+
+.system-admin-form {
+    max-width: 400px;
+    margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+    .system-admin-form {
+        padding: 0 1rem;
+    }
+
+    .save-btn {
+        width: 100%;
+    }
+}
