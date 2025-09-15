@@ -1,6 +1,160 @@
 @page "/sms/bulk"
+@using System.Text.RegularExpressions
+@using NexaCRM.WebClient.Models.Sms
+@using NexaCRM.WebClient.Services.Interfaces
+@inject ISmsService SmsService
 
 <ResponsivePage>
-    <h3>Bulk SMS Sending</h3>
-    <p>Send SMS messages to multiple recipients.</p>
+    <div class="bulk-sms-container">
+        <h3>Bulk SMS Sending</h3>
+        <p>Send SMS messages to multiple recipients.</p>
+
+        <div class="mb-3">
+            <label class="form-label">Recipients</label>
+            <select multiple class="form-select" @onchange="OnRecipientsChanged">
+                @foreach (var r in AvailableRecipients)
+                {
+                    <option value="@r" selected="@SelectedRecipients.Contains(r)">@r</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Template</label>
+            <select class="form-select" @onchange="OnTemplateChanged">
+                <option value="">-- Select template --</option>
+                @foreach (var t in Templates)
+                {
+                    <option value="@t.Id" selected="@Equals(t.Id, SelectedTemplateId)">@t.Id</option>
+                }
+            </select>
+        </div>
+
+        @if (SelectedTemplate != null)
+        {
+            foreach (var placeholder in Placeholders)
+            {
+                <div class="mb-2">
+                    <label class="form-label">@placeholder</label>
+                    <InputText class="form-control placeholder-input"
+                               placeholder="@placeholder"
+                               Value="@PlaceholderValues[placeholder]"
+                               ValueChanged="value => OnPlaceholderChanged(placeholder, value)" />
+                </div>
+            }
+        }
+
+        <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" rows="5" @bind="Message"></textarea>
+        </div>
+
+        <button class="btn btn-primary bulk-sms-send-btn" @onclick="SendAsync" disabled="@SendDisabled">
+            @(IsSending ? "Sending..." : "Send")
+        </button>
+
+        @if (IsSending)
+        {
+            <div class="mt-3">
+                <div class="progress bulk-sms-progress">
+                    <div class="progress-bar" role="progressbar" style="width:@Progress%" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@Progress%</div>
+                </div>
+            </div>
+        }
+    </div>
 </ResponsivePage>
+
+@code {
+    private List<string> AvailableRecipients = new() { "+15551234567", "+15557654321", "+15559876543" };
+    private List<string> SelectedRecipients = new();
+
+    private List<SmsTemplate> Templates = new()
+    {
+        new("Promotion", "Hi {Name}, check out our {Product}!"),
+        new("Reminder", "Dear {Name}, your appointment is on {Date}.")
+    };
+
+    private string? SelectedTemplateId;
+    private SmsTemplate? SelectedTemplate => Templates.FirstOrDefault(t => t.Id == SelectedTemplateId);
+
+    private List<string> Placeholders = new();
+    private Dictionary<string, string> PlaceholderValues = new();
+
+    private string Message = string.Empty;
+
+    private bool IsSending;
+    private int Progress;
+
+    private void OnRecipientsChanged(ChangeEventArgs e)
+    {
+        if (e.Value is IEnumerable<string> values)
+        {
+            SelectedRecipients = values.ToList();
+        }
+        else
+        {
+            SelectedRecipients.Clear();
+        }
+    }
+
+    private void OnTemplateChanged(ChangeEventArgs e)
+    {
+        SelectedTemplateId = e.Value?.ToString();
+        Placeholders.Clear();
+        PlaceholderValues.Clear();
+
+        if (SelectedTemplate != null)
+        {
+            var matches = Regex.Matches(SelectedTemplate.Content, "{(.*?)}");
+            foreach (Match match in matches)
+            {
+                var key = match.Groups[1].Value;
+                Placeholders.Add(key);
+                PlaceholderValues[key] = string.Empty;
+            }
+        }
+
+        UpdateMessage();
+    }
+
+    private void OnPlaceholderChanged(string key, string? value)
+    {
+        PlaceholderValues[key] = value ?? string.Empty;
+        UpdateMessage();
+    }
+
+    private void UpdateMessage()
+    {
+        if (SelectedTemplate != null)
+        {
+            Message = SelectedTemplate.Content;
+            foreach (var kv in PlaceholderValues)
+            {
+                Message = Message.Replace($"{{{kv.Key}}}", kv.Value);
+            }
+        }
+    }
+
+    private bool SendDisabled => !SelectedRecipients.Any() || string.IsNullOrWhiteSpace(Message) || IsSending;
+
+    private async Task SendAsync()
+    {
+        var batches = SelectedRecipients
+            .Chunk(10)
+            .Select(chunk => new BulkSmsRequest(chunk.ToList(), Message))
+            .ToList();
+
+        IsSending = true;
+        Progress = 0;
+        var progress = new Progress<int>(p => { Progress = p; InvokeAsync(StateHasChanged); });
+
+        try
+        {
+            await SmsService.SendBulkAsync(batches, progress);
+        }
+        finally
+        {
+            IsSending = false;
+        }
+    }
+}

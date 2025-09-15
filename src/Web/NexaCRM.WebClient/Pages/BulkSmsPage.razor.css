@@ -1,0 +1,18 @@
+/* Bulk SMS page responsive styles */
+.bulk-sms-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.placeholder-input {
+    width: 100%;
+}
+
+@media (max-width: 576px) {
+    .bulk-sms-send-btn {
+        width: 100%;
+    }
+    .bulk-sms-progress {
+        width: 100%;
+    }
+}

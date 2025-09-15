@@ -7,7 +7,7 @@ namespace NexaCRM.WebClient.Services.Interfaces;
 
 public interface ISmsService
 {
-    Task SendBulkSmsAsync(BulkSmsRequest request);
+    Task SendBulkAsync(IEnumerable<BulkSmsRequest> batches, IProgress<int>? progress = null);
     Task<IEnumerable<string>> GetSenderNumbersAsync();
     Task SaveSenderNumberAsync(string number);
     Task DeleteSenderNumberAsync(string number);
