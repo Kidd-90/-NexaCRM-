@@ -1,0 +1,57 @@
+.faq-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.faq-table th,
+.faq-table td {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+}
+
+.faq-actions {
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .faq-table th.faq-category-header,
+    .faq-table td.faq-category-cell {
+        display: none;
+    }
+
+    .faq-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 0.5rem;
+    }
+
+    .faq-table tbody td {
+        display: block;
+        border: none;
+        padding: 0.25rem 0;
+    }
+
+    .faq-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.25rem;
+    }
+
+    .faq-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .faq-form input,
+    .faq-form textarea,
+    .faq-form select {
+        width: 100%;
+    }
+
+    .faq-form button {
+        width: 100%;
+    }
+}
