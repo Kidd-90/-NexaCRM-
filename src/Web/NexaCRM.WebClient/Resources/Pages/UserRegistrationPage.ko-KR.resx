@@ -93,4 +93,10 @@
   <data name="AlreadyHaveAccount" xml:space="preserve">
     <value>이미 계정이 있으신가요? 로그인</value>
   </data>
+  <data name="RegistrationSuccessful" xml:space="preserve">
+    <value>회원가입이 완료되었습니다.</value>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>회원가입에 실패했습니다: {0}</value>
+  </data>
 </root>
