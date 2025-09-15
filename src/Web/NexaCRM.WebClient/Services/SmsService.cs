@@ -1,5 +1,6 @@
 using NexaCRM.WebClient.Models.Sms;
 using NexaCRM.WebClient.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,7 +18,12 @@ public class SmsService : ISmsService
         Task.CompletedTask;
 
     public Task<IEnumerable<SmsHistoryItem>> GetHistoryAsync() =>
-        Task.FromResult<IEnumerable<SmsHistoryItem>>(new List<SmsHistoryItem>());
+        Task.FromResult<IEnumerable<SmsHistoryItem>>(new List<SmsHistoryItem>
+        {
+            new("010-1234-5678", "Hello!", DateTime.UtcNow.AddDays(-1), "Sent"),
+            new("010-2345-6789", "Reminder", DateTime.UtcNow.AddDays(-2), "Failed"),
+            new("010-3456-7890", "Promotion", DateTime.UtcNow.AddDays(-3), "Sent"),
+        });
 
     public Task ScheduleSmsAsync(SmsScheduleItem schedule) =>
         Task.CompletedTask;

@@ -1,0 +1,21 @@
+/* SmsHistoryPage Mobile Responsive Styles */
+
+.sms-history-table td:nth-child(2) {
+    word-break: break-word;
+}
+
+.sms-history-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 576px) {
+    .sms-filters .col-12:not(:last-child) {
+        margin-bottom: 0.5rem;
+    }
+
+    .pagination-controls button {
+        min-height: 44px;
+    }
+}
