@@ -15,6 +15,9 @@
   <data name="BulkSms" xml:space="preserve">
     <value>대량 문자</value>
   </data>
+  <data name="CloseMenu" xml:space="preserve">
+    <value>메뉴 닫기</value>
+  </data>
   <data name="CompanyInfo" xml:space="preserve">
     <value>회사 정보</value>
   </data>

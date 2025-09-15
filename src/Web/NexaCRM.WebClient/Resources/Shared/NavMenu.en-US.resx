@@ -15,6 +15,9 @@
   <data name="BulkSms" xml:space="preserve">
     <value>Bulk SMS</value>
   </data>
+  <data name="CloseMenu" xml:space="preserve">
+    <value>Close menu</value>
+  </data>
   <data name="CompanyInfo" xml:space="preserve">
     <value>Company Information</value>
   </data>

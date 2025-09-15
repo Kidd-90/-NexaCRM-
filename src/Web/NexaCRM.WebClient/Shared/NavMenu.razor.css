@@ -21,3 +21,60 @@
     background-color: var(--primary-color);
     color: white !important; /* Ensure text is white on active background */
 }
+
+.nav-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1rem 1.5rem 0.5rem;
+}
+
+.nav-close-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: background-color var(--transition-fast, 0.2s ease),
+                color var(--transition-fast, 0.2s ease),
+                transform var(--transition-fast, 0.2s ease);
+}
+
+.nav-close-button:hover {
+    background-color: var(--hover-overlay);
+    color: var(--text-primary);
+    transform: scale(1.05);
+}
+
+.nav-close-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem var(--focus-ring, rgba(33, 83, 200, 0.28));
+}
+
+.nav-close-button i {
+    pointer-events: none;
+}
+
+.logout-item {
+    position: relative;
+    padding-top: var(--spacing-md, 1rem);
+}
+
+.logout-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc(var(--spacing-md, 1rem) + 0.5rem);
+    right: calc(var(--spacing-md, 1rem) + 0.5rem);
+    border-top: 1px solid var(--divider-color);
+}
+
+.logout-item .nav-link {
+    margin-bottom: var(--spacing-sm, 0.5rem);
+}
