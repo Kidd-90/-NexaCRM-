@@ -23,5 +23,11 @@ public class SettingsService : ISettingsService
 
     public Task SaveSmsSettingsAsync(SmsSettings settings) =>
         Task.CompletedTask;
+
+    public Task<UserProfile> GetUserProfileAsync() =>
+        Task.FromResult(new UserProfile());
+
+    public Task SaveUserProfileAsync(UserProfile profile) =>
+        Task.CompletedTask;
 }
 

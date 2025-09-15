@@ -9,8 +9,10 @@ namespace NexaCRM.WebClient.Services;
 
 public class OrganizationService : IOrganizationService
 {
-    private readonly HttpClient _httpClient;
+    // Temporary in-memory user list for demonstration; replace with API call if needed
+    private readonly List<OrganizationUser> _users = new List<OrganizationUser>();
 
+    private readonly HttpClient _httpClient;
     public OrganizationService(HttpClient httpClient)
     {
         _httpClient = httpClient;
@@ -36,6 +38,25 @@ public class OrganizationService : IOrganizationService
     public async Task SetSystemAdministratorAsync(string userId)
     {
         await _httpClient.PostAsJsonAsync("api/organization/system-admin", new { userId });
+    }
+
+    public Task<IEnumerable<OrganizationUser>> GetUsersAsync() =>
+        Task.FromResult<IEnumerable<OrganizationUser>>(_users);
+
+    public Task UpdateUserAsync(OrganizationUser user)
+    {
+        var index = _users.FindIndex(u => u.Id == user.Id);
+        if (index >= 0)
+        {
+            _users[index] = user;
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteUserAsync(int userId)
+    {
+        _users.RemoveAll(u => u.Id == userId);
+        return Task.CompletedTask;
     }
 }
 

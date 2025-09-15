@@ -10,5 +10,8 @@ public interface IOrganizationService
     Task SaveOrganizationUnitAsync(OrganizationUnit unit);
     Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync();
     Task SetSystemAdministratorAsync(string userId);
+    Task<IEnumerable<OrganizationUser>> GetUsersAsync();
+    Task UpdateUserAsync(OrganizationUser user);
+    Task DeleteUserAsync(int userId);
 }
 
