@@ -5,6 +5,6 @@ namespace NexaCRM.WebClient.Services.Interfaces;
 
 public interface IStatisticsService
 {
-    Task<StatisticsSummary> GetStatisticsAsync();
+    Task<StatisticsSummary> GetStatisticsAsync(string? companyId = null, string? teamId = null, string? memberId = null);
 }
 

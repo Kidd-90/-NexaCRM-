@@ -554,3 +554,26 @@ if (document.readyState === 'loading') {
 } else {
     window.interactionManager.init();
 }
+
+window.downloadFile = (fileName, content) => {
+    const blob = new Blob([content], { type: 'text/csv' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'text/csv' })] })) {
+        const file = new File([blob], fileName, { type: 'text/csv' });
+        navigator.share({ files: [file] }).catch(() => fallbackDownload(blob));
+        return;
+    }
+
+    fallbackDownload(blob);
+
+    function fallbackDownload(b) {
+        const url = URL.createObjectURL(b);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+};

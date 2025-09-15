@@ -1,6 +1,104 @@
 @page "/organization/stats"
+@using System.Linq
+@using System.Collections.Generic
+@using NexaCRM.WebClient.Models.Statistics
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IStatisticsService StatisticsService
+@inject IJSRuntime JSRuntime
 
 <ResponsivePage>
     <h3>Organization Statistics</h3>
-    <p>View statistics by company, team and member.</p>
+
+    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 mb-4">
+        <select class="form-input w-full sm:min-w-40" @bind="selectedCompany" @bind:after="OnFilterChanged">
+            <option value="">All Companies</option>
+            @foreach (var c in companies)
+            {
+                <option value="@c">@c</option>
+            }
+        </select>
+        <select class="form-input w-full sm:min-w-40" @bind="selectedTeam" @bind:after="OnFilterChanged">
+            <option value="">All Teams</option>
+            @foreach (var t in teams)
+            {
+                <option value="@t">@t</option>
+            }
+        </select>
+        <select class="form-input w-full sm:min-w-40" @bind="selectedMember" @bind:after="OnFilterChanged">
+            <option value="">All Members</option>
+            @foreach (var m in members)
+            {
+                <option value="@m">@m</option>
+            }
+        </select>
+        <button class="flex items-center justify-center w-full sm:w-auto rounded-lg bg-[#2a74ea] text-slate-50 px-4" @onclick="Export">Export</button>
+        <button class="flex items-center justify-center w-full sm:w-auto rounded-lg bg-[#e7ecf3] px-4" @onclick="Print">Print</button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="stat-card flex flex-col gap-2 rounded-lg p-4 bg-[#e7ecf3] text-center">
+            <p>Total Members</p>
+            <p class="text-xl font-bold">@summary.TotalMembers</p>
+        </div>
+        <div class="stat-card flex flex-col gap-2 rounded-lg p-4 bg-[#e7ecf3] text-center">
+            <p>Total Logins</p>
+            <p class="text-xl font-bold">@summary.TotalLogins</p>
+        </div>
+        <div class="stat-card flex flex-col gap-2 rounded-lg p-4 bg-[#e7ecf3] text-center">
+            <p>Total Downloads</p>
+            <p class="text-xl font-bold">@summary.TotalDownloads</p>
+        </div>
+    </div>
+
+    <div class="chart-container w-full flex flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 overflow-x-auto">
+        <p>Summary Chart</p>
+        <div class="grid min-w-[240px] min-h-[150px] grid-flow-col gap-3 grid-rows-[1fr_auto] items-end justify-items-center px-1">
+            <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height:@BarHeight(summary.TotalMembers)"></div>
+            <p class="text-xs font-bold text-[#4d6a99]">Members</p>
+            <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height:@BarHeight(summary.TotalLogins)"></div>
+            <p class="text-xs font-bold text-[#4d6a99]">Logins</p>
+            <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height:@BarHeight(summary.TotalDownloads)"></div>
+            <p class="text-xs font-bold text-[#4d6a99]">Downloads</p>
+        </div>
+    </div>
 </ResponsivePage>
+
+@code {
+    private StatisticsSummary summary = new(0, 0, 0);
+    private string? selectedCompany;
+    private string? selectedTeam;
+    private string? selectedMember;
+
+    private readonly List<string> companies = new() { "Alpha", "Beta" };
+    private readonly List<string> teams = new() { "Team 1", "Team 2" };
+    private readonly List<string> members = new() { "Alice", "Bob" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task OnFilterChanged() => await LoadData();
+
+    private async Task LoadData()
+    {
+        summary = await StatisticsService.GetStatisticsAsync(selectedCompany, selectedTeam, selectedMember);
+    }
+
+    private string BarHeight(int value)
+    {
+        var max = new[] { summary.TotalMembers, summary.TotalLogins, summary.TotalDownloads }.Max();
+        if (max == 0) return "0%";
+        var pct = (int)((double)value / max * 100);
+        return pct + "%";
+    }
+
+    private async Task Export()
+    {
+        var csv = $"Metric,Value\nTotal Members,{summary.TotalMembers}\nTotal Logins,{summary.TotalLogins}\nTotal Downloads,{summary.TotalDownloads}";
+        await JSRuntime.InvokeVoidAsync("downloadFile", "organization-stats.csv", csv);
+    }
+
+    private async Task Print() => await JSRuntime.InvokeVoidAsync("print");
+}
+
