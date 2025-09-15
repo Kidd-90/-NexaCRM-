@@ -1,77 +1,104 @@
 @page "/organization/system-admin"
-@using System.ComponentModel.DataAnnotations
+@using System.Linq
 @using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.WebClient.Components.UI
+@using AgentModel = NexaCRM.WebClient.Models.Agent
 @inject IOrganizationService OrganizationService
 
 <ResponsivePage>
     <h3>System Administration</h3>
+    <p>Configure global system administrators.</p>
 
-    <div class="system-admin-form">
-        <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+    <div class="admin-form">
+        <input @bind="newAdminId" placeholder="User ID" />
+        <button class="btn btn-primary" @onclick="AddAdmin">Add</button>
+    </div>
 
-            <div class="form-group">
-                <label for="userId">User Identifier</label>
-                <InputText id="userId" class="form-control" @bind-Value="model.UserId" placeholder="Enter user ID" />
-                <ValidationMessage For="@(() => model.UserId)" />
+    <div class="admin-table-container">
+        <table class="table admin-table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var admin in admins)
+                {
+                    <tr>
+                        <td>@admin.Id</td>
+                        <td>@admin.Name</td>
+                        <td>@admin.Email</td>
+                        <td>
+                            <button class="btn btn-link text-danger" @onclick="() => RemoveAdmin(admin.Id)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admins-mobile-view">
+        @foreach (var admin in admins)
+        {
+            <div class="admin-card">
+                <div class="admin-info">
+                    <span class="admin-name">@admin.Name</span>
+                    <span class="admin-email">@admin.Email</span>
+                </div>
+                <button class="btn btn-link text-danger" @onclick="() => RemoveAdmin(admin.Id)">Remove</button>
             </div>
-
-            <button type="submit" class="btn btn-primary save-btn" disabled="@isSaving">
-                @if (isSaving)
-                {
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span class="visually-hidden">Saving...</span>
-                }
-                else
-                {
-                    <span>Save</span>
-                }
-            </button>
-        </EditForm>
-
-        @if (!string.IsNullOrEmpty(successMessage))
-        {
-            <div class="alert alert-success mt-3" role="alert">@successMessage</div>
-        }
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger mt-3" role="alert">@errorMessage</div>
         }
     </div>
+
+    <ToastNotification @ref="toast" Title="@toastTitle" Message="@toastMessage" Type="@toastType" />
 </ResponsivePage>
 
 @code {
-    private AdminModel model = new();
-    private string? successMessage;
-    private string? errorMessage;
+    private List<AgentModel> admins = new();
+    private string? newAdminId;
+    private ToastNotification? toast;
+    private string toastTitle = string.Empty;
+    private string toastMessage = string.Empty;
+    private ToastNotification.ToastType toastType = ToastNotification.ToastType.Info;
 
-    private bool isSaving;
-
-    private async Task HandleValidSubmit()
+    protected override async Task OnInitializedAsync()
     {
-        successMessage = null;
-        errorMessage = null;
-        isSaving = true;
-
-        try
-        {
-            await OrganizationService.SetSystemAdministratorAsync(model.UserId);
-            successMessage = "System administrator updated successfully.";
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error saving: {ex.Message}";
-        }
-        finally
-        {
-            isSaving = false;
-        }
+        admins = (await OrganizationService.GetAdminsAsync()).ToList();
     }
 
-    private class AdminModel
+    private async Task AddAdmin()
     {
-        [Required]
-        public string UserId { get; set; } = string.Empty;
+        if (string.IsNullOrWhiteSpace(newAdminId))
+        {
+            return;
+        }
+
+        await OrganizationService.AddAdminAsync(newAdminId);
+        admins = (await OrganizationService.GetAdminsAsync()).ToList();
+        toastTitle = "Admin added";
+        toastMessage = $"User {newAdminId} added.";
+        toastType = ToastNotification.ToastType.Success;
+        if (toast is not null)
+        {
+            await toast.Show();
+        }
+        newAdminId = string.Empty;
+    }
+
+    private async Task RemoveAdmin(int userId)
+    {
+        await OrganizationService.RemoveAdminAsync(userId.ToString());
+        admins = (await OrganizationService.GetAdminsAsync()).ToList();
+        toastTitle = "Admin removed";
+        toastMessage = $"User {userId} removed.";
+        toastType = ToastNotification.ToastType.Success;
+        if (toast is not null)
+        {
+            await toast.Show();
+        }
     }
 }
+

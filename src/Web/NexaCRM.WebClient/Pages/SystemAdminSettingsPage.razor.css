@@ -1,16 +1,49 @@
 /* SystemAdminSettingsPage Mobile Responsive Styles */
 
-.system-admin-form {
-    max-width: 400px;
-    margin-top: 1rem;
+.admin-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
-@media (max-width: 600px) {
-    .system-admin-form {
-        padding: 0 1rem;
+.admin-table-container {
+    overflow-x: auto;
+}
+
+.admins-mobile-view {
+    display: none;
+}
+
+.admin-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-info {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .admin-form {
+        flex-direction: column;
     }
 
-    .save-btn {
+    .admin-form input,
+    .admin-form button {
         width: 100%;
+    }
+
+    .admin-table-container {
+        display: none;
+    }
+
+    .admins-mobile-view {
+        display: block;
     }
 }
