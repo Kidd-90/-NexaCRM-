@@ -81,4 +81,13 @@
   <data name="Cancel" xml:space="preserve">
     <value>취소</value>
   </data>
+  <data name="Subject" xml:space="preserve">
+    <value>제목</value>
+  </data>
+  <data name="SubjectRequired" xml:space="preserve">
+    <value>제목은 필수입니다</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>메뉴</value>
+  </data>
 </root>
