@@ -1,11 +1,14 @@
-@page "/email-template-builder"
+@page "/email-template-builder/{TemplateId:guid?}"
 @using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Services.Interfaces
 @inject IStringLocalizer<EmailTemplateBuilder> Localizer
+@inject IEmailTemplateService TemplateService
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-          <div class="flex items-center gap-8">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-4 md:px-10 py-3">
+          <div class="flex items-center gap-4 md:gap-8">
             <div class="flex items-center gap-4 text-[#0e131b]">
               <div class="size-4">
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,7 +28,12 @@
               </div>
               <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
             </div>
-            <div class="flex items-center gap-9">
+            <button class="md:hidden p-2" @onclick="ToggleMenu" aria-label='@Localizer["Menu"]'>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M40 128a8 8 0 0 1 8-8h160a8 8 0 0 1 0 16H48a8 8 0 0 1-8-8Zm-8-48a8 8 0 0 1 8-8h160a8 8 0 0 1 0 16H48a8 8 0 0 1-8-8Zm168 88a8 8 0 0 1 8-8H48a8 8 0 0 0 0 16h160a8 8 0 0 1 8-8Z" />
+              </svg>
+            </button>
+            <div class="@((isMenuOpen ? "flex" : "hidden") + " md:flex flex-col md:flex-row items-center gap-4 md:gap-9")">
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Sales"]</a>
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
@@ -33,8 +41,8 @@
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Analytics"]</a>
             </div>
           </div>
-          <div class="flex flex-1 justify-end gap-8">
-            <label class="flex flex-col min-w-40 !h-10 max-w-64">
+          <div class="flex flex-1 justify-end gap-2 md:gap-8 items-center">
+            <label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
               <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
                 <div
                   class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
@@ -53,44 +61,44 @@
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                   value=""
                 />
-              </div>
-            </label>
-            <button
-              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
-            >
-              <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                  <path
+                </div>
+              </label>
+              <button
+                class="hidden md:flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+              >
+                <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
                     d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
                   ></path>
                 </svg>
               </div>
             </button>
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCL3XVsr5aS8ATjJDCWyCjG_AXHLpdfPgEtTtJ-xmWb1Gr5Rq_OZ8NULUQ08vt34JiconXrQ7NdVGUYJ96M5cXWnEmGMf1gwbDDIZniee7OhnXKK3-OW-Xt9MS1rBKcdJcrW4Z_-M9twlPTnyTad-N-O9mv3D-lhPn2sHURaWysjJuuRX4M5Bs8zUGscjfpAOJXCMVty6TVUUpgGC2-yeTInS-TlKtIaNVxl_W1lZ-Va4fOVjRHxk_Gc4OCGjIn9xN1ZRTIyfVPdE8L");'
-            ></div>
-          </div>
-        </header>
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-80">
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["EmailTemplateBuilder"]</h2>
+              <div
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCL3XVsr5aS8ATjJDCWyCjG_AXHLpdfPgEtTtJ-xmWb1Gr5Rq_OZ8NULUQ08vt34JiconXrQ7NdVGUYJ96M5cXWnEmGMf1gwbDDIZniee7OhnXKK3-OW-Xt9MS1rBKcdJcrW4Z_-M9twlPTnyTad-N-O9mv3D-lhPn2sHURaWysjJuuRX4M5Bs8zUGscjfpAOJXCMVty6TVUUpgGC2-yeTInS-TlKtIaNVxl_W1lZ-Va4fOVjRHxk_Gc4OCGjIn9xN1ZRTIyfVPdE8L");'
+              ></div>
+            </div>
+          </header>
+        <div class="gap-1 px-4 md:px-6 flex flex-1 justify-center py-5 flex-col md:flex-row">
+          <div class="layout-content-container flex flex-col w-full md:w-80">
+              <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["EmailTemplateBuilder"]</h2>
             <div class="pb-3">
               <div class="flex border-b border-[#d0d9e7] px-4 gap-8">
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#">
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#" @onclick='() => activeTab = "Blocks"'>
                   <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Blocks"]</p>
                 </a>
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#" @onclick='() => activeTab = "Settings"'>
                   <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Settings"]</p>
                 </a>
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
+                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#" @onclick='() => activeTab = "Preview"'>
                   <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Preview"]</p>
                 </a>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["BasicBlocks"]</h3>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+              <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["BasicBlocks"]</h3>
+              <div class="block-grid grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+                <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Text")'>
                 <div class="text-[#0e131b]" data-icon="TextB" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -100,7 +108,7 @@
                 </div>
                 <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Text"]</h2>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+                <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Image")'>
                 <div class="text-[#0e131b]" data-icon="Image" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -110,7 +118,7 @@
                 </div>
                 <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Image"]</h2>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+                <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Button")'>
                 <div class="text-[#0e131b]" data-icon="CursorClick" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -120,7 +128,7 @@
                 </div>
                 <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Button"]</h2>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+                <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("SocialLinks")'>
                 <div class="text-[#0e131b]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -132,8 +140,8 @@
               </div>
             </div>
             <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["AdvancedBlocks"]</h3>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+            <div class="block-grid grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Layout")'>
                 <div class="text-[#0e131b]" data-icon="Layout" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -143,7 +151,7 @@
                 </div>
                 <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Layout"]</h2>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Divider")'>
                 <div class="text-[#0e131b]" data-icon="Divide" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -153,7 +161,7 @@
                 </div>
                 <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Divider"]</h2>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Video")'>
                 <div class="text-[#0e131b]" data-icon="Video" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -163,7 +171,7 @@
                 </div>
                 <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Video"]</h2>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center">
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center" @onclick='() => AddBlock("Product")'>
                 <div class="text-[#0e131b]" data-icon="X" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
@@ -175,7 +183,7 @@
               </div>
             </div>
           </div>
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1 w-full">
             <div class="flex flex-wrap justify-between gap-3 p-4">
               <div class="flex min-w-72 flex-col gap-3">
                 <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["NewEmailTemplate"]</p>
@@ -183,20 +191,47 @@
               </div>
             </div>
             <div class="flex flex-col p-4">
-              <div class="flex flex-col items-center gap-6 rounded-lg border-2 border-dashed border-[#d0d9e7] px-6 py-14">
-                <div class="flex max-w-[480px] flex-col items-center gap-2">
-                  <p class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">@Localizer["DragAndDropHere"]</p>
-                  <p class="text-[#0e131b] text-sm font-normal leading-normal max-w-[480px] text-center">
-                    @Localizer["StartBuilding"]
-                  </p>
-                </div>
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
-                >
-                  <span class="truncate">@Localizer["SaveTemplate"]</span>
-                </button>
+              <input class="mb-2 rounded-lg border border-[#d0d9e7] px-2 py-1" @bind="Template.Subject" placeholder="@Localizer["Subject"]" />
+              @if (!string.IsNullOrEmpty(validationMessage))
+              {
+                  <p class="text-red-600 text-sm">@validationMessage</p>
+              }
+              @if (activeTab == "Preview")
+              {
+                  <div class="flex flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4">
+                      <h3 class="text-lg font-bold">@Template.Subject</h3>
+                      @foreach (var block in Template.Blocks)
+                      {
+                          <div class="border p-2">@block.Type: @block.Content</div>
+                      }
+                  </div>
+              }
+              else
+              {
+                  <div class="flex flex-col items-center gap-6 rounded-lg border-2 border-dashed border-[#d0d9e7] px-6 py-14">
+                      @if (Template.Blocks.Count == 0)
+                      {
+                          <div class="flex max-w-[480px] flex-col items-center gap-2">
+                              <p class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">@Localizer["DragAndDropHere"]</p>
+                              <p class="text-[#0e131b] text-sm font-normal leading-normal max-w-[480px] text-center">
+                                @Localizer["StartBuilding"]
+                              </p>
+                          </div>
+                      }
+                      else
+                      {
+                          <div class="w-full">
+                              @foreach (var item in Template.Blocks.Select((b, i) => new { Block = b, Index = i }))
+                              {
+                                  <div class="w-full p-4 mb-2 bg-white border" draggable="true" @ondragstart="() => HandleDragStart(item.Index)" @ondrop="() => HandleDrop(item.Index)">
+                                      <p class="font-bold">@item.Block.Type</p>
+                                  </div>
+                              }
+                          </div>
+                      }
+                    </div>
+                }
               </div>
-            </div>
             <div class="flex justify-stretch">
               <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-end">
                 <button
@@ -206,7 +241,7 @@
                 </button>
                 <button
                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
-                >
+                  @onclick="SaveTemplateAsync" disabled="@string.IsNullOrWhiteSpace(Template.Subject)">
                   <span class="truncate">@Localizer["SaveTemplate"]</span>
                 </button>
               </div>
@@ -215,3 +250,59 @@
         </div>
       </div>
     </div>
+
+@code {
+    [Parameter] public Guid? TemplateId { get; set; }
+
+    private EmailTemplate Template = new();
+    private string activeTab = "Blocks";
+    private string? validationMessage;
+    private int draggedIndex = -1;
+    private bool isMenuOpen;
+
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    {
+        if (TemplateId.HasValue)
+        {
+            var loaded = await TemplateService.LoadTemplateAsync(TemplateId.Value);
+            if (loaded != null)
+            {
+                Template = loaded;
+            }
+        }
+    }
+
+    private void AddBlock(string type)
+    {
+        Template.Blocks.Add(new EmailBlock { Type = type });
+    }
+
+    private void HandleDragStart(int index) => draggedIndex = index;
+
+    private void HandleDrop(int index)
+    {
+        if (draggedIndex < 0 || draggedIndex == index)
+        {
+            return;
+        }
+
+        var item = Template.Blocks[draggedIndex];
+        Template.Blocks.RemoveAt(draggedIndex);
+        Template.Blocks.Insert(index, item);
+        draggedIndex = -1;
+    }
+
+    private void ToggleMenu() => isMenuOpen = !isMenuOpen;
+
+    private async System.Threading.Tasks.Task SaveTemplateAsync()
+    {
+        validationMessage = null;
+        if (string.IsNullOrWhiteSpace(Template.Subject))
+        {
+            validationMessage = Localizer["SubjectRequired"];
+            return;
+        }
+
+        await TemplateService.SaveTemplateAsync(Template);
+    }
+}
