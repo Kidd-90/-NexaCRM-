@@ -333,6 +333,8 @@ a:hover, .btn-link:hover {
 /* JavaScript will handle the overlay visibility instead of :has() for better browser support */
 .mobile-overlay.show {
     display: block;
+    pointer-events: none;
+    height: 3.5rem; /* mobile-fixed-header 영역만 어둡게 */
 }
 
 /* 태블릿 환경 (768px - 1024px) */
