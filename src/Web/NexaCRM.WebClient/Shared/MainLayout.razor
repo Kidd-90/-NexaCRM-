@@ -1,32 +1,75 @@
 @inherits LayoutComponentBase
-@using NexaCRM.WebClient.Shared
-@using NexaCRM.WebClient.Services.Interfaces
+@implements IDisposable
+@using System
+@using System.Collections.Generic
+@using System.Globalization
+@using System.Linq
+@using System.Security.Claims
+@using System.Threading.Tasks
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
+@using NexaCRM.WebClient.Models.Navigation
+@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.WebClient.Shared
 @inject IDeviceService DeviceService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IUserFavoritesService UserFavoritesService
 
 <div class="page @(isMobile ? "mobile-layout" : "desktop-layout")">
     @if (isMobile)
     {
-        <header class="mobile-fixed-header">
-            <button class="nav-menu-button" title="Navigation menu" @onclick="ToggleNavMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="page-title">@currentPageTitle</div>
-            <button class="user-info-button" title="User profile" @onclick="GoToProfile">
-                <span class="oi oi-person" aria-hidden="true"></span>
-            </button>
+        <header class="mobile-fixed-header" role="banner">
+            <div class="header-left">
+                @if (isDetailPage)
+                {
+                    <button class="nav-back-button" title="Go back" @onclick="NavigateBack">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                    </button>
+                }
+                else
+                {
+                    <button class="nav-menu-button" title="Navigation menu" @onclick="ToggleNavMenu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                }
+            </div>
+            <div class="page-title" role="heading" aria-level="1">@currentPageTitle</div>
+            <div class="header-right">
+                @if (isHomePage)
+                {
+                    <AuthorizeView>
+                        <Authorized>
+                            <button class="user-chip" title="Open profile settings" @onclick="GoToProfile">
+                                <span class="user-avatar" aria-hidden="true">@userInitials</span>
+                                <span class="user-name">@userDisplayName</span>
+                            </button>
+                        </Authorized>
+                        <NotAuthorized>
+                            <button class="user-chip" title="Sign in" @onclick="GoToProfile">
+                                <span class="user-avatar"><i class="bi bi-person" aria-hidden="true"></i></span>
+                            </button>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                }
+                else
+                {
+                    <button class="page-action-button" title="@headerActionLabel">
+                        <i class="@headerActionIcon" aria-hidden="true"></i>
+                    </button>
+                }
+            </div>
         </header>
     }
     else
     {
-        <!-- 고정된 햄버거 버튼 - sidebar 밖에 배치 -->
         <button title="Navigation menu" class="floating-menu-toggle" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     }
-    
+
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -36,16 +79,165 @@
             @Body
         </article>
     </main>
-    
 
+    @if (isMobile && favoriteShortcuts.Count > 0)
+    {
+        <footer class="mobile-fixed-footer" role="contentinfo">
+            <nav class="favorites-nav" aria-label="Favourite shortcuts">
+                @foreach (var shortcut in favoriteShortcuts)
+                {
+                    <button @key="shortcut.Id" class="favorite-button" style="@BuildFavoriteStyle(shortcut)" title="@shortcut.Label" @onclick="() => NavigateToFavorite(shortcut)">
+                        <span class="favorite-icon">
+                            <i class="@shortcut.IconCssClass" aria-hidden="true"></i>
+                        </span>
+                        <span class="favorite-label">@shortcut.Label</span>
+                    </button>
+                }
+            </nav>
+        </footer>
+    }
 </div>
 
 @code {
+    private static readonly string[] DetailRoutePrefixes =
+    {
+        "contacts/",
+        "db/distribution/assign/",
+        "email-template-builder/"
+    };
+
+    private static readonly Dictionary<string, string> DetailParentRoutes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["contacts/"] = "/contacts",
+        ["db/distribution/assign/"] = "/db/distribution/status",
+        ["email-template-builder/"] = "/email-template-builder"
+    };
+
+    private static readonly Dictionary<string, string> PageTitleOverrides = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [""] = "Home",
+        ["main-dashboard"] = "Home",
+        ["sales-manager-dashboard"] = "Manager Dashboard",
+        ["statistics/dashboard"] = "Statistics",
+        ["statistics"] = "Statistics",
+        ["reports-page"] = "Reports",
+        ["sales-pipeline-page"] = "Sales Pipeline",
+        ["contacts"] = "Contacts",
+        ["tasks-page"] = "Tasks",
+        ["settings"] = "Settings",
+        ["settings-page"] = "Theme Settings",
+        ["profile-settings-page"] = "Profile",
+        ["settings/company-info"] = "Company Info",
+        ["settings/security"] = "Security",
+        ["settings/sms"] = "SMS Settings",
+        ["sms/senders"] = "Sender Numbers",
+        ["notification-settings-page"] = "Notifications",
+        ["organization/structure"] = "Organization Structure",
+        ["organization/stats"] = "Organization Stats",
+        ["organization/system-admin"] = "System Admin",
+        ["db/customer/all"] = "All Customers",
+        ["db/customer/new"] = "New Customers",
+        ["db/customer/starred"] = "Starred Customers",
+        ["db/customer/assigned-today"] = "Today's Assignments",
+        ["db/distribution/unassigned"] = "Unassigned DB",
+        ["db/distribution/newly-assigned"] = "Newly Assigned",
+        ["db/distribution/status"] = "Distribution Status",
+        ["db/distribution/my-history"] = "Assignment History",
+        ["db/customer/team-status"] = "Team DB Status",
+        ["db/advanced"] = "Advanced DB",
+        ["db/customer/my-list"] = "My DB List",
+        ["customer-support-dashboard"] = "Support Dashboard",
+        ["customer-support-ticket-management-interface"] = "Support Tickets",
+        ["customer-support-knowledge-base"] = "Support Knowledge Base",
+        ["marketing-campaign-management-interface"] = "Marketing Campaigns",
+        ["system/info"] = "System Info",
+        ["email-template-builder"] = "Email Templates"
+    };
+
+    private static readonly Dictionary<string, string> HeaderIconOverrides = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["contacts"] = "bi bi-person-lines-fill",
+        ["reports-page"] = "bi bi-bar-chart-line",
+        ["statistics"] = "bi bi-graph-up",
+        ["statistics/dashboard"] = "bi bi-graph-up",
+        ["sales-pipeline-page"] = "bi bi-kanban",
+        ["tasks-page"] = "bi bi-check2-square",
+        ["settings"] = "bi bi-gear-wide-connected",
+        ["settings-page"] = "bi bi-brightness-high",
+        ["profile-settings-page"] = "bi bi-person-circle",
+        ["organization"] = "bi bi-diagram-3",
+        ["marketing-campaign-management-interface"] = "bi bi-bullseye",
+        ["customer-support-dashboard"] = "bi bi-headset",
+        ["customer-support-ticket-management-interface"] = "bi bi-card-checklist",
+        ["system"] = "bi bi-hdd-network",
+        ["sms"] = "bi bi-chat-dots",
+        ["db"] = "bi bi-database",
+        ["sales-manager-dashboard"] = "bi bi-speedometer2",
+        ["email-template-builder"] = "bi bi-envelope-open"
+    };
+
     private bool isMobile;
-    private string currentPageTitle = string.Empty;
+    private bool isDetailPage;
+    private bool isHomePage;
+    private string currentPageTitle = "Home";
+    private string headerActionIcon = "bi bi-grid-3x3-gap";
+    private string headerActionLabel = "Page actions";
+    private string userDisplayName = "Guest";
+    private string userInitials = "G";
+    private string? parentPagePath;
+    private IReadOnlyList<UserFavoriteShortcut> favoriteShortcuts = Array.Empty<UserFavoriteShortcut>();
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            UpdateUserInfo(authState.User);
+        }
+        catch
+        {
+            UpdateUserInfo(new ClaimsPrincipal(new ClaimsIdentity()));
+        }
+
+        try
+        {
+            favoriteShortcuts = await UserFavoritesService.GetFavoritesAsync();
+        }
+        catch
+        {
+            favoriteShortcuts = Array.Empty<UserFavoriteShortcut>();
+        }
+
+        UpdateLayoutState();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+            await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
+            isMobile = await DeviceService.IsMobileAsync();
+            UpdateLayoutState();
+            StateHasChanged();
+        }
+
+        if (!firstRender && isMobile)
+        {
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.syncMobileLayoutSpacing");
+        }
+    }
+
     private async Task ToggleNavMenu()
     {
-        // JavaScript 함수 호출하여 메뉴 상태 토글
         await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu");
     }
 
@@ -54,37 +246,210 @@
         NavigationManager.NavigateTo("profile-settings-page");
     }
 
-    private async Task UpdatePageTitle()
+    private async Task NavigateBack()
     {
-        var title = await JSRuntime.InvokeAsync<string>("eval", "document.title");
-        currentPageTitle = title.Contains('-') ? title.Split('-')[0].Trim() : title;
-        StateHasChanged();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
+        if (!string.IsNullOrWhiteSpace(parentPagePath))
         {
-            // 초기 렌더링 후 JavaScript 초기화
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupOverlayHandler");
-            // 초기 상태를 확실히 설정 (메뉴 닫힌 상태)
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
-
-            // 테마 토글 아이콘 초기화
-            await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
-            isMobile = await DeviceService.IsMobileAsync();
-            await UpdatePageTitle();
-            StateHasChanged();
+            NavigationManager.NavigateTo(parentPagePath);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("history.back");
         }
     }
 
-    protected override void OnInitialized()
+    private void NavigateToFavorite(UserFavoriteShortcut shortcut)
     {
-        NavigationManager.LocationChanged += async (_, __) =>
+        if (shortcut is null || !shortcut.HasTarget)
         {
-            await UpdatePageTitle();
+            return;
+        }
+
+        NavigationManager.NavigateTo(shortcut.TargetUri);
+    }
+
+    private void UpdateLayoutState()
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var normalized = NormalizePath(relativePath);
+
+        isDetailPage = false;
+        parentPagePath = null;
+
+        foreach (var prefix in DetailRoutePrefixes)
+        {
+            if (normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && normalized.Length > prefix.Length)
+            {
+                isDetailPage = true;
+                if (DetailParentRoutes.TryGetValue(prefix, out var explicitParent))
+                {
+                    parentPagePath = explicitParent;
+                }
+                break;
+            }
+        }
+
+        if (isDetailPage && string.IsNullOrEmpty(parentPagePath))
+        {
+            var lastSeparator = normalized.LastIndexOf('/');
+            if (lastSeparator > 0)
+            {
+                parentPagePath = "/" + normalized[..lastSeparator];
+            }
+        }
+
+        isHomePage = string.IsNullOrEmpty(normalized) ||
+                     string.Equals(normalized, "main-dashboard", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(normalized, "sales-manager-dashboard", StringComparison.OrdinalIgnoreCase);
+
+        currentPageTitle = ResolvePageTitle(normalized, isDetailPage);
+        headerActionIcon = ResolveHeaderActionIcon(normalized);
+        headerActionLabel = string.Format(CultureInfo.CurrentCulture, "{0} actions", currentPageTitle);
+    }
+
+    private static string NormalizePath(string? relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativePath))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = relativePath.Split('?', '#')[0];
+        return trimmed.Trim('/');
+    }
+
+    private string ResolvePageTitle(string normalizedPath, bool treatAsDetail)
+    {
+        if (PageTitleOverrides.TryGetValue(normalizedPath, out var directTitle))
+        {
+            return directTitle;
+        }
+
+        if (string.IsNullOrEmpty(normalizedPath))
+        {
+            return "Home";
+        }
+
+        var segments = normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0)
+        {
+            return "Home";
+        }
+
+        if (treatAsDetail && segments.Length > 1)
+        {
+            var detailBase = string.Join('/', segments[..^1]);
+            if (PageTitleOverrides.TryGetValue(detailBase, out var detailTitle))
+            {
+                return detailTitle;
+            }
+
+            segments = segments[..^1];
+        }
+
+        var lastSegment = segments.Last();
+        if (PageTitleOverrides.TryGetValue(lastSegment, out var segmentTitle))
+        {
+            return segmentTitle;
+        }
+
+        return ToTitleCase(lastSegment.Replace("-", " "));
+    }
+
+    private string ResolveHeaderActionIcon(string normalizedPath)
+    {
+        if (HeaderIconOverrides.TryGetValue(normalizedPath, out var icon))
+        {
+            return icon;
+        }
+
+        if (string.IsNullOrEmpty(normalizedPath))
+        {
+            return "bi bi-grid-3x3-gap";
+        }
+
+        var segments = normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var segment in new[] { normalizedPath, segments.First(), segments.Last() })
+        {
+            if (HeaderIconOverrides.TryGetValue(segment, out icon))
+            {
+                return icon;
+            }
+        }
+
+        return "bi bi-grid-3x3-gap";
+    }
+
+    private static string ToTitleCase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "Home";
+        }
+
+        var lowerInvariant = value.ToLower(CultureInfo.CurrentCulture);
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lowerInvariant);
+    }
+
+    private static string BuildFavoriteStyle(UserFavoriteShortcut shortcut)
+    {
+        var background = string.IsNullOrWhiteSpace(shortcut.BackgroundColor)
+            ? "rgba(33, 83, 200, 0.12)"
+            : shortcut.BackgroundColor;
+
+        var iconColor = string.IsNullOrWhiteSpace(shortcut.IconColor)
+            ? "var(--primary-color)"
+            : shortcut.IconColor;
+
+        return $"--favorite-background: {background}; --favorite-icon-color: {iconColor};";
+    }
+
+    private void UpdateUserInfo(ClaimsPrincipal user)
+    {
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            userDisplayName = string.IsNullOrWhiteSpace(user.Identity?.Name) ? "User" : user.Identity!.Name!;
+
+            userInitials = string.Join(string.Empty, userDisplayName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Where(segment => segment.Length > 0)
+                .Take(2)
+                .Select(segment => char.ToUpperInvariant(segment[0])));
+
+            if (string.IsNullOrWhiteSpace(userInitials))
+            {
+                var firstChar = userDisplayName.FirstOrDefault();
+                userInitials = firstChar == default ? "U" : char.ToUpperInvariant(firstChar).ToString();
+            }
+        }
+        else
+        {
+            userDisplayName = "Guest";
+            userInitials = "G";
+        }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        try
+        {
+            UpdateLayoutState();
+            await InvokeAsync(StateHasChanged);
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
-        };
+            if (isMobile)
+            {
+                await JSRuntime.InvokeVoidAsync("window.navigationHelper.syncMobileLayoutSpacing");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error?.WriteLine($"Failed to update layout on navigation: {ex.Message}");
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
 

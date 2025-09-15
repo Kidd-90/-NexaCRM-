@@ -167,9 +167,76 @@ window.navigationHelper = {
         if (overlay) {
             overlay.classList.remove('show');
         }
-        
+
         // Setup navigation scrolling functionality
         window.navigationHelper.setupNavigationScrolling();
+    },
+
+    // Keep mobile content offset from fixed header/footer heights
+    syncMobileLayoutSpacing: () => {
+        const root = document.documentElement;
+        if (!root) return;
+
+        const state = window.navigationHelper._mobileSpacingState || (window.navigationHelper._mobileSpacingState = {
+            lastHeader: 72,
+            lastFooter: 80,
+            headerObserver: null,
+            footerObserver: null,
+            viewportHandler: null
+        });
+
+        const header = document.querySelector('.mobile-layout .mobile-fixed-header');
+        const footer = document.querySelector('.mobile-layout .mobile-fixed-footer');
+
+        const updateSpacing = () => {
+            const headerRect = header ? header.getBoundingClientRect() : null;
+            const footerRect = footer ? footer.getBoundingClientRect() : null;
+
+            const headerHeight = Math.max(1, Math.ceil((headerRect && headerRect.height) || state.lastHeader || 72));
+            const footerHeight = Math.max(1, Math.ceil((footerRect && footerRect.height) || state.lastFooter || 80));
+
+            state.lastHeader = headerHeight;
+            state.lastFooter = footerHeight;
+
+            root.style.setProperty('--mobile-header-height', `${headerHeight}px`);
+            root.style.setProperty('--mobile-footer-height', `${footerHeight}px`);
+        };
+
+        updateSpacing();
+
+        if (state.headerObserver) {
+            state.headerObserver.disconnect();
+            state.headerObserver = null;
+        }
+
+        if (state.footerObserver) {
+            state.footerObserver.disconnect();
+            state.footerObserver = null;
+        }
+
+        if (typeof ResizeObserver !== 'undefined') {
+            if (header) {
+                state.headerObserver = new ResizeObserver(updateSpacing);
+                state.headerObserver.observe(header);
+            }
+
+            if (footer) {
+                state.footerObserver = new ResizeObserver(updateSpacing);
+                state.footerObserver.observe(footer);
+            }
+        }
+
+        if (state.viewportHandler) {
+            window.removeEventListener('resize', state.viewportHandler);
+            window.removeEventListener('orientationchange', state.viewportHandler);
+        }
+
+        state.viewportHandler = () => window.requestAnimationFrame(updateSpacing);
+
+        window.addEventListener('resize', state.viewportHandler);
+        window.addEventListener('orientationchange', state.viewportHandler);
+
+        requestAnimationFrame(updateSpacing);
     },
 
     // Mobile dashboard navigation functionality
