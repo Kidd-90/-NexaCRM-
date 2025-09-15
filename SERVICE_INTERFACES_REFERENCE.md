@@ -440,6 +440,9 @@ private async Task LaunchCampaign()
 ```csharp
 public interface IReportService
 {
+    Task SaveReportDefinitionAsync(ReportDefinition definition);
+    Task<IEnumerable<ReportDefinition>> GetReportDefinitionsAsync();
+    Task<ReportData> GenerateReportAsync(ReportDefinition definition);
     Task<ReportData> GetQuarterlyPerformanceAsync();
     Task<ReportData> GetLeadSourceAnalyticsAsync();
     Task<ReportData> GetTicketVolumeAsync();
@@ -461,6 +464,21 @@ public interface IReportService
 - **Return Type**: `Task<ReportData>`
 - **Parameters**: None
 - **Includes**: Lead sources, conversion rates, and ROI by channel
+
+**SaveReportDefinitionAsync(ReportDefinition)**
+- **Purpose**: Persists a custom report definition
+- **Return Type**: `Task`
+- **Parameters**: `ReportDefinition` definition
+
+**GetReportDefinitionsAsync()**
+- **Purpose**: Retrieves saved report definitions
+- **Return Type**: `Task<IEnumerable<ReportDefinition>>`
+- **Parameters**: None
+
+**GenerateReportAsync(ReportDefinition)**
+- **Purpose**: Generates report data based on a definition
+- **Return Type**: `Task<ReportData>`
+- **Parameters**: `ReportDefinition` definition
 
 **GetTicketVolumeAsync()**
 - **Purpose**: Reports on support ticket volume and trends

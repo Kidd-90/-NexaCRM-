@@ -219,7 +219,7 @@ builder.Services.AddScoped<IActivityService, MockActivityService>();
 - **ContactsPage.razor**: Contact management interface with search and filtering
 - **SalesPipelinePage.razor**: Visual deal pipeline with drag-and-drop functionality
 - **TasksPage.razor**: Task management interface with assignment and tracking
-- **ReportsPage.razor**: Comprehensive reporting dashboard with multiple report types
+- **ReportsPage.razor**: Custom report builder with field selection, filters, saved definitions, preview, and mobile-friendly layout
 
 **Support and Service Pages:**
 - **CustomerSupportDashboard.razor**: Support team dashboard with ticket overview

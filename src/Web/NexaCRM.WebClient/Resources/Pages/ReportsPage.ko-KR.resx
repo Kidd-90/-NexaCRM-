@@ -45,4 +45,31 @@
   <data name="ScheduleReport" xml:space="preserve">
     <value>보고서 예약</value>
   </data>
+  <data name="ReportName" xml:space="preserve">
+    <value>보고서 이름</value>
+  </data>
+  <data name="Field" xml:space="preserve">
+    <value>필드</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>추가</value>
+  </data>
+  <data name="FilterKey" xml:space="preserve">
+    <value>필터 키</value>
+  </data>
+  <data name="FilterValue" xml:space="preserve">
+    <value>필터 값</value>
+  </data>
+  <data name="SaveDefinition" xml:space="preserve">
+    <value>정의 저장</value>
+  </data>
+  <data name="SavedReports" xml:space="preserve">
+    <value>저장된 보고서</value>
+  </data>
+  <data name="GenerateReport" xml:space="preserve">
+    <value>보고서 생성</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>미리보기</value>
+  </data>
 </root>

@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using NexaCRM.WebClient.Models;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services.Interfaces
 {
     public interface IReportService
     {
-        Task<ReportData> GetQuarterlyPerformanceAsync();
-        Task<ReportData> GetLeadSourceAnalyticsAsync();
-        Task<ReportData> GetTicketVolumeAsync();
-        Task<ReportData> GetResolutionRateAsync();
-        Task<ReportData> GetTicketsByCategoryAsync();
+        System.Threading.Tasks.Task SaveReportDefinitionAsync(ReportDefinition definition);
+        System.Threading.Tasks.Task<IEnumerable<ReportDefinition>> GetReportDefinitionsAsync();
+        System.Threading.Tasks.Task<ReportData> GenerateReportAsync(ReportDefinition definition);
+        System.Threading.Tasks.Task<ReportData> GetQuarterlyPerformanceAsync();
+        System.Threading.Tasks.Task<ReportData> GetLeadSourceAnalyticsAsync();
+        System.Threading.Tasks.Task<ReportData> GetTicketVolumeAsync();
+        System.Threading.Tasks.Task<ReportData> GetResolutionRateAsync();
+        System.Threading.Tasks.Task<ReportData> GetTicketsByCategoryAsync();
     }
 }

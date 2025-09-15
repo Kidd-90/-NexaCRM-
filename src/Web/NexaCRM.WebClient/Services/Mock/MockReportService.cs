@@ -1,11 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Services.Interfaces;
-using System.Collections.Generic;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
     public class MockReportService : IReportService
     {
+        private readonly List<ReportDefinition> _definitions = new();
+
+        public System.Threading.Tasks.Task SaveReportDefinitionAsync(ReportDefinition definition)
+        {
+            _definitions.Add(definition);
+            return System.Threading.Tasks.Task.CompletedTask;
+        }
+
+        public System.Threading.Tasks.Task<IEnumerable<ReportDefinition>> GetReportDefinitionsAsync()
+        {
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<ReportDefinition>>(_definitions);
+        }
+
+        public System.Threading.Tasks.Task<ReportData> GenerateReportAsync(ReportDefinition definition)
+        {
+            var data = new ReportData
+            {
+                Title = definition.Name,
+                Data = definition.SelectedFields.ToDictionary(f => f, f => (double)Random.Shared.Next(10, 100))
+            };
+
+            return System.Threading.Tasks.Task.FromResult(data);
+        }
+
         public System.Threading.Tasks.Task<ReportData> GetQuarterlyPerformanceAsync()
         {
             var data = new ReportData

@@ -45,4 +45,31 @@
   <data name="ScheduleReport" xml:space="preserve">
     <value>Schedule Report</value>
   </data>
+  <data name="ReportName" xml:space="preserve">
+    <value>Report Name</value>
+  </data>
+  <data name="Field" xml:space="preserve">
+    <value>Field</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="FilterKey" xml:space="preserve">
+    <value>Filter Key</value>
+  </data>
+  <data name="FilterValue" xml:space="preserve">
+    <value>Filter Value</value>
+  </data>
+  <data name="SaveDefinition" xml:space="preserve">
+    <value>Save Definition</value>
+  </data>
+  <data name="SavedReports" xml:space="preserve">
+    <value>Saved Reports</value>
+  </data>
+  <data name="GenerateReport" xml:space="preserve">
+    <value>Generate Report</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
 </root>
