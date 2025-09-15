@@ -335,6 +335,8 @@ a:hover, .btn-link:hover {
     display: block;
     pointer-events: none;
     height: 3.5rem; /* mobile-fixed-header 영역만 어둡게 */
+    background: rgba(0,0,0,0.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* 태블릿 환경 (768px - 1024px) */
