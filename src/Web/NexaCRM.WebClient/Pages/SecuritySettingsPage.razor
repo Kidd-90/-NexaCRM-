@@ -1,6 +1,94 @@
 @page "/settings/security"
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
+@using NexaCRM.WebClient.Models.Settings
+@using NexaCRM.WebClient.Services.Interfaces
+@inject ISecurityService SecurityService
 
 <ResponsivePage>
     <h3>Security Settings</h3>
     <p>Configure IP restrictions, login blocking and other security options.</p>
+
+    <EditForm Model="_model" OnValidSubmit="HandleValidSubmit" class="security-settings-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-check form-switch mb-3">
+            <InputCheckbox @bind-Value="_model.IpRestrictionEnabled" class="form-check-input" id="ipRestriction" />
+            <label class="form-check-label" for="ipRestriction">Enable IP Restriction</label>
+        </div>
+
+        @if (_model.IpRestrictionEnabled)
+        {
+            <div class="mb-3">
+                <label class="form-label" for="ipWhitelist">IP Whitelist (comma separated)</label>
+                <InputText @bind-Value="_model.IpWhitelist" id="ipWhitelist" class="form-control" placeholder="192.168.0.1, 192.168.0.2" />
+            </div>
+        }
+
+        <div class="form-check form-switch mb-3">
+            <InputCheckbox @bind-Value="_model.LoginBlockEnabled" class="form-check-input" id="loginBlock" />
+            <label class="form-check-label" for="loginBlock">Enable Login Blocking</label>
+        </div>
+
+        @if (_model.LoginBlockEnabled)
+        {
+            <div class="mb-3">
+                <label class="form-label" for="maxLoginAttempts">Max Login Attempts</label>
+                <InputNumber @bind-Value="_model.MaxLoginAttempts" id="maxLoginAttempts" class="form-control" min="1" max="10" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="blockDuration">Block Duration (minutes)</label>
+                <InputNumber @bind-Value="_model.BlockDurationMinutes" id="blockDuration" class="form-control" min="1" max="1440" />
+            </div>
+        }
+
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
+    </EditForm>
 </ResponsivePage>
+
+@code {
+    private SecuritySettingsInputModel _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await SecurityService.GetSecuritySettingsAsync();
+        _model = new SecuritySettingsInputModel
+        {
+            IpRestrictionEnabled = settings.IpRestrictionEnabled,
+            LoginBlockEnabled = settings.LoginBlockEnabled,
+            IpWhitelist = string.Join(", ", settings.IpWhitelist),
+            MaxLoginAttempts = settings.MaxLoginAttempts,
+            BlockDurationMinutes = settings.BlockDurationMinutes
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var settings = new SecuritySettings(
+            _model.IpRestrictionEnabled,
+            _model.LoginBlockEnabled,
+            _model.IpWhitelist.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList(),
+            _model.MaxLoginAttempts,
+            _model.BlockDurationMinutes
+        );
+        await SecurityService.SaveSecuritySettingsAsync(settings);
+    }
+
+    public class SecuritySettingsInputModel
+    {
+        public bool IpRestrictionEnabled { get; set; }
+
+        [Display(Name = "IP Whitelist")]
+        public string IpWhitelist { get; set; } = string.Empty;
+
+        public bool LoginBlockEnabled { get; set; }
+
+        [Range(1, 10, ErrorMessage = "Max login attempts must be between 1 and 10")]
+        public int MaxLoginAttempts { get; set; } = 5;
+
+        [Range(1, 1440, ErrorMessage = "Block duration must be between 1 and 1440 minutes")]
+        public int BlockDurationMinutes { get; set; } = 15;
+    }
+}
