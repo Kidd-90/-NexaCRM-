@@ -1,22 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-	<PropertyGroup>
-		<!-- 다중 대상 프레임워크 -->
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
-	</PropertyGroup>
+    <PropertyGroup>
+        <!-- 다중 대상 프레임워크 -->
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+        <!-- ConvertDllsToWebCil 단계에서 파일 잠금 오류 방지를 위해 WebCIL 변환 비활성화 -->
+        <WasmEnableWebcil>false</WasmEnableWebcil>
+    </PropertyGroup>
 
-	<!-- net8.0 타겟에만 Blazor WebAssembly 8.0 패키지 참조 -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<!-- Blazor WebAssembly 핵심 런타임 참조 -->
-                <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
-                <!-- 개발 서버 도구 (PrivateAssets로 빌드 출력 미포함) -->
-                <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
-                <!-- Microsoft.AspNetCore.* 네임스페이스 정의 어셈블리 -->
-                <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
-                <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
-                <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
-                <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
-        </ItemGroup>
+    <!-- net8.0 타겟에만 Blazor WebAssembly 8.0 패키지 참조 -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+        <!-- Blazor WebAssembly 핵심 런타임 참조 -->
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+        <!-- 개발 서버 도구 (PrivateAssets로 빌드 출력 미포함) -->
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+        <!-- Microsoft.AspNetCore.* 네임스페이스 정의 어셈블리 -->
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+    </ItemGroup>
 </Project>
