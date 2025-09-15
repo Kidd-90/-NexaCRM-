@@ -1,0 +1,16 @@
+/* OrganizationStructurePage Mobile Responsive Styles */
+
+.unit-list {
+    max-width: 600px;
+}
+
+@media (max-width: 576px) {
+    .unit-list-item {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    .unit-list {
+        max-width: 100%;
+    }
+}

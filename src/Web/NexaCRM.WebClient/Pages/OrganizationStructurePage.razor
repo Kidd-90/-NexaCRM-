@@ -1,6 +1,62 @@
 @page "/organization/structure"
+@using NexaCRM.WebClient.Models.Organization
+@using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq
+@inject IOrganizationService OrganizationService
 
 <ResponsivePage>
     <h3>Organization Structure</h3>
     <p>Manage production companies, teams and members.</p>
+
+    <EditForm Model="unit" OnValidSubmit="SaveUnit" class="row g-3">
+        <DataAnnotationsValidator />
+        <div class="col-12 col-md-6">
+            <label for="name" class="form-label">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="unit.Name" />
+            <ValidationMessage For="@(() => unit.Name)" />
+        </div>
+        <div class="col-12 col-md-6">
+            <label for="parent" class="form-label">Parent Unit</label>
+            <InputSelect id="parent" class="form-select" @bind-Value="unit.ParentId">
+                <option value="">(None)</option>
+                @foreach (var existing in units)
+                {
+                    <option value="@existing.Id">@existing.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="col-12 text-md-end">
+            <button type="submit" class="btn btn-primary w-100 w-md-auto">Save</button>
+        </div>
+    </EditForm>
+
+    @if (units.Any())
+    {
+        <div class="list-group unit-list mt-4">
+            @foreach (var existing in units)
+            {
+                <div class="list-group-item unit-list-item">@existing.Name</div>
+            }
+        </div>
+    }
 </ResponsivePage>
+
+@code {
+    private List<OrganizationUnit> units = new();
+    private OrganizationUnit unit = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await OrganizationService.GetOrganizationStructureAsync();
+        units = existing.ToList();
+    }
+
+    private async Task SaveUnit()
+    {
+        await OrganizationService.SaveOrganizationUnitAsync(unit);
+        unit = new OrganizationUnit();
+        var existing = await OrganizationService.GetOrganizationStructureAsync();
+        units = existing.ToList();
+    }
+}
