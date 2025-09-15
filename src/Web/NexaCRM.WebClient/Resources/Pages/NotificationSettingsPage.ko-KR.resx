@@ -111,4 +111,7 @@
   <data name="SaveSettings" xml:space="preserve">
     <value>설정 저장</value>
   </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>설정이 저장되었습니다.</value>
+  </data>
 </root>
