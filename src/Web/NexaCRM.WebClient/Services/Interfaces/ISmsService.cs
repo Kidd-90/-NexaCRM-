@@ -1,4 +1,5 @@
 using NexaCRM.WebClient.Models.Sms;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,8 @@ public interface ISmsService
     Task<IEnumerable<string>> GetSenderNumbersAsync();
     Task SaveSenderNumberAsync(string number);
     Task<IEnumerable<SmsHistoryItem>> GetHistoryAsync();
-    Task ScheduleSmsAsync(SmsScheduleItem schedule);
+    Task ScheduleAsync(SmsScheduleItem schedule);
+    Task<IEnumerable<SmsScheduleItem>> GetUpcomingSchedulesAsync();
+    Task CancelAsync(Guid id);
 }
 
