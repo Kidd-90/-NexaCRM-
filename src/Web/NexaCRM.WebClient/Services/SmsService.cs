@@ -17,6 +17,9 @@ public class SmsService : ISmsService
     public Task SaveSenderNumberAsync(string number) =>
         Task.CompletedTask;
 
+    public Task DeleteSenderNumberAsync(string number) =>
+        Task.CompletedTask;
+
     public Task<IEnumerable<SmsHistoryItem>> GetHistoryAsync() =>
         Task.FromResult<IEnumerable<SmsHistoryItem>>(new List<SmsHistoryItem>());
 
