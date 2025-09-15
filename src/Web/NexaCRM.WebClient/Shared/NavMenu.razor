@@ -13,8 +13,17 @@
 @inject IJSRuntime JSRuntime
 @inject IRolePermissionService RolePermissionService
 
-<div @onclick:stopPropagation="true">
+<div class="nav-menu" @onclick:stopPropagation="true">
     <nav class="flex-column">
+        <div class="nav-header">
+            <button type="button"
+                    class="nav-close-button"
+                    title="@Localizer["CloseMenu"]"
+                    aria-label="@Localizer["CloseMenu"]"
+                    @onclick="CloseNavMenu">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
         <div class="nav-scroll-container">
             <!-- Always visible base menu -->
             <div class="nav-item px-3">
@@ -250,7 +259,7 @@
                     </div>
 
                     <!-- Logout button -->
-                    <div class="nav-item px-3 mt-auto">
+                    <div class="nav-item px-3 mt-auto logout-item">
                         <button class="nav-link btn btn-link" @onclick="Logout">
                             <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i> @Localizer["Logout"]
                         </button>
