@@ -1,62 +1,55 @@
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using NexaCRM.WebClient.Models.Organization;
 using NexaCRM.WebClient.Services.Interfaces;
+using AgentModel = NexaCRM.WebClient.Models.Agent;
 
 namespace NexaCRM.WebClient.Services;
 
 public class OrganizationService : IOrganizationService
 {
-    // Temporary in-memory user list for demonstration; replace with API call if needed
-    private readonly List<OrganizationUser> _users = new List<OrganizationUser>();
-
-
-    private readonly HttpClient _httpClient;
-    public OrganizationService(HttpClient httpClient)
+    private readonly List<AgentModel> _admins = new()
     {
-        _httpClient = httpClient;
-    }
+        new AgentModel { Id = 1, Name = "Alice", Email = "alice@example.com", Role = "Admin" },
+        new AgentModel { Id = 2, Name = "Bob", Email = "bob@example.com", Role = "Admin" }
+    };
 
-    public async Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync()
+    public Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync() =>
+        Task.FromResult<IEnumerable<OrganizationUnit>>(new List<OrganizationUnit>());
+
+    public Task SaveOrganizationUnitAsync(OrganizationUnit unit) =>
+        Task.CompletedTask;
+
+    public Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync() =>
+        Task.FromResult<IEnumerable<OrganizationStats>>(new List<OrganizationStats>());
+
+    public Task SetSystemAdministratorAsync(string userId) =>
+        Task.CompletedTask;
+
+    public Task<IEnumerable<AgentModel>> GetAdminsAsync() =>
+        Task.FromResult<IEnumerable<AgentModel>>(_admins);
+
+    public Task AddAdminAsync(string userId)
     {
-        return await _httpClient.GetFromJsonAsync<IEnumerable<OrganizationUnit>>("api/organization/structure")
-            ?? new List<OrganizationUnit>();
-    }
-
-    public async Task SaveOrganizationUnitAsync(OrganizationUnit unit)
-    {
-        await _httpClient.PostAsJsonAsync("api/organization/structure", unit);
-    }
-
-    public async Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync()
-    {
-        return await _httpClient.GetFromJsonAsync<IEnumerable<OrganizationStats>>("api/organization/stats")
-            ?? new List<OrganizationStats>();
-    }
-
-    public async Task SetSystemAdministratorAsync(string userId)
-    {
-        await _httpClient.PostAsJsonAsync("api/organization/system-admin", new { userId });
-    }
-
-    public Task<IEnumerable<OrganizationUser>> GetUsersAsync() =>
-        Task.FromResult<IEnumerable<OrganizationUser>>(_users);
-
-    public Task UpdateUserAsync(OrganizationUser user)
-    {
-        var index = _users.FindIndex(u => u.Id == user.Id);
-        if (index >= 0)
+        if (int.TryParse(userId, out var id))
         {
-            _users[index] = user;
+            _admins.Add(new AgentModel
+            {
+                Id = id,
+                Name = $"User{id}",
+                Email = $"user{id}@example.com",
+                Role = "Admin"
+            });
         }
         return Task.CompletedTask;
     }
 
-    public Task DeleteUserAsync(int userId)
+    public Task RemoveAdminAsync(string userId)
     {
-        _users.RemoveAll(u => u.Id == userId);
+        if (int.TryParse(userId, out var id))
+        {
+            _admins.RemoveAll(a => a.Id == id);
+        }
         return Task.CompletedTask;
     }
 }
