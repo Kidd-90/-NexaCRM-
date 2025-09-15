@@ -1,0 +1,15 @@
+/* SecuritySettingsPage Mobile Responsive Styles */
+
+.security-settings-form {
+    max-width: 600px;
+}
+
+@media (max-width: 768px) {
+    .security-settings-form {
+        padding: 0.5rem;
+    }
+
+    .security-settings-form button {
+        width: 100%;
+    }
+}
