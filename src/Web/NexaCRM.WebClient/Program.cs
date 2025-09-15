@@ -48,6 +48,7 @@ builder.Services.AddScoped<INoticeService, NoticeService>();
 builder.Services.AddScoped<ISmsService, SmsService>();
 builder.Services.AddScoped<ISystemInfoService, SystemInfoService>();
 builder.Services.AddScoped<IFaqService, FaqService>();
+builder.Services.AddScoped<IUserFavoritesService, UserFavoritesService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;

@@ -2,8 +2,8 @@
 :root {
     /* Design system colors */
     --color-primary: #2153C8;
-    --color-secondary: #E3F2FD;
-    --color-background: #ffffff;
+    --color-secondary: #EEF2FF;
+    --color-background: #F6F8FF;
     --color-dark-bg: #1a1e3c;
 
     /* Light Theme Colors */
@@ -11,24 +11,36 @@
     --primary-hover: #1a4bb5;
     --secondary-color: var(--color-primary);
     --background-color: var(--color-background);
-    --surface-color: var(--color-secondary);
+    --background-muted: #ECF1FF;
+    --surface-color: #FFFFFF;
+    --surface-muted: #F5F7FF;
+    --surface-tint: rgba(33, 83, 200, 0.06);
     --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --border-color: #e5e7eb;
-    --shadow-light: rgba(0, 0, 0, 0.08);
-    --shadow-medium: rgba(0, 0, 0, 0.12);
-    --shadow-strong: rgba(0, 0, 0, 0.16);
-    
+    --text-secondary: #54607a;
+    --border-color: #d7e3ff;
+    --divider-color: rgba(124, 141, 181, 0.16);
+    --shadow-light: rgba(33, 53, 106, 0.08);
+    --shadow-medium: rgba(33, 53, 106, 0.14);
+    --shadow-strong: rgba(15, 23, 42, 0.2);
+
     /* Interactive Colors */
-    --hover-overlay: rgba(59, 130, 246, 0.15);
-    --active-overlay: rgba(59, 130, 246, 0.2);
-    --focus-ring: rgba(59, 130, 246, 0.25);
-    
+    --hover-overlay: rgba(33, 83, 200, 0.08);
+    --active-overlay: rgba(33, 83, 200, 0.12);
+    --focus-ring: rgba(33, 83, 200, 0.28);
+
+    /* Elevated surface tokens */
+    --app-background-gradient: linear-gradient(180deg, #f7f9ff 0%, #eef2ff 45%, #ffffff 100%);
+    --surface-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(235, 241, 255, 0.92) 100%);
+    --floating-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(237, 243, 255, 0.9));
+    --frosted-border: rgba(181, 197, 235, 0.7);
+    --favorite-surface: linear-gradient(135deg, rgba(33, 83, 200, 0.14), rgba(33, 83, 200, 0.08));
+    --favorite-icon-shadow: rgba(33, 83, 200, 0.18);
+
     /* Animation Properties */
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     /* Touch Target Sizes */
     --touch-target-min: 44px;
     --spacing-xs: 0.25rem;
@@ -36,6 +48,8 @@
     --spacing-md: 1rem;
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
+    --mobile-header-height: 4.5rem;
+    --mobile-footer-height: 5rem;
 }
 
 /* Dark Theme Support */
@@ -46,15 +60,26 @@
     --primary-hover: #1a4bb5;
     --secondary-color: #60a5fa;
     --background-color: var(--color-background);
-    --surface-color: var(--color-secondary);
+    --background-muted: #1f2744;
+    --surface-color: #252a4a;
+    --surface-muted: #20253d;
+    --surface-tint: rgba(59, 130, 246, 0.2);
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --border-color: #334155;
+    --divider-color: rgba(148, 163, 184, 0.2);
     --shadow-light: rgba(0, 0, 0, 0.3);
     --shadow-medium: rgba(0, 0, 0, 0.4);
     --shadow-strong: rgba(0, 0, 0, 0.5);
     --hover-overlay: rgba(59, 130, 246, 0.2);
     --active-overlay: rgba(59, 130, 246, 0.3);
+    --focus-ring: rgba(59, 130, 246, 0.45);
+    --app-background-gradient: linear-gradient(180deg, #1a1e3c 0%, #10152d 60%, #0b1224 100%);
+    --surface-gradient: linear-gradient(135deg, rgba(37, 42, 74, 0.92), rgba(26, 32, 58, 0.92));
+    --floating-surface: linear-gradient(135deg, rgba(37, 42, 74, 0.96), rgba(20, 25, 45, 0.92));
+    --frosted-border: rgba(59, 130, 246, 0.35);
+    --favorite-surface: linear-gradient(135deg, rgba(33, 83, 200, 0.28), rgba(33, 83, 200, 0.18));
+    --favorite-icon-shadow: rgba(15, 23, 42, 0.45);
 }
 
 /* Dark theme specific component overrides */
@@ -104,8 +129,12 @@ html, body {
     width: 100%;
     overflow-x: hidden; /* 가로 스크롤 방지 */
     background-color: var(--background-color);
+    background-image: var(--app-background-gradient);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     color: var(--text-primary);
-    transition: background-color var(--transition-normal), color var(--transition-normal);
+    transition: background-color var(--transition-normal), color var(--transition-normal), background-image var(--transition-slow);
 }
 
 h1:focus {
@@ -147,14 +176,19 @@ a:hover, .btn-link:hover {
     padding-left: var(--spacing-md);
     padding-right: var(--spacing-md);
     min-height: 100vh; /* 전체 화면 높이 사용 */
-    background-color: var(--background-color);
-    transition: background-color var(--transition-normal);
+    background: var(--surface-gradient, var(--surface-color));
+    border-radius: 1.5rem;
+    border: 1px solid var(--divider-color);
+    box-shadow: 0 24px 48px var(--shadow-light);
+    margin: var(--spacing-lg) auto var(--spacing-xl);
+    max-width: min(1200px, 100%);
+    transition: background-color var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
 }
 
 /* Navigation styles - 반응형 디자인 */
 .sidebar {
-    background-color: var(--surface-color); /* Use theme surface color */
-    border-right: 1px solid var(--border-color); /* Use theme border color */
+    background: var(--surface-gradient, var(--surface-color)); /* Use theme surface color */
+    border-right: 1px solid var(--divider-color); /* Use theme border color */
     width: min(80%, 250px); /* Use fluid width on small screens */
     min-height: 100vh;
     position: fixed;
@@ -163,7 +197,9 @@ a:hover, .btn-link:hover {
     z-index: 10001; /* Ensure menu stays above overlay */
     transition: transform var(--transition-normal); /* Use theme transition */
     will-change: transform; /* Hint for smoother animation */
-    box-shadow: 0 4px 20px var(--shadow-light); /* Use theme shadow */
+    box-shadow: 0 24px 48px var(--shadow-light); /* Use theme shadow */
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     /* 기본적으로 모든 화면에서 숨김 */
     transform: translateX(-100%);
     /* Improve scrolling on mobile */
@@ -201,9 +237,9 @@ a:hover, .btn-link:hover {
     position: fixed !important;
     top: calc(env(safe-area-inset-top) + 1rem) !important;
     right: 1.5rem !important;
-    background: rgba(255, 255, 255, 0.95) !important; /* Light theme background */
-    border: 2px solid rgba(229, 231, 235, 0.8) !important; /* Light border */
-    color: #374151 !important; /* Dark text for light background */
+    background: var(--floating-surface, rgba(255, 255, 255, 0.95)) !important; /* Light theme background */
+    border: 1px solid var(--frosted-border) !important; /* Light border */
+    color: var(--text-primary) !important; /* Dark text for light background */
     padding: 0.875rem !important; /* Increased for better touch target (minimum 44px) */
     min-width: 2.75rem !important; /* Ensure minimum 44px touch target */
     min-height: 2.75rem !important; /* Ensure minimum 44px touch target */
@@ -216,7 +252,7 @@ a:hover, .btn-link:hover {
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
     z-index: 9999 !important; /* Very high z-index to ensure it's always visible */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important; /* Light shadow */
+    box-shadow: 0 18px 32px var(--shadow-light) !important; /* Light shadow */
     /* Improve accessibility */
     -webkit-tap-highlight-color: transparent !important;
     user-select: none !important;
@@ -224,15 +260,15 @@ a:hover, .btn-link:hover {
 }
 
 .floating-menu-toggle:hover {
-    background: rgba(249, 250, 251, 1) !important; /* Light hover background */
-    border-color: rgba(156, 163, 175, 0.8) !important; /* Darker border on hover */
+    background: var(--surface-color) !important; /* Light hover background */
+    border-color: rgba(120, 141, 196, 0.5) !important; /* Darker border on hover */
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important; /* Enhanced shadow */
+    box-shadow: 0 22px 40px var(--shadow-medium) !important; /* Enhanced shadow */
 }
 
 .floating-menu-toggle:focus {
     outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.4) !important; /* Blue focus ring for light theme */
+    box-shadow: 0 0 0 0.25rem var(--focus-ring) !important; /* Blue focus ring for light theme */
 }
 
 /* Active state for better mobile feedback */
@@ -275,7 +311,7 @@ a:hover, .btn-link:hover {
 }
 
 .nav-link {
-    color: #374151 !important; /* Dark text for light background */
+    color: var(--text-primary) !important; /* Dark text for light background */
     padding: 0.75rem 1rem;
     display: flex;
     align-items: center;
@@ -290,15 +326,15 @@ a:hover, .btn-link:hover {
 }
 
 .nav-link:hover {
-    background-color: rgba(59, 130, 246, 0.1); /* Light blue hover for light theme */
+    background-color: var(--hover-overlay); /* Light blue hover for light theme */
     color: #1f2937; /* Darker text on hover */
     transform: translateX(5px);
 }
 
 .nav-link.active {
-    background-color: #3b82f6; /* Blue active background */
+    background-color: var(--primary-color); /* Blue active background */
     color: #ffffff; /* White text on active */
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
 }
 
 .nav-link span {
@@ -319,24 +355,22 @@ a:hover, .btn-link:hover {
 .mobile-overlay {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 10000; /* Layer below sidebar but above content */
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1090; /* Below the header but above main content */
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    opacity: 0;
 }
 
 /* JavaScript will handle the overlay visibility instead of :has() for better browser support */
 .mobile-overlay.show {
     display: block;
-    pointer-events: none;
-    height: 3.5rem; /* mobile-fixed-header 영역만 어둡게 */
-    background: rgba(0,0,0,0.4);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: auto;
+    opacity: 1;
 }
 
 /* 태블릿 환경 (768px - 1024px) */
@@ -379,17 +413,25 @@ a:hover, .btn-link:hover {
     
     .nav-link:hover {
         transform: none;
-        background-color: rgba(59, 130, 246, 0.15); /* Light blue hover for mobile */
+        background-color: var(--hover-overlay); /* Light blue hover for mobile */
     }
-    
+
     .nav-link:active {
-        background-color: rgba(59, 130, 246, 0.2); /* Light blue active for mobile */
+        background-color: var(--active-overlay); /* Light blue active for mobile */
         transition-duration: 0.1s;
     }
     
     .nav-link span {
         margin-right: 1rem;
         font-size: 1.2rem;
+    }
+
+    .content {
+        margin: 0;
+        border-radius: 1rem;
+        box-shadow: 0 16px 32px var(--shadow-light);
+        border-color: rgba(148, 163, 184, 0.18);
+        background: rgba(255, 255, 255, 0.94);
     }
     
     /* Improved submenu spacing for mobile */
