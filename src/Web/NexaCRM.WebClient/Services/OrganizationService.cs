@@ -1,22 +1,41 @@
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using NexaCRM.WebClient.Models.Organization;
 using NexaCRM.WebClient.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services;
 
 public class OrganizationService : IOrganizationService
 {
-    public Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync() =>
-        Task.FromResult<IEnumerable<OrganizationUnit>>(new List<OrganizationUnit>());
+    private readonly HttpClient _httpClient;
 
-    public Task SaveOrganizationUnitAsync(OrganizationUnit unit) =>
-        Task.CompletedTask;
+    public OrganizationService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
-    public Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync() =>
-        Task.FromResult<IEnumerable<OrganizationStats>>(new List<OrganizationStats>());
+    public async Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<IEnumerable<OrganizationUnit>>("api/organization/structure")
+            ?? new List<OrganizationUnit>();
+    }
 
-    public Task SetSystemAdministratorAsync(string userId) =>
-        Task.CompletedTask;
+    public async Task SaveOrganizationUnitAsync(OrganizationUnit unit)
+    {
+        await _httpClient.PostAsJsonAsync("api/organization/structure", unit);
+    }
+
+    public async Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<IEnumerable<OrganizationStats>>("api/organization/stats")
+            ?? new List<OrganizationStats>();
+    }
+
+    public async Task SetSystemAdministratorAsync(string userId)
+    {
+        await _httpClient.PostAsJsonAsync("api/organization/system-admin", new { userId });
+    }
 }
 
