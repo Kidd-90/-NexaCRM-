@@ -1,0 +1,32 @@
+/* ReportsPage mobile responsive styles */
+
+.report-form-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.report-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.report-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+    .report-form-row,
+    .report-actions {
+        flex-direction: column;
+    }
+
+    .report-form-row > *,
+    .report-actions > * {
+        width: 100%;
+    }
+
+    .report-actions button {
+        width: 100%;
+    }
+}
