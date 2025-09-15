@@ -2,13 +2,17 @@ using NexaCRM.WebClient.Models.Sms;
 using NexaCRM.WebClient.Models.Settings;
 using NexaCRM.WebClient.Services.Interfaces;
 using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services;
 
 public class SmsService : ISmsService
 {
+    private readonly List<SmsScheduleItem> _schedules = new();
+
     public Task SendBulkSmsAsync(BulkSmsRequest request) =>
         Task.CompletedTask;
 
@@ -29,13 +33,31 @@ public class SmsService : ISmsService
             new("010-3456-7890", "Promotion", DateTime.UtcNow.AddDays(-3), "Sent"),
         });
 
-    public Task ScheduleSmsAsync(SmsScheduleItem schedule) =>
-        Task.CompletedTask;
+    public Task ScheduleAsync(SmsScheduleItem schedule)
+    {
+        _schedules.Add(schedule);
+        return Task.CompletedTask;
+    }
 
-    public Task<SmsSettings> GetSettingsAsync() =>
-        Task.FromResult(new SmsSettings());
+    public Task<IEnumerable<SmsScheduleItem>> GetUpcomingSchedulesAsync()
+    {
+        var now = DateTime.UtcNow;
+        var upcoming = _schedules
+            .Where(s => s.ScheduledAt > now && !s.IsCancelled)
+            .OrderBy(s => s.ScheduledAt)
+            .ToList();
+        return Task.FromResult<IEnumerable<SmsScheduleItem>>(upcoming);
+    }
 
-    public Task SaveSettingsAsync(SmsSettings settings) =>
-        Task.CompletedTask;
+    public Task CancelAsync(Guid id)
+    {
+        var item = _schedules.FirstOrDefault(s => s.Id == id);
+        if (item != null)
+        {
+            var index = _schedules.IndexOf(item);
+            _schedules[index] = item with { IsCancelled = true };
+        }
+        return Task.CompletedTask;
+    }
 }
 
