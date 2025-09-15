@@ -1,6 +1,77 @@
 @page "/organization/system-admin"
+@using System.ComponentModel.DataAnnotations
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IOrganizationService OrganizationService
 
 <ResponsivePage>
     <h3>System Administration</h3>
-    <p>Configure global system administrators.</p>
+
+    <div class="system-admin-form">
+        <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="userId">User Identifier</label>
+                <InputText id="userId" class="form-control" @bind-Value="model.UserId" placeholder="Enter user ID" />
+                <ValidationMessage For="@(() => model.UserId)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary save-btn" disabled="@isSaving">
+                @if (isSaving)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden">Saving...</span>
+                }
+                else
+                {
+                    <span>Save</span>
+                }
+            </button>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success mt-3" role="alert">@successMessage</div>
+        }
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-3" role="alert">@errorMessage</div>
+        }
+    </div>
 </ResponsivePage>
+
+@code {
+    private AdminModel model = new();
+    private string? successMessage;
+    private string? errorMessage;
+
+    private bool isSaving;
+
+    private async Task HandleValidSubmit()
+    {
+        successMessage = null;
+        errorMessage = null;
+        isSaving = true;
+
+        try
+        {
+            await OrganizationService.SetSystemAdministratorAsync(model.UserId);
+            successMessage = "System administrator updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private class AdminModel
+    {
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+    }
+}
