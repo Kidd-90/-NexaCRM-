@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Dashboard" xml:space="preserve">
-    <value>대시보드</value>
-  </data>
-  <data name="ManagerDashboard" xml:space="preserve">
-    <value>관리자 대시보드</value>
-  </data>
-  <data name="Logout" xml:space="preserve">
-    <value>로그아웃</value>
-  </data>
-  <data name="Home" xml:space="preserve">
-    <value>홈</value>
-  </data>
   <data name="AdminDashboard" xml:space="preserve">
     <value>관리자 대시보드</value>
   </data>
-  <data name="Reports" xml:space="preserve">
-    <value>보고서</value>
+  <data name="AllDbList" xml:space="preserve">
+    <value>전체 DB 목록</value>
   </data>
-  <data name="SalesPipeline" xml:space="preserve">
-    <value>세일즈 파이프라인</value>
+  <data name="AssignDb" xml:space="preserve">
+    <value>DB 배정</value>
+  </data>
+  <data name="BasicSettings" xml:space="preserve">
+    <value>기본 설정</value>
+  </data>
+  <data name="BulkSms" xml:space="preserve">
+    <value>대량 문자</value>
+  </data>
+  <data name="CompanyInfo" xml:space="preserve">
+    <value>회사 정보</value>
   </data>
   <data name="Contacts" xml:space="preserve">
     <value>연락처</value>
+  </data>
+  <data name="ConsultationNotes" xml:space="preserve">
+    <value>상담 노트</value>
+  </data>
+  <data name="CustomerCenter" xml:space="preserve">
+    <value>고객 센터</value>
   </data>
   <data name="CustomerManagement" xml:space="preserve">
     <value>고객관리</value>
@@ -33,31 +36,11 @@
   <data name="CustomerSupportDashboard" xml:space="preserve">
     <value>고객 지원 대시보드</value>
   </data>
-  <data name="KnowledgeBase" xml:space="preserve">
-    <value>지식 베이스</value>
+  <data name="Dashboard" xml:space="preserve">
+    <value>대시보드</value>
   </data>
-  <data name="TicketManagement" xml:space="preserve">
-    <value>티켓 관리</value>
-  </data>
-  <data name="FeedbackSurvey" xml:space="preserve">
-    <value>피드백 &amp; 설문조사</value>
-  </data>
-  <data name="SalesManagement" xml:space="preserve">
-    <value>영업관리</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>설정</value>
-  </data>
-  <data name="SalesCalendar" xml:space="preserve">
-    <value>영업 캘린더</value>
-  </data>
-  <data name="ConsultationNotes" xml:space="preserve">
-    <value>상담 노트</value>
-  </data>
-
-  <!-- New Keys for DB Management -->
-  <data name="DbManagement" xml:space="preserve">
-    <value>DB 관리</value>
+  <data name="DbAdvanced" xml:space="preserve">
+    <value>고급 DB 관리</value>
   </data>
   <data name="DbCustomerManagement" xml:space="preserve">
     <value>DB 고객관리</value>
@@ -65,46 +48,130 @@
   <data name="DbDistributionManagement" xml:space="preserve">
     <value>DB 분배 관리</value>
   </data>
-
-  <!-- Manager Menu Items -->
-  <data name="AllDbList" xml:space="preserve">
-    <value>전체 DB 목록</value>
-  </data>
-  <data name="TeamDbStatus" xml:space="preserve">
-    <value>팀 DB 현황</value>
-  </data>
-  <data name="UnassignedDbList" xml:space="preserve">
-    <value>미분배 DB 목록</value>
-  </data>
-  <data name="TodaysAssignedDb" xml:space="preserve">
-    <value>오늘 분배된 DB</value>
-  </data>
   <data name="DbDistributionStatus" xml:space="preserve">
     <value>DB 분배 현황</value>
   </data>
-
-  <!-- Sales Menu Items -->
-  <data name="NewDbList" xml:space="preserve">
-    <value>신규 DB 목록</value>
+  <data name="DbManagement" xml:space="preserve">
+    <value>DB 관리</value>
   </data>
-  <data name="StarredDbList" xml:space="preserve">
-    <value>관심 DB 목록</value>
+  <data name="Faq" xml:space="preserve">
+    <value>자주 묻는 질문</value>
   </data>
-  <data name="NewlyAssignedDb" xml:space="preserve">
-    <value>신규 분배 DB</value>
+  <data name="FeedbackSurvey" xml:space="preserve">
+    <value>피드백 &amp; 설문조사</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>홈</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>지식 베이스</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>로그인</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>로그아웃</value>
+  </data>
+  <data name="ManagerDashboard" xml:space="preserve">
+    <value>매니저 대시보드</value>
   </data>
   <data name="MyAssignmentHistory" xml:space="preserve">
     <value>내 분배 이력</value>
   </data>
-
-  <!-- Common Menu Item -->
   <data name="MyDbList" xml:space="preserve">
     <value>내 DB 목록</value>
   </data>
-  <data name="AssignDb" xml:space="preserve">
-    <value>DB 배정</value>
+  <data name="NewDbList" xml:space="preserve">
+    <value>신규 DB 목록</value>
   </data>
-  <data name="DbAdvanced" xml:space="preserve">
-    <value>고급 DB 관리</value>
+  <data name="NewlyAssignedDb" xml:space="preserve">
+    <value>신규 분배 DB</value>
+  </data>
+  <data name="Notices" xml:space="preserve">
+    <value>공지사항</value>
+  </data>
+  <data name="NotificationSettings" xml:space="preserve">
+    <value>알림 설정</value>
+  </data>
+  <data name="OrganizationManagement" xml:space="preserve">
+    <value>조직 관리</value>
+  </data>
+  <data name="OrganizationStats" xml:space="preserve">
+    <value>조직 통계</value>
+  </data>
+  <data name="OrganizationStructure" xml:space="preserve">
+    <value>조직 구조</value>
+  </data>
+  <data name="PersonalInfo" xml:space="preserve">
+    <value>개인 정보</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>보고서</value>
+  </data>
+  <data name="SalesCalendar" xml:space="preserve">
+    <value>영업 캘린더</value>
+  </data>
+  <data name="SalesManagement" xml:space="preserve">
+    <value>영업관리</value>
+  </data>
+  <data name="SalesPipeline" xml:space="preserve">
+    <value>세일즈 파이프라인</value>
+  </data>
+  <data name="ScheduleManagement" xml:space="preserve">
+    <value>일정 관리</value>
+  </data>
+  <data name="SecuritySettings" xml:space="preserve">
+    <value>보안 설정</value>
+  </data>
+  <data name="SenderNumbers" xml:space="preserve">
+    <value>발신 번호</value>
+  </data>
+  <data name="Sms" xml:space="preserve">
+    <value>문자</value>
+  </data>
+  <data name="SmsHistory" xml:space="preserve">
+    <value>문자 발송 이력</value>
+  </data>
+  <data name="SmsSchedule" xml:space="preserve">
+    <value>문자 예약</value>
+  </data>
+  <data name="SmsSettings" xml:space="preserve">
+    <value>문자 설정</value>
+  </data>
+  <data name="StarredDbList" xml:space="preserve">
+    <value>관심 DB 목록</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>통계</value>
+  </data>
+  <data name="StatisticsDashboard" xml:space="preserve">
+    <value>통계 대시보드</value>
+  </data>
+  <data name="SystemAdmin" xml:space="preserve">
+    <value>시스템 관리자</value>
+  </data>
+  <data name="SystemInfo" xml:space="preserve">
+    <value>시스템 안내</value>
+  </data>
+  <data name="SystemInformation" xml:space="preserve">
+    <value>시스템 정보</value>
+  </data>
+  <data name="TeamDbStatus" xml:space="preserve">
+    <value>팀 DB 현황</value>
+  </data>
+  <data name="TemplateManagement" xml:space="preserve">
+    <value>템플릿 관리</value>
+  </data>
+  <data name="ThemeSettings" xml:space="preserve">
+    <value>테마 설정</value>
+  </data>
+  <data name="TodaysAssignedDb" xml:space="preserve">
+    <value>오늘 분배된 DB</value>
+  </data>
+  <data name="UnassignedDbList" xml:space="preserve">
+    <value>미분배 DB 목록</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>사용자 관리</value>
   </data>
 </root>
