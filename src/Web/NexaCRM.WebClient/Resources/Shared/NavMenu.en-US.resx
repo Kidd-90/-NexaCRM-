@@ -57,4 +57,40 @@
   <data name="AssignDb" xml:space="preserve">
     <value>Assign DB</value>
   </data>
+  <data name="DbManagement" xml:space="preserve">
+    <value>DB Management</value>
+  </data>
+  <data name="AllDbList" xml:space="preserve">
+    <value>All DB List</value>
+  </data>
+  <data name="NewDbList" xml:space="preserve">
+    <value>New DB List</value>
+  </data>
+  <data name="StarredDbList" xml:space="preserve">
+    <value>Starred DB List</value>
+  </data>
+  <data name="TodaysAssignedDb" xml:space="preserve">
+    <value>Today's Assigned DB</value>
+  </data>
+  <data name="UnassignedDbList" xml:space="preserve">
+    <value>Unassigned DB List</value>
+  </data>
+  <data name="NewlyAssignedDb" xml:space="preserve">
+    <value>Newly Assigned DB</value>
+  </data>
+  <data name="DbDistributionStatus" xml:space="preserve">
+    <value>DB Distribution Status</value>
+  </data>
+  <data name="MyAssignmentHistory" xml:space="preserve">
+    <value>My Assignment History</value>
+  </data>
+  <data name="TeamDbStatus" xml:space="preserve">
+    <value>Team DB Status</value>
+  </data>
+  <data name="DbAdvanced" xml:space="preserve">
+    <value>DB Advanced</value>
+  </data>
+  <data name="MyDbList" xml:space="preserve">
+    <value>My DB List</value>
+  </data>
 </root>

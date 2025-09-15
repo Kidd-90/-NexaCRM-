@@ -45,7 +45,7 @@
             <!-- Always visible base menu -->
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
-                    <span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
+                    <i class="bi bi-house me-2" aria-hidden="true"></i> @Localizer["Home"]
                 </NavLink>
             </div>
 
@@ -55,14 +55,14 @@
                     <!-- 📊 Dashboard -->
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
-                            <span class="oi oi-dashboard" aria-hidden="true"></span> @Localizer["Dashboard"]
+                            <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i> @Localizer["Dashboard"]
                         </NavLink>
                     </div>
 
                     <!-- 1. Basic Settings -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleBasicSettingsSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-cog" aria-hidden="true"></span>
+                            <i class="bi bi-gear me-2" aria-hidden="true"></i>
                             @Localizer["BasicSettings"]
                             <span class="submenu-toggle @(showBasicSettingsSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -71,28 +71,28 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="settings/company-info" @onclick="CloseNavMenu">
-                                    <span class="oi oi-briefcase" aria-hidden="true"></span> @Localizer["CompanyInfo"]
+                                    <i class="bi bi-building" aria-hidden="true"></i> @Localizer["CompanyInfo"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="profile-settings-page" @onclick="CloseNavMenu">
-                                    <span class="oi oi-person" aria-hidden="true"></span> @Localizer["PersonalInfo"]
+                                    <i class="bi bi-person" aria-hidden="true"></i> @Localizer["PersonalInfo"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="settings-page" @onclick="CloseNavMenu">
-                                    <span class="oi oi-brush" aria-hidden="true"></span> @Localizer["ThemeSettings"]
+                                    <i class="bi bi-palette" aria-hidden="true"></i> @Localizer["ThemeSettings"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="settings/security" @onclick="CloseNavMenu">
-                                    <span class="oi oi-lock-locked" aria-hidden="true"></span> @Localizer["SecuritySettings"]
+                                    <i class="bi bi-shield-lock" aria-hidden="true"></i> @Localizer["SecuritySettings"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="settings/sms" @onclick="CloseNavMenu">
-                                    <span class="oi oi-chat" aria-hidden="true"></span> @Localizer["SmsSettings"]
+                                    <i class="bi bi-chat-dots" aria-hidden="true"></i> @Localizer["SmsSettings"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="sms/senders" @onclick="CloseNavMenu">
-                                    <span class="oi oi-phone" aria-hidden="true"></span> @Localizer["SenderNumbers"]
+                                    <i class="bi bi-telephone" aria-hidden="true"></i> @Localizer["SenderNumbers"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="email-template-builder" @onclick="CloseNavMenu">
-                                    <span class="oi oi-document" aria-hidden="true"></span> @Localizer["TemplateManagement"]
+                                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["TemplateManagement"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="notification-settings-page" @onclick="CloseNavMenu">
-                                    <span class="oi oi-bell" aria-hidden="true"></span> @Localizer["NotificationSettings"]
+                                    <i class="bi bi-bell" aria-hidden="true"></i> @Localizer["NotificationSettings"]
                                 </NavLink>
                             </div>
                         }
@@ -101,7 +101,7 @@
                     <!-- 2. Organization Management -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleOrganizationSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-people" aria-hidden="true"></span>
+                            <i class="bi bi-people me-2" aria-hidden="true"></i>
                             @Localizer["OrganizationManagement"]
                             <span class="submenu-toggle @(showOrganizationSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -110,16 +110,16 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="organization/structure" @onclick="CloseNavMenu">
-                                    <span class="oi oi-spreadsheet" aria-hidden="true"></span> @Localizer["OrganizationStructure"]
+                                    <i class="bi bi-diagram-3" aria-hidden="true"></i> @Localizer["OrganizationStructure"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="user-registration-page" @onclick="CloseNavMenu">
-                                    <span class="oi oi-plus" aria-hidden="true"></span> @Localizer["UserManagement"]
+                                    <i class="bi bi-person-plus" aria-hidden="true"></i> @Localizer["UserManagement"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="organization/stats" @onclick="CloseNavMenu">
-                                    <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["OrganizationStats"]
+                                    <i class="bi bi-bar-chart" aria-hidden="true"></i> @Localizer["OrganizationStats"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="organization/system-admin" @onclick="CloseNavMenu">
-                                    <span class="oi oi-cog" aria-hidden="true"></span> @Localizer["SystemAdmin"]
+                                    <i class="bi bi-person-gear" aria-hidden="true"></i> @Localizer["SystemAdmin"]
                                 </NavLink>
                             </div>
                         }
@@ -128,7 +128,7 @@
                     <!-- 3. DB Management -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbManagementSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-folder" aria-hidden="true"></span>
+                            <i class="bi bi-database me-2" aria-hidden="true"></i>
                             @Localizer["DbManagement"]
                             <span class="submenu-toggle @(showDbManagementSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -137,16 +137,37 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
-                                    <span class="oi oi-database" aria-hidden="true"></span> @Localizer["DbIntegration"]
+                                    <i class="bi bi-table" aria-hidden="true"></i> @Localizer["AllDbList"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/customer/new" @onclick="CloseNavMenu">
+                                    <i class="bi bi-plus-circle" aria-hidden="true"></i> @Localizer["NewDbList"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/customer/starred" @onclick="CloseNavMenu">
+                                    <i class="bi bi-star" aria-hidden="true"></i> @Localizer["StarredDbList"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/customer/assigned-today" @onclick="CloseNavMenu">
+                                    <i class="bi bi-calendar-day" aria-hidden="true"></i> @Localizer["TodaysAssignedDb"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i> @Localizer["UnassignedDbList"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/distribution/newly-assigned" @onclick="CloseNavMenu">
+                                    <i class="bi bi-arrow-left-right" aria-hidden="true"></i> @Localizer["NewlyAssignedDb"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
-                                    <span class="oi oi-transfer" aria-hidden="true"></span> @Localizer["DbDistribution"]
+                                    <i class="bi bi-clipboard-data" aria-hidden="true"></i> @Localizer["DbDistributionStatus"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/distribution/my-history" @onclick="CloseNavMenu">
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["MyAssignmentHistory"]
+                                </NavLink>
+                                <NavLink class="nav-link submenu-link" href="db/customer/team-status" @onclick="CloseNavMenu">
+                                    <i class="bi bi-people" aria-hidden="true"></i> @Localizer["TeamDbStatus"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="db/advanced" @onclick="CloseNavMenu">
-                                    <span class="oi oi-wrench" aria-hidden="true"></span> @Localizer["DbAdvanced"]
+                                    <i class="bi bi-tools" aria-hidden="true"></i> @Localizer["DbAdvanced"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="db/customer/my-list" @onclick="CloseNavMenu">
-                                    <span class="oi oi-person" aria-hidden="true"></span> @Localizer["MyDbList"]
+                                    <i class="bi bi-person-lines-fill" aria-hidden="true"></i> @Localizer["MyDbList"]
                                 </NavLink>
                             </div>
                         }
@@ -155,7 +176,7 @@
                     <!-- 4. Statistics -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleStatisticsSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-graph" aria-hidden="true"></span>
+                            <i class="bi bi-graph-up me-2" aria-hidden="true"></i>
                             @Localizer["Statistics"]
                             <span class="submenu-toggle @(showStatisticsSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -164,10 +185,10 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="statistics/dashboard" @onclick="CloseNavMenu">
-                                    <span class="oi oi-pie-chart" aria-hidden="true"></span> @Localizer["StatisticsDashboard"]
+                                    <i class="bi bi-speedometer" aria-hidden="true"></i> @Localizer["StatisticsDashboard"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="reports-page" @onclick="CloseNavMenu">
-                                    <span class="oi oi-bar-chart" aria-hidden="true"></span> @Localizer["Reports"]
+                                    <i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i> @Localizer["Reports"]
                                 </NavLink>
                             </div>
                         }
@@ -176,7 +197,7 @@
                     <!-- 5. Customer Center -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleCustomerCenterSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-question-mark" aria-hidden="true"></span>
+                            <i class="bi bi-headset me-2" aria-hidden="true"></i>
                             @Localizer["CustomerCenter"]
                             <span class="submenu-toggle @(showCustomerCenterSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -185,10 +206,10 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="support/notices" @onclick="CloseNavMenu">
-                                    <span class="oi oi-bullhorn" aria-hidden="true"></span> @Localizer["Notices"]
+                                    <i class="bi bi-megaphone" aria-hidden="true"></i> @Localizer["Notices"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="support/faq" @onclick="CloseNavMenu">
-                                    <span class="oi oi-book" aria-hidden="true"></span> @Localizer["Faq"]
+                                    <i class="bi bi-question-circle" aria-hidden="true"></i> @Localizer["Faq"]
                                 </NavLink>
                             </div>
                         }
@@ -197,7 +218,7 @@
                     <!-- 6. Schedule Management -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleScheduleSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-calendar" aria-hidden="true"></span>
+                            <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
                             @Localizer["ScheduleManagement"]
                             <span class="submenu-toggle @(showScheduleSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -206,10 +227,10 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
-                                    <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["SalesCalendar"]
+                                    <i class="bi bi-calendar-event" aria-hidden="true"></i> @Localizer["SalesCalendar"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="schedule/sms" @onclick="CloseNavMenu">
-                                    <span class="oi oi-envelope-closed" aria-hidden="true"></span> @Localizer["SmsSchedule"]
+                                    <i class="bi bi-envelope-plus" aria-hidden="true"></i> @Localizer["SmsSchedule"]
                                 </NavLink>
                             </div>
                         }
@@ -218,7 +239,7 @@
                     <!-- 7. SMS -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSmsSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-chat" aria-hidden="true"></span>
+                            <i class="bi bi-chat-dots me-2" aria-hidden="true"></i>
                             @Localizer["Sms"]
                             <span class="submenu-toggle @(showSmsSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -227,10 +248,10 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="sms/bulk" @onclick="CloseNavMenu">
-                                    <span class="oi oi-envelope-closed" aria-hidden="true"></span> @Localizer["BulkSms"]
+                                    <i class="bi bi-send" aria-hidden="true"></i> @Localizer["BulkSms"]
                                 </NavLink>
                                 <NavLink class="nav-link submenu-link" href="sms/history" @onclick="CloseNavMenu">
-                                    <span class="oi oi-history" aria-hidden="true"></span> @Localizer["SmsHistory"]
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["SmsHistory"]
                                 </NavLink>
                             </div>
                         }
@@ -239,7 +260,7 @@
                     <!-- 8. System Info -->
                     <div class="nav-item px-3">
                         <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSystemSubmenu" style="cursor: pointer;">
-                            <span class="oi oi-info" aria-hidden="true"></span>
+                            <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
                             @Localizer["SystemInfo"]
                             <span class="submenu-toggle @(showSystemSubmenu ? "expanded" : "collapsed")">▼</span>
                         </div>
@@ -248,7 +269,7 @@
                         {
                             <div class="nav-submenu">
                                 <NavLink class="nav-link submenu-link" href="system/info" @onclick="CloseNavMenu">
-                                    <span class="oi oi-document" aria-hidden="true"></span> @Localizer["SystemInformation"]
+                                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["SystemInformation"]
                                 </NavLink>
                             </div>
                         }
@@ -257,14 +278,14 @@
                     <!-- Logout button -->
                     <div class="nav-item px-3 mt-auto">
                         <button class="nav-link btn btn-link" @onclick="Logout">
-                            <span class="oi oi-account-logout" aria-hidden="true"></span> @Localizer["Logout"]
+                            <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i> @Localizer["Logout"]
                         </button>
                     </div>
                 </Authorized>
                 <NotAuthorized>
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="login" @onclick="CloseNavMenu">
-                            <span class="oi oi-account-login" aria-hidden="true"></span> @Localizer["Login"]
+                            <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i> @Localizer["Login"]
                         </NavLink>
                     </div>
                 </NotAuthorized>
