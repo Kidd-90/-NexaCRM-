@@ -1,30 +1,45 @@
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using NexaCRM.WebClient.Models.Organization;
 using NexaCRM.WebClient.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace NexaCRM.WebClient.Services;
 
 public class OrganizationService : IOrganizationService
 {
-    private readonly List<OrganizationUser> _users = new()
+    // Temporary in-memory user list for demonstration; replace with API call if needed
+    private readonly List<OrganizationUser> _users = new List<OrganizationUser>();
+
+
+    private readonly HttpClient _httpClient;
+    public OrganizationService(HttpClient httpClient)
     {
-        new OrganizationUser { Id = 1, Name = "Ethan Carter", Email = "ethan.carter@example.com", Role = "Admin", Status = "Active" },
-        new OrganizationUser { Id = 2, Name = "Olivia Bennett", Email = "olivia.bennett@example.com", Role = "Sales", Status = "Active" },
-        new OrganizationUser { Id = 3, Name = "Noah Thompson", Email = "noah.thompson@example.com", Role = "Marketing", Status = "Inactive" }
-    };
+        _httpClient = httpClient;
+    }
 
-    public Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync() =>
-        Task.FromResult<IEnumerable<OrganizationUnit>>(new List<OrganizationUnit>());
+    public async Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<IEnumerable<OrganizationUnit>>("api/organization/structure")
+            ?? new List<OrganizationUnit>();
+    }
 
-    public Task SaveOrganizationUnitAsync(OrganizationUnit unit) =>
-        Task.CompletedTask;
+    public async Task SaveOrganizationUnitAsync(OrganizationUnit unit)
+    {
+        await _httpClient.PostAsJsonAsync("api/organization/structure", unit);
+    }
 
-    public Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync() =>
-        Task.FromResult<IEnumerable<OrganizationStats>>(new List<OrganizationStats>());
+    public async Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<IEnumerable<OrganizationStats>>("api/organization/stats")
+            ?? new List<OrganizationStats>();
+    }
 
-    public Task SetSystemAdministratorAsync(string userId) =>
-        Task.CompletedTask;
+    public async Task SetSystemAdministratorAsync(string userId)
+    {
+        await _httpClient.PostAsJsonAsync("api/organization/system-admin", new { userId });
+    }
 
     public Task<IEnumerable<OrganizationUser>> GetUsersAsync() =>
         Task.FromResult<IEnumerable<OrganizationUser>>(_users);
