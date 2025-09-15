@@ -1,6 +1,74 @@
 @page "/organization/stats"
+@using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Models.Organization
+@using NexaCRM.WebClient.Services.Interfaces
+@using System.Linq
+@inject IOrganizationService OrganizationService
+@inject IStringLocalizer<OrganizationStatsPage> Localizer
 
 <ResponsivePage>
-    <h3>Organization Statistics</h3>
-    <p>View statistics by company, team and member.</p>
+    <h3>@Localizer["OrganizationStatistics"]</h3>
+    <p>@Localizer["StatisticsDescription"]</p>
+
+    @if (stats == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">@Localizer["Loading"]</span>
+            </div>
+        </div>
+    }
+    else if (!stats.Any())
+    {
+        <p>@Localizer["NoStatistics"]</p>
+    }
+    else
+    {
+        <div class="desktop-table-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["UnitName"]</th>
+                            <th>@Localizer["MemberCount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in stats)
+                        {
+                            <tr>
+                                <td>@stat.UnitName</td>
+                                <td>@stat.MemberCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mobile-card-view">
+            @foreach (var stat in stats)
+            {
+                <div class="stat-card">
+                    <div class="card-info-row">
+                        <span class="card-info-label">@Localizer["UnitName"]</span>
+                        <span class="card-info-value">@stat.UnitName</span>
+                    </div>
+                    <div class="card-info-row">
+                        <span class="card-info-label">@Localizer["MemberCount"]</span>
+                        <span class="card-info-value">@stat.MemberCount</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </ResponsivePage>
+
+@code {
+    private IEnumerable<OrganizationStats>? stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await OrganizationService.GetOrganizationStatsAsync();
+    }
+}
