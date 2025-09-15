@@ -11,5 +11,7 @@ public interface ISettingsService
     Task SaveSecuritySettingsAsync(SecuritySettings settings);
     Task<SmsSettings> GetSmsSettingsAsync();
     Task SaveSmsSettingsAsync(SmsSettings settings);
+    Task<UserProfile> GetUserProfileAsync();
+    Task SaveUserProfileAsync(UserProfile profile);
 }
 
