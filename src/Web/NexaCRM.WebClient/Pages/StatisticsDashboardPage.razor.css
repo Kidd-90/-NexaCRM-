@@ -1,0 +1,54 @@
+/* StatisticsDashboardPage styles */
+
+.summary-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md, 1rem);
+    margin: var(--spacing-md, 1rem) 0;
+}
+
+.summary-tiles .tile {
+    flex: 1;
+    padding: var(--spacing-md, 1rem);
+    border: 1px solid var(--border-color, #d0d9e7);
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.trend-charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md, 1rem);
+}
+
+.trend-charts .chart {
+    flex: 1;
+    min-width: 250px;
+}
+
+.date-range {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm, 0.5rem);
+    margin-bottom: var(--spacing-md, 1rem);
+}
+
+@media (max-width: 600px) {
+    .summary-tiles {
+        flex-direction: column;
+    }
+
+    .trend-charts {
+        flex-direction: column;
+    }
+
+    .trend-charts .chart {
+        min-width: 100%;
+    }
+
+    .date-range {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

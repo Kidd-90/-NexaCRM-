@@ -1,6 +1,103 @@
 @page "/statistics/dashboard"
+@using System.Collections.Generic
+@using System.Linq
+@using NexaCRM.WebClient.Components.UI
+@using NexaCRM.WebClient.Models.Statistics
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IStatisticsService StatisticsService
 
 <ResponsivePage>
     <h3>Statistics Dashboard</h3>
-    <p>View system usage statistics and reports.</p>
+
+    <div class="date-range">
+        <input type="date" @bind="startDate" @bind:format="yyyy-MM-dd" />
+        <input type="date" @bind="endDate" @bind:format="yyyy-MM-dd" />
+        <button @onclick="LoadStatistics">Update</button>
+    </div>
+
+    @if (isLoading)
+    {
+        <LoadingSpinner LoadingText="Loading statistics..." />
+    }
+    else if (stats is null ||
+            (stats.Summary.TotalMembers == 0 && stats.Summary.TotalLogins == 0 && stats.Summary.TotalDownloads == 0))
+    {
+        <p>No statistics available for the selected date range.</p>
+    }
+    else
+    {
+        <div class="summary-tiles">
+            <div class="tile">Total Members: @stats.Summary.TotalMembers</div>
+            <div class="tile">Total Logins: @stats.Summary.TotalLogins</div>
+            <div class="tile">Total Downloads: @stats.Summary.TotalDownloads</div>
+        </div>
+
+        <div class="trend-charts">
+            <div class="chart">
+                <h4>Logins Trend</h4>
+                @if (stats.LoginTrend.Any())
+                {
+                    <svg width="100%" height="100" viewBox="0 0 100 100">
+                        <polyline fill="none" stroke="blue" stroke-width="2" points="@GetTrendPoints(stats.LoginTrend)" />
+                    </svg>
+                }
+                else
+                {
+                    <p>No data.</p>
+                }
+            </div>
+
+            <div class="chart">
+                <h4>Downloads Trend</h4>
+                @if (stats.DownloadTrend.Any())
+                {
+                    <svg width="100%" height="100" viewBox="0 0 100 100">
+                        <polyline fill="none" stroke="green" stroke-width="2" points="@GetTrendPoints(stats.DownloadTrend)" />
+                    </svg>
+                }
+                else
+                {
+                    <p>No data.</p>
+                }
+            </div>
+        </div>
+    }
 </ResponsivePage>
+
+@code {
+    private DateTime startDate = DateTime.Today.AddDays(-7);
+    private DateTime endDate = DateTime.Today;
+    private StatisticsResult? stats;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatistics();
+    }
+
+    private async Task LoadStatistics()
+    {
+        isLoading = true;
+        stats = await StatisticsService.GetStatisticsAsync(startDate, endDate);
+        isLoading = false;
+    }
+
+    private static string GetTrendPoints(List<TrendPoint> trend)
+    {
+        if (trend.Count == 0) return string.Empty;
+        var max = trend.Max(p => p.Value);
+        var min = trend.Min(p => p.Value);
+        var range = max - min;
+        if (range == 0) range = 1;
+
+        var points = new System.Text.StringBuilder();
+        for (int i = 0; i < trend.Count; i++)
+        {
+            var x = (double)i / (trend.Count - 1) * 100;
+            var y = 100 - ((double)(trend[i].Value - min) / range * 100);
+            points.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "{0:F2},{1:F2} ", x, y);
+        }
+        return points.ToString();
+    }
+}
+
