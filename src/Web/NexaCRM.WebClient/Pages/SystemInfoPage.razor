@@ -1,6 +1,48 @@
 @page "/system/info"
+@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.WebClient.Models.SystemInfo
+@inject ISystemInfoService SystemInfoService
 
 <ResponsivePage>
-    <h3>System Information</h3>
-    <p>View terms of service, company contact and address.</p>
+    <div class="container mx-auto p-4 space-y-6">
+        <h3 class="mb-4 text-center sm:text-left">System Information</h3>
+        @if (_info is null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <section class="system-info-section">
+                <h4 class="section-title">Terms of Service</h4>
+                <p class="section-content">@_info.Terms</p>
+                <a href="docs/terms.pdf" class="btn btn-primary download-link" download>Download Terms (PDF)</a>
+            </section>
+            <section class="system-info-section">
+                <h4 class="section-title">Company Address</h4>
+                <address class="section-content">@_info.CompanyAddress</address>
+            </section>
+            <section class="system-info-section">
+                <h4 class="section-title">Support Contacts</h4>
+                <ul class="section-list">
+                    @if (_info.SupportContacts is not null)
+                    {
+                        @foreach (var contact in _info.SupportContacts)
+                        {
+                            <li>@contact</li>
+                        }
+                    }
+                </ul>
+                <a href="docs/privacy.pdf" class="btn btn-secondary download-link" download>Download Privacy Policy (PDF)</a>
+            </section>
+        }
+    </div>
 </ResponsivePage>
+
+@code {
+    private SystemInfo? _info;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _info = await SystemInfoService.GetSystemInfoAsync();
+    }
+}
