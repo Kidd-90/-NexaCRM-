@@ -162,10 +162,21 @@ window.navigationHelper = {
         if (sidebar && !sidebar.classList.contains('collapse')) {
             sidebar.classList.add('collapse');
         }
-        
+
         // Ensure overlay is hidden initially
         if (overlay) {
             overlay.classList.remove('show');
+        }
+
+        const body = document.body;
+        const page = document.querySelector('.page');
+
+        if (body) {
+            body.classList.remove('nav-open');
+        }
+
+        if (page) {
+            page.classList.remove('nav-open');
         }
 
         // Setup navigation scrolling functionality
@@ -541,6 +552,8 @@ window.navigationHelper = {
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.querySelector('.mobile-overlay');
         const toggleBtn = document.querySelector('.floating-menu-toggle');
+        const body = document.body;
+        const page = document.querySelector('.page');
 
         if (!sidebar) return;
 
@@ -553,10 +566,22 @@ window.navigationHelper = {
             if (overlay) {
                 overlay.classList.remove('show');
             }
+            if (body) {
+                body.classList.remove('nav-open');
+            }
+            if (page) {
+                page.classList.remove('nav-open');
+            }
         } else {
             sidebar.classList.remove('collapse');
             if (overlay) {
                 overlay.classList.add('show');
+            }
+            if (body) {
+                body.classList.add('nav-open');
+            }
+            if (page) {
+                page.classList.add('nav-open');
             }
         }
 
@@ -596,6 +621,15 @@ window.navigationHelper = {
             // Ensure overlay is hidden on page load
             if (overlay && overlay.classList.contains('show')) {
                 overlay.classList.remove('show');
+            }
+
+            if (document.body) {
+                document.body.classList.remove('nav-open');
+            }
+
+            const page = document.querySelector('.page');
+            if (page) {
+                page.classList.remove('nav-open');
             }
         }, 100);
 

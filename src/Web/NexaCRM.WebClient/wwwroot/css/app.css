@@ -104,16 +104,16 @@
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(248, 250, 252, 0.9)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
-[data-theme="dark"] .nav-link {
+[data-theme="dark"] .sidebar .nav-link {
     color: var(--text-primary) !important;
 }
 
-[data-theme="dark"] .nav-link:hover {
+[data-theme="dark"] .sidebar .nav-link:hover {
     background-color: var(--hover-overlay) !important;
     color: var(--text-primary) !important;
 }
 
-[data-theme="dark"] .nav-link.active {
+[data-theme="dark"] .sidebar .nav-link.active {
     background-color: var(--primary-color) !important;
     color: #ffffff !important;
 }
@@ -135,6 +135,10 @@ html, body {
     background-attachment: fixed;
     color: var(--text-primary);
     transition: background-color var(--transition-normal), color var(--transition-normal), background-image var(--transition-slow);
+}
+
+body.nav-open {
+    overflow: hidden;
 }
 
 h1:focus {
@@ -199,24 +203,23 @@ a:hover, .btn-link:hover {
 
 /* Navigation styles - 반응형 디자인 */
 .sidebar {
-    background: var(--surface-gradient, var(--surface-color)); /* Use theme surface color */
-    border-right: 1px solid var(--divider-color); /* Use theme border color */
-    width: var(--sidebar-width); /* Use fluid width on small screens */
+    --nav-accent-color: var(--primary-color, #2153C8);
+    background: linear-gradient(180deg, rgba(114, 99, 255, 0.08) 0%, rgba(114, 99, 255, 0.02) 100%), var(--surface-gradient, var(--surface-color));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--nav-accent-color) 14%, transparent) 0%, color-mix(in srgb, var(--nav-accent-color) 4%, transparent) 100%), var(--surface-gradient, var(--surface-color));
+    border-right: none;
+    width: var(--sidebar-width);
     min-height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 10001; /* Ensure menu stays above overlay */
-    transition: transform var(--transition-normal); /* Use theme transition */
-    will-change: transform; /* Hint for smoother animation */
-    box-shadow: 0 24px 48px var(--shadow-light); /* Use theme shadow */
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    /* 기본적으로 모든 화면에서 숨김 */
+    z-index: 10001;
+    transition: transform var(--transition-normal);
+    will-change: transform;
+    box-shadow: 0 24px 48px var(--shadow-light);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     transform: translateX(-100%);
-    /* Improve scrolling on mobile */
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
 }
 
 /* collapse 클래스가 없을 때만 보이기 (메뉴 열림) */
@@ -227,6 +230,87 @@ a:hover, .btn-link:hover {
 /* collapse 클래스가 있을 때는 강제로 숨김 (메뉴 닫힘) */
 .sidebar.collapse {
     transform: translateX(-100%) !important;
+}
+
+.nav-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+    padding: 1.75rem 1.5rem 2rem;
+    box-sizing: border-box;
+}
+
+.nav-drawer__header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    border-bottom: 1px solid color-mix(in srgb, rgba(255, 255, 255, 0.65) 50%, transparent);
+}
+
+.nav-drawer__logo {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1.1rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.35rem;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(114, 99, 255, 0.95), rgba(88, 73, 228, 0.9));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--nav-accent-color) 82%, #6b4dff 18%), color-mix(in srgb, var(--nav-accent-color) 65%, #4c3ac1 35%));
+    box-shadow: 0 14px 28px rgba(114, 99, 255, 0.25);
+}
+
+.nav-drawer__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.nav-drawer__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nav-scroll-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+    margin: 0;
+    scrollbar-width: thin;
+}
+
+.nav-scroll-container::-webkit-scrollbar {
+    width: 0.4rem;
+}
+
+.nav-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(33, 83, 200, 0.18);
+    border-radius: 999px;
+}
+
+.nav-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar .nav-item {
+    margin: 0;
+}
+
+.sidebar .nav-item.px-3 {
+    padding: 0;
+}
+
+.sidebar .nav-item.mt-auto {
+    margin-top: auto !important;
 }
 
 /* 기존 top-row 숨김 - 더 이상 사용하지 않음 */
@@ -308,45 +392,150 @@ a:hover, .btn-link:hover {
     height: 1.5em;
 }
 
-.nav-item {
-    margin: 0.25rem 0;
-}
-
-.nav-link {
-    color: var(--text-primary) !important; /* Dark text for light background */
-    padding: 0.75rem 1rem;
+.sidebar .nav-link {
     display: flex;
     align-items: center;
-    text-decoration: none;
-    background: transparent;
-    border: none;
+    gap: 0.75rem;
     width: 100%;
+    padding: 0.85rem 1rem;
+    margin: 0;
+    border: none;
+    text-decoration: none;
     text-align: left;
-    border-radius: 0.375rem;
-    margin: 0 0.5rem;
-    transition: all 0.2s ease;
+    border-radius: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-secondary) !important;
+    background: transparent;
+    transition: transform var(--transition-fast), color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.nav-link:hover {
-    background-color: var(--hover-overlay); /* Light blue hover for light theme */
-    color: #1f2937; /* Darker text on hover */
-    transform: translateX(5px);
+.sidebar .nav-link::before {
+    display: none;
 }
 
-.nav-link.active {
-    background-color: var(--primary-color); /* Blue active background */
-    color: #ffffff; /* White text on active */
-    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+.sidebar .nav-link i {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.85rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    background: rgba(33, 83, 200, 0.12);
+    background: color-mix(in srgb, var(--primary-color) 22%, transparent);
+    box-shadow: 0 10px 18px rgba(33, 83, 200, 0.12);
+    transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
-.nav-link span {
-    margin-right: 0.75rem;
-    font-size: 1.1rem;
+.sidebar .nav-link:hover {
+    color: var(--primary-color) !important;
+    background: rgba(33, 83, 200, 0.08);
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    transform: translateX(6px);
+    box-shadow: 0 18px 32px rgba(33, 83, 200, 0.12);
 }
 
-.nav-link span.oi {
-    width: 20px;
-    text-align: center;
+.sidebar .nav-link:hover i {
+    background: rgba(33, 83, 200, 0.22);
+    background: color-mix(in srgb, var(--primary-color) 32%, transparent);
+    box-shadow: 0 18px 32px rgba(33, 83, 200, 0.2);
+}
+
+.sidebar .nav-link.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(33, 83, 200, 0.35), rgba(33, 83, 200, 0.22));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 38%, transparent), color-mix(in srgb, var(--primary-color) 24%, transparent));
+    box-shadow: 0 22px 42px rgba(33, 83, 200, 0.24);
+}
+
+.sidebar .nav-link.active i {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 18px 32px rgba(33, 83, 200, 0.32);
+}
+
+.sidebar .nav-link.btn-link {
+    text-decoration: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.sidebar .nav-link.btn-link:hover {
+    text-decoration: none;
+}
+
+.nav-submenu {
+    padding-left: 3.25rem;
+    display: grid;
+    gap: 0.25rem;
+}
+
+.sidebar .nav-link.submenu-link {
+    padding: 0.7rem 0.85rem;
+    margin: 0.15rem 0;
+    font-size: 0.95rem;
+    border-radius: 0.85rem;
+}
+
+.sidebar .nav-link.submenu-link i {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.7rem;
+    font-size: 0.95rem;
+    box-shadow: 0 10px 18px rgba(33, 83, 200, 0.1);
+}
+
+.nav-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin: 0.35rem 0;
+    border-radius: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.nav-section-header i {
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.8rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    background: rgba(33, 83, 200, 0.1);
+    background: color-mix(in srgb, var(--primary-color) 16%, transparent);
+    box-shadow: 0 12px 20px rgba(33, 83, 200, 0.12);
+}
+
+.nav-section-header .submenu-toggle {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.nav-section-header .submenu-toggle.expanded {
+    transform: rotate(180deg);
+}
+
+.nav-section-header:hover {
+    color: var(--primary-color);
+    background: rgba(33, 83, 200, 0.08);
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    box-shadow: 0 16px 30px rgba(33, 83, 200, 0.12);
+}
+
+.nav-section-header:hover i {
+    background: rgba(33, 83, 200, 0.2);
+    background: color-mix(in srgb, var(--primary-color) 28%, transparent);
+}
+
+.sidebar .nav-link span {
+    margin-right: 0;
 }
 
 .collapse {
@@ -386,14 +575,15 @@ a:hover, .btn-link:hover {
         width: var(--sidebar-width); /* 태블릿에서도 동일한 크기 */
     }
     
-    .nav-link {
-        padding: 0.75rem 1rem;
+    .sidebar .nav-link {
+        padding: 0.85rem 1rem;
         font-size: 0.95rem;
-        min-height: 2.75rem; /* Ensure adequate touch target */
+        min-height: 2.75rem;
     }
-    
-    .nav-link span {
-        margin-right: 0.75rem;
+
+    .sidebar .nav-link i {
+        width: 2.25rem;
+        height: 2.25rem;
     }
     
     .floating-menu-toggle {
@@ -412,29 +602,31 @@ a:hover, .btn-link:hover {
         width: var(--sidebar-width); /* Responsive width, max 80% of viewport */
     }
     
-    .nav-link {
-        padding: 1rem 1.5rem;
+    .sidebar .nav-link {
+        padding: 0.95rem 1.1rem;
         font-size: 1rem;
-        border-radius: 0;
-        margin: 0;
-        min-height: 2.75rem; /* Ensure minimum 44px touch target */
-        display: flex;
-        align-items: center;
-    }
-    
-    .nav-link:hover {
-        transform: none;
-        background-color: var(--hover-overlay); /* Light blue hover for mobile */
+        min-height: 2.75rem;
     }
 
-    .nav-link:active {
-        background-color: var(--active-overlay); /* Light blue active for mobile */
+    .sidebar .nav-link i {
+        width: 2.3rem;
+        height: 2.3rem;
+        font-size: 1rem;
+    }
+
+    .sidebar .nav-link:hover {
+        transform: translateX(4px);
+        background-color: var(--hover-overlay);
+    }
+
+    .sidebar .nav-link:active {
+        background-color: var(--active-overlay);
         transition-duration: 0.1s;
     }
-    
-    .nav-link span {
-        margin-right: 1rem;
-        font-size: 1.2rem;
+
+    .sidebar .nav-link span {
+        margin-right: 0;
+        font-size: inherit;
     }
 
     .content {
@@ -446,7 +638,7 @@ a:hover, .btn-link:hover {
     }
     
     /* Improved submenu spacing for mobile */
-    .nav-submenu .submenu-link {
+    .sidebar .nav-submenu .submenu-link {
         padding: 0.875rem 1.5rem 0.875rem 2.5rem !important;
         min-height: 2.5rem;
     }
@@ -640,18 +832,23 @@ input, select, textarea {
         width: var(--sidebar-width); /* Full width on very small screens, but capped */
     }
     
-    .nav-link {
-        padding: 1.125rem 1.5rem; /* Slightly larger for very small screens */
+    .sidebar .nav-link {
+        padding: 1.05rem 1.2rem;
         font-size: 1.05rem;
-        min-height: 3rem; /* Larger touch targets on very small screens */
+        min-height: 3rem;
     }
-    
-    .nav-link span {
-        margin-right: 1rem;
-        font-size: 1.25rem;
+
+    .sidebar .nav-link i {
+        width: 2.35rem;
+        height: 2.35rem;
     }
-    
-    .nav-submenu .submenu-link {
+
+    .sidebar .nav-link span {
+        margin-right: 0;
+        font-size: inherit;
+    }
+
+    .sidebar .nav-submenu .submenu-link {
         padding: 1rem 1.5rem 1rem 3rem !important;
         min-height: 2.75rem;
     }

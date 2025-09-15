@@ -13,8 +13,14 @@
 @inject IJSRuntime JSRuntime
 @inject IRolePermissionService RolePermissionService
 
-<div @onclick:stopPropagation="true">
-    <nav class="flex-column">
+<div class="nav-drawer" @onclick:stopPropagation="true">
+    <div class="nav-drawer__header">
+        <span class="nav-drawer__logo" aria-hidden="true">
+            <i class="bi bi-cube"></i>
+        </span>
+        <div class="nav-drawer__title">@Localizer["MenuBrandTitle"]</div>
+    </div>
+    <nav class="nav-drawer__content flex-column">
         <div class="nav-scroll-container">
             <!-- Always visible base menu -->
             <div class="nav-item px-3">
