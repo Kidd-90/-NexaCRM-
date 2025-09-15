@@ -45,6 +45,7 @@ builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IDbAdminService, DbAdminService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ICustomerCenterService, CustomerCenterService>();
+builder.Services.AddScoped<INoticeService, NoticeService>();
 builder.Services.AddScoped<ISmsService, SmsService>();
 builder.Services.AddScoped<ISystemInfoService, SystemInfoService>();
 builder.Services.AddScoped<IEmailTemplateService, MockEmailTemplateService>();

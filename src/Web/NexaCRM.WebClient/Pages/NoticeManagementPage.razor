@@ -1,6 +1,217 @@
 @page "/support/notices"
+@using Microsoft.AspNetCore.Components.Forms
+@using NexaCRM.WebClient.Models.CustomerCenter
+@using NexaCRM.WebClient.Services.Interfaces
+@inject INoticeService NoticeService
+@inject IJSRuntime JSRuntime
 
 <ResponsivePage>
     <h3>Notice Management</h3>
-    <p>Create and manage announcements.</p>
+
+    <div class="search-bar mb-3">
+        <input class="form-control flex-grow-1" placeholder="Search notices" value="@searchTerm" @oninput="OnSearchChanged" />
+        <button class="btn btn-success" @onclick="ShowCreateModal">
+            <span class="oi oi-plus"></span> New Notice
+        </button>
+    </div>
+
+    @if (PagedNotices.Any())
+    {
+        <div class="table-responsive d-none d-md-block">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var notice in PagedNotices)
+                    {
+                        <tr>
+                            <td>@notice.Title</td>
+                            <td>@notice.Content</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-primary" @onclick="() => ShowEditModal(notice)">
+                                        <span class="oi oi-pencil"></span>
+                                    </button>
+                                    <button class="btn btn-danger" @onclick="() => DeleteNotice(notice.Id)">
+                                        <span class="oi oi-trash"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-md-none">
+            @foreach (var notice in PagedNotices)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">@notice.Title</h5>
+                        <p class="card-text">@notice.Content</p>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-sm btn-primary me-1" @onclick="() => ShowEditModal(notice)">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteNotice(notice.Id)">
+                                <span class="oi oi-trash"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (TotalPages > 1)
+        {
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : string.Empty)">
+                        <button class="page-link" @onclick="PreviousPage">Prev</button>
+                    </li>
+                    @for (int i = 1; i <= TotalPages; i++)
+                    {
+                        <li class="page-item @(currentPage == i ? "active" : string.Empty)">
+                            <button class="page-link" @onclick="() => GoToPage(i)">@i</button>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage == TotalPages ? "disabled" : string.Empty)">
+                        <button class="page-link" @onclick="NextPage">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <p>No notices found.</p>
+    }
 </ResponsivePage>
+
+@if (showModal)
+{
+    <div class="modal-backdrop" @onclick="CloseModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <EditForm OnValidSubmit="SaveNotice">
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <InputText class="form-control" @bind-Value="editTitle" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Content</label>
+                    <InputTextArea class="form-control" @bind-Value="editContent" />
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary me-2">Save</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Notice> notices = new();
+    private string searchTerm = string.Empty;
+    private int currentPage = 1;
+    private const int PageSize = 5;
+    private bool showModal;
+    private int? editingId;
+    private string editTitle = string.Empty;
+    private string editContent = string.Empty;
+
+    private IEnumerable<Notice> FilteredNotices =>
+        string.IsNullOrWhiteSpace(searchTerm)
+            ? notices
+            : notices.Where(n => n.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                 n.Content.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+    private int TotalPages => (int)Math.Ceiling(FilteredNotices.Count() / (double)PageSize);
+
+    private IEnumerable<Notice> PagedNotices =>
+        FilteredNotices.Skip((currentPage - 1) * PageSize).Take(PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotices();
+    }
+
+    private async Task LoadNotices()
+    {
+        notices = (await NoticeService.GetNoticesAsync()).ToList();
+        currentPage = 1;
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? string.Empty;
+        currentPage = 1;
+    }
+
+    private void GoToPage(int page) => currentPage = page;
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < TotalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void ShowCreateModal()
+    {
+        editingId = null;
+        editTitle = string.Empty;
+        editContent = string.Empty;
+        showModal = true;
+    }
+
+    private void ShowEditModal(Notice notice)
+    {
+        editingId = notice.Id;
+        editTitle = notice.Title;
+        editContent = notice.Content;
+        showModal = true;
+    }
+
+    private void CloseModal() => showModal = false;
+
+    private async Task SaveNotice()
+    {
+        if (editingId.HasValue)
+        {
+            await NoticeService.UpdateNoticeAsync(new Notice(editingId.Value, editTitle, editContent));
+        }
+        else
+        {
+            await NoticeService.CreateNoticeAsync(new Notice(0, editTitle, editContent));
+        }
+
+        showModal = false;
+        await LoadNotices();
+    }
+
+    private async Task DeleteNotice(int id)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Delete this notice?"))
+        {
+            await NoticeService.DeleteNoticeAsync(id);
+            await LoadNotices();
+        }
+    }
+}
+
