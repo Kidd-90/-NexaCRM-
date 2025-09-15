@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace NexaCRM.WebClient.Models.Settings;
 
@@ -13,11 +14,27 @@ public record SecuritySettings(
     bool LoginBlockEnabled = false
 );
 
-public record SmsSettings(
-    IList<string> SenderNumbers,
-    IList<string> Templates
-)
+public class SmsSettings
 {
-    public SmsSettings() : this(new List<string>(), new List<string>()) { }
+    public IList<string> SenderNumbers { get; set; }
+    public IList<string> Templates { get; set; }
+
+    [Required]
+    public string ProviderApiKey { get; set; } = string.Empty;
+
+    [Required]
+    public string ProviderApiSecret { get; set; } = string.Empty;
+
+    public string DefaultTemplate { get; set; } = string.Empty;
+
+    [Required]
+    [RegularExpression("^[a-zA-Z0-9]{3,11}$", ErrorMessage = "Sender ID must be alphanumeric and 3-11 characters.")]
+    public string SenderId { get; set; } = string.Empty;
+
+    public SmsSettings()
+    {
+        SenderNumbers = new List<string>();
+        Templates = new List<string>();
+    }
 }
 

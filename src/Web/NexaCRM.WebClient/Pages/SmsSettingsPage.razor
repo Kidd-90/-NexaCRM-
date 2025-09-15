@@ -1,6 +1,54 @@
 @page "/settings/sms"
+@using NexaCRM.WebClient.Models.Settings
+@using NexaCRM.WebClient.Services.Interfaces
+@inject ISmsService SmsService
 
 <ResponsivePage>
     <h3>SMS Settings</h3>
-    <p>Manage sender numbers and message templates.</p>
+    <p>Manage provider credentials, sender IDs and default templates.</p>
+    <EditForm Model="_settings" OnValidSubmit="SaveAsync" class="sms-settings-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-field">
+            <label for="providerKey">Provider API Key</label>
+            <InputText id="providerKey" @bind-Value="_settings.ProviderApiKey" class="input" />
+            <ValidationMessage For="@(() => _settings.ProviderApiKey)" />
+        </div>
+        <div class="form-field">
+            <label for="providerSecret">Provider API Secret</label>
+            <InputText id="providerSecret" @bind-Value="_settings.ProviderApiSecret" type="password" class="input" />
+            <ValidationMessage For="@(() => _settings.ProviderApiSecret)" />
+        </div>
+        <div class="form-field">
+            <label for="senderId">Sender ID</label>
+            <InputText id="senderId" @bind-Value="_settings.SenderId" class="input" maxlength="11" />
+            <ValidationMessage For="@(() => _settings.SenderId)" />
+        </div>
+        <div class="form-field">
+            <label for="defaultTemplate">Default Template</label>
+            <InputSelect id="defaultTemplate" @bind-Value="_settings.DefaultTemplate" class="input">
+                <option value="">Select template</option>
+                @foreach (var template in _settings.Templates)
+                {
+                    <option value="@template">@template</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => _settings.DefaultTemplate)" />
+        </div>
+        <button type="submit" class="save-button">Save</button>
+    </EditForm>
 </ResponsivePage>
+
+@code {
+    private SmsSettings _settings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _settings = await SmsService.GetSettingsAsync() ?? new SmsSettings();
+    }
+
+    private async Task SaveAsync()
+    {
+        await SmsService.SaveSettingsAsync(_settings);
+    }
+}
