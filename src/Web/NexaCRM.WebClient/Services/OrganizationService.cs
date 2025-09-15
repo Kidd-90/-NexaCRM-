@@ -12,6 +12,7 @@ public class OrganizationService : IOrganizationService
     // Temporary in-memory user list for demonstration; replace with API call if needed
     private readonly List<OrganizationUser> _users = new List<OrganizationUser>();
 
+
     private readonly HttpClient _httpClient;
     public OrganizationService(HttpClient httpClient)
     {
