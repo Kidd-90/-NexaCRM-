@@ -93,4 +93,10 @@
   <data name="AlreadyHaveAccount" xml:space="preserve">
     <value>Already have an account? Log in</value>
   </data>
+  <data name="RegistrationSuccessful" xml:space="preserve">
+    <value>Registration successful.</value>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>Registration failed: {0}</value>
+  </data>
 </root>

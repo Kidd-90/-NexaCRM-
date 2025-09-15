@@ -21,5 +21,8 @@ public class OrganizationService : IOrganizationService
 
     public Task SetSystemAdministratorAsync(string userId) =>
         Task.CompletedTask;
+
+    public Task RegisterUserAsync(NexaCRM.WebClient.Models.NewUser user) =>
+        Task.CompletedTask;
 }
 

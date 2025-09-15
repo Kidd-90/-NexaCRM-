@@ -1,0 +1,77 @@
+.register-card {
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    box-shadow: 0 25px 50px var(--shadow-strong);
+    transition: all var(--transition-normal);
+}
+
+.register-header {
+    color: var(--text-primary);
+}
+
+.register-form-label {
+    color: var(--text-primary);
+}
+
+.register-form-input {
+    background-color: var(--surface-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.register-form-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.register-form-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.register-button {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: all var(--transition-fast);
+}
+
+.register-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+.register-link {
+    color: var(--secondary-color);
+    transition: color var(--transition-fast);
+}
+
+.register-link:hover {
+    color: var(--primary-hover);
+}
+
+.error-message {
+    background-color: var(--error-bg, #fef2f2);
+    border-color: var(--error-border, #fecaca);
+    color: var(--error-text, #dc2626);
+    transition: all var(--transition-fast);
+}
+
+[data-theme="dark"] .error-message {
+    --error-bg: #7f1d1d;
+    --error-border: #dc2626;
+    --error-text: #fca5a5;
+}
+
+.success-message {
+    background-color: var(--success-bg, #dcfce7);
+    border-color: var(--success-border, #86efac);
+    color: var(--success-text, #166534);
+    transition: all var(--transition-fast);
+}
+
+[data-theme="dark"] .success-message {
+    --success-bg: #064e3b;
+    --success-border: #16a34a;
+    --success-text: #bbf7d0;
+}
