@@ -8,7 +8,7 @@ public record BulkSmsRequest(IList<string> Recipients, string Message)
     public BulkSmsRequest() : this(new List<string>(), string.Empty) { }
 }
 
-public record SmsHistoryItem(string Recipient, string Message, DateTime SentAt);
+public record SmsHistoryItem(string Recipient, string Message, DateTime SentAt, string Status);
 
 public record SmsScheduleItem(DateTime ScheduledAt, BulkSmsRequest Request)
 {

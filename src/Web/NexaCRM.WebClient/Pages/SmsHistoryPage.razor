@@ -1,6 +1,83 @@
 @page "/sms/history"
+@using NexaCRM.WebClient.Models.Sms
 
 <ResponsivePage>
     <h3>SMS History</h3>
-    <p>Review SMS delivery history.</p>
+
+    <div class="mb-3">
+        <div class="row g-2 sms-filters">
+            <div class="col-12 col-md">
+                <input type="date" class="form-control" @bind="startDate" @bind:after="ResetPage" />
+            </div>
+            <div class="col-12 col-md">
+                <input type="date" class="form-control" @bind="endDate" @bind:after="ResetPage" />
+            </div>
+            <div class="col-12 col-md">
+                <input class="form-control" placeholder="Recipient" @bind="recipient" @bind:event="oninput" @bind:after="ResetPage" />
+            </div>
+            <div class="col-12 col-md">
+                <select class="form-select" @bind="status" @bind:after="ResetPage">
+                    <option value="">All</option>
+                    <option>Sent</option>
+                    <option>Failed</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-auto text-md-end">
+                <button class="btn btn-secondary w-100 w-md-auto" @onclick="ExportCsv">Export CSV</button>
+            </div>
+        </div>
+    </div>
+
+    @if (history == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="d-none d-md-block">
+            <div class="table-responsive">
+                <table class="table table-striped sms-history-table">
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Message</th>
+                            <th>Sent At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in PagedHistory)
+                        {
+                            <tr>
+                                <td>@item.Recipient</td>
+                                <td>@item.Message</td>
+                                <td>@item.SentAt.ToLocalTime()</td>
+                                <td>@item.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="sms-history-mobile d-md-none">
+            @foreach (var item in PagedHistory)
+            {
+                <div class="card sms-history-card">
+                    <div class="card-body">
+                        <div><strong>Recipient:</strong> @item.Recipient</div>
+                        <div class="sms-message"><strong>Message:</strong> @item.Message</div>
+                        <div><strong>Sent At:</strong> @item.SentAt.ToLocalTime()</div>
+                        <div><strong>Status:</strong> @item.Status</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 pagination-controls">
+            <button class="btn btn-outline-primary w-100 w-md-auto" @onclick="PrevPage" disabled="@(_currentPage == 1)">Previous</button>
+            <span>Page @_currentPage of @TotalPages</span>
+            <button class="btn btn-outline-primary w-100 w-md-auto" @onclick="NextPage" disabled="@(_currentPage == TotalPages)">Next</button>
+        </div>
+    }
 </ResponsivePage>
