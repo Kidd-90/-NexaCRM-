@@ -1,6 +1,108 @@
 @page "/schedule/sms"
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@using NexaCRM.WebClient.Models.Sms
+@using NexaCRM.WebClient.Services.Interfaces
+@inject ISmsService SmsService
 
 <ResponsivePage>
-    <h3>SMS Schedule</h3>
-    <p>Register and view scheduled SMS messages.</p>
+    <h3 class="mb-4">SMS Schedule</h3>
+
+    <EditForm Model="_form" OnValidSubmit="ScheduleAsync" class="schedule-form">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label class="form-label">Recipients (comma separated)</label>
+            <InputText class="form-control" @bind-Value="_form.Recipients" placeholder="01012345678, 01098765432" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Message</label>
+            <InputTextArea class="form-control" @bind-Value="_form.Message" rows="3" placeholder="Enter your message" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Send Time</label>
+            <div class="date-time-group d-flex flex-column flex-sm-row">
+                <InputDate class="form-control" @bind-Value="_form.SendDate" />
+                <InputText type="time" class="form-control ms-sm-2 mt-2 mt-sm-0" @bind-Value="_form.SendTime" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 w-sm-auto">Schedule</button>
+    </EditForm>
+
+    <h4 class="mt-4">Upcoming Messages</h4>
+
+    @if (schedules.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped schedule-table">
+                <thead>
+                    <tr>
+                        <th>Recipients</th>
+                        <th>Message</th>
+                        <th>Send At</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in schedules)
+                    {
+                        <tr>
+                            <td>@string.Join(", ", s.Request.Recipients)</td>
+                            <td>@s.Request.Message</td>
+                            <td>@s.ScheduledAt.ToString("g")</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" @onclick="() => CancelAsync(s.Id)">Cancel</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p>No upcoming messages.</p>
+    }
 </ResponsivePage>
+
+@code {
+    private ScheduleForm _form = new();
+    private List<SmsScheduleItem> schedules = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSchedules();
+    }
+
+    private async Task LoadSchedules()
+    {
+        schedules = (await SmsService.GetUpcomingSchedulesAsync()).ToList();
+    }
+
+    private async Task ScheduleAsync()
+    {
+        if (TimeSpan.TryParse(_form.SendTime, out var time))
+        {
+            var recipients = _form.Recipients.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(r => r.Trim()).ToList();
+            var schedule = new SmsScheduleItem(Guid.NewGuid(), _form.SendDate.Date.Add(time), new BulkSmsRequest(recipients, _form.Message));
+            await SmsService.ScheduleAsync(schedule);
+            _form = new();
+            await LoadSchedules();
+        }
+    }
+
+    private async Task CancelAsync(Guid id)
+    {
+        await SmsService.CancelAsync(id);
+        await LoadSchedules();
+    }
+
+    private class ScheduleForm
+    {
+        public string Recipients { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public DateTime SendDate { get; set; } = DateTime.Today;
+        public string SendTime { get; set; } = "09:00";
+    }
+}

@@ -10,8 +10,8 @@ public record BulkSmsRequest(IList<string> Recipients, string Message)
 
 public record SmsHistoryItem(string Recipient, string Message, DateTime SentAt, string Status);
 
-public record SmsScheduleItem(DateTime ScheduledAt, BulkSmsRequest Request)
+public record SmsScheduleItem(Guid Id, DateTime ScheduledAt, BulkSmsRequest Request, bool IsCancelled = false)
 {
-    public SmsScheduleItem() : this(DateTime.UtcNow, new BulkSmsRequest()) { }
+    public SmsScheduleItem() : this(Guid.NewGuid(), DateTime.UtcNow, new BulkSmsRequest()) { }
 }
 
