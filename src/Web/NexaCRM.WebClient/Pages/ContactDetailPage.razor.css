@@ -1,0 +1,25 @@
+.history-item {
+    position: relative;
+    padding: 10px 10px 10px 40px;
+    border-left: 2px solid #e7ecf3;
+}
+.history-icon {
+    position: absolute;
+    left: -12px;
+    top: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #0d6efd;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.history-item-body {
+    font-size: 0.95rem;
+}
+.history-item-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
