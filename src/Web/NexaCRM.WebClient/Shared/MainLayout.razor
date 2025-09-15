@@ -80,7 +80,11 @@
 
     protected override void OnInitialized()
     {
-        NavigationManager.LocationChanged += async (_, __) => await UpdatePageTitle();
+        NavigationManager.LocationChanged += async (_, __) =>
+        {
+            await UpdatePageTitle();
+            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+        };
     }
 }
 
