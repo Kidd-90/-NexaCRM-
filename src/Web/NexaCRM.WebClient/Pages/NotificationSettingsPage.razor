@@ -1,13 +1,16 @@
 @page "/notification-settings-page"
 @using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.WebClient.Models.Settings
 @inject IStringLocalizer<NotificationSettingsPage> Localizer
+@inject INotificationService NotificationService
 
 <div
       class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden"
       style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(77,106,153)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Inter, &quot;Noto Sans&quot;, sans-serif;"
     >
       <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-4 md:px-10 py-3">
           <div class="flex items-center gap-4 text-[#0e131b]">
             <div class="size-4">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,8 +30,13 @@
             </div>
             <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
           </div>
-          <div class="flex flex-1 justify-end gap-8">
-            <div class="flex items-center gap-9">
+          <div class="flex flex-1 items-center justify-end gap-4 md:gap-8">
+            <button class="md:hidden p-2" @onclick="ToggleMobileMenu" aria-label="Toggle navigation">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M40 60h176a8 8 0 0 1 0 16H40a8 8 0 0 1 0-16Zm0 60h176a8 8 0 0 1 0 16H40a8 8 0 0 1 0-16Zm176 76H40a8 8 0 0 1 0-16h176a8 8 0 0 1 0 16Z"></path>
+              </svg>
+            </button>
+            <div class="hidden md:flex items-center gap-9">
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Sales"]</a>
               <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
@@ -66,16 +74,27 @@
             ></div>
           </div>
         </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
+        @if (mobileMenuOpen)
+        {
+          <nav class="md:hidden flex flex-col gap-2 border-b border-solid border-b-[#e7ecf3] px-4 py-3">
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Sales"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Service"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
+            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Analytics"]</a>
+          </nav>
+        }
+        <div class="px-4 md:px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] w-full flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-2 sm:p-4">
               <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["NotificationSettings"]</p>
+                <p class="text-[#0e131b] tracking-light text-2xl md:text-[32px] font-bold leading-tight">@Localizer["NotificationSettings"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["NotificationSettingsDescription"]</p>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["NewLeads"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["NewLeads"]</h3>
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewLeadCreated"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["NewLeadCreatedDescription"]</p>
@@ -85,11 +104,11 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.NewLeadCreated" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["LeadStatusUpdated"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["LeadStatusUpdatedDescription"]</p>
@@ -99,12 +118,12 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.LeadStatusUpdated" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["DealUpdates"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["DealUpdates"]</h3>
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["DealStageChanged"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["DealStageChangedDescription"]</p>
@@ -114,11 +133,11 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.DealStageChanged" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["DealValueUpdated"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["DealValueUpdatedDescription"]</p>
@@ -128,12 +147,12 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.DealValueUpdated" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["TaskAssignments"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["TaskAssignments"]</h3>
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewTaskAssigned"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["NewTaskAssignedDescription"]</p>
@@ -143,11 +162,11 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.NewTaskAssigned" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["TaskDueDateReminder"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["TaskDueDateReminderDescription"]</p>
@@ -157,12 +176,12 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.TaskDueDateReminder" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["NotificationChannels"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["NotificationChannels"]</h3>
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["EmailNotifications"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["EmailNotificationsDescription"]</p>
@@ -172,11 +191,11 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.EmailNotifications" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["InAppNotifications"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["InAppNotificationsDescription"]</p>
@@ -186,11 +205,11 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.InAppNotifications" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2 justify-between">
+            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
               <div class="flex flex-col justify-center">
                 <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["PushNotifications"]</p>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["PushNotificationsDescription"]</p>
@@ -200,13 +219,13 @@
                   class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
                 >
                   <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" />
+                  <input type="checkbox" class="invisible absolute" @bind="settings.PushNotifications" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["NotificationFrequency"]</h3>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["NotificationFrequency"]</h3>
+            <div class="flex max-w-full md:max-w-[480px] flex-wrap items-end gap-4 px-2 sm:px-4 py-3">
+              <label class="flex flex-col min-w-0 flex-1">
                 <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["Frequency"]</p>
                 <select
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 bg-[image:--select-button-svg] placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
@@ -217,9 +236,9 @@
                 </select>
               </label>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["SnoozeOptions"]</h3>
-            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-              <label class="flex flex-col min-w-40 flex-1">
+            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["SnoozeOptions"]</h3>
+            <div class="flex max-w-full md:max-w-[480px] flex-wrap items-end gap-4 px-2 sm:px-4 py-3">
+              <label class="flex flex-col min-w-0 flex-1">
                 <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["SnoozeDuration"]</p>
                 <select
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 bg-[image:--select-button-svg] placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
@@ -230,14 +249,41 @@
                 </select>
               </label>
             </div>
-            <div class="flex px-4 py-3 justify-end">
+            <div class="flex px-2 sm:px-4 py-3 justify-end">
               <button
                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                @onclick="SaveSettings"
               >
                 <span class="truncate">@Localizer["SaveSettings"]</span>
               </button>
             </div>
-          </div>
-        </div>
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+              <div class="px-2 sm:px-4 py-2 text-green-600 text-sm">@statusMessage</div>
+            }
       </div>
     </div>
+  </div>
+</div>
+
+@code {
+    private NotificationSettings settings = new();
+    private string? statusMessage;
+    private bool mobileMenuOpen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await NotificationService.GetSettingsAsync();
+    }
+
+    private async Task SaveSettings()
+    {
+        await NotificationService.SaveSettingsAsync(settings);
+        statusMessage = Localizer["SettingsSaved"];
+    }
+
+    private void ToggleMobileMenu()
+    {
+        mobileMenuOpen = !mobileMenuOpen;
+    }
+}
