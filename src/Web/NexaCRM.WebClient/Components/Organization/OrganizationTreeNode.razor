@@ -1,0 +1,44 @@
+<li class="organization-node" @key="Node.Unit.Id">
+    <div class="node-content d-flex align-items-center flex-wrap gap-1">
+        @if (Node.Children.Any())
+        {
+            <span @onclick="() => Toggle(Node)" class="toggle-icon me-1" role="button" aria-label="Toggle children">
+                @(Node.IsExpanded ? "▼" : "▶")
+            </span>
+        }
+        else
+        {
+            <span class="me-1"></span>
+        }
+        <span class="node-name">@Node.Unit.Name</span>
+        <div class="node-actions btn-group btn-group-sm ms-auto">
+            <button class="btn btn-sm btn-link p-0" title="Add" @onclick="() => AddChild.InvokeAsync(Node)">
+                <span class="oi oi-plus me-1"></span><span class="d-none d-sm-inline">Add</span>
+            </button>
+            <button class="btn btn-sm btn-link p-0" title="Edit" @onclick="() => Edit.InvokeAsync(Node)">
+                <span class="oi oi-pencil me-1"></span><span class="d-none d-sm-inline">Edit</span>
+            </button>
+            <button class="btn btn-sm btn-link p-0 text-danger" title="Delete" @onclick="() => Delete.InvokeAsync(Node)">
+                <span class="oi oi-trash me-1"></span><span class="d-none d-sm-inline">Delete</span>
+            </button>
+        </div>
+    </div>
+    @if (Node.IsExpanded && Node.Children.Any())
+    {
+        <ul class="list-unstyled ms-3">
+            @foreach (var child in Node.Children)
+            {
+                <OrganizationTreeNode @key="child.Unit.Id" Node="child" AddChild="AddChild" Edit="Edit" Delete="Delete" />
+            }
+        </ul>
+    }
+</li>
+
+@code {
+    [Parameter] public OrganizationNode Node { get; set; } = default!;
+    [Parameter] public EventCallback<OrganizationNode> AddChild { get; set; }
+    [Parameter] public EventCallback<OrganizationNode> Edit { get; set; }
+    [Parameter] public EventCallback<OrganizationNode> Delete { get; set; }
+
+    private void Toggle(OrganizationNode node) => node.IsExpanded = !node.IsExpanded;
+}

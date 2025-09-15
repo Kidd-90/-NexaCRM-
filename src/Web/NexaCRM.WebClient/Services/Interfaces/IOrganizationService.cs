@@ -7,8 +7,9 @@ namespace NexaCRM.WebClient.Services.Interfaces;
 
 public interface IOrganizationService
 {
-    Task<IEnumerable<OrganizationUnit>> GetOrganizationStructureAsync();
+    Task<IEnumerable<OrganizationUnit>> GetStructureAsync();
     Task SaveOrganizationUnitAsync(OrganizationUnit unit);
+    Task DeleteOrganizationUnitAsync(int id);
     Task<IEnumerable<OrganizationStats>> GetOrganizationStatsAsync();
     Task SetSystemAdministratorAsync(string userId);
     Task<IEnumerable<AgentModel>> GetAdminsAsync();

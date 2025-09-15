@@ -1,62 +1,144 @@
 @page "/organization/structure"
-@using NexaCRM.WebClient.Models.Organization
-@using NexaCRM.WebClient.Services.Interfaces
-@using Microsoft.AspNetCore.Components.Forms
-@using System.Linq
 @inject IOrganizationService OrganizationService
 
 <ResponsivePage>
     <h3>Organization Structure</h3>
     <p>Manage production companies, teams and members.</p>
 
-    <EditForm Model="unit" OnValidSubmit="SaveUnit" class="row g-3">
-        <DataAnnotationsValidator />
-        <div class="col-12 col-md-6">
-            <label for="name" class="form-label">Name</label>
-            <InputText id="name" class="form-control" @bind-Value="unit.Name" />
-            <ValidationMessage For="@(() => unit.Name)" />
-        </div>
-        <div class="col-12 col-md-6">
-            <label for="parent" class="form-label">Parent Unit</label>
-            <InputSelect id="parent" class="form-select" @bind-Value="unit.ParentId">
-                <option value="">(None)</option>
-                @foreach (var existing in units)
-                {
-                    <option value="@existing.Id">@existing.Name</option>
-                }
-            </InputSelect>
-        </div>
-        <div class="col-12 text-md-end">
-            <button type="submit" class="btn btn-primary w-100 w-md-auto">Save</button>
-        </div>
-    </EditForm>
-
-    @if (units.Any())
+    @if (_nodes is null)
     {
-        <div class="list-group unit-list mt-4">
-            @foreach (var existing in units)
+        <p>Loading...</p>
+    }
+    else
+    {
+        <ul class="organization-tree list-unstyled">
+            @foreach (var node in _nodes)
             {
-                <div class="list-group-item unit-list-item">@existing.Name</div>
+                <OrganizationTreeNode Node="node" AddChild="StartAdd" Edit="StartEdit" Delete="StartDelete" />
             }
+        </ul>
+    }
+
+    @if (_showDialog)
+    {
+        <div class="modal show d-block" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@_dialogTitle</h5>
+                        <button type="button" class="btn-close" @onclick="CloseDialog"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (_mode == DialogMode.Delete)
+                        {
+                            <p>Are you sure you want to delete '@_current?.Unit.Name'?</p>
+                        }
+                        else
+                        {
+                            <input class="form-control" @bind="_name" />
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="CloseDialog">Cancel</button>
+                        <button class="btn btn-primary" @onclick="ConfirmAsync">Confirm</button>
+                    </div>
+                </div>
+            </div>
         </div>
+        <div class="modal-backdrop fade show"></div>
     }
 </ResponsivePage>
 
 @code {
-    private List<OrganizationUnit> units = new();
-    private OrganizationUnit unit = new();
+    private List<OrganizationNode>? _nodes;
+    private bool _showDialog;
+    private DialogMode _mode;
+    private string _dialogTitle = string.Empty;
+    private string _name = string.Empty;
+    private OrganizationNode? _current;
 
     protected override async Task OnInitializedAsync()
     {
-        var existing = await OrganizationService.GetOrganizationStructureAsync();
-        units = existing.ToList();
+        var units = (await OrganizationService.GetStructureAsync()).ToList();
+        var lookup = units.ToLookup(u => u.ParentId);
+        _nodes = BuildTree(null);
+
+        List<OrganizationNode> BuildTree(int? parentId) =>
+            lookup[parentId]
+                .Select(u => new OrganizationNode { Unit = u, Children = BuildTree(u.Id) })
+                .ToList();
     }
 
-    private async Task SaveUnit()
+    private void StartAdd(OrganizationNode parent)
     {
-        await OrganizationService.SaveOrganizationUnitAsync(unit);
-        unit = new OrganizationUnit();
-        var existing = await OrganizationService.GetOrganizationStructureAsync();
-        units = existing.ToList();
+        _mode = DialogMode.Create;
+        _current = parent;
+        _name = string.Empty;
+        _dialogTitle = "Add Unit";
+        _showDialog = true;
+    }
+
+    private void StartEdit(OrganizationNode node)
+    {
+        _mode = DialogMode.Edit;
+        _current = node;
+        _name = node.Unit.Name;
+        _dialogTitle = "Edit Unit";
+        _showDialog = true;
+    }
+
+    private void StartDelete(OrganizationNode node)
+    {
+        _mode = DialogMode.Delete;
+        _current = node;
+        _dialogTitle = "Delete Unit";
+        _showDialog = true;
+    }
+
+    private void CloseDialog() => _showDialog = false;
+
+    private async Task ConfirmAsync()
+    {
+        if (_current is null) return;
+
+        switch (_mode)
+        {
+            case DialogMode.Create:
+                var newUnit = new OrganizationUnit(0, _name, _current.Unit.Id);
+                await OrganizationService.SaveOrganizationUnitAsync(newUnit);
+                var newNode = new OrganizationNode { Unit = newUnit };
+                _current.Children.Add(newNode);
+                _current.IsExpanded = true;
+                break;
+            case DialogMode.Edit:
+                var updated = _current.Unit with { Name = _name };
+                await OrganizationService.SaveOrganizationUnitAsync(updated);
+                _current.Unit = updated;
+                break;
+            case DialogMode.Delete:
+                await OrganizationService.DeleteOrganizationUnitAsync(_current.Unit.Id);
+                RemoveNode(_nodes!, _current);
+                break;
+        }
+
+        _showDialog = false;
+    }
+
+    private void RemoveNode(List<OrganizationNode> list, OrganizationNode node)
+    {
+        if (list.Remove(node))
+            return;
+
+        foreach (var item in list)
+        {
+            RemoveNode(item.Children, node);
+        }
+    }
+
+    private enum DialogMode
+    {
+        Create,
+        Edit,
+        Delete
     }
 }

@@ -60,3 +60,20 @@
         padding-top: 3.5rem;
     }
 }
+
+/* Organization tree responsive adjustments */
+.organization-node .toggle-icon {
+    cursor: pointer;
+}
+
+@media (max-width: 576px) {
+    .organization-node .node-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .organization-node .node-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 0.25rem;
+    }
+}
