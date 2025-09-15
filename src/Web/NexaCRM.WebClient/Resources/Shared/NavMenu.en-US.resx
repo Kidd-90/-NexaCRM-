@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
-  </data>
-  <data name="ManagerDashboard" xml:space="preserve">
-    <value>Manager Dashboard</value>
-  </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
-  </data>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
   <data name="AdminDashboard" xml:space="preserve">
     <value>Admin Dashboard</value>
   </data>
-  <data name="Reports" xml:space="preserve">
-    <value>Reports</value>
+  <data name="AllDbList" xml:space="preserve">
+    <value>All DB List</value>
   </data>
-  <data name="SalesPipeline" xml:space="preserve">
-    <value>Sales Pipeline</value>
+  <data name="AssignDb" xml:space="preserve">
+    <value>Assign DB</value>
+  </data>
+  <data name="BasicSettings" xml:space="preserve">
+    <value>Basic Settings</value>
+  </data>
+  <data name="BulkSms" xml:space="preserve">
+    <value>Bulk SMS</value>
+  </data>
+  <data name="CompanyInfo" xml:space="preserve">
+    <value>Company Information</value>
   </data>
   <data name="Contacts" xml:space="preserve">
     <value>Contacts</value>
+  </data>
+  <data name="ConsultationNotes" xml:space="preserve">
+    <value>Consultation Notes</value>
+  </data>
+  <data name="CustomerCenter" xml:space="preserve">
+    <value>Customer Center</value>
   </data>
   <data name="CustomerManagement" xml:space="preserve">
     <value>Customer Management</value>
@@ -33,41 +36,134 @@
   <data name="CustomerSupportDashboard" xml:space="preserve">
     <value>Customer Support Dashboard</value>
   </data>
-  <data name="KnowledgeBase" xml:space="preserve">
-    <value>Knowledge Base</value>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
-  <data name="TicketManagement" xml:space="preserve">
-    <value>Ticket Management</value>
+  <data name="DbAdvanced" xml:space="preserve">
+    <value>DB Advanced</value>
   </data>
-  <data name="FeedbackSurvey" xml:space="preserve">
-    <value>Feedback &amp; Survey</value>
+  <data name="DbCustomerManagement" xml:space="preserve">
+    <value>DB Customer Management</value>
   </data>
-  <data name="SalesManagement" xml:space="preserve">
-    <value>Sales Management</value>
+  <data name="DbDistributionManagement" xml:space="preserve">
+    <value>DB Distribution Management</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
-  </data>
-  <data name="SalesCalendar" xml:space="preserve">
-    <value>Sales Calendar</value>
-  </data>
-  <data name="ConsultationNotes" xml:space="preserve">
-    <value>Consultation Notes</value>
-  </data>
-  <data name="AssignDb" xml:space="preserve">
-    <value>Assign DB</value>
+  <data name="DbDistributionStatus" xml:space="preserve">
+    <value>DB Distribution Status</value>
   </data>
   <data name="DbManagement" xml:space="preserve">
     <value>DB Management</value>
   </data>
-  <data name="AllDbList" xml:space="preserve">
-    <value>All DB List</value>
+  <data name="Faq" xml:space="preserve">
+    <value>FAQ</value>
+  </data>
+  <data name="FeedbackSurvey" xml:space="preserve">
+    <value>Feedback &amp; Survey</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="KnowledgeBase" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="ManagerDashboard" xml:space="preserve">
+    <value>Manager Dashboard</value>
+  </data>
+  <data name="MyAssignmentHistory" xml:space="preserve">
+    <value>My Assignment History</value>
+  </data>
+  <data name="MyDbList" xml:space="preserve">
+    <value>My DB List</value>
   </data>
   <data name="NewDbList" xml:space="preserve">
     <value>New DB List</value>
   </data>
+  <data name="NewlyAssignedDb" xml:space="preserve">
+    <value>Newly Assigned DB</value>
+  </data>
+  <data name="Notices" xml:space="preserve">
+    <value>Notices</value>
+  </data>
+  <data name="NotificationSettings" xml:space="preserve">
+    <value>Notification Settings</value>
+  </data>
+  <data name="OrganizationManagement" xml:space="preserve">
+    <value>Organization Management</value>
+  </data>
+  <data name="OrganizationStats" xml:space="preserve">
+    <value>Organization Statistics</value>
+  </data>
+  <data name="OrganizationStructure" xml:space="preserve">
+    <value>Organization Structure</value>
+  </data>
+  <data name="PersonalInfo" xml:space="preserve">
+    <value>Personal Information</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="SalesCalendar" xml:space="preserve">
+    <value>Sales Calendar</value>
+  </data>
+  <data name="SalesManagement" xml:space="preserve">
+    <value>Sales Management</value>
+  </data>
+  <data name="SalesPipeline" xml:space="preserve">
+    <value>Sales Pipeline</value>
+  </data>
+  <data name="ScheduleManagement" xml:space="preserve">
+    <value>Schedule Management</value>
+  </data>
+  <data name="SecuritySettings" xml:space="preserve">
+    <value>Security Settings</value>
+  </data>
+  <data name="SenderNumbers" xml:space="preserve">
+    <value>Sender Numbers</value>
+  </data>
+  <data name="Sms" xml:space="preserve">
+    <value>SMS</value>
+  </data>
+  <data name="SmsHistory" xml:space="preserve">
+    <value>SMS History</value>
+  </data>
+  <data name="SmsSchedule" xml:space="preserve">
+    <value>SMS Schedule</value>
+  </data>
+  <data name="SmsSettings" xml:space="preserve">
+    <value>SMS Settings</value>
+  </data>
   <data name="StarredDbList" xml:space="preserve">
     <value>Starred DB List</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="StatisticsDashboard" xml:space="preserve">
+    <value>Statistics Dashboard</value>
+  </data>
+  <data name="SystemAdmin" xml:space="preserve">
+    <value>System Administrator</value>
+  </data>
+  <data name="SystemInfo" xml:space="preserve">
+    <value>System Info</value>
+  </data>
+  <data name="SystemInformation" xml:space="preserve">
+    <value>System Information</value>
+  </data>
+  <data name="TeamDbStatus" xml:space="preserve">
+    <value>Team DB Status</value>
+  </data>
+  <data name="TemplateManagement" xml:space="preserve">
+    <value>Template Management</value>
+  </data>
+  <data name="ThemeSettings" xml:space="preserve">
+    <value>Theme Settings</value>
   </data>
   <data name="TodaysAssignedDb" xml:space="preserve">
     <value>Today's Assigned DB</value>
@@ -75,22 +171,7 @@
   <data name="UnassignedDbList" xml:space="preserve">
     <value>Unassigned DB List</value>
   </data>
-  <data name="NewlyAssignedDb" xml:space="preserve">
-    <value>Newly Assigned DB</value>
-  </data>
-  <data name="DbDistributionStatus" xml:space="preserve">
-    <value>DB Distribution Status</value>
-  </data>
-  <data name="MyAssignmentHistory" xml:space="preserve">
-    <value>My Assignment History</value>
-  </data>
-  <data name="TeamDbStatus" xml:space="preserve">
-    <value>Team DB Status</value>
-  </data>
-  <data name="DbAdvanced" xml:space="preserve">
-    <value>DB Advanced</value>
-  </data>
-  <data name="MyDbList" xml:space="preserve">
-    <value>My DB List</value>
+  <data name="UserManagement" xml:space="preserve">
+    <value>User Management</value>
   </data>
 </root>
