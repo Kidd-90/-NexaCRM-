@@ -153,7 +153,7 @@
     box-shadow: 0 2px 4px var(--shadow-light);
 }
 
-.submenu-link .oi {
+.submenu-link i {
     margin-right: 8px;
     font-size: 12px;
 }

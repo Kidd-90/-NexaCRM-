@@ -56,6 +56,9 @@
   </data>
 
   <!-- New Keys for DB Management -->
+  <data name="DbManagement" xml:space="preserve">
+    <value>DB 관리</value>
+  </data>
   <data name="DbCustomerManagement" xml:space="preserve">
     <value>DB 고객관리</value>
   </data>
@@ -100,5 +103,8 @@
   </data>
   <data name="AssignDb" xml:space="preserve">
     <value>DB 배정</value>
+  </data>
+  <data name="DbAdvanced" xml:space="preserve">
+    <value>고급 DB 관리</value>
   </data>
 </root>
