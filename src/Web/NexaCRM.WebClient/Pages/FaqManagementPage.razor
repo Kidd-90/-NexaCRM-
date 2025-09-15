@@ -1,6 +1,135 @@
 @page "/support/faq"
+@using NexaCRM.WebClient.Models.CustomerCenter
+@using NexaCRM.WebClient.Services.Interfaces
+@using System.Linq
+@inject IFaqService FaqService
 
 <ResponsivePage>
     <h3>FAQ Management</h3>
-    <p>Manage frequently asked questions.</p>
+
+    <div class="faq-filter">
+        <label for="categoryFilter">Category:</label>
+        <select id="categoryFilter" @bind="selectedCategory">
+            <option value="">All</option>
+            @foreach (var cat in Categories)
+            {
+                <option value="@cat">@cat</option>
+            }
+        </select>
+    </div>
+
+    <div class="faq-table-container">
+        <table class="faq-table">
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th class="faq-category-header">Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var faq in FilteredFaqs)
+                {
+                    <tr>
+                        <td>@faq.Question</td>
+                        <td class="faq-category-cell">@faq.Category</td>
+                        <td class="faq-actions">
+                            <button type="button" @onclick="() => Edit(faq)">Edit</button>
+                            <button type="button" @onclick="() => MoveUp(faq)" disabled="@IsFirst(faq)">↑</button>
+                            <button type="button" @onclick="() => MoveDown(faq)" disabled="@IsLast(faq)">↓</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <EditForm Model="editItem" OnValidSubmit="Save" class="faq-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label>Category</label>
+            <InputText @bind-Value="editItem.Category" />
+        </div>
+        <div>
+            <label>Question</label>
+            <InputText @bind-Value="editItem.Question" />
+        </div>
+        <div>
+            <label>Answer</label>
+            <InputTextArea @bind-Value="editItem.Answer" />
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" @onclick="NewFaq">New</button>
+    </EditForm>
 </ResponsivePage>
+
+@code {
+    private List<FaqItem> items = new();
+    private FaqItem editItem = new();
+    private string selectedCategory = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await FaqService.GetFaqsAsync();
+    }
+
+    private IEnumerable<FaqItem> FilteredFaqs =>
+        string.IsNullOrEmpty(selectedCategory) ? items : items.Where(f => f.Category == selectedCategory);
+
+    private IEnumerable<string> Categories =>
+        items.Select(f => f.Category).Distinct().OrderBy(c => c);
+
+    private bool IsFirst(FaqItem item) =>
+        items.FindIndex(f => f.Id == item.Id) == 0;
+
+    private bool IsLast(FaqItem item) =>
+        items.FindIndex(f => f.Id == item.Id) == items.Count - 1;
+
+    private void NewFaq()
+    {
+        editItem = new FaqItem();
+    }
+
+    private void Edit(FaqItem item)
+    {
+        editItem = new FaqItem
+        {
+            Id = item.Id,
+            Category = item.Category,
+            Question = item.Question,
+            Answer = item.Answer,
+            Order = item.Order
+        };
+    }
+
+    private async Task Save()
+    {
+        await FaqService.SaveFaqAsync(editItem);
+        items = await FaqService.GetFaqsAsync();
+        editItem = new FaqItem();
+    }
+
+    private async Task MoveUp(FaqItem item)
+    {
+        var index = items.FindIndex(f => f.Id == item.Id);
+        if (index > 0)
+        {
+            (items[index - 1], items[index]) = (items[index], items[index - 1]);
+            await FaqService.ReorderFaqsAsync(items);
+            items = await FaqService.GetFaqsAsync();
+        }
+    }
+
+    private async Task MoveDown(FaqItem item)
+    {
+        var index = items.FindIndex(f => f.Id == item.Id);
+        if (index < items.Count - 1)
+        {
+            (items[index + 1], items[index]) = (items[index], items[index + 1]);
+            await FaqService.ReorderFaqsAsync(items);
+            items = await FaqService.GetFaqsAsync();
+        }
+    }
+}
+
