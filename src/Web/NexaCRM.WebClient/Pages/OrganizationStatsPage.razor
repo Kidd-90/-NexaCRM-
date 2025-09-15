@@ -1,104 +1,74 @@
 @page "/organization/stats"
-@using System.Linq
-@using System.Collections.Generic
-@using NexaCRM.WebClient.Models.Statistics
+@using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Models.Organization
 @using NexaCRM.WebClient.Services.Interfaces
-@inject IStatisticsService StatisticsService
-@inject IJSRuntime JSRuntime
+@using System.Linq
+@inject IOrganizationService OrganizationService
+@inject IStringLocalizer<OrganizationStatsPage> Localizer
 
 <ResponsivePage>
-    <h3>Organization Statistics</h3>
+    <h3>@Localizer["OrganizationStatistics"]</h3>
+    <p>@Localizer["StatisticsDescription"]</p>
 
-    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 mb-4">
-        <select class="form-input w-full sm:min-w-40" @bind="selectedCompany" @bind:after="OnFilterChanged">
-            <option value="">All Companies</option>
-            @foreach (var c in companies)
-            {
-                <option value="@c">@c</option>
-            }
-        </select>
-        <select class="form-input w-full sm:min-w-40" @bind="selectedTeam" @bind:after="OnFilterChanged">
-            <option value="">All Teams</option>
-            @foreach (var t in teams)
-            {
-                <option value="@t">@t</option>
-            }
-        </select>
-        <select class="form-input w-full sm:min-w-40" @bind="selectedMember" @bind:after="OnFilterChanged">
-            <option value="">All Members</option>
-            @foreach (var m in members)
-            {
-                <option value="@m">@m</option>
-            }
-        </select>
-        <button class="flex items-center justify-center w-full sm:w-auto rounded-lg bg-[#2a74ea] text-slate-50 px-4" @onclick="Export">Export</button>
-        <button class="flex items-center justify-center w-full sm:w-auto rounded-lg bg-[#e7ecf3] px-4" @onclick="Print">Print</button>
-    </div>
+    @if (stats == null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">@Localizer["Loading"]</span>
+            </div>
+        </div>
+    }
+    else if (!stats.Any())
+    {
+        <p>@Localizer["NoStatistics"]</p>
+    }
+    else
+    {
+        <div class="desktop-table-view">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["UnitName"]</th>
+                            <th>@Localizer["MemberCount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in stats)
+                        {
+                            <tr>
+                                <td>@stat.UnitName</td>
+                                <td>@stat.MemberCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div class="stat-card flex flex-col gap-2 rounded-lg p-4 bg-[#e7ecf3] text-center">
-            <p>Total Members</p>
-            <p class="text-xl font-bold">@summary.TotalMembers</p>
+        <div class="mobile-card-view">
+            @foreach (var stat in stats)
+            {
+                <div class="stat-card">
+                    <div class="card-info-row">
+                        <span class="card-info-label">@Localizer["UnitName"]</span>
+                        <span class="card-info-value">@stat.UnitName</span>
+                    </div>
+                    <div class="card-info-row">
+                        <span class="card-info-label">@Localizer["MemberCount"]</span>
+                        <span class="card-info-value">@stat.MemberCount</span>
+                    </div>
+                </div>
+            }
         </div>
-        <div class="stat-card flex flex-col gap-2 rounded-lg p-4 bg-[#e7ecf3] text-center">
-            <p>Total Logins</p>
-            <p class="text-xl font-bold">@summary.TotalLogins</p>
-        </div>
-        <div class="stat-card flex flex-col gap-2 rounded-lg p-4 bg-[#e7ecf3] text-center">
-            <p>Total Downloads</p>
-            <p class="text-xl font-bold">@summary.TotalDownloads</p>
-        </div>
-    </div>
-
-    <div class="chart-container w-full flex flex-col gap-2 rounded-lg border border-[#d0d9e7] p-4 overflow-x-auto">
-        <p>Summary Chart</p>
-        <div class="grid min-w-[240px] min-h-[150px] grid-flow-col gap-3 grid-rows-[1fr_auto] items-end justify-items-center px-1">
-            <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height:@BarHeight(summary.TotalMembers)"></div>
-            <p class="text-xs font-bold text-[#4d6a99]">Members</p>
-            <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height:@BarHeight(summary.TotalLogins)"></div>
-            <p class="text-xs font-bold text-[#4d6a99]">Logins</p>
-            <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height:@BarHeight(summary.TotalDownloads)"></div>
-            <p class="text-xs font-bold text-[#4d6a99]">Downloads</p>
-        </div>
-    </div>
+    }
 </ResponsivePage>
 
 @code {
-    private StatisticsSummary summary = new(0, 0, 0);
-    private string? selectedCompany;
-    private string? selectedTeam;
-    private string? selectedMember;
-
-    private readonly List<string> companies = new() { "Alpha", "Beta" };
-    private readonly List<string> teams = new() { "Team 1", "Team 2" };
-    private readonly List<string> members = new() { "Alice", "Bob" };
+    private IEnumerable<OrganizationStats>? stats;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        stats = await OrganizationService.GetOrganizationStatsAsync();
     }
-
-    private async Task OnFilterChanged() => await LoadData();
-
-    private async Task LoadData()
-    {
-        summary = await StatisticsService.GetStatisticsAsync(selectedCompany, selectedTeam, selectedMember);
-    }
-
-    private string BarHeight(int value)
-    {
-        var max = new[] { summary.TotalMembers, summary.TotalLogins, summary.TotalDownloads }.Max();
-        if (max == 0) return "0%";
-        var pct = (int)((double)value / max * 100);
-        return pct + "%";
-    }
-
-    private async Task Export()
-    {
-        var csv = $"Metric,Value\nTotal Members,{summary.TotalMembers}\nTotal Logins,{summary.TotalLogins}\nTotal Downloads,{summary.TotalDownloads}";
-        await JSRuntime.InvokeVoidAsync("downloadFile", "organization-stats.csv", csv);
-    }
-
-    private async Task Print() => await JSRuntime.InvokeVoidAsync("print");
 }
-
