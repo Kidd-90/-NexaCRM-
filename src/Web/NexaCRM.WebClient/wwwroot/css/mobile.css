@@ -148,12 +148,17 @@
     }
 
     .mobile-layout main {
-        padding: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top)) 1rem calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+        margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
+        padding: 1rem 1rem calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
         background: transparent;
         min-height: calc(100vh - var(--mobile-header-height, 4.5rem) - var(--mobile-footer-height, 5rem) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
         box-sizing: border-box;
-        scroll-padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
+        scroll-padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + 1rem);
         scroll-padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+    }
+
+    .mobile-layout .content {
+        scroll-margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
     }
 
     .mobile-layout .mobile-fixed-footer {
