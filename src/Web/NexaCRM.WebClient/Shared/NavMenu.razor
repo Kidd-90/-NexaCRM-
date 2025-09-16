@@ -33,227 +33,309 @@
             <AuthorizeView Context="mainContext">
                 <Authorized>
                     <!-- 📊 Dashboard -->
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
-                            <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i> @Localizer["Dashboard"]
-                        </NavLink>
-                    </div>
+                    <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="main-dashboard" @onclick="CloseNavMenu">
+                                <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i> @Localizer["Dashboard"]
+                            </NavLink>
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 1. Basic Settings -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleBasicSettingsSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-gear me-2" aria-hidden="true"></i>
-                            @Localizer["BasicSettings"]
-                            <span class="submenu-toggle @(showBasicSettingsSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showBasicSettingsSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="settings/company-info" @onclick="CloseNavMenu">
-                                    <i class="bi bi-building" aria-hidden="true"></i> @Localizer["CompanyInfo"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="profile-settings-page" @onclick="CloseNavMenu">
-                                    <i class="bi bi-person" aria-hidden="true"></i> @Localizer["PersonalInfo"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="settings-page" @onclick="CloseNavMenu">
-                                    <i class="bi bi-palette" aria-hidden="true"></i> @Localizer["ThemeSettings"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="settings/security" @onclick="CloseNavMenu">
-                                    <i class="bi bi-shield-lock" aria-hidden="true"></i> @Localizer["SecuritySettings"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="settings/sms" @onclick="CloseNavMenu">
-                                    <i class="bi bi-chat-dots" aria-hidden="true"></i> @Localizer["SmsSettings"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="sms/senders" @onclick="CloseNavMenu">
-                                    <i class="bi bi-telephone" aria-hidden="true"></i> @Localizer["SenderNumbers"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="email-template-builder" @onclick="CloseNavMenu">
-                                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["TemplateManagement"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="notification-settings-page" @onclick="CloseNavMenu">
-                                    <i class="bi bi-bell" aria-hidden="true"></i> @Localizer["NotificationSettings"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Sales,Manager,Admin,Developer">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleBasicSettingsSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-gear me-2" aria-hidden="true"></i>
+                                @Localizer["BasicSettings"]
+                                <span class="submenu-toggle @(showBasicSettingsSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showBasicSettingsSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="settings/company-info" @onclick="CloseNavMenu">
+                                            <i class="bi bi-building" aria-hidden="true"></i> @Localizer["CompanyInfo"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="profile-settings-page" @onclick="CloseNavMenu">
+                                            <i class="bi bi-person" aria-hidden="true"></i> @Localizer["PersonalInfo"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="settings-page" @onclick="CloseNavMenu">
+                                            <i class="bi bi-palette" aria-hidden="true"></i> @Localizer["ThemeSettings"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="settings/security" @onclick="CloseNavMenu">
+                                            <i class="bi bi-shield-lock" aria-hidden="true"></i> @Localizer["SecuritySettings"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="settings/sms" @onclick="CloseNavMenu">
+                                            <i class="bi bi-chat-dots" aria-hidden="true"></i> @Localizer["SmsSettings"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="sms/senders" @onclick="CloseNavMenu">
+                                            <i class="bi bi-telephone" aria-hidden="true"></i> @Localizer["SenderNumbers"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="email-template-builder" @onclick="CloseNavMenu">
+                                            <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["TemplateManagement"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="notification-settings-page" @onclick="CloseNavMenu">
+                                            <i class="bi bi-bell" aria-hidden="true"></i> @Localizer["NotificationSettings"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 2. Organization Management -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleOrganizationSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-people me-2" aria-hidden="true"></i>
-                            @Localizer["OrganizationManagement"]
-                            <span class="submenu-toggle @(showOrganizationSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showOrganizationSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="organization/structure" @onclick="CloseNavMenu">
-                                    <i class="bi bi-diagram-3" aria-hidden="true"></i> @Localizer["OrganizationStructure"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="user-registration-page" @onclick="CloseNavMenu">
-                                    <i class="bi bi-person-plus" aria-hidden="true"></i> @Localizer["UserManagement"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="organization/stats" @onclick="CloseNavMenu">
-                                    <i class="bi bi-bar-chart" aria-hidden="true"></i> @Localizer["OrganizationStats"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="organization/system-admin" @onclick="CloseNavMenu">
-                                    <i class="bi bi-person-gear" aria-hidden="true"></i> @Localizer["SystemAdmin"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Manager,Admin">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleOrganizationSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-people me-2" aria-hidden="true"></i>
+                                @Localizer["OrganizationManagement"]
+                                <span class="submenu-toggle @(showOrganizationSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showOrganizationSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="organization/structure" @onclick="CloseNavMenu">
+                                            <i class="bi bi-diagram-3" aria-hidden="true"></i> @Localizer["OrganizationStructure"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="user-registration-page" @onclick="CloseNavMenu">
+                                            <i class="bi bi-person-plus" aria-hidden="true"></i> @Localizer["UserManagement"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="organization/stats" @onclick="CloseNavMenu">
+                                            <i class="bi bi-bar-chart" aria-hidden="true"></i> @Localizer["OrganizationStats"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="organization/system-admin" @onclick="CloseNavMenu">
+                                            <i class="bi bi-person-gear" aria-hidden="true"></i> @Localizer["SystemAdmin"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 3. DB Management -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbManagementSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-database me-2" aria-hidden="true"></i>
-                            @Localizer["DbManagement"]
-                            <span class="submenu-toggle @(showDbManagementSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showDbManagementSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
-                                    <i class="bi bi-table" aria-hidden="true"></i> @Localizer["AllDbList"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/customer/new" @onclick="CloseNavMenu">
-                                    <i class="bi bi-plus-circle" aria-hidden="true"></i> @Localizer["NewDbList"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/customer/starred" @onclick="CloseNavMenu">
-                                    <i class="bi bi-star" aria-hidden="true"></i> @Localizer["StarredDbList"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/customer/assigned-today" @onclick="CloseNavMenu">
-                                    <i class="bi bi-calendar-day" aria-hidden="true"></i> @Localizer["TodaysAssignedDb"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
-                                    <i class="bi bi-x-circle" aria-hidden="true"></i> @Localizer["UnassignedDbList"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/distribution/newly-assigned" @onclick="CloseNavMenu">
-                                    <i class="bi bi-arrow-left-right" aria-hidden="true"></i> @Localizer["NewlyAssignedDb"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
-                                    <i class="bi bi-clipboard-data" aria-hidden="true"></i> @Localizer["DbDistributionStatus"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/distribution/my-history" @onclick="CloseNavMenu">
-                                    <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["MyAssignmentHistory"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/customer/team-status" @onclick="CloseNavMenu">
-                                    <i class="bi bi-people" aria-hidden="true"></i> @Localizer["TeamDbStatus"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/advanced" @onclick="CloseNavMenu">
-                                    <i class="bi bi-tools" aria-hidden="true"></i> @Localizer["DbAdvanced"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="db/customer/my-list" @onclick="CloseNavMenu">
-                                    <i class="bi bi-person-lines-fill" aria-hidden="true"></i> @Localizer["MyDbList"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Sales,Manager,Developer">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleDbManagementSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-database me-2" aria-hidden="true"></i>
+                                @Localizer["DbManagement"]
+                                <span class="submenu-toggle @(showDbManagementSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showDbManagementSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/all" @onclick="CloseNavMenu">
+                                            <i class="bi bi-table" aria-hidden="true"></i> @Localizer["AllDbList"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/new" @onclick="CloseNavMenu">
+                                            <i class="bi bi-plus-circle" aria-hidden="true"></i> @Localizer["NewDbList"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/starred" @onclick="CloseNavMenu">
+                                            <i class="bi bi-star" aria-hidden="true"></i> @Localizer["StarredDbList"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/assigned-today" @onclick="CloseNavMenu">
+                                            <i class="bi bi-calendar-day" aria-hidden="true"></i> @Localizer["TodaysAssignedDb"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/unassigned" @onclick="CloseNavMenu">
+                                            <i class="bi bi-x-circle" aria-hidden="true"></i> @Localizer["UnassignedDbList"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/newly-assigned" @onclick="CloseNavMenu">
+                                            <i class="bi bi-arrow-left-right" aria-hidden="true"></i> @Localizer["NewlyAssignedDb"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/status" @onclick="CloseNavMenu">
+                                            <i class="bi bi-clipboard-data" aria-hidden="true"></i> @Localizer["DbDistributionStatus"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/distribution/my-history" @onclick="CloseNavMenu">
+                                            <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["MyAssignmentHistory"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/team-status" @onclick="CloseNavMenu">
+                                            <i class="bi bi-people" aria-hidden="true"></i> @Localizer["TeamDbStatus"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Developer">
+                                        <NavLink class="nav-link submenu-link" href="db/advanced" @onclick="CloseNavMenu">
+                                            <i class="bi bi-tools" aria-hidden="true"></i> @Localizer["DbAdvanced"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Sales">
+                                        <NavLink class="nav-link submenu-link" href="db/customer/my-list" @onclick="CloseNavMenu">
+                                            <i class="bi bi-person-lines-fill" aria-hidden="true"></i> @Localizer["MyDbList"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 4. Statistics -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleStatisticsSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-graph-up me-2" aria-hidden="true"></i>
-                            @Localizer["Statistics"]
-                            <span class="submenu-toggle @(showStatisticsSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showStatisticsSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="statistics/dashboard" @onclick="CloseNavMenu">
-                                    <i class="bi bi-speedometer" aria-hidden="true"></i> @Localizer["StatisticsDashboard"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="reports-page" @onclick="CloseNavMenu">
-                                    <i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i> @Localizer["Reports"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleStatisticsSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-graph-up me-2" aria-hidden="true"></i>
+                                @Localizer["Statistics"]
+                                <span class="submenu-toggle @(showStatisticsSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showStatisticsSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="statistics/dashboard" @onclick="CloseNavMenu">
+                                            <i class="bi bi-speedometer" aria-hidden="true"></i> @Localizer["StatisticsDashboard"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="reports-page" @onclick="CloseNavMenu">
+                                            <i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i> @Localizer["Reports"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 5. Customer Center -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleCustomerCenterSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-headset me-2" aria-hidden="true"></i>
-                            @Localizer["CustomerCenter"]
-                            <span class="submenu-toggle @(showCustomerCenterSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showCustomerCenterSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="support/notices" @onclick="CloseNavMenu">
-                                    <i class="bi bi-megaphone" aria-hidden="true"></i> @Localizer["Notices"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="support/faq" @onclick="CloseNavMenu">
-                                    <i class="bi bi-question-circle" aria-hidden="true"></i> @Localizer["Faq"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleCustomerCenterSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-headset me-2" aria-hidden="true"></i>
+                                @Localizer["CustomerCenter"]
+                                <span class="submenu-toggle @(showCustomerCenterSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showCustomerCenterSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="support/notices" @onclick="CloseNavMenu">
+                                            <i class="bi bi-megaphone" aria-hidden="true"></i> @Localizer["Notices"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="support/faq" @onclick="CloseNavMenu">
+                                            <i class="bi bi-question-circle" aria-hidden="true"></i> @Localizer["Faq"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 6. Schedule Management -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleScheduleSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                            @Localizer["ScheduleManagement"]
-                            <span class="submenu-toggle @(showScheduleSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showScheduleSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
-                                    <i class="bi bi-calendar-event" aria-hidden="true"></i> @Localizer["SalesCalendar"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="schedule/sms" @onclick="CloseNavMenu">
-                                    <i class="bi bi-envelope-plus" aria-hidden="true"></i> @Localizer["SmsSchedule"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleScheduleSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
+                                @Localizer["ScheduleManagement"]
+                                <span class="submenu-toggle @(showScheduleSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showScheduleSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                                        <NavLink class="nav-link submenu-link" href="sales-calendar" @onclick="CloseNavMenu">
+                                            <i class="bi bi-calendar-event" aria-hidden="true"></i> @Localizer["SalesCalendar"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                                        <NavLink class="nav-link submenu-link" href="schedule/sms" @onclick="CloseNavMenu">
+                                            <i class="bi bi-envelope-plus" aria-hidden="true"></i> @Localizer["SmsSchedule"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 7. SMS -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSmsSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-chat-dots me-2" aria-hidden="true"></i>
-                            @Localizer["Sms"]
-                            <span class="submenu-toggle @(showSmsSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showSmsSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="sms/bulk" @onclick="CloseNavMenu">
-                                    <i class="bi bi-send" aria-hidden="true"></i> @Localizer["BulkSms"]
-                                </NavLink>
-                                <NavLink class="nav-link submenu-link" href="sms/history" @onclick="CloseNavMenu">
-                                    <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["SmsHistory"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSmsSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-chat-dots me-2" aria-hidden="true"></i>
+                                @Localizer["Sms"]
+                                <span class="submenu-toggle @(showSmsSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showSmsSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                                        <NavLink class="nav-link submenu-link" href="sms/bulk" @onclick="CloseNavMenu">
+                                            <i class="bi bi-send" aria-hidden="true"></i> @Localizer["BulkSms"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                                        <NavLink class="nav-link submenu-link" href="sms/history" @onclick="CloseNavMenu">
+                                            <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["SmsHistory"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- 8. System Info -->
-                    <div class="nav-item px-3">
-                        <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSystemSubmenu" style="cursor: pointer;">
-                            <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
-                            @Localizer["SystemInfo"]
-                            <span class="submenu-toggle @(showSystemSubmenu ? "expanded" : "collapsed")">▼</span>
-                        </div>
-
-                        @if (showSystemSubmenu)
-                        {
-                            <div class="nav-submenu">
-                                <NavLink class="nav-link submenu-link" href="system/info" @onclick="CloseNavMenu">
-                                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["SystemInformation"]
-                                </NavLink>
+                    <RoleBasedComponent RequiredRoles="Admin,Developer">
+                        <div class="nav-item px-3">
+                            <div class="nav-section-header @(IsDarkMode() ? "dark-mode" : null)" @onclick="ToggleSystemSubmenu" style="cursor: pointer;">
+                                <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+                                @Localizer["SystemInfo"]
+                                <span class="submenu-toggle @(showSystemSubmenu ? "expanded" : "collapsed")">▼</span>
                             </div>
-                        }
-                    </div>
+
+                            @if (showSystemSubmenu)
+                            {
+                                <div class="nav-submenu">
+                                    <RoleBasedComponent RequiredRoles="Admin,Developer">
+                                        <NavLink class="nav-link submenu-link" href="system/info" @onclick="CloseNavMenu">
+                                            <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["SystemInformation"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                </div>
+                            }
+                        </div>
+                    </RoleBasedComponent>
 
                     <!-- Logout button -->
                     <div class="nav-item px-3 mt-auto">
