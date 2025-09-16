@@ -57,11 +57,13 @@
 }
 
 /* Mobile-specific styles */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .quick-actions-container {
         @apply flex-col gap-3;
+        width: 100%;
+        align-items: stretch;
     }
-    
+
     .quick-actions-wrapper {
         @apply flex-row justify-center gap-4;
         width: 100%;

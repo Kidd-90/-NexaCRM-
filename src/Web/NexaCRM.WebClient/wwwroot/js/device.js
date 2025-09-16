@@ -1,7 +1,7 @@
 window.deviceInfo = {
     isMobile: function () {
         if (window.matchMedia) {
-            if (window.matchMedia('(max-width: 768px)').matches) {
+            if (window.matchMedia('(max-width: 767px)').matches) {
                 return true;
             }
         }

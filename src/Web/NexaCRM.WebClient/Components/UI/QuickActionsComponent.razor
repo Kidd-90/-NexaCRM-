@@ -71,7 +71,7 @@
         try
         {
             // Detect if we're on mobile or desktop
-            var isMobile = await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 768px)').matches");
+            var isMobile = await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 767px)').matches");
             
             if (isMobile)
             {
