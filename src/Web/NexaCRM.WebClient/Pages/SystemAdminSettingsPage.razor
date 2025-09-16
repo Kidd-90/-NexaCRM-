@@ -1,4 +1,5 @@
 @page "/organization/system-admin"
+@attribute [Authorize(Roles = "Admin")]
 @using System.Linq
 @using NexaCRM.WebClient.Services.Interfaces
 @using NexaCRM.WebClient.Components.UI
