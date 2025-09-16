@@ -21,6 +21,9 @@
   <data name="MenuBrandTitle" xml:space="preserve">
     <value>Company Logo</value>
   </data>
+  <data name="MenuBrandSubtitle" xml:space="preserve">
+    <value>Customer Relationship Hub</value>
+  </data>
   <data name="CloseMenu" xml:space="preserve">
     <value>Close menu</value>
   </data>

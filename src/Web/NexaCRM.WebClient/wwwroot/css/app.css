@@ -191,7 +191,7 @@ a:hover, .btn-link:hover {
 
 /* Navigation styles - 반응형 디자인 */
 .page {
-    --sidebar-width: min(90vw, 320px); /* Ensure sidebar has consistent roomy width across devices */
+    --sidebar-width: min(90vw, 320px);
     min-height: 100vh;
     transition: margin-left 0.3s ease-in-out;
     /* 기본적으로 전체 화면 사용 */
@@ -582,10 +582,6 @@ a:hover, .btn-link:hover {
 
 /* 태블릿 환경 (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
-    .sidebar {
-        width: var(--sidebar-width); /* 태블릿에서도 동일한 공유 폭 유지 */
-    }
-    
     .sidebar .nav-link {
         padding: 0.85rem 1rem;
         font-size: 0.95rem;
@@ -604,15 +600,7 @@ a:hover, .btn-link:hover {
 }
 
 /* 모바일 환경 (768px 이하) */
-@media (max-width: 767px) {
-    .page {
-        --sidebar-width: min(80vw, 280px); /* Mobile sidebar width */
-    }
-
-    .sidebar {
-        width: var(--sidebar-width); /* 공유된 폭(min(90vw, 320px))을 사용하여 반응형 유지 */
-    }
-    
+@media (max-width: 768px) {
     .sidebar .nav-link {
         padding: 0.95rem 1.1rem;
         font-size: 1rem;
@@ -673,6 +661,108 @@ a:hover, .btn-link:hover {
     /* Hide dashboard sidebar on mobile (in case it's present) */
     .dashboard-sidebar {
         display: none !important;
+    }
+}
+
+/* Desktop & tablet navigation layout */
+@media (min-width: 769px) {
+    .page {
+        --sidebar-width: clamp(260px, 24vw, 320px);
+    }
+
+    .page.desktop-layout {
+        --desktop-shell-gap: clamp(1.5rem, 3.2vw, 2.5rem);
+        --desktop-shell-padding: clamp(1.75rem, 4vw, 2.75rem);
+        display: grid;
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+        gap: var(--desktop-shell-gap);
+        width: min(1480px, 100%);
+        margin: 0 auto;
+        padding: var(--desktop-shell-padding);
+        padding-bottom: clamp(2rem, 5vw, 3.25rem);
+        min-height: 100vh;
+        box-sizing: border-box;
+        align-items: start;
+    }
+
+    .desktop-layout .sidebar {
+        position: sticky;
+        top: var(--desktop-shell-padding);
+        transform: none !important;
+        width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
+        height: calc(100vh - (var(--desktop-shell-padding) * 2));
+        max-height: calc(100vh - (var(--desktop-shell-padding) * 2));
+        border-radius: 1.75rem;
+        border: 1px solid color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 18%, transparent);
+        background:
+            radial-gradient(140% 120% at 100% 0%, color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 18%, transparent) 0%, transparent 55%),
+            var(--surface-gradient, var(--surface-color));
+        box-shadow: 0 32px 64px rgba(15, 23, 42, 0.14);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .desktop-layout .sidebar.collapse {
+        transform: none !important;
+    }
+
+    .desktop-layout .nav-drawer {
+        height: 100%;
+        padding: clamp(1.75rem, 4vw, 2.5rem) clamp(1.5rem, 3vw, 2.5rem);
+        gap: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    .desktop-layout .nav-scroll-container {
+        margin-right: -0.5rem;
+        padding-right: 0.75rem;
+    }
+
+    .desktop-layout .nav-drawer__footer {
+        padding-top: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .desktop-layout .mobile-overlay {
+        display: none !important;
+    }
+
+    .desktop-layout main {
+        width: 100%;
+        min-height: calc(100vh - (var(--desktop-shell-padding) * 2));
+        display: flex;
+    }
+
+    .desktop-layout .content {
+        margin: 0;
+        max-width: 100%;
+        width: 100%;
+        min-height: 100%;
+        border-radius: 2rem;
+        padding: clamp(2.25rem, 5vw, 3rem);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 247, 255, 0.92));
+        border: 1px solid color-mix(in srgb, var(--divider-color) 55%, transparent);
+        box-shadow: 0 32px 64px rgba(15, 23, 42, 0.12);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.5rem, 3vw, 2.25rem);
+        flex: 1;
+    }
+
+    .desktop-layout .floating-menu-toggle {
+        display: none !important;
+    }
+
+    @supports (height: 100dvh) {
+        .desktop-layout .sidebar {
+            height: calc(100dvh - (var(--desktop-shell-padding) * 2));
+            max-height: calc(100dvh - (var(--desktop-shell-padding) * 2));
+        }
+
+        .desktop-layout main {
+            min-height: calc(100dvh - (var(--desktop-shell-padding) * 2));
+        }
     }
 }
 
