@@ -158,26 +158,54 @@ window.navigationHelper = {
             }, { passive: false });
         }
         
-        // 초기 상태에서 메뉴를 확실히 숨김
-        if (sidebar && !sidebar.classList.contains('collapse')) {
-            sidebar.classList.add('collapse');
+        const applyResponsiveState = () => {
+            const sidebarElement = document.querySelector('.sidebar');
+            const toggleBtn = document.querySelector('.floating-menu-toggle');
+            const pageElement = document.querySelector('.page');
+            const bodyElement = document.body;
+            const isMobileViewport = window.deviceInfo && typeof window.deviceInfo.isMobile === 'function'
+                ? window.deviceInfo.isMobile()
+                : window.matchMedia('(max-width: 768px)').matches;
+
+            if (!sidebarElement) {
+                return;
+            }
+
+            if (isMobileViewport) {
+                if (!sidebarElement.classList.contains('collapse')) {
+                    sidebarElement.classList.add('collapse');
+                }
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'flex';
+                }
+            } else {
+                sidebarElement.classList.remove('collapse');
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'none';
+                }
+            }
+
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+
+            if (bodyElement) {
+                bodyElement.classList.remove('nav-open');
+            }
+
+            if (pageElement) {
+                pageElement.classList.remove('nav-open');
+            }
+        };
+
+        applyResponsiveState();
+
+        if (window.navigationHelper._viewportResizeHandler) {
+            window.removeEventListener('resize', window.navigationHelper._viewportResizeHandler);
         }
 
-        // Ensure overlay is hidden initially
-        if (overlay) {
-            overlay.classList.remove('show');
-        }
-
-        const body = document.body;
-        const page = document.querySelector('.page');
-
-        if (body) {
-            body.classList.remove('nav-open');
-        }
-
-        if (page) {
-            page.classList.remove('nav-open');
-        }
+        window.navigationHelper._viewportResizeHandler = applyResponsiveState;
+        window.addEventListener('resize', applyResponsiveState);
 
         // Setup navigation scrolling functionality
         window.navigationHelper.setupNavigationScrolling();
@@ -557,7 +585,30 @@ window.navigationHelper = {
         const body = document.body;
         const page = document.querySelector('.page');
 
-        if (!sidebar) return;
+        if (!sidebar) {
+            return false;
+        }
+
+        const isMobileViewport = window.deviceInfo && typeof window.deviceInfo.isMobile === 'function'
+            ? window.deviceInfo.isMobile()
+            : window.matchMedia('(max-width: 768px)').matches;
+
+        if (!isMobileViewport) {
+            sidebar.classList.remove('collapse');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+            if (toggleBtn) {
+                toggleBtn.style.display = 'none';
+            }
+            if (body) {
+                body.classList.remove('nav-open');
+            }
+            if (page) {
+                page.classList.remove('nav-open');
+            }
+            return false;
+        }
 
         if (typeof isCollapsed === 'undefined') {
             isCollapsed = !sidebar.classList.contains('collapse');
@@ -574,6 +625,9 @@ window.navigationHelper = {
             if (page) {
                 page.classList.remove('nav-open');
             }
+            if (toggleBtn) {
+                toggleBtn.style.display = 'flex';
+            }
         } else {
             sidebar.classList.remove('collapse');
             if (overlay) {
@@ -585,10 +639,9 @@ window.navigationHelper = {
             if (page) {
                 page.classList.add('nav-open');
             }
-        }
-
-        if (toggleBtn) {
-            toggleBtn.style.display = isCollapsed ? 'flex' : 'none';
+            if (toggleBtn) {
+                toggleBtn.style.display = 'none';
+            }
         }
 
         return isCollapsed;
@@ -613,26 +666,11 @@ window.navigationHelper = {
         
         // 즉시 실행하여 초기 상태 보장
         setTimeout(() => {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.mobile-overlay');
-            
-            if (sidebar && !sidebar.classList.contains('collapse')) {
-                sidebar.classList.add('collapse');
-            }
-            
-            // Ensure overlay is hidden on page load
-            if (overlay && overlay.classList.contains('show')) {
-                overlay.classList.remove('show');
-            }
+            const isMobileViewport = window.deviceInfo && typeof window.deviceInfo.isMobile === 'function'
+                ? window.deviceInfo.isMobile()
+                : window.matchMedia('(max-width: 768px)').matches;
 
-            if (document.body) {
-                document.body.classList.remove('nav-open');
-            }
-
-            const page = document.querySelector('.page');
-            if (page) {
-                page.classList.remove('nav-open');
-            }
+            window.navigationHelper.toggleMenu(isMobileViewport);
         }, 100);
 
         // Re-setup dashboard navigation when page content changes (for SPA routing)

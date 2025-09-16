@@ -21,6 +21,9 @@
   <data name="MenuBrandTitle" xml:space="preserve">
     <value>회사 로고</value>
   </data>
+  <data name="MenuBrandSubtitle" xml:space="preserve">
+    <value>고객 관계 허브</value>
+  </data>
   <data name="CloseMenu" xml:space="preserve">
     <value>메뉴 닫기</value>
   </data>
