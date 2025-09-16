@@ -146,3 +146,9 @@
     color: white !important; /* Ensure text is white on active background */
     box-shadow: 0 16px 32px rgba(33, 83, 200, 0.18);
 }
+
+@media (max-width: 768px) {
+    .nav-item--home {
+        display: none;
+    }
+}
