@@ -147,12 +147,18 @@
 
 @code {
     private UserProfile userProfile = new();
-    private EditContext editContext = default!;
+    private EditContext editContext;
     private bool isMobileMenuOpen = false;
+
+    public ProfileSettingsPage()
+    {
+        editContext = new EditContext(userProfile);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        userProfile = await SettingsService.GetUserProfileAsync();
+        var loadedProfile = await SettingsService.GetUserProfileAsync();
+        userProfile = loadedProfile ?? new UserProfile();
         editContext = new EditContext(userProfile);
     }
 
