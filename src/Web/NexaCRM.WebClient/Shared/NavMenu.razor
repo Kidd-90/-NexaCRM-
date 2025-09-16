@@ -14,14 +14,21 @@
 @inject IRolePermissionService RolePermissionService
 
 <div class="nav-drawer" @onclick:stopPropagation="true">
-    <div class="nav-drawer__header">
-        <span class="nav-drawer__logo" aria-hidden="true">
-            <i class="bi bi-cube"></i>
-        </span>
-        <div class="nav-drawer__title">@Localizer["MenuBrandTitle"]</div>
-    </div>
-    <nav class="nav-drawer__content flex-column">
-        <div class="nav-scroll-container">
+    <div class="nav-drawer__container">
+        <header class="nav-drawer__header">
+            <div class="nav-drawer__brand">
+                <span class="nav-drawer__logo" aria-hidden="true">
+                    <i class="bi bi-cube"></i>
+                </span>
+                <div class="nav-drawer__title">@Localizer["MenuBrandTitle"]</div>
+            </div>
+            <button type="button" class="nav-drawer__close" @onclick="CloseNavMenu" @onclick:stopPropagation="true">
+                <span class="visually-hidden">@Localizer["CloseMenu"]</span>
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </header>
+        <nav class="nav-drawer__content flex-column" aria-label='@Localizer["MainNavigation"]'>
+            <div class="nav-scroll-container">
             <!-- Always visible base menu -->
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseNavMenu">
@@ -337,12 +344,6 @@
                         </div>
                     </RoleBasedComponent>
 
-                    <!-- Logout button -->
-                    <div class="nav-item px-3 mt-auto">
-                        <button class="nav-link btn btn-link" @onclick="Logout">
-                            <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i> @Localizer["Logout"]
-                        </button>
-                    </div>
                 </Authorized>
                 <NotAuthorized>
                     <div class="nav-item px-3">
@@ -353,7 +354,20 @@
                 </NotAuthorized>
             </AuthorizeView>
         </div>
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-drawer__footer">
+                    <span class="nav-drawer__divider" aria-hidden="true"></span>
+                    <div class="nav-item px-3">
+                        <button type="button" class="nav-link btn btn-link nav-drawer__logout" @onclick="Logout" @onclick:stopPropagation="true">
+                            <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i> @Localizer["Logout"]
+                        </button>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </nav>
+    </div>
 </div>
 
 @code {
