@@ -29,14 +29,14 @@ public class OrganizationService : IOrganizationService
 
     private readonly List<OrganizationUser> _users =
     [
-        new() { Id = 1, Name = "Alice Kim", Email = "alice.kim@example.com", Role = "Administrator", Status = "Active" },
+        new() { Id = 1, Name = "Alice Kim", Email = "alice.kim@example.com", Role = "Admin", Status = "Active" },
         new() { Id = 2, Name = "Brian Lee", Email = "brian.lee@example.com", Role = "Manager", Status = "Active" },
         new() { Id = 3, Name = "Chloe Park", Email = "chloe.park@example.com", Role = "Analyst", Status = "Inactive" }
     ];
 
     private readonly List<AgentModel> _admins =
     [
-        new() { Id = 1, Name = "Alice Kim", Email = "alice.kim@example.com", Role = "Administrator" },
+        new() { Id = 1, Name = "Alice Kim", Email = "alice.kim@example.com", Role = "Admin" },
         new() { Id = 2, Name = "Brian Lee", Email = "brian.lee@example.com", Role = "Manager" }
     ];
 
@@ -96,7 +96,7 @@ public class OrganizationService : IOrganizationService
             Id = id,
             Name = $"Admin {id}",
             Email = $"admin{id}@example.com",
-            Role = "Administrator"
+            Role = "Admin"
         });
 
         return Task.CompletedTask;
@@ -131,7 +131,7 @@ public class OrganizationService : IOrganizationService
         return Task.CompletedTask;
     }
 
-    public Task SetSystemAdministratorAsync(string userId) => AddAdminAsync(userId);
+    public Task SetSystemAdminAsync(string userId) => AddAdminAsync(userId);
 
     public Task RegisterUserAsync(NewUserModel user)
     {
