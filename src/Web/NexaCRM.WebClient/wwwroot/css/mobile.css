@@ -2,6 +2,8 @@
 @media (max-width: 768px) {
     .mobile-layout {
         --sidebar-width: min(90vw, 320px);
+        --mobile-header-clearance: clamp(1.25rem, 5vw, 1.75rem);
+        --mobile-footer-clearance: clamp(0.875rem, 4vw, 1.5rem);
         background: var(--app-background-gradient, var(--background-color));
         min-height: 100vh;
     }
@@ -148,17 +150,20 @@
     }
 
     .mobile-layout main {
-        margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
-        padding: 1rem 1rem calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+        margin-top: 0;
+        padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + var(--mobile-header-clearance, 1.5rem));
+        padding-right: 1rem;
+        padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom) + var(--mobile-footer-clearance, 1rem));
+        padding-left: 1rem;
         background: transparent;
-        min-height: calc(100vh - var(--mobile-header-height, 4.5rem) - var(--mobile-footer-height, 5rem) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        min-height: calc(100vh - var(--mobile-header-height, 4.5rem) - var(--mobile-footer-height, 5rem) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - var(--mobile-header-clearance, 1.5rem) - var(--mobile-footer-clearance, 1rem));
         box-sizing: border-box;
-        scroll-padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + 1rem);
-        scroll-padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+        scroll-padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + var(--mobile-header-clearance, 1.5rem));
+        scroll-padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom) + var(--mobile-footer-clearance, 1rem));
     }
 
     .mobile-layout .content {
-        scroll-margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
+        scroll-margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + var(--mobile-header-clearance, 1.5rem));
     }
 
     .mobile-layout .mobile-fixed-footer {
