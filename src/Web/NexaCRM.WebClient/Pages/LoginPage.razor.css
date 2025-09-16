@@ -114,6 +114,10 @@
     transform: translateY(-50%);
     border: none;
     background: transparent;
+    background-color: transparent;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
     color: var(--brand-gradient-start);
     font-weight: 700;
     font-size: 0.7rem;
@@ -126,6 +130,7 @@
 .password-toggle:hover,
 .password-toggle:focus-visible {
     color: var(--brand-gradient-end);
+    background-color: transparent;
     outline: none;
 }
 
@@ -352,7 +357,7 @@
     .login-input {
         padding: 12px 16px;
         font-size: 15px;
-        border-radius: 16px;
+        border-radius: 18px;
     }
 
     .password-toggle {
@@ -404,8 +409,8 @@
     }
 
     .social-icon {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
     }
 }
 
@@ -418,8 +423,8 @@
     }
 
     .social-icon {
-        width: 44px;
-        height: 44px;
+        width: 36px;
+        height: 36px;
     }
 }
 
