@@ -130,7 +130,7 @@
 }
 
 /* Mobile adjustments */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .fab-container {
         @apply bottom-4 right-4;
     }

@@ -1,5 +1,5 @@
 /* Enhanced responsive layout for handheld devices */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .mobile-layout {
         --mobile-header-clearance: clamp(1.25rem, 5vw, 1.75rem);
         --mobile-footer-clearance: clamp(0.875rem, 4vw, 1.5rem);
