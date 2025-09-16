@@ -393,15 +393,127 @@
 
     private static string BuildFavoriteStyle(UserFavoriteShortcut shortcut)
     {
-        var background = string.IsNullOrWhiteSpace(shortcut.BackgroundColor)
-            ? "rgba(33, 83, 200, 0.12)"
-            : shortcut.BackgroundColor;
-
         var iconColor = string.IsNullOrWhiteSpace(shortcut.IconColor)
-            ? "var(--primary-color)"
+            ? "#2153C8"
             : shortcut.IconColor;
 
-        return $"--favorite-background: {background}; --favorite-icon-color: {iconColor};";
+        var baseColor = TryParseColor(iconColor) ?? DefaultFavoriteColor;
+        var background = BuildFavoriteBackground(shortcut.BackgroundColor, baseColor);
+
+        var iconShadow = baseColor.ToRgba(0.3d);
+        var border = baseColor.Lighten(0.6d).ToRgba(0.65d);
+        var highlight = baseColor.Lighten(0.45d).ToRgba(0.35d);
+        var glow = baseColor.Lighten(0.1d).ToRgba(0.4d);
+        var chipBackground = baseColor.ToRgba(0.12d);
+
+        return string.Join(' ',
+            $"--favorite-background: {background};",
+            $"--favorite-icon-color: {iconColor};",
+            $"--favorite-icon-shadow: {iconShadow};",
+            $"--favorite-border: {border};",
+            $"--favorite-highlight: {highlight};",
+            $"--favorite-icon-glow: {glow};",
+            $"--favorite-chip-background: {chipBackground};");
+    }
+
+    private static string BuildFavoriteBackground(string? configuredBackground, RgbColor baseColor)
+    {
+        var gradient = FormattableString.Invariant(
+            $"linear-gradient(135deg, {baseColor.Lighten(0.55d).ToRgba(0.95d)} 0%, {baseColor.Lighten(0.2d).ToRgba(0.92d)} 48%, {baseColor.Darken(0.1d).ToRgba(0.98d)} 100%)");
+
+        if (string.IsNullOrWhiteSpace(configuredBackground) || string.Equals(configuredBackground, "transparent", StringComparison.OrdinalIgnoreCase))
+        {
+            return gradient;
+        }
+
+        if (configuredBackground.Contains("gradient", StringComparison.OrdinalIgnoreCase))
+        {
+            return configuredBackground;
+        }
+
+        var parsed = TryParseColor(configuredBackground);
+        if (parsed is not null)
+        {
+            return FormattableString.Invariant(
+                $"linear-gradient(135deg, {parsed.Value.Lighten(0.45d).ToRgba(0.95d)} 0%, {parsed.Value.Blend(baseColor, 0.35d).ToRgba(0.9d)} 55%, {baseColor.Darken(0.12d).ToRgba(0.98d)} 100%)");
+        }
+
+        return gradient;
+    }
+
+    private static RgbColor? TryParseColor(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var trimmed = value.Trim();
+
+        if (trimmed.StartsWith('#'))
+        {
+            var hex = trimmed[1..];
+            if (hex.Length == 3)
+            {
+                hex = string.Concat(hex.Select(c => new string(c, 2)));
+            }
+
+            if (hex.Length == 6 &&
+                int.TryParse(hex[..2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r) &&
+                int.TryParse(hex.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g) &&
+                int.TryParse(hex.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
+            {
+                return new RgbColor(r, g, b);
+            }
+        }
+
+        if (trimmed.StartsWith("rgb", StringComparison.OrdinalIgnoreCase))
+        {
+            var start = trimmed.IndexOf('(');
+            var end = trimmed.IndexOf(')');
+            if (start > -1 && end > start)
+            {
+                var segments = trimmed.Substring(start + 1, end - start - 1)
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                if (segments.Length >= 3 &&
+                    double.TryParse(segments[0], NumberStyles.Number, CultureInfo.InvariantCulture, out var r) &&
+                    double.TryParse(segments[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var g) &&
+                    double.TryParse(segments[2], NumberStyles.Number, CultureInfo.InvariantCulture, out var b))
+                {
+                    return new RgbColor(r, g, b);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static readonly RgbColor DefaultFavoriteColor = new(33, 83, 200);
+
+    private readonly record struct RgbColor(double R, double G, double B)
+    {
+        private static readonly RgbColor White = new(255, 255, 255);
+        private static readonly RgbColor Black = new(0, 0, 0);
+
+        public RgbColor Lighten(double amount) => Blend(White, amount);
+        public RgbColor Darken(double amount) => Blend(Black, amount);
+
+        public RgbColor Blend(RgbColor target, double amount)
+        {
+            var t = Math.Clamp(amount, 0d, 1d);
+            return new RgbColor(
+                R + ((target.R - R) * t),
+                G + ((target.G - G) * t),
+                B + ((target.B - B) * t));
+        }
+
+        public string ToRgba(double alpha = 1d)
+        {
+            var clampedAlpha = Math.Clamp(alpha, 0d, 1d);
+            return FormattableString.Invariant(
+                $"rgba({Math.Clamp((int)Math.Round(R), 0, 255)}, {Math.Clamp((int)Math.Round(G), 0, 255)}, {Math.Clamp((int)Math.Round(B), 0, 255)}, {clampedAlpha:0.##})");
+        }
     }
 
     private void UpdateUserInfo(ClaimsPrincipal user)
