@@ -227,6 +227,10 @@
             await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
             isMobile = await DeviceService.IsMobileAsync();
             UpdateLayoutState();
+            if (isMobile)
+            {
+                await JSRuntime.InvokeVoidAsync("window.navigationHelper.syncMobileLayoutSpacing");
+            }
             StateHasChanged();
         }
 

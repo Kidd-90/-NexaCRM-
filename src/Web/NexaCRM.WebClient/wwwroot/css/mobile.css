@@ -148,8 +148,11 @@
     }
 
     .mobile-layout main {
-        margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
-        padding: 1rem 1rem calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+        margin-top: 0;
+        padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + 1rem);
+        padding-right: 1rem;
+        padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+        padding-left: 1rem;
         background: transparent;
         min-height: calc(100vh - var(--mobile-header-height, 4.5rem) - var(--mobile-footer-height, 5rem) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
         box-sizing: border-box;
