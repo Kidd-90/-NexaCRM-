@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
@@ -7,6 +11,11 @@ namespace NexaCRM.WebClient.Services
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
+        private const string UsernameStorageKey = "username";
+        private const string RolesStorageKey = "roles";
+        private const string DeveloperFlagStorageKey = "isDeveloper";
+        private const string DeveloperRoleName = "Developer";
+
         private readonly IJSRuntime _jsRuntime;
         private ClaimsPrincipal _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
         private bool _initialized = false;
@@ -30,28 +39,24 @@ namespace NexaCRM.WebClient.Services
         {
             try
             {
-                var username = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "username");
-                var rolesJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "roles");
+                var username = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", UsernameStorageKey);
+                var rolesJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", RolesStorageKey);
+                var developerFlagRaw = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", DeveloperFlagStorageKey);
 
-                if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(rolesJson) && 
-                    username != "null" && rolesJson != "null")
+                if (!string.IsNullOrEmpty(username) && username != "null")
                 {
-                    var roles = System.Text.Json.JsonSerializer.Deserialize<string[]>(rolesJson);
-                    if (roles != null && roles.Length > 0)
+                    var roles = DeserializeRoles(rolesJson);
+                    var normalizedRoles = NormalizeRoles(roles, ParseBooleanFlag(developerFlagRaw));
+
+                    if (normalizedRoles.Length > 0)
                     {
-                        SetCurrentUser(username, roles);
-                    }
-                    else
-                    {
-                        // 역할이 없거나 유효하지 않은 경우 localStorage 정리
-                        await ClearStorageAsync();
+                        SetCurrentUser(username, normalizedRoles);
+                        return;
                     }
                 }
-                else
-                {
-                    // 유효하지 않은 데이터가 있는 경우 localStorage 정리
-                    await ClearStorageAsync();
-                }
+
+                // 유효하지 않은 데이터가 있는 경우 localStorage 정리
+                await ClearStorageAsync();
             }
             catch
             {
@@ -72,8 +77,9 @@ namespace NexaCRM.WebClient.Services
         {
             try
             {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "username");
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "roles");
+                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UsernameStorageKey);
+                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", RolesStorageKey);
+                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", DeveloperFlagStorageKey);
             }
             catch
             {
@@ -85,16 +91,24 @@ namespace NexaCRM.WebClient.Services
         {
             if (!string.IsNullOrEmpty(username) && roles != null && roles.Length > 0)
             {
-                SetCurrentUser(username, roles);
-                
+                var normalizedRoles = NormalizeRoles(roles, ContainsDeveloperRole(roles));
+                SetCurrentUser(username, normalizedRoles);
+
                 // Store in localStorage asynchronously
                 _ = Task.Run(async () =>
                 {
                     try
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "username", username);
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "roles", System.Text.Json.JsonSerializer.Serialize(roles));
-                        
+                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", UsernameStorageKey, username);
+                        await _jsRuntime.InvokeVoidAsync(
+                            "localStorage.setItem",
+                            RolesStorageKey,
+                            JsonSerializer.Serialize(normalizedRoles));
+                        await _jsRuntime.InvokeVoidAsync(
+                            "localStorage.setItem",
+                            DeveloperFlagStorageKey,
+                            ContainsDeveloperRole(normalizedRoles) ? "true" : "false");
+
                         // 세션 타임아웃 리셋 (authManager가 로드된 경우)
                         await _jsRuntime.InvokeVoidAsync("eval", @"
                             if (window.authManager && window.authManager.resetSessionTimeout) {
@@ -111,15 +125,16 @@ namespace NexaCRM.WebClient.Services
             else
             {
                 _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-                
+
                 // Clear localStorage asynchronously
                 _ = Task.Run(async () =>
                 {
                     try
                     {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "username");
-                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "roles");
-                        
+                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UsernameStorageKey);
+                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", RolesStorageKey);
+                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", DeveloperFlagStorageKey);
+
                         // 세션 타임아웃 클리어 (authManager가 로드된 경우)
                         await _jsRuntime.InvokeVoidAsync("eval", @"
                             if (window.authManager && window.authManager.sessionTimeoutId) {
@@ -138,7 +153,7 @@ namespace NexaCRM.WebClient.Services
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
-        private void SetCurrentUser(string username, string[] roles)
+        private void SetCurrentUser(string username, IEnumerable<string> roles)
         {
             var identity = new ClaimsIdentity(new[]
             {
@@ -159,5 +174,60 @@ namespace NexaCRM.WebClient.Services
         }
 
         public bool IsAuthenticated => _currentUser.Identity?.IsAuthenticated ?? false;
+
+        private static string[] DeserializeRoles(string? rolesJson)
+        {
+            if (string.IsNullOrWhiteSpace(rolesJson) || rolesJson == "null")
+            {
+                return Array.Empty<string>();
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<string[]>(rolesJson) ?? Array.Empty<string>();
+            }
+            catch (JsonException)
+            {
+                return Array.Empty<string>();
+            }
+            catch (NotSupportedException)
+            {
+                return Array.Empty<string>();
+            }
+        }
+
+        private static string[] NormalizeRoles(IEnumerable<string> roles, bool ensureDeveloperRole)
+        {
+            var normalized = roles
+                .Where(role => !string.IsNullOrWhiteSpace(role))
+                .Select(role => role.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (ensureDeveloperRole && !normalized.Any(role => string.Equals(role, DeveloperRoleName, StringComparison.OrdinalIgnoreCase)))
+            {
+                normalized.Add(DeveloperRoleName);
+            }
+
+            return normalized.ToArray();
+        }
+
+        private static bool ParseBooleanFlag(string? value)
+        {
+            return !string.IsNullOrWhiteSpace(value) && bool.TryParse(value, out var result) && result;
+        }
+
+        private static bool ContainsDeveloperRole(IEnumerable<string> roles)
+        {
+            foreach (var role in roles)
+            {
+                if (string.Equals(role, DeveloperRoleName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

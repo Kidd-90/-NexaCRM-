@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using NexaCRM.WebClient.Services.Interfaces;
 
@@ -5,40 +7,57 @@ namespace NexaCRM.WebClient.Services
 {
     public class RolePermissionService : IRolePermissionService
     {
+        private const string DeveloperRoleName = "Developer";
+
+        private static readonly string[] CustomerManagementRoles =
+        {
+            "Sales",
+            "Manager",
+            "Admin",
+            DeveloperRoleName
+        };
+
+        private static readonly string[] CreateCustomerRoles =
+        {
+            "Manager",
+            "Admin",
+            DeveloperRoleName
+        };
+
+        private static readonly string[] EditCustomerRoles =
+        {
+            "Sales",
+            "Manager",
+            "Admin",
+            DeveloperRoleName
+        };
+
+        private static readonly string[] ViewCustomerRoles =
+        {
+            "Sales",
+            "Manager",
+            "Admin",
+            DeveloperRoleName
+        };
+
         public Task<bool> CanAccessCustomerManagementAsync(ClaimsPrincipal user)
         {
-            // Sales 및 Manager 역할 모두 고객 관리 페이지에 접근 가능
-            return Task.FromResult(
-                user.Identity?.IsAuthenticated == true && 
-                (user.IsInRole("Sales") || user.IsInRole("Manager") || user.IsInRole("Admin"))
-            );
+            return Task.FromResult(HasRequiredRole(user, CustomerManagementRoles));
         }
 
         public Task<bool> CanCreateNewCustomerAsync(ClaimsPrincipal user)
         {
-            // Manager와 Admin만 신규 고객 등록 가능 (Sales 역할 제한)
-            return Task.FromResult(
-                user.Identity?.IsAuthenticated == true && 
-                (user.IsInRole("Manager") || user.IsInRole("Admin"))
-            );
+            return Task.FromResult(HasRequiredRole(user, CreateCustomerRoles));
         }
 
         public Task<bool> CanEditCustomerAsync(ClaimsPrincipal user)
         {
-            // Sales, Manager, Admin 모두 고객 정보 수정 가능
-            return Task.FromResult(
-                user.Identity?.IsAuthenticated == true && 
-                (user.IsInRole("Sales") || user.IsInRole("Manager") || user.IsInRole("Admin"))
-            );
+            return Task.FromResult(HasRequiredRole(user, EditCustomerRoles));
         }
 
         public Task<bool> CanViewCustomerAsync(ClaimsPrincipal user)
         {
-            // Sales, Manager, Admin 모두 고객 정보 조회 가능
-            return Task.FromResult(
-                user.Identity?.IsAuthenticated == true && 
-                (user.IsInRole("Sales") || user.IsInRole("Manager") || user.IsInRole("Admin"))
-            );
+            return Task.FromResult(HasRequiredRole(user, ViewCustomerRoles));
         }
 
         public Task<string[]> GetUserRolesAsync(ClaimsPrincipal user)
@@ -54,6 +73,24 @@ namespace NexaCRM.WebClient.Services
                 .ToArray();
 
             return Task.FromResult(roles);
+        }
+
+        private static bool HasRequiredRole(ClaimsPrincipal user, IEnumerable<string> allowedRoles)
+        {
+            if (user.Identity?.IsAuthenticated != true)
+            {
+                return false;
+            }
+
+            foreach (var role in allowedRoles)
+            {
+                if (user.IsInRole(role))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

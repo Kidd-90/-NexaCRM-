@@ -455,6 +455,7 @@ window.navigationHelper = {
                     console.log('Browser was closed, clearing authentication data');
                     localStorage.removeItem('username');
                     localStorage.removeItem('roles');
+                    localStorage.removeItem('isDeveloper');
                 }
             }
             // cleanup
@@ -475,6 +476,7 @@ window.navigationHelper = {
                     console.log('Session timeout, clearing authentication data');
                     localStorage.removeItem('username');
                     localStorage.removeItem('roles');
+                    localStorage.removeItem('isDeveloper');
                     window.location.href = '/login';
                 }
             }, 30 * 60 * 1000); // 30분
