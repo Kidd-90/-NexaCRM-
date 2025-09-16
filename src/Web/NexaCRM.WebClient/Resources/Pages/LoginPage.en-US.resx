@@ -19,7 +19,7 @@
     <value>Enter your password</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
-    <value>Remember me</value>
+    <value>Keep me signed in</value>
   </data>
   <data name="LogIn" xml:space="preserve">
     <value>Log in</value>
@@ -37,10 +37,19 @@
     <value>Or log in with</value>
   </data>
   <data name="Google" xml:space="preserve">
-    <value>Google</value>
+    <value>Continue with Google</value>
   </data>
-  <data name="Microsoft" xml:space="preserve">
-    <value>Microsoft</value>
+  <data name="Naver" xml:space="preserve">
+    <value>Continue with Naver</value>
+  </data>
+  <data name="Kakao" xml:space="preserve">
+    <value>Continue with Kakao</value>
+  </data>
+  <data name="ShowPassword" xml:space="preserve">
+    <value>SHOW</value>
+  </data>
+  <data name="HidePassword" xml:space="preserve">
+    <value>HIDE</value>
   </data>
   <data name="LoggingIn" xml:space="preserve">
     <value>Logging in...</value>
