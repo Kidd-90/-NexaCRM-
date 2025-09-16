@@ -1,7 +1,6 @@
 /* Enhanced responsive layout for handheld devices */
 @media (max-width: 768px) {
     .mobile-layout {
-        --sidebar-width: min(90vw, 320px);
         --mobile-header-clearance: clamp(1.25rem, 5vw, 1.75rem);
         --mobile-footer-clearance: clamp(0.875rem, 4vw, 1.5rem);
         --mobile-safe-area-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
