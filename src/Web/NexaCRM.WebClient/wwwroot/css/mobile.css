@@ -1,5 +1,5 @@
 /* Enhanced responsive layout for handheld devices */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .mobile-layout {
         --sidebar-width: min(90vw, 320px);
         --mobile-header-clearance: clamp(1.25rem, 5vw, 1.75rem);

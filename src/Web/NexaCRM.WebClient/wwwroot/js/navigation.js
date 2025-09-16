@@ -390,7 +390,7 @@ window.navigationHelper = {
                 const sidebar = document.querySelector('.sidebar');
                 const overlay = document.querySelector('.mobile-overlay');
                 
-                if (window.innerWidth <= 768) {
+                if (window.innerWidth < 768) {
                     if (sidebar) sidebar.classList.add('collapse');
                     if (overlay) overlay.classList.remove('show');
                 }
@@ -404,7 +404,7 @@ window.navigationHelper = {
         const updateMobileLayout = () => {
             const dashboardSidebar = document.querySelector('.dashboard-sidebar');
             const dashboardTopNav = document.querySelector('.dashboard-top-nav');
-            const isMobile = window.innerWidth <= 768;
+            const isMobile = window.innerWidth < 768;
 
             if (dashboardSidebar) {
                 dashboardSidebar.style.display = isMobile ? 'none' : '';

@@ -718,7 +718,7 @@
                     try {
                         // Force mobile header to be visible
                         const mobileHeader = document.querySelector('.mobile-header');
-                        if (mobileHeader && window.innerWidth <= 768) {
+                        if (mobileHeader && window.innerWidth < 768) {
                             mobileHeader.style.display = 'flex';
                             mobileHeader.style.visibility = 'visible';
                             mobileHeader.style.opacity = '1';
@@ -769,7 +769,7 @@
                         // Fix dark mode button text colors
                         const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
                         if (isDarkMode) {
-                            if (window.innerWidth <= 768) {
+                            if (window.innerWidth < 768) {
                                 const dashboardCards = document.querySelectorAll('.dashboard-card');
                                 dashboardCards.forEach(card => {
                                     card.style.backgroundColor = '#374151';

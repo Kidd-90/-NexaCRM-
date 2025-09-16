@@ -263,7 +263,7 @@ a:hover, .btn-link:hover {
     box-shadow: 0 14px 28px rgba(114, 99, 255, 0.25);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .nav-drawer__logo {
         background: linear-gradient(135deg, rgba(33, 83, 200, 0.75), rgba(33, 83, 200, 0.55));
         background: linear-gradient(
@@ -608,7 +608,7 @@ a:hover, .btn-link:hover {
 }
 
 /* 모바일 환경 (768px 이하) */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .page {
         --sidebar-width: min(80vw, 280px); /* Mobile sidebar width */
     }
@@ -733,7 +733,7 @@ input, select, textarea {
 }
 
 /* Mobile-friendly input sizing */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     input, select, textarea, button, .btn {
         font-size: 16px; /* Prevent zoom on iOS */
         border-radius: 8px; /* More modern rounded corners */
@@ -762,7 +762,7 @@ input, select, textarea {
 }
 
 /* Mobile dashboard responsive improvements */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .dashboard-card {
         padding: 1.5rem 1rem;
         margin: 0.5rem 0;
@@ -1226,7 +1226,7 @@ html {
 }
 
 /* Enhanced mobile touch feedback */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .touch-feedback:active {
         background-color: var(--active-overlay);
         transform: scale(0.97);
@@ -1323,7 +1323,7 @@ body[data-theme="dark"] .theme-toggle-button .theme-light-icon {
     display: inline;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .theme-toggle-button {
         top: 1rem; /* 햄버거 메뉴와 같은 높이에 배치 */
         right: 4rem; /* 햄버거 메뉴 왼쪽에 배치 */
