@@ -263,6 +263,21 @@ a:hover, .btn-link:hover {
     box-shadow: 0 14px 28px rgba(114, 99, 255, 0.25);
 }
 
+@media (max-width: 768px) {
+    .nav-drawer__logo {
+        background: linear-gradient(135deg, rgba(33, 83, 200, 0.75), rgba(33, 83, 200, 0.55));
+        background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--primary-color) 65%, var(--surface-color) 35%),
+            color-mix(in srgb, var(--primary-color) 45%, var(--surface-muted) 55%)
+        );
+        box-shadow: 0 12px 24px rgba(33, 83, 200, 0.18);
+        box-shadow: 0 12px 24px color-mix(in srgb, var(--primary-color) 18%, transparent);
+        border: 1px solid rgba(33, 83, 200, 0.18);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 26%, transparent);
+    }
+}
+
 .nav-drawer__title {
     font-size: 1.25rem;
     font-weight: 700;
