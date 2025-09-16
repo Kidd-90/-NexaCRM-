@@ -190,7 +190,7 @@ window.navigationHelper = {
 
         const state = window.navigationHelper._mobileSpacingState || (window.navigationHelper._mobileSpacingState = {
             lastHeader: 72,
-            lastFooter: 80,
+            lastFooter: 0,
             headerObserver: null,
             footerObserver: null,
             viewportHandler: null
@@ -203,8 +203,8 @@ window.navigationHelper = {
             const headerRect = header ? header.getBoundingClientRect() : null;
             const footerRect = footer ? footer.getBoundingClientRect() : null;
 
-            const headerHeight = Math.max(1, Math.ceil((headerRect && headerRect.height) || state.lastHeader || 72));
-            const footerHeight = Math.max(1, Math.ceil((footerRect && footerRect.height) || state.lastFooter || 80));
+            const headerHeight = Math.max(1, Math.ceil(headerRect?.height ?? state.lastHeader ?? 72));
+            const footerHeight = footerRect ? Math.max(0, Math.ceil(footerRect.height)) : 0;
 
             state.lastHeader = headerHeight;
             state.lastFooter = footerHeight;
