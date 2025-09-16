@@ -4,6 +4,11 @@
         --sidebar-width: min(90vw, 320px);
         --mobile-header-clearance: clamp(1.25rem, 5vw, 1.75rem);
         --mobile-footer-clearance: clamp(0.875rem, 4vw, 1.5rem);
+        --mobile-safe-area-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top));
+        --mobile-safe-area-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom));
+        --mobile-body-offset-top: calc(var(--mobile-safe-area-top) + var(--mobile-header-clearance));
+        --mobile-body-offset-bottom: calc(var(--mobile-safe-area-bottom) + var(--mobile-footer-clearance));
+        --mobile-body-padding: clamp(1rem, 4vw, 1.25rem);
         background: var(--app-background-gradient, var(--background-color));
         min-height: 100vh;
     }
@@ -151,19 +156,35 @@
 
     .mobile-layout main {
         margin-top: 0;
-        padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + var(--mobile-header-clearance, 1.5rem));
+        padding-top: var(--mobile-body-offset-top);
         padding-right: 1rem;
-        padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom) + var(--mobile-footer-clearance, 1rem));
+        padding-bottom: var(--mobile-body-offset-bottom);
         padding-left: 1rem;
         background: transparent;
-        min-height: calc(100vh - var(--mobile-header-height, 4.5rem) - var(--mobile-footer-height, 5rem) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - var(--mobile-header-clearance, 1.5rem) - var(--mobile-footer-clearance, 1rem));
+        min-height: max(0px, calc(100vh - var(--mobile-body-offset-top) - var(--mobile-body-offset-bottom)));
         box-sizing: border-box;
-        scroll-padding-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + var(--mobile-header-clearance, 1.5rem));
-        scroll-padding-bottom: calc(var(--mobile-footer-height, 5rem) + env(safe-area-inset-bottom) + var(--mobile-footer-clearance, 1rem));
+        scroll-padding-top: var(--mobile-body-offset-top);
+        scroll-padding-bottom: var(--mobile-body-offset-bottom);
+    }
+
+    @supports (height: 100dvh) {
+        .mobile-layout main {
+            min-height: max(0px, calc(100dvh - var(--mobile-body-offset-top) - var(--mobile-body-offset-bottom)));
+        }
     }
 
     .mobile-layout .content {
-        scroll-margin-top: calc(var(--mobile-header-height, 4.5rem) + env(safe-area-inset-top) + var(--mobile-header-clearance, 1.5rem));
+        scroll-margin-top: var(--mobile-body-offset-top);
+        padding-top: var(--mobile-body-padding);
+        padding-bottom: max(var(--mobile-body-padding), var(--mobile-footer-clearance, 1rem));
+        min-height: max(0px, calc(100vh - var(--mobile-body-offset-top) - var(--mobile-body-offset-bottom)));
+        box-sizing: border-box;
+    }
+
+    @supports (height: 100dvh) {
+        .mobile-layout .content {
+            min-height: max(0px, calc(100dvh - var(--mobile-body-offset-top) - var(--mobile-body-offset-bottom)));
+        }
     }
 
     .mobile-layout .mobile-fixed-footer {
