@@ -18,7 +18,7 @@ public interface IOrganizationService
     Task<IEnumerable<OrganizationUser>> GetUsersAsync();
     Task UpdateUserAsync(OrganizationUser user);
     Task DeleteUserAsync(int userId);
-    Task SetSystemAdministratorAsync(string userId);
+    Task SetSystemAdminAsync(string userId);
     Task RegisterUserAsync(NewUserModel user);
 }
 
