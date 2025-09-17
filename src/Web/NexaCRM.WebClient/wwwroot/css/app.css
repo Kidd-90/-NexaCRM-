@@ -665,7 +665,7 @@ a:hover, .btn-link:hover {
 }
 
 /* Desktop & tablet navigation layout */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
     .page {
         --sidebar-width: clamp(260px, 24vw, 320px);
     }
@@ -693,14 +693,18 @@ a:hover, .btn-link:hover {
         max-width: var(--sidebar-width);
         height: calc(100vh - (var(--desktop-shell-padding) * 2));
         max-height: calc(100vh - (var(--desktop-shell-padding) * 2));
-        border-radius: 1.75rem;
-        border: 1px solid color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 18%, transparent);
+        border-radius: 1.9rem;
+        border: 1px solid color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 22%, transparent);
         background:
-            radial-gradient(140% 120% at 100% 0%, color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 18%, transparent) 0%, transparent 55%),
-            var(--surface-gradient, var(--surface-color));
-        box-shadow: 0 32px 64px rgba(15, 23, 42, 0.14);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+            radial-gradient(150% 140% at 100% 0%, color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 16%, transparent) 0%, transparent 60%),
+            linear-gradient(
+                180deg,
+                color-mix(in srgb, #fafbff 88%, var(--nav-accent-color, var(--primary-color)) 12%) 0%,
+                color-mix(in srgb, #eef1ff 74%, var(--nav-accent-color, var(--primary-color)) 26%) 100%
+            );
+        box-shadow: 0 36px 72px rgba(82, 96, 155, 0.18);
+        backdrop-filter: blur(26px);
+        -webkit-backdrop-filter: blur(26px);
         padding: 0;
         overflow: hidden;
     }
@@ -711,8 +715,8 @@ a:hover, .btn-link:hover {
 
     .desktop-layout .nav-drawer {
         height: 100%;
-        padding: clamp(1.75rem, 4vw, 2.5rem) clamp(1.5rem, 3vw, 2.5rem);
-        gap: clamp(1.5rem, 3vw, 2rem);
+        padding: clamp(2rem, 4.5vw, 2.85rem) clamp(1.75rem, 3.5vw, 2.65rem);
+        gap: clamp(1.75rem, 3.2vw, 2.25rem);
     }
 
     .desktop-layout .nav-scroll-container {
