@@ -137,6 +137,14 @@ html, body {
     transition: background-color var(--transition-normal), color var(--transition-normal), background-image var(--transition-slow);
 }
 
+/* Force clean white background on desktop/tablet */
+@media (min-width: 768px) {
+  html, body {
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+  }
+}
+
 body.nav-open {
     overflow: hidden;
 }
@@ -670,41 +678,39 @@ a:hover, .btn-link:hover {
         --sidebar-width: clamp(260px, 24vw, 320px);
     }
 
+    /* Edge-to-edge layout on tablet and above */
     .page.desktop-layout {
-        --desktop-shell-gap: clamp(1.5rem, 3.2vw, 2.5rem);
-        --desktop-shell-padding: clamp(1.75rem, 4vw, 2.75rem);
+        --desktop-shell-gap: 0; /* No gap between sidebar and content */
+        --desktop-shell-padding: 0; /* Remove outer padding so content fills */
         display: grid;
         grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
         gap: var(--desktop-shell-gap);
-        width: min(1480px, 100%);
-        margin: 0 auto;
-        padding: var(--desktop-shell-padding);
-        padding-bottom: clamp(2rem, 5vw, 3.25rem);
+        width: 100%;
+        margin: 0;
+        padding: 0; /* No outer padding */
         min-height: 100vh;
         box-sizing: border-box;
         align-items: start;
     }
 
     .desktop-layout .sidebar {
-        position: sticky;
-        top: var(--desktop-shell-padding);
+        position: fixed; /* Make rail flush with viewport */
+        top: 0;
+        left: 0;
         transform: none !important;
         width: var(--sidebar-width);
         max-width: var(--sidebar-width);
-        height: calc(100vh - (var(--desktop-shell-padding) * 2));
-        max-height: calc(100vh - (var(--desktop-shell-padding) * 2));
-        border-radius: 1.9rem;
-        border: 1px solid color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 22%, transparent);
-        background:
-            radial-gradient(150% 140% at 100% 0%, color-mix(in srgb, var(--nav-accent-color, var(--primary-color)) 16%, transparent) 0%, transparent 60%),
-            linear-gradient(
-                180deg,
-                color-mix(in srgb, #fafbff 88%, var(--nav-accent-color, var(--primary-color)) 12%) 0%,
-                color-mix(in srgb, #eef1ff 74%, var(--nav-accent-color, var(--primary-color)) 26%) 100%
-            );
-        box-shadow: 0 36px 72px rgba(82, 96, 155, 0.18);
-        backdrop-filter: blur(26px);
-        -webkit-backdrop-filter: blur(26px);
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0; /* No outer rounding */
+        border-right: 1px solid #E5E7EB; /* neutral divider like image */
+        border-left: none;
+        border-top: none;
+        border-bottom: none;
+        background: #F3F4F6; /* neutral gray */
+        box-shadow: none; /* flush */
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         padding: 0;
         overflow: hidden;
     }
@@ -733,9 +739,117 @@ a:hover, .btn-link:hover {
     }
 
     .desktop-layout main {
+        grid-column: 2; /* ensure main sits to the right of the rail */
         width: 100%;
-        min-height: calc(100vh - (var(--desktop-shell-padding) * 2));
+        min-height: 100vh;
         display: flex;
+        flex-direction: column; /* stack header above content */
+        padding: 0; /* flush to edges */
+    }
+
+    /* Desktop page header within content column */
+    .desktop-page-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: #FFFFFF;
+        border-bottom: 1px solid #E5E7EB;
+    }
+
+    .desktop-page-header .page-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #111827;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .desktop-page-header .nav-menu-button {
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.9rem;
+        display: grid;
+        place-items: center;
+        border: 1px solid #E5E7EB;
+        background: #F3F4F6;
+        color: #111827;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .desktop-page-header .nav-menu-button:hover {
+        background: #FFFFFF;
+        border-color: #D1D5DB;
+        box-shadow: 0 8px 18px rgba(17,24,39,0.08);
+        transform: translateY(-1px);
+    }
+
+    .desktop-page-header .nav-menu-button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(17,24,39,0.06);
+    }
+
+    /* Notification button on header-right */
+    .desktop-page-header .notif-button {
+        position: relative;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.9rem;
+        display: grid;
+        place-items: center;
+        border: 1px solid #E5E7EB;
+        background: #F3F4F6;
+        color: #111827;
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .desktop-page-header .notif-button:hover {
+        background: #FFFFFF;
+        border-color: #D1D5DB;
+        box-shadow: 0 8px 18px rgba(17,24,39,0.08);
+        transform: translateY(-1px);
+    }
+
+    .desktop-page-header .notif-button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(17,24,39,0.06);
+    }
+
+    .desktop-page-header .notif-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: #EF4444; /* red */
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFFFFF; /* ring to separate from button */
+        line-height: 1;
+    }
+
+    /* Make article fill all available width, no outer chrome (match top header color) */
+    .desktop-layout .content {
+        margin: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        background: #FFFFFF !important; /* unify with desktop-page-header */
     }
 
     .desktop-layout .content {

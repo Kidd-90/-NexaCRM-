@@ -17,6 +17,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserFavoritesService UserFavoritesService
+@inject INotificationFeedService NotificationFeed
 
 <div class="page @(isMobile ? "mobile-layout" : "desktop-layout")">
     @if (isMobile)
@@ -65,10 +66,37 @@
     }
 
     <div class="sidebar">
-        <NavMenu />
+        @if (isMobile)
+        {
+            <NavMenu />
+        }
+        else
+        {
+            <NavigationRail />
+        }
     </div>
     <div class="mobile-overlay"></div>
     <main>
+        @if (!isMobile)
+        {
+            <header class="desktop-page-header" role="banner">
+                <div class="header-left">
+                    <button class="nav-menu-button" title="Navigation menu" @onclick="ToggleNavMenu">
+                        <i class="bi bi-list" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="page-title" role="heading" aria-level="1">@currentPageTitle</div>
+                <div class="header-right">
+                    <button class="notif-button" title="Notifications" @onclick="OnNotificationsClick">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (unreadNotificationsCount > 0)
+                        {
+                            <span class="notif-badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
+                        }
+                    </button>
+                </div>
+            </header>
+        }
         <article class="content px-4 page-fade-enter">
             @Body
         </article>
@@ -176,6 +204,7 @@
     private string currentPageTitle = "Home";
     private string headerActionIcon = "bi bi-grid-3x3-gap";
     private string headerActionLabel = "Page actions";
+    private int unreadNotificationsCount = 0;
     private string userDisplayName = "Guest";
     private string userInitials = "G";
     private string? parentPagePath;
@@ -184,6 +213,7 @@
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += OnLocationChanged;
+        NotificationFeed.UnreadCountChanged += OnUnreadChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -221,6 +251,7 @@
             UpdateLayoutState();
             await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", isMobile);
             await JSRuntime.InvokeVoidAsync("updateMainThemeToggleIcon");
+            await UpdateUnreadNotificationsAsync();
             if (isMobile)
             {
                 await JSRuntime.InvokeVoidAsync("window.navigationHelper.syncMobileLayoutSpacing");
@@ -387,6 +418,19 @@
 
         var lowerInvariant = value.ToLower(CultureInfo.CurrentCulture);
         return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lowerInvariant);
+    }
+
+    private async Task UpdateUnreadNotificationsAsync()
+    {
+        unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
+    }
+
+    private void OnNotificationsClick() => NavigationManager.NavigateTo("/notifications");
+
+    private void OnUnreadChanged(int count)
+    {
+        unreadNotificationsCount = Math.Max(0, count);
+        InvokeAsync(StateHasChanged);
     }
 
     private static string BuildFavoriteStyle(UserFavoriteShortcut shortcut)
@@ -560,6 +604,7 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+        NotificationFeed.UnreadCountChanged -= OnUnreadChanged;
     }
 }
 

@@ -1,0 +1,85 @@
+@page "/notifications"
+@using System.Text.Json
+@inject IJSRuntime JS
+@inject NexaCRM.WebClient.Services.Interfaces.INotificationFeedService Feed
+
+<div class="notifications-page">
+    <div class="notifications-header">
+        <h1>알림</h1>
+        <div class="actions">
+            <button class="mark-read" @onclick="MarkAllRead">모두 읽음 처리</button>
+            <a class="settings-link" href="/notification-settings-page">알림 설정</a>
+        </div>
+    </div>
+
+    @if (items.Count == 0)
+    {
+        <div class="empty-state">표시할 알림이 없습니다.</div>
+    }
+    else
+    {
+        <ul class="notif-list">
+            @foreach (var n in items)
+            {
+                <li class="notif-item @(n.IsRead ? "read" : "unread")">
+                    <div class="icon type-@n.Type.ToString().ToLower()"></div>
+                    <div class="body">
+                        <div class="title">@n.Title</div>
+                        <div class="message">@n.Message</div>
+                        <div class="meta">@n.TimeLocal.ToString("yyyy.MM.dd HH:mm")</div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private List<NotificationItem> items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var list = await Feed.GetAsync();
+        items = list.Select(x => new NotificationItem(x.Title, x.Message, x.TimestampUtc, x.IsRead, ToType(x.Type))).ToList();
+    }
+
+    private async Task MarkAllRead()
+    {
+        await Feed.MarkAllReadAsync();
+        await LoadAsync();
+        StateHasChanged();
+    }
+
+    private static NotificationType ToType(string type) => type?.ToLowerInvariant() switch
+    {
+        "success" => NotificationType.Success,
+        "warning" => NotificationType.Warning,
+        "error" => NotificationType.Error,
+        _ => NotificationType.Info
+    };
+
+    private class NotificationItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public DateTime TimeUtc { get; set; } = DateTime.UtcNow;
+        public bool IsRead { get; set; }
+        public NotificationType Type { get; set; } = NotificationType.Info;
+
+        public NotificationItem() {}
+
+        public NotificationItem(string title, string message, DateTime timeUtc, bool isRead, NotificationType type)
+        {
+            Title = title; Message = message; TimeUtc = timeUtc; IsRead = isRead; Type = type;
+        }
+
+        public DateTime TimeLocal => TimeUtc.ToLocalTime();
+    }
+
+    private enum NotificationType { Info, Success, Warning, Error }
+}
