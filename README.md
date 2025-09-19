@@ -112,6 +112,15 @@ dotnet run --project src/Services/Deal.API/Services.Deal.API.csproj
 dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 ```
 
+### 빌드/테스트 검증 스크립트
+코드를 변경한 후에는 저장소 루트에서 다음 스크립트를 실행해 의존성 복원, 빌드, 테스트를 한 번에 검증할 수 있습니다.
+
+```bash
+./scripts/verify-build.sh
+```
+
+> `dotnet` SDK가 설치되어 있어야 하며, 스크립트는 자동으로 `dotnet restore`, `dotnet build --configuration Release`, `dotnet test --configuration Release`를 순서대로 수행합니다.
+
 ### 접속 정보
 -   **Web UI**: `https://localhost:7001`
 -   **Contact API Swagger**: `https://localhost:7011/swagger`
