@@ -2,11 +2,11 @@
   "profiles": {
     "NexaCRM.WebClient": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:60738;http://localhost:60743"
+      "applicationUrl": "http://0.0.0.0:5000"
     }
   }
 }
