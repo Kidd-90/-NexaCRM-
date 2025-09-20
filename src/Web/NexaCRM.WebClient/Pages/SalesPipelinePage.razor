@@ -326,7 +326,7 @@
         SelectedTimePeriod != FilterPeriodAll ||
         SelectedAmountRange != FilterAmountAll;
 
-    protected override async Task OnInitializedAsync()
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         var deals = await DealService.GetDealsAsync();
         allDeals.AddRange(deals.Where(d => !string.IsNullOrWhiteSpace(d.Stage)));
