@@ -84,6 +84,42 @@
   <data name="Amount" xml:space="preserve">
     <value>Amount</value>
   </data>
+  <data name="FilterOwnerAny" xml:space="preserve">
+    <value>All owners</value>
+  </data>
+  <data name="FilterTimeAny" xml:space="preserve">
+    <value>Any time</value>
+  </data>
+  <data name="FilterTimeLast7Days" xml:space="preserve">
+    <value>Last 7 days</value>
+  </data>
+  <data name="FilterTimeLast30Days" xml:space="preserve">
+    <value>Last 30 days</value>
+  </data>
+  <data name="FilterTimeQuarterToDate" xml:space="preserve">
+    <value>Quarter to date</value>
+  </data>
+  <data name="FilterAmountAny" xml:space="preserve">
+    <value>Any amount</value>
+  </data>
+  <data name="FilterAmountUnder25K" xml:space="preserve">
+    <value>Under $25K</value>
+  </data>
+  <data name="FilterAmount25KTo50K" xml:space="preserve">
+    <value>$25K - $50K</value>
+  </data>
+  <data name="FilterAmountAbove50K" xml:space="preserve">
+    <value>Above $50K</value>
+  </data>
+  <data name="DealsFound" xml:space="preserve">
+    <value>{0} deals found</value>
+  </data>
+  <data name="ClearFilters" xml:space="preserve">
+    <value>Clear filters</value>
+  </data>
+  <data name="NoDealsMatch" xml:space="preserve">
+    <value>No deals match the current filters.</value>
+  </data>
   <data name="PipelineStages" xml:space="preserve">
     <value>Pipeline Stages</value>
   </data>

@@ -1,3 +1,5 @@
+using System;
+
 namespace NexaCRM.WebClient.Models
 {
     public class Deal
@@ -8,5 +10,7 @@ namespace NexaCRM.WebClient.Models
         public decimal Amount { get; set; }
         public string? Company { get; set; }
         public string? ContactPerson { get; set; }
+        public string? Owner { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Today;
     }
 }

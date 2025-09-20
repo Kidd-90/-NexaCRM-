@@ -45,6 +45,9 @@
   <data name="Kakao" xml:space="preserve">
     <value>Continue with Kakao</value>
   </data>
+  <data name="SocialLoginComingSoon" xml:space="preserve">
+    <value>Social logins are coming soon.</value>
+  </data>
   <data name="ShowPassword" xml:space="preserve">
     <value>SHOW</value>
   </data>

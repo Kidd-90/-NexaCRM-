@@ -13,6 +13,32 @@
     gap: 0.75rem;
 }
 
+.preview-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d0d9e7;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+    color: #1f2937;
+    font-size: 0.95rem;
+}
+
+.preview-banner .bi {
+    color: #2153C8;
+    font-size: 1rem;
+}
+
+.preview-action {
+    opacity: 0.88;
+    transition: opacity 0.2s ease;
+}
+
+.preview-action:hover {
+    opacity: 1;
+}
+
 .advanced-db__header .toolbar {
     display: flex;
     gap: 0.5rem;

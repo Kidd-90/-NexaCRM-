@@ -279,6 +279,17 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.social-login-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+}
+
+.social-login-btn:disabled .social-text {
+    color: var(--muted-color);
+}
+
 .social-login-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 18px 32px rgba(124, 58, 237, 0.22);
@@ -304,6 +315,13 @@
 
 .social-text {
     line-height: 1.2;
+}
+
+.social-login-notice {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted-color);
 }
 
 .naver-btn {

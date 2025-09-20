@@ -84,6 +84,42 @@
   <data name="Amount" xml:space="preserve">
     <value>금액</value>
   </data>
+  <data name="FilterOwnerAny" xml:space="preserve">
+    <value>전체 소유자</value>
+  </data>
+  <data name="FilterTimeAny" xml:space="preserve">
+    <value>전체 기간</value>
+  </data>
+  <data name="FilterTimeLast7Days" xml:space="preserve">
+    <value>최근 7일</value>
+  </data>
+  <data name="FilterTimeLast30Days" xml:space="preserve">
+    <value>최근 30일</value>
+  </data>
+  <data name="FilterTimeQuarterToDate" xml:space="preserve">
+    <value>이번 분기 누계</value>
+  </data>
+  <data name="FilterAmountAny" xml:space="preserve">
+    <value>전체 금액</value>
+  </data>
+  <data name="FilterAmountUnder25K" xml:space="preserve">
+    <value>2만5천 달러 미만</value>
+  </data>
+  <data name="FilterAmount25KTo50K" xml:space="preserve">
+    <value>2만5천~5만 달러</value>
+  </data>
+  <data name="FilterAmountAbove50K" xml:space="preserve">
+    <value>5만 달러 초과</value>
+  </data>
+  <data name="DealsFound" xml:space="preserve">
+    <value>{0}건의 거래가 검색되었습니다.</value>
+  </data>
+  <data name="ClearFilters" xml:space="preserve">
+    <value>필터 초기화</value>
+  </data>
+  <data name="NoDealsMatch" xml:space="preserve">
+    <value>현재 필터와 일치하는 거래가 없습니다.</value>
+  </data>
   <data name="PipelineStages" xml:space="preserve">
     <value>파이프라인 단계</value>
   </data>

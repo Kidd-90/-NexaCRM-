@@ -145,6 +145,9 @@
   <data name="Notifications" xml:space="preserve">
     <value>Notifications</value>
   </data>
+  <data name="UnreadNotificationsLabel" xml:space="preserve">
+    <value>You have {0} unread notifications.</value>
+  </data>
   <data name="Contacts" xml:space="preserve">
     <value>Contacts</value>
   </data>
