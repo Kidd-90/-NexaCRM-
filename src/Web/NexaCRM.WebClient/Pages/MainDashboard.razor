@@ -1,36 +1,44 @@
 @page "/main-dashboard"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Services.Interfaces
 @inject IStringLocalizer<MainDashboard> Localizer
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject INotificationFeedService NotificationFeed
 @attribute [Authorize(Roles = "Sales,Manager")]
+@implements IDisposable
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;' data-page="main-dashboard">
     <!-- Mobile Header Bar -->
-    <div class="mobile-header" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 999999 !important; background-color: #ffffff !important; border-bottom: 1px solid #e5e7eb !important; height: 60px !important; width: 100vw !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;">
-        <div class="mobile-header-content" style="display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; padding: 0 1rem !important;">
-            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]" style="display: flex !important; align-items: center !important; justify-content: center !important; padding: 0.5rem !important; background: none !important; border: none !important; color: #374151 !important;">
+    <div class="mobile-header mobile-header--active">
+        <div class="mobile-header-content">
+            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
                 </svg>
             </button>
             
-            <div class="mobile-header-title" style="display: flex !important; flex: 1 !important; justify-content: center !important;">
-                <h1 class="mobile-title" style="display: block !important; font-size: 1.25rem !important; font-weight: 700 !important; color: #374151 !important; margin: 0 !important;">@Localizer["CRM"]</h1>
+            <div class="mobile-header-title">
+                <h1 class="mobile-title">@Localizer["CRM"]</h1>
             </div>
-            
-            <div class="mobile-header-actions" style="display: flex !important; gap: 0.5rem !important; align-items: center !important;">
-                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]" style="display: flex !important; align-items: center !important; justify-content: center !important; padding: 0.5rem !important; background: none !important; border: none !important; color: #374151 !important;">
+
+            <div class="mobile-header-actions">
+                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                     </svg>
                 </button>
-                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]" style="display: flex !important; align-items: center !important; justify-content: center !important; padding: 0.5rem !important; background: none !important; border: none !important; color: #374151 !important; position: relative !important;">
+                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
                     </svg>
-                    <span class="notification-badge" style="display: block !important; position: absolute !important; top: -2px !important; right: -2px !important; background-color: #ef4444 !important; color: white !important; font-size: 0.75rem !important; padding: 0.125rem 0.375rem !important; border-radius: 0.5rem !important; min-width: 1rem !important; text-align: center !important;">3</span>
+                    @if (UnreadMobileNotificationsCount > 0)
+                    {
+                        <span class="notification-badge" aria-label="@Localizer["Notifications"]">
+                            @UnreadMobileNotificationsCount
+                        </span>
+                    }
                 </button>
             </div>
         </div>
@@ -104,39 +112,44 @@
             </button>
         </div>
         <div class="mobile-notifications-content">
-            <div class="notification-item">
-                <div class="notification-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
-                    </svg>
+            @foreach (var notification in mobileNotifications)
+            {
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        @switch (notification.Icon)
+                        {
+                            case NotificationIconType.Lead:
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
+                                </svg>
+                                break;
+                            case NotificationIconType.Deal:
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
+                                </svg>
+                                break;
+                            case NotificationIconType.Task:
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path>
+                                </svg>
+                                break;
+                        }
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">@Localizer[notification.TitleKey]</div>
+                        <div class="notification-time">
+                            @if (!string.IsNullOrWhiteSpace(notification.TimeValue))
+                            {
+                                <span>@notification.TimeValue @Localizer[notification.TimeKey]</span>
+                            }
+                            else
+                            {
+                                <span>@Localizer[notification.TimeKey]</span>
+                            }
+                        </div>
+                    </div>
                 </div>
-                <div class="notification-content">
-                    <div class="notification-title">@Localizer["NewLead"]</div>
-                    <div class="notification-time">2 @Localizer["MinutesAgo"]</div>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notification-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
-                    </svg>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">@Localizer["DealClosed"]</div>
-                    <div class="notification-time">15 @Localizer["MinutesAgo"]</div>
-                </div>
-            </div>
-            <div class="notification-item">
-                <div class="notification-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path>
-                    </svg>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">@Localizer["TaskReminder"]</div>
-                    <div class="notification-time">1 @Localizer["HourAgo"]</div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 
@@ -169,73 +182,73 @@
                                 salesLink = "/sales-manager-dashboard";
                             }
                         }
-                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
-                            <div class="text-[#0e131b]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
+                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2 nav-link">
+                            <div class="text-[#0e131b] nav-link-icon" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
+                                <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path
                                     d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"
                                 ></path>
                                 </svg>
                             </div>
-                            <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Sales"]</p>
+                            <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Sales"]</p>
                         </a>
-                        <a href="/contacts" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
-                            <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
+                        <a href="/contacts" class="flex items-center gap-3 px-3 py-2 nav-link">
+                            <div class="text-[#0e131b] nav-link-icon" data-icon="Users" data-size="24px" data-weight="regular">
+                                <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path
                                     d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
                                 ></path>
                                 </svg>
                             </div>
-                            <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Contacts"]</p>
+                            <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Contacts"]</p>
                         </a>
                     </Authorized>
                 </AuthorizeView>
-                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
-                    <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
+                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2 nav-link">
+                    <div class="text-[#0e131b] nav-link-icon" data-icon="Megaphone" data-size="24px" data-weight="regular">
+                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                             d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48.07,48.07,0,0,0,240,120ZM40,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C126.65,155,82.84,164.07,40,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Marketing"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Marketing"]</p>
                 </a>
-                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
-                    <div class="text-[#0e131b]" data-icon="Headset" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
+                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2 nav-link">
+                    <div class="text-[#0e131b] nav-link-icon" data-icon="Headset" data-size="24px" data-weight="regular">
+                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                             d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88.12,88.12,0,0,1,190.54,65.93,87.39,87.39,0,0,1,215.65,120H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h24a24,24,0,0,1-24,24H136a8,8,0,0,0,0,16h56a40,40,0,0,0,40-40V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm128,56a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24v56Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Service"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Service"]</p>
                 </a>
-                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
-                    <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
+                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2 nav-link">
+                    <div class="text-[#0e131b] nav-link-icon" data-icon="PresentationChart" data-size="24px" data-weight="regular">
+                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                             d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Reports"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Reports"]</p>
                 </a>
-                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2" style="color: #0e131b !important;">
-                    <div class="text-[#0e131b]" data-icon="Gear" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2 nav-link">
+                    <div class="text-[#0e131b] nav-link-icon" data-icon="Gear" data-size="24px" data-weight="regular">
+                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                             d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
                         ></path>
                         </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Settings"]</p>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Settings"]</p>
                 </a>
             </div>
             </div>
         </div>
         </div>
-        <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content" style="padding-top: 70px;">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3 dashboard-header dashboard-top-nav">
             <div class="flex items-center gap-4 text-[#0e131b]">
             <div class="size-4">
@@ -272,7 +285,10 @@
             </label>
             <div class="flex gap-2">
                 <button
-                class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 dashboard-button"
+                type="button"
+                class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 dashboard-button dashboard-button--notifications"
+                @onclick="NavigateToNotifications"
+                aria-label="@Localizer["Notifications"]"
                 >
                 <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
@@ -281,8 +297,14 @@
                     ></path>
                     </svg>
                 </div>
+                @if (unreadNotificationsCount > 0)
+                {
+                    <span class="notification-badge" aria-hidden="true">@unreadNotificationsCount</span>
+                    <span class="sr-only">@string.Format(Localizer["UnreadNotificationsLabel"], unreadNotificationsCount)</span>
+                }
                 </button>
                 <button
+                type="button"
                 class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 dashboard-button"
                 >
                 <div class="text-[#0e131b]" data-icon="Question" data-size="20px" data-weight="regular">
@@ -330,9 +352,9 @@
             </div>
             </label>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" style="display: block !important; visibility: visible !important;">@Localizer["DashboardOverview"]</h2>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid" style="display: grid !important; visibility: visible !important;">
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/sales-pipeline" style="display: flex !important; visibility: visible !important;">
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 dashboard-section-title">@Localizer["DashboardOverview"]</h2>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/sales-pipeline">
             <div class="text-[#0e131b]" data-icon="Funnel" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -342,7 +364,7 @@
             </div>
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPipeline"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/reports" style="display: flex !important; visibility: visible !important;">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/reports">
             <div class="text-[#0e131b]" data-icon="Target" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -352,7 +374,7 @@
             </div>
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["QuarterlyPerformance"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/tasks-page" style="display: flex !important; visibility: visible !important;">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/tasks-page">
             <div class="text-[#0e131b]" data-icon="ListBullets" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -362,7 +384,7 @@
             </div>
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Tasks"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="#recent-activity" style="display: flex !important; visibility: visible !important;">
+            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="#recent-activity">
             <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -373,11 +395,11 @@
             <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["RecentActivity"]</h2>
             </button>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" style="display: block !important; visibility: visible !important;">@Localizer["SalesPipelineSummary"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6" style="display: flex !important; visibility: visible !important;">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6" style="display: flex !important; visibility: visible !important; width: 100%; min-width: auto;">
-            <p class="text-[#0e131b] text-base font-medium leading-normal" style="display: block !important; visibility: visible !important;">@Localizer["DealsByStage"]</p>
-            <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3" style="display: grid !important; visibility: visible !important; min-height: 120px;">
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 dashboard-section-title">@Localizer["SalesPipelineSummary"]</h2>
+        <div class="flex flex-wrap gap-4 px-4 py-6 dashboard-section-content">
+            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6 dashboard-stat-card">
+            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["DealsByStage"]</p>
+            <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3 dashboard-chart-grid">
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Prospecting"]</p>
                 <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 60%;"></div></div>
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Qualification"]</p>
@@ -393,11 +415,11 @@
             </div>
             </div>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" style="display: block !important; visibility: visible !important;">@Localizer["QuarterlyPerformance"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6" style="display: flex !important; visibility: visible !important;">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6" style="display: flex !important; visibility: visible !important; width: 100%; min-width: auto;">
-            <p class="text-[#0e131b] text-base font-medium leading-normal" style="display: block !important; visibility: visible !important;">@Localizer["RevenueByQuarter"]</p>
-            <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3" style="display: grid !important; visibility: visible !important; min-height: 120px;">
+        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 dashboard-section-title">@Localizer["QuarterlyPerformance"]</h2>
+        <div class="flex flex-wrap gap-4 px-4 py-6 dashboard-section-content">
+            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6 dashboard-stat-card">
+            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["RevenueByQuarter"]</p>
+            <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3 dashboard-chart-grid">
                 <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Q1"]</p>
                 <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 90%;"></div>
@@ -411,7 +433,7 @@
         </div>
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Tasks"]</h2>
         <div class="px-4 py-3 container">
-            <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50 dashboard-table-container" style="visibility: visible !important;">
+            <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50 dashboard-table-container">
             <table class="flex-1">
                 <thead>
                 <tr class="bg-slate-50">
@@ -433,9 +455,8 @@
                     <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                     <button
                         class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
-                        style="background-color: #e7ecf3 !important; color: #0e131b !important;"
                     >
-                        <span class="truncate" style="color: #0e131b !important;">@Localizer["High"]</span>
+                        <span class="truncate priority-label">@Localizer["High"]</span>
                     </button>
                     </td>
                 </tr>
@@ -449,9 +470,8 @@
                     <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                     <button
                         class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
-                        style="background-color: #e7ecf3 !important; color: #0e131b !important;"
                     >
-                        <span class="truncate" style="color: #0e131b !important;">@Localizer["Medium"]</span>
+                        <span class="truncate priority-label">@Localizer["Medium"]</span>
                     </button>
                     </td>
                 </tr>
@@ -465,9 +485,8 @@
                     <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
                     <button
                         class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
-                        style="background-color: #e7ecf3 !important; color: #0e131b !important;"
                     >
-                        <span class="truncate" style="color: #0e131b !important;">@Localizer["Low"]</span>
+                        <span class="truncate priority-label">@Localizer["Low"]</span>
                     </button>
                     </td>
                 </tr>
@@ -551,18 +570,48 @@
 </div>
 
 @code {
+    private int unreadNotificationsCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NotificationFeed.UnreadCountChanged += HandleUnreadCountChanged;
+        unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
+    }
+
+    private static readonly MobileNotification[] mobileNotifications =
+    [
+        new(NotificationIconType.Lead, "NewLead", "2", "MinutesAgo"),
+        new(NotificationIconType.Deal, "DealClosed", "15", "MinutesAgo"),
+        new(NotificationIconType.Task, "TaskReminder", "1", "HourAgo")
+    ];
+
     private bool showMobileSearch = false;
     private bool showMobileNotifications = false;
     private string mobileSearchQuery = "";
+    private int UnreadMobileNotificationsCount => mobileNotifications.Length;
+
+    private sealed record MobileNotification(NotificationIconType Icon, string TitleKey, string TimeValue, string TimeKey);
+
+    private enum NotificationIconType
+    {
+        Lead,
+        Deal,
+        Task
+    }
 
     private async Task NavigateToPage(string url)
     {
         // Close any open mobile panels first
         await CloseMobilePanels();
-        
+
         // Add visual feedback before navigation
         await Task.Delay(150);
         NavigationManager.NavigateTo(url);
+    }
+
+    private void NavigateToNotifications()
+    {
+        NavigationManager.NavigateTo("/notifications");
     }
 
     private async Task ScrollToSection(string sectionId)
@@ -641,15 +690,21 @@
     private async Task ToggleMobileNotifications()
     {
         showMobileNotifications = !showMobileNotifications;
-        
+
         // Close search if notifications is opening
         if (showMobileNotifications)
         {
             showMobileSearch = false;
         }
-        
+
         StateHasChanged();
         await Task.Delay(50); // Small delay for smooth animation
+    }
+
+    private void HandleUnreadCountChanged(int count)
+    {
+        unreadNotificationsCount = Math.Max(0, count);
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private async Task CloseMobilePanels()
@@ -716,179 +771,56 @@
             {
                 await JSRuntime.InvokeVoidAsync("eval", @"
                     try {
-                        // Force mobile header to be visible
                         const mobileHeader = document.querySelector('.mobile-header');
-                        if (mobileHeader && window.innerWidth < 768) {
-                            mobileHeader.style.display = 'flex';
-                            mobileHeader.style.visibility = 'visible';
-                            mobileHeader.style.opacity = '1';
-                            mobileHeader.style.position = 'fixed';
-                            mobileHeader.style.top = '0';
-                            mobileHeader.style.left = '0';
-                            mobileHeader.style.right = '0';
-                            mobileHeader.style.zIndex = '999999';
-                            mobileHeader.style.backgroundColor = '#ffffff';
-                            mobileHeader.style.height = '60px';
-                            mobileHeader.style.width = '100vw';
-                            mobileHeader.style.borderBottom = '1px solid #e5e7eb';
-                            mobileHeader.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-                            
-                            // Ensure all child elements are visible
-                            const headerContent = mobileHeader.querySelector('.mobile-header-content');
-                            if (headerContent) {
-                                headerContent.style.display = 'flex';
-                                headerContent.style.width = '100%';
-                                headerContent.style.alignItems = 'center';
-                                headerContent.style.justifyContent = 'space-between';
-                                headerContent.style.padding = '0 16px';
-                            }
-                            
-                            const mobileTitle = mobileHeader.querySelector('.mobile-title');
-                            if (mobileTitle) {
-                                mobileTitle.style.display = 'block';
-                                mobileTitle.style.color = '#000000';
-                                mobileTitle.style.fontSize = '20px';
-                                mobileTitle.style.fontWeight = '700';
-                            }
-                            
-                            // Check for dark mode and adjust colors
-                            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-                            if (isDarkMode) {
-                                mobileHeader.style.backgroundColor = '#1f2937';
-                                mobileHeader.style.borderBottomColor = '#374151';
-                                if (mobileTitle) {
-                                    mobileTitle.style.color = '#ffffff';
-                                }
-                                const buttons = mobileHeader.querySelectorAll('button');
-                                buttons.forEach(btn => {
-                                    btn.style.color = '#ffffff';
-                                });
-                            }
+                        if (mobileHeader) {
+                            mobileHeader.classList.add('mobile-header--active');
                         }
-                        
-                        // Fix dark mode button text colors
-                        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-                        if (isDarkMode) {
-                            if (window.innerWidth < 768) {
-                                const dashboardCards = document.querySelectorAll('.dashboard-card');
-                                dashboardCards.forEach(card => {
-                                    card.style.backgroundColor = '#374151';
-                                    card.style.borderColor = '#4b5563';
-                                    card.style.color = '#ffffff';
-                                    
-                                    const textElements = card.querySelectorAll('h2, span, .text-\\[#0e131b\\]');
-                                    textElements.forEach(el => {
-                                        el.style.color = '#ffffff';
-                                    });
-                                });
+
+                        const handleBackdropClick = (event) => {
+                            if (!event.target || !event.target.classList) {
+                                return;
                             }
-                            
-                            // Fix priority button text colors in dark mode
-                            const priorityButtons = document.querySelectorAll('.priority-button');
-                            priorityButtons.forEach(button => {
-                                button.style.backgroundColor = '#374151';
-                                button.style.color = '#ffffff';
-                                button.style.borderColor = '#4b5563';
-                                
-                                const span = button.querySelector('span');
-                                if (span) {
-                                    span.style.color = '#ffffff';
+
+                            if (event.target.classList.contains('mobile-search-bar') && event.target.classList.contains('expanded')) {
+                                const closeSearch = document.querySelector('.mobile-search-close');
+                                if (closeSearch) {
+                                    closeSearch.click();
                                 }
-                            });
-                            
-                            // Fix sidebar navigation links in dark mode
-                            const sidebarLinks = document.querySelectorAll('.dashboard-sidebar a');
-                            sidebarLinks.forEach(link => {
-                                link.style.color = '#ffffff !important';
-                                link.style.setProperty('color', '#ffffff', 'important');
-                                
-                                const allElements = link.querySelectorAll('*');
-                                allElements.forEach(el => {
-                                    el.style.color = '#ffffff !important';
-                                    el.style.setProperty('color', '#ffffff', 'important');
-                                });
-                                
-                                const textElements = link.querySelectorAll('p, div[data-icon], svg');
-                                textElements.forEach(el => {
-                                    el.style.color = '#ffffff !important';
-                                    el.style.setProperty('color', '#ffffff', 'important');
-                                    if (el.tagName === 'SVG') {
-                                        el.style.fill = '#ffffff !important';
-                                        el.style.setProperty('fill', '#ffffff', 'important');
-                                    }
-                                });
-                            });
-                            
-                            // Fix sidebar background in dark mode
-                            const sidebar = document.querySelector('.dashboard-sidebar');
-                            if (sidebar) {
-                                sidebar.style.backgroundColor = '#1f2937';
-                                
-                                // Apply to all nested elements
-                                const allSidebarElements = sidebar.querySelectorAll('*');
-                                allSidebarElements.forEach(el => {
-                                    if (el.tagName === 'A' || el.tagName === 'P' || el.tagName === 'DIV') {
-                                        el.style.color = '#ffffff !important';
-                                        el.style.setProperty('color', '#ffffff', 'important');
-                                    }
-                                    if (el.tagName === 'SVG') {
-                                        el.style.fill = '#ffffff !important';
-                                        el.style.setProperty('fill', '#ffffff', 'important');
-                                    }
-                                });
                             }
-                        }
-                        // Handle mobile panel backdrop clicks
-                        document.addEventListener('click', (e) => {
-                            try {
-                                if (e.target && e.target.classList) {
-                                    if (e.target.classList.contains('mobile-search-bar') && e.target.classList.contains('expanded')) {
-                                        // Click on backdrop should close search
-                                        const closeBtn = document.querySelector('.mobile-search-close');
-                                        if (closeBtn) closeBtn.click();
-                                    }
-                                    if (e.target.classList.contains('mobile-notifications-panel') && e.target.classList.contains('expanded')) {
-                                        // Click on backdrop should close notifications
-                                        const closeBtn = document.querySelector('.mobile-notifications-close');
-                                        if (closeBtn) closeBtn.click();
-                                    }
+
+                            if (event.target.classList.contains('mobile-notifications-panel') && event.target.classList.contains('expanded')) {
+                                const closeNotifications = document.querySelector('.mobile-notifications-close');
+                                if (closeNotifications) {
+                                    closeNotifications.click();
                                 }
-                            } catch (clickError) {
-                                console.warn('Click handler error:', clickError);
                             }
-                        });
-                        
-                        // Setup swipe gestures for mobile panels
+                        };
+
+                        document.addEventListener('click', handleBackdropClick);
+
                         let touchStartY = 0;
-                        document.addEventListener('touchstart', (e) => {
-                            try {
-                                if (e.touches && e.touches[0]) {
-                                    touchStartY = e.touches[0].clientY;
-                                }
-                            } catch (touchError) {
-                                console.warn('Touch start error:', touchError);
+                        document.addEventListener('touchstart', (event) => {
+                            if (event.touches && event.touches[0]) {
+                                touchStartY = event.touches[0].clientY;
                             }
                         }, { passive: true });
-                        
-                        document.addEventListener('touchend', (e) => {
-                            try {
-                                if (e.changedTouches && e.changedTouches[0]) {
-                                    const touchEndY = e.changedTouches[0].clientY;
-                                    const diff = touchStartY - touchEndY;
-                                    
-                                    // Swipe up to close panels
-                                    if (diff > 50) {
-                                        const expandedPanels = document.querySelectorAll('.mobile-search-bar.expanded, .mobile-notifications-panel.expanded');
-                                        if (expandedPanels) {
-                                            expandedPanels.forEach(panel => {
-                                                const closeBtn = panel.querySelector('.mobile-search-close, .mobile-notifications-close');
-                                                if (closeBtn) closeBtn.click();
-                                            });
-                                        }
+
+                        document.addEventListener('touchend', (event) => {
+                            if (!event.changedTouches || !event.changedTouches[0]) {
+                                return;
+                            }
+
+                            const touchEndY = event.changedTouches[0].clientY;
+                            const diff = touchStartY - touchEndY;
+
+                            if (diff > 50) {
+                                const expandedPanels = document.querySelectorAll('.mobile-search-bar.expanded, .mobile-notifications-panel.expanded');
+                                expandedPanels.forEach((panel) => {
+                                    const closeBtn = panel.querySelector('.mobile-search-close, .mobile-notifications-close');
+                                    if (closeBtn) {
+                                        closeBtn.click();
                                     }
-                                }
-                            } catch (touchError) {
-                                console.warn('Touch end error:', touchError);
+                                });
                             }
                         }, { passive: true });
                     } catch (setupError) {
@@ -927,5 +859,13 @@
         
         // Add a small delay to ensure navigation is processed
         await Task.Delay(10);
+    }
+
+    public void Dispose()
+    {
+        if (NotificationFeed is not null)
+        {
+            NotificationFeed.UnreadCountChanged -= HandleUnreadCountChanged;
+        }
     }
 }

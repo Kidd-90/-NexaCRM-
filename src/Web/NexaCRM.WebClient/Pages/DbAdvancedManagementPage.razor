@@ -15,14 +15,19 @@
     <header class="advanced-db__header">
         <h1>고급 DB 관리</h1>
         <div class="toolbar">
-            <button class="btn btn-light" @onclick="SaveCurrentView"><i class="bi bi-bookmark"></i> 보기 저장</button>
+            <button class="btn btn-light preview-action" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
             <button class="btn btn-light" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
             <button class="btn btn-light" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
-            <button class="btn btn-light" @onclick="ExportCsv"><i class="bi bi-download"></i> 내보내기</button>
-            <label class="btn btn-success" for="importFile"><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
+            <button class="btn btn-light preview-action" @onclick="ExportCsv" title="곧 제공 예정 기능입니다."><i class="bi bi-download"></i> 내보내기</button>
+            <label class="btn btn-success preview-action" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
             <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
         </div>
     </header>
+
+    <div class="preview-banner" role="status" aria-live="polite">
+        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+        <span>저장/내보내기 기능은 현재 데모 모드로 안내되며 곧 정식 제공될 예정입니다.</span>
+    </div>
 
     <nav class="tabs" role="tablist">
     <button class="tab @(activeTab==Tab.Explore?"active":null)" @onclick="(()=>SetTab(Tab.Explore))">목록</button>
@@ -330,7 +335,7 @@
                 </table>
             </div>
             <div class="mt-3 text-end">
-                <button class="btn btn-success" @onclick="SaveGradeRows"><i class="bi bi-save"></i> 등급구분값 저장</button>
+                <button class="btn btn-success preview-action" @onclick="SaveGradeRows" title="곧 제공 예정 기능입니다."><i class="bi bi-save"></i> 등급구분값 저장</button>
             </div>
         </section>
     }
@@ -399,7 +404,7 @@
                 </table>
             </div>
             <div class="mt-3 text-end">
-                <button class="btn btn-success" @onclick="SaveConsultRows"><i class="bi bi-save"></i> 상담구분값 저장</button>
+                <button class="btn btn-success preview-action" @onclick="SaveConsultRows" title="곧 제공 예정 기능입니다."><i class="bi bi-save"></i> 상담구분값 저장</button>
             </div>
         </section>
     }
@@ -482,7 +487,7 @@
                 }
             </div>
             <div class="mt-4 text-end">
-                <button class="btn btn-dark" @onclick="SaveDistributionSettings"><i class="bi bi-save"></i> 저장하기</button>
+                <button class="btn btn-dark preview-action" @onclick="SaveDistributionSettings" title="곧 제공 예정 기능입니다."><i class="bi bi-save"></i> 저장하기</button>
             </div>
         </section>
     }
@@ -565,9 +570,10 @@
     private bool autoDistVendor = false;
     private string selectedTeam = "TM0001";
 
-    private void SaveDistributionSettings()
+    private async Task SaveDistributionSettings()
     {
         // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+        await NotifyPreviewFeatureAsync("분배 설정 저장");
     }
 
     // 상담구분값 관리용 모델
@@ -607,7 +613,7 @@
             consultRows.Remove(row);
     }
 
-    private void SaveConsultRows()
+    private async Task SaveConsultRows()
     {
         foreach (var row in consultRows)
         {
@@ -615,6 +621,7 @@
         }
         // TODO: 실제 저장 로직(예: DB/API 연동) 필요
         // 현재는 단순히 UpdatedAt만 갱신
+        await NotifyPreviewFeatureAsync("상담 구분값 저장");
     }
 
     // 등급관리용 모델
@@ -650,7 +657,7 @@
             gradeRows.Remove(row);
     }
 
-    private void SaveGradeRows()
+    private async Task SaveGradeRows()
     {
         foreach (var row in gradeRows)
         {
@@ -658,6 +665,7 @@
         }
         // TODO: 실제 저장 로직(예: DB/API 연동) 필요
         // 현재는 단순히 UpdatedAt만 갱신
+        await NotifyPreviewFeatureAsync("등급 구분값 저장");
     }
     private Tab activeTab = Tab.Explore;
 
@@ -1021,22 +1029,15 @@
         public List<int> ContactIds { get; set; } = new();
     }
 
-    private Task SaveCurrentView()
-    {
-        // TODO: Persist filters/columns as a saved view
-        return Task.CompletedTask;
-    }
+    private Task SaveCurrentView() => NotifyPreviewFeatureAsync("보기 저장");
 
-    private Task ExportCsv()
-    {
-        // TODO: Wire to CSV export util
-        return Task.CompletedTask;
-    }
+    private Task ExportCsv() => NotifyPreviewFeatureAsync("CSV 내보내기");
 
-    private Task OnImportFileSelected(ChangeEventArgs e)
+    private Task OnImportFileSelected(ChangeEventArgs e) => NotifyPreviewFeatureAsync("고객 DB 추가하기");
+
+    private Task NotifyPreviewFeatureAsync(string featureName)
     {
-        // TODO: Hook into import workflow (mapping/validation)
-        return Task.CompletedTask;
+        return JS.InvokeVoidAsync("alert", $"{featureName} 기능은 준비 중입니다. 곧 제공될 예정입니다.").AsTask();
     }
 
     private static string GetStatusClass(DbStatus status) => status switch

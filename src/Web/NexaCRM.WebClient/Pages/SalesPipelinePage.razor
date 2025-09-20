@@ -56,7 +56,8 @@
             <input
                 placeholder='@Localizer["Search"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                value=""
+                @bind="DealSearchTerm"
+                @bind:event="oninput"
             />
             </div>
         </label>
@@ -102,37 +103,78 @@
                 <input
                 placeholder='@Localizer["SearchDeals"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                value=""
+                @bind="DealSearchTerm"
+                @bind:event="oninput"
                 />
             </div>
             </label>
         </div>
-        <div class="flex gap-3 p-3 flex-wrap pr-4">
-            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Owner"]</p>
-            <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+        <div class="flex gap-3 p-3 flex-wrap pr-4 pipeline-filter-row">
+            <div class="pipeline-filter-control">
+                <span class="pipeline-filter-label">@Localizer["Owner"]</span>
+                <div class="pipeline-filter-select-wrapper">
+                    <select id="owner-filter" class="pipeline-filter-select" @bind="SelectedOwner">
+                        <option value="@FilterOwnerAll">@Localizer["FilterOwnerAny"]</option>
+                        @foreach (var owner in ownerOptions)
+                        {
+                            <option value="@owner">@owner</option>
+                        }
+                    </select>
+                </div>
             </div>
-            </button>
-            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["TimePeriod"]</p>
-            <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+            <div class="pipeline-filter-control">
+                <span class="pipeline-filter-label">@Localizer["TimePeriod"]</span>
+                <div class="pipeline-filter-select-wrapper">
+                    <select id="time-filter" class="pipeline-filter-select" @bind="SelectedTimePeriod">
+                        <option value="@FilterPeriodAll">@Localizer["FilterTimeAny"]</option>
+                        <option value="@FilterPeriodLast7Days">@Localizer["FilterTimeLast7Days"]</option>
+                        <option value="@FilterPeriodLast30Days">@Localizer["FilterTimeLast30Days"]</option>
+                        <option value="@FilterPeriodQuarterToDate">@Localizer["FilterTimeQuarterToDate"]</option>
+                    </select>
+                </div>
             </div>
-            </button>
-            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Amount"]</p>
-            <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+            <div class="pipeline-filter-control">
+                <span class="pipeline-filter-label">@Localizer["Amount"]</span>
+                <div class="pipeline-filter-select-wrapper">
+                    <select id="amount-filter" class="pipeline-filter-select" @bind="SelectedAmountRange">
+                        <option value="@FilterAmountAll">@Localizer["FilterAmountAny"]</option>
+                        <option value="@FilterAmountUnder25K">@Localizer["FilterAmountUnder25K"]</option>
+                        <option value="@FilterAmount25KTo50K">@Localizer["FilterAmount25KTo50K"]</option>
+                        <option value="@FilterAmountAbove50K">@Localizer["FilterAmountAbove50K"]</option>
+                    </select>
+                </div>
             </div>
-            </button>
         </div>
+
+        @if (isLoading)
+        {
+            <div class="filter-summary filter-summary--muted" aria-live="polite">
+                <span>@Localizer["Loading..."]</span>
+            </div>
+        }
+        else
+        {
+            <div class="filter-summary @(HasActiveFilters ? "filter-summary--active" : string.Empty)" aria-live="polite">
+                <div class="filter-summary__meta">
+                    <span class="filter-summary__count">@string.Format(Localizer["DealsFound"], FilteredDealCount)</span>
+                    @if (HasActiveFilters)
+                    {
+                        <button type="button" class="clear-filters-button" @onclick="ClearFilters">
+                            @Localizer["ClearFilters"]
+                        </button>
+                    }
+                </div>
+                @if (HasActiveFilters)
+                {
+                    <div class="filter-summary__badges">
+                        @foreach (var description in BuildActiveFilterDescriptions())
+                        {
+                            <span class="active-filter-badge">@description</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["PipelineStages"]</h2>
         <div class="px-4 py-3 container">
             <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
@@ -145,15 +187,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                    @if (dealsByStage == null)
+                    @if (isLoading)
                     {
                         <tr>
                             <td colspan="3"><em>@Localizer["Loading..."]</em></td>
                         </tr>
                     }
+                    else if (groupedDeals.Length == 0)
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["NoDealsMatch"]</td>
+                        </tr>
+                    }
                     else
                     {
-                        @foreach (var stage in dealsByStage)
+                        @foreach (var stage in groupedDeals)
                         {
                             <tr class="border-t border-t-[#d0d9e7]">
                                 <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
@@ -182,12 +230,199 @@
 </div>
 
 @code {
-    private IGrouping<string, Deal>[]? dealsByStage;
+    private const string FilterOwnerAll = "all";
+    private const string FilterPeriodAll = "all";
+    private const string FilterPeriodLast7Days = "last7";
+    private const string FilterPeriodLast30Days = "last30";
+    private const string FilterPeriodQuarterToDate = "quarter";
+    private const string FilterAmountAll = "all";
+    private const string FilterAmountUnder25K = "under25";
+    private const string FilterAmount25KTo50K = "25to50";
+    private const string FilterAmountAbove50K = "above50";
 
-    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    private readonly List<Deal> allDeals = new();
+    private IGrouping<string, Deal>[] groupedDeals = Array.Empty<IGrouping<string, Deal>>();
+    private IReadOnlyList<string> ownerOptions = Array.Empty<string>();
+    private string dealSearchTerm = string.Empty;
+    private string selectedOwner = FilterOwnerAll;
+    private string selectedTimePeriod = FilterPeriodAll;
+    private string selectedAmountRange = FilterAmountAll;
+    private bool isLoading = true;
+
+    private string DealSearchTerm
+    {
+        get => dealSearchTerm;
+        set
+        {
+            if (dealSearchTerm != value)
+            {
+                dealSearchTerm = value;
+                ApplyFilters();
+            }
+        }
+    }
+
+    private string SelectedOwner
+    {
+        get => selectedOwner;
+        set
+        {
+            if (selectedOwner != value)
+            {
+                selectedOwner = value;
+                ApplyFilters();
+            }
+        }
+    }
+
+    private string SelectedTimePeriod
+    {
+        get => selectedTimePeriod;
+        set
+        {
+            if (selectedTimePeriod != value)
+            {
+                selectedTimePeriod = value;
+                ApplyFilters();
+            }
+        }
+    }
+
+    private string SelectedAmountRange
+    {
+        get => selectedAmountRange;
+        set
+        {
+            if (selectedAmountRange != value)
+            {
+                selectedAmountRange = value;
+                ApplyFilters();
+            }
+        }
+    }
+
+    private int FilteredDealCount => groupedDeals.Sum(group => group.Count());
+    private bool HasActiveFilters =>
+        !string.IsNullOrWhiteSpace(DealSearchTerm) ||
+        SelectedOwner != FilterOwnerAll ||
+        SelectedTimePeriod != FilterPeriodAll ||
+        SelectedAmountRange != FilterAmountAll;
+
+    protected override async Task OnInitializedAsync()
     {
         var deals = await DealService.GetDealsAsync();
-        dealsByStage = deals.Where(d => !string.IsNullOrEmpty(d.Stage)).GroupBy(d => d.Stage!).ToArray();
+        allDeals.AddRange(deals.Where(d => !string.IsNullOrWhiteSpace(d.Stage)));
+
+        ownerOptions = allDeals
+            .Select(d => d.Owner)
+            .Where(owner => !string.IsNullOrWhiteSpace(owner))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(owner => owner, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        ApplyFilters();
+        isLoading = false;
+    }
+
+    private void ApplyFilters()
+    {
+        if (allDeals.Count == 0)
+        {
+            groupedDeals = Array.Empty<IGrouping<string, Deal>>();
+            return;
+        }
+
+        IEnumerable<Deal> query = allDeals;
+
+        if (!string.IsNullOrWhiteSpace(DealSearchTerm))
+        {
+            var term = DealSearchTerm.Trim();
+            query = query.Where(deal =>
+                (deal.Name?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (deal.Company?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (deal.ContactPerson?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+
+        if (SelectedOwner != FilterOwnerAll)
+        {
+            query = query.Where(deal => string.Equals(deal.Owner, SelectedOwner, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (SelectedTimePeriod != FilterPeriodAll)
+        {
+            var today = DateTime.Today;
+            query = SelectedTimePeriod switch
+            {
+                FilterPeriodLast7Days => query.Where(deal => deal.CreatedDate.Date >= today.AddDays(-7)),
+                FilterPeriodLast30Days => query.Where(deal => deal.CreatedDate.Date >= today.AddDays(-30)),
+                FilterPeriodQuarterToDate => query.Where(deal => deal.CreatedDate.Date >= new DateTime(today.Year, ((today.Month - 1) / 3) * 3 + 1, 1)),
+                _ => query
+            };
+        }
+
+        if (SelectedAmountRange != FilterAmountAll)
+        {
+            query = SelectedAmountRange switch
+            {
+                FilterAmountUnder25K => query.Where(deal => deal.Amount < 25000m),
+                FilterAmount25KTo50K => query.Where(deal => deal.Amount >= 25000m && deal.Amount <= 50000m),
+                FilterAmountAbove50K => query.Where(deal => deal.Amount > 50000m),
+                _ => query
+            };
+        }
+
+        groupedDeals = query
+            .Where(deal => !string.IsNullOrWhiteSpace(deal.Stage))
+            .GroupBy(deal => deal.Stage!)
+            .OrderBy(group => group.Key)
+            .ToArray();
+    }
+
+    private IEnumerable<string> BuildActiveFilterDescriptions()
+    {
+        if (!string.IsNullOrWhiteSpace(DealSearchTerm))
+        {
+            yield return $"{Localizer["Search"]}: \"{DealSearchTerm}\"";
+        }
+
+        if (SelectedOwner != FilterOwnerAll)
+        {
+            yield return $"{Localizer["Owner"]}: {SelectedOwner}";
+        }
+
+        if (SelectedTimePeriod != FilterPeriodAll)
+        {
+            var label = SelectedTimePeriod switch
+            {
+                FilterPeriodLast7Days => Localizer["FilterTimeLast7Days"],
+                FilterPeriodLast30Days => Localizer["FilterTimeLast30Days"],
+                FilterPeriodQuarterToDate => Localizer["FilterTimeQuarterToDate"],
+                _ => Localizer["FilterTimeAny"]
+            };
+
+            yield return $"{Localizer["TimePeriod"]}: {label}";
+        }
+
+        if (SelectedAmountRange != FilterAmountAll)
+        {
+            var label = SelectedAmountRange switch
+            {
+                FilterAmountUnder25K => Localizer["FilterAmountUnder25K"],
+                FilterAmount25KTo50K => Localizer["FilterAmount25KTo50K"],
+                FilterAmountAbove50K => Localizer["FilterAmountAbove50K"],
+                _ => Localizer["FilterAmountAny"]
+            };
+
+            yield return $"{Localizer["Amount"]}: {label}";
+        }
+    }
+
+    private void ClearFilters()
+    {
+        DealSearchTerm = string.Empty;
+        SelectedOwner = FilterOwnerAll;
+        SelectedTimePeriod = FilterPeriodAll;
+        SelectedAmountRange = FilterAmountAll;
     }
 
     private async System.Threading.Tasks.Task HandleFloatingAction(string action)

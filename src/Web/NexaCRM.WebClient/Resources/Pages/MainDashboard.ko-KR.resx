@@ -145,6 +145,9 @@
   <data name="Notifications" xml:space="preserve">
     <value>알림</value>
   </data>
+  <data name="UnreadNotificationsLabel" xml:space="preserve">
+    <value>읽지 않은 알림이 {0}건 있습니다.</value>
+  </data>
   <data name="Contacts" xml:space="preserve">
     <value>연락처</value>
   </data>
