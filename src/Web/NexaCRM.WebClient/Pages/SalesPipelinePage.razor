@@ -1,5 +1,6 @@
 @page "/sales-pipeline-page"
 @using Microsoft.Extensions.Localization
+@using System.Linq
 @inject IStringLocalizer<SalesPipelinePage> Localizer
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
@@ -148,8 +149,10 @@
 
         @if (isLoading)
         {
-            <div class="filter-summary filter-summary--muted" aria-live="polite">
-                <span>@Localizer["Loading..."]</span>
+            <div class="filter-summary filter-summary--loading" aria-live="polite">
+                <span class="visually-hidden">@Localizer["Loading..."]</span>
+                <div class="skeleton skeleton--text skeleton--short"></div>
+                <div class="skeleton skeleton--text skeleton--wide"></div>
             </div>
         }
         else
@@ -178,20 +181,35 @@
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["PipelineStages"]</h2>
         <div class="px-4 py-3 container">
             <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
-            <table class="flex-1">
+            <table class="flex-1 pipeline-table">
                 <thead>
                 <tr class="bg-slate-50">
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Stage"]</th>
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Deals"]</th>
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Amount"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Stage"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Deals"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Amount"]</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="pipeline-table__body">
                     @if (isLoading)
                     {
-                        <tr>
-                            <td colspan="3"><em>@Localizer["Loading..."]</em></td>
-                        </tr>
+                        @foreach (var placeholderIndex in Enumerable.Range(0, 4))
+                        {
+                            <tr class="pipeline-row pipeline-row--skeleton border-t border-t-[#d0d9e7]">
+                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                                    @if (placeholderIndex == 0)
+                                    {
+                                        <span class="visually-hidden">@Localizer["Loading..."]</span>
+                                    }
+                                    <span class="skeleton skeleton--text skeleton--stage"></span>
+                                </td>
+                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                                    <span class="skeleton skeleton--text skeleton--count"></span>
+                                </td>
+                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                                    <span class="skeleton skeleton--text skeleton--amount"></span>
+                                </td>
+                            </tr>
+                        }
                     }
                     else if (groupedDeals.Length == 0)
                     {
@@ -203,12 +221,12 @@
                     {
                         @foreach (var stage in groupedDeals)
                         {
-                            <tr class="border-t border-t-[#d0d9e7]">
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                            <tr class="pipeline-row pipeline-row--data border-t border-t-[#d0d9e7]">
+                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
                                 @stage.Key
                                 </td>
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Count()</td>
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Sum(d => d.Amount).ToString("C")</td>
+                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Count()</td>
+                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Sum(d => d.Amount).ToString("C")</td>
                             </tr>
                         }
                     }
