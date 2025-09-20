@@ -142,13 +142,13 @@
 
 @code {
     [Parameter]
-    public string ContactId { get; set; }
+    public string? ContactId { get; set; }
 
     private Contact? contact;
-    private IEnumerable<Activity> activities;
-    private string newActivityContent;
-    private IEnumerable<Deal> relatedDeals;
-    private ClaimsPrincipal user;
+    private IEnumerable<Activity>? activities;
+    private string? newActivityContent;
+    private IEnumerable<Deal>? relatedDeals;
+    private ClaimsPrincipal? user;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {

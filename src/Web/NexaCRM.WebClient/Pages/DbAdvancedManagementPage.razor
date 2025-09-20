@@ -25,11 +25,14 @@
     </header>
 
     <nav class="tabs" role="tablist">
-        <button class="tab @(activeTab==Tab.Explore?"active":null)" @onclick="(()=>SetTab(Tab.Explore))">목록</button>
-        <button class="tab @(activeTab==Tab.Segments?"active":null)" @onclick="(()=>SetTab(Tab.Segments))">세그먼트</button>
-        <button class="tab @(activeTab==Tab.Imports?"active":null)" @onclick="(()=>SetTab(Tab.Imports))">가져오기</button>
-        <button class="tab @(activeTab==Tab.Dedupe?"active":null)" @onclick="(()=>SetTab(Tab.Dedupe))">중복 관리</button>
-        <button class="tab @(activeTab==Tab.Settings?"active":null)" @onclick="(()=>SetTab(Tab.Settings))">설정</button>
+    <button class="tab @(activeTab==Tab.Explore?"active":null)" @onclick="(()=>SetTab(Tab.Explore))">목록</button>
+    <button class="tab @(activeTab==Tab.Segments?"active":null)" @onclick="(()=>SetTab(Tab.Segments))">세그먼트</button>
+    <button class="tab @(activeTab==Tab.Imports?"active":null)" @onclick="(()=>SetTab(Tab.Imports))">가져오기</button>
+    <button class="tab @(activeTab==Tab.Dedupe?"active":null)" @onclick="(()=>SetTab(Tab.Dedupe))">중복 관리</button>
+    <button class="tab @(activeTab==Tab.Grade?"active":null)" @onclick="(()=>SetTab(Tab.Grade))">등급 관리</button>
+    <button class="tab @(activeTab==Tab.Consult?"active":null)" @onclick="(()=>SetTab(Tab.Consult))">상담 구분값</button>
+    <button class="tab @(activeTab==Tab.Distribution?"active":null)" @onclick="(()=>SetTab(Tab.Distribution))">분배설정</button>
+    <button class="tab @(activeTab==Tab.Settings?"active":null)" @onclick="(()=>SetTab(Tab.Settings))">설정</button>
     </nav>
 
     @if (activeTab == Tab.Explore)
@@ -276,6 +279,213 @@
             }
         </section>
     }
+    else if (activeTab == Tab.Grade)
+    {
+        <section class="grade-management">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>등급 구분값 관리</h5>
+                <button class="btn btn-primary" @onclick="AddGradeRow"><i class="bi bi-plus-circle"></i> 등급구분값 등록</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>NO</th>
+                            <th>구분값명</th>
+                            <th>상세설명</th>
+                            <th>사용여부</th>
+                            <th>최초등록일시</th>
+                            <th>최종수정일시</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (gradeRows.Any())
+                        {
+                            @foreach (var row in gradeRows.OrderByDescending(r => r.Id))
+                            {
+                                <tr>
+                                    <td>@row.Id</td>
+                                    <td><input class="form-control" @bind="row.Name" /></td>
+                                    <td><input class="form-control" @bind="row.Description" /></td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsActive">
+                                            <option value="true">사용중</option>
+                                            <option value="false">미사용</option>
+                                        </select>
+                                    </td>
+                                    <td>@row.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@(row.UpdatedAt.HasValue ? row.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "-")</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveGradeRow(row.Id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center text-muted">등급 데이터가 없습니다.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3 text-end">
+                <button class="btn btn-success" @onclick="SaveGradeRows"><i class="bi bi-save"></i> 등급구분값 저장</button>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Consult)
+    {
+        <section class="consult-management">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>상담 구분값 관리</h5>
+                <button class="btn btn-primary" @onclick="AddConsultRow"><i class="bi bi-plus-circle"></i> 상담구분값 등록</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>NO</th>
+                            <th>상태값명</th>
+                            <th>정산사용여부</th>
+                            <th>상담완료여부</th>
+                            <th>사용여부</th>
+                            <th>최초등록일시</th>
+                            <th>최종수정일시</th>
+                            <th>순서</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (consultRows.Any())
+                        {
+                            @foreach (var row in consultRows.OrderByDescending(r => r.Id))
+                            {
+                                <tr>
+                                    <td>@row.Id</td>
+                                    <td><input class="form-control" @bind="row.Name" /></td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsSettlement">
+                                            <option value="true">사용중</option>
+                                            <option value="false">미사용</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsComplete">
+                                            <option value="true">완료값</option>
+                                            <option value="false">기본값</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsActive">
+                                            <option value="true">사용중</option>
+                                            <option value="false">미사용</option>
+                                        </select>
+                                    </td>
+                                    <td>@row.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@(row.UpdatedAt.HasValue ? row.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "-")</td>
+                                    <td><input class="form-control" type="number" min="1" @bind="row.Order" style="width:80px;" /></td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveConsultRow(row.Id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="9" class="text-center text-muted">상담 구분값 데이터가 없습니다.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3 text-end">
+                <button class="btn btn-success" @onclick="SaveConsultRows"><i class="bi bi-save"></i> 상담구분값 저장</button>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Distribution)
+    {
+        <section class="distribution-settings">
+            <h5 class="mb-3">팀별 분배설정</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="me-2">팀분배 설정 (팀명/우선순위/기본수량)</span>
+                <div class="form-check form-switch ms-auto">
+                    <input class="form-check-input" type="checkbox" id="autoDistTeam" @bind="autoDistTeam" />
+                    <label class="form-check-label" for="autoDistTeam">자동 분배</label>
+                </div>
+            </div>
+            <div class="row mb-4">
+                @foreach (var team in teamRows)
+                {
+                    <div class="col-md-3 mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@team.Name</span>
+                            <span class="input-group-text">@team.Code</span>
+                            <span class="input-group-text">@team.Priority<span>위</span></span>
+                            <input type="number" class="form-control" min="0" @bind="team.Quantity" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <h5 class="mb-3">담당자별 분배설정</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="me-2">팀 선택</span>
+                <select class="form-select w-auto" @bind="selectedTeam">
+                    @foreach (var team in teamRows)
+                    {
+                        <option value="@team.Code">@team.Name</option>
+                    }
+                </select>
+                <div class="form-check form-switch ms-auto">
+                    <input class="form-check-input" type="checkbox" id="autoDistUser" @bind="autoDistUser" />
+                    <label class="form-check-label" for="autoDistUser">자동 분배</label>
+                </div>
+            </div>
+            <div class="row mb-4">
+                @foreach (var user in userRows.Where(u => u.TeamCode == selectedTeam))
+                {
+                    <div class="col-md-3 mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@user.Name</span>
+                            <span class="input-group-text">@user.Code</span>
+                            <span class="input-group-text">@user.Priority<span>위</span></span>
+                            <input type="number" class="form-control" min="0" @bind="user.Quantity" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <h5 class="mb-3">생산업체별 분배설정</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="me-2">생산업체(DB공급업체/소개/개인/기타) - 팀 매칭</span>
+                <div class="form-check form-switch ms-auto">
+                    <input class="form-check-input" type="checkbox" id="autoDistVendor" @bind="autoDistVendor" />
+                    <label class="form-check-label" for="autoDistVendor">자동 분배</label>
+                </div>
+            </div>
+            <div class="row mb-4">
+                @foreach (var vendor in vendorRows)
+                {
+                    <div class="col-md-6 mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@vendor.Name</span>
+                            <select class="form-select" @bind="vendor.TeamCode">
+                                <option value="">팀 선택</option>
+                                @foreach (var team in teamRows)
+                                {
+                                    <option value="@team.Code">@team.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="mt-4 text-end">
+                <button class="btn btn-dark" @onclick="SaveDistributionSettings"><i class="bi bi-save"></i> 저장하기</button>
+            </div>
+        </section>
+    }
     else if (activeTab == Tab.Settings)
     {
         <AuthorizeView Roles="Manager">
@@ -305,7 +515,150 @@
 </div>
 
 @code {
-    private enum Tab { Explore, Segments, Imports, Dedupe, Settings }
+    private enum Tab { Explore, Segments, Imports, Dedupe, Grade, Consult, Distribution, Settings }
+
+    // 분배설정용 모델
+    private class TeamRow
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Priority { get; set; } = 1;
+        public int Quantity { get; set; } = 0;
+    }
+    private class UserRow
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string TeamCode { get; set; } = "";
+        public int Priority { get; set; } = 1;
+        public int Quantity { get; set; } = 0;
+    }
+    private class VendorRow
+    {
+        public string Name { get; set; } = "";
+        public string TeamCode { get; set; } = "";
+    }
+
+    private List<TeamRow> teamRows = new()
+    {
+        new TeamRow { Code = "TM0001", Name = "직영", Priority = 1 },
+        new TeamRow { Code = "TM0002", Name = "Elite지점", Priority = 2 },
+        new TeamRow { Code = "TM0003", Name = "SKY지점", Priority = 3 }
+    };
+    private List<UserRow> userRows = new()
+    {
+        new UserRow { Code = "FC0004", Name = "차은우(영업1팀장)", TeamCode = "TM0001", Priority = 1 },
+        new UserRow { Code = "FC0005", Name = "이혜리(영업1팀원)", TeamCode = "TM0001", Priority = 2 },
+        new UserRow { Code = "FC0017", Name = "이병헌(영업2팀)", TeamCode = "TM0002", Priority = 1 }
+    };
+    private List<VendorRow> vendorRows = new()
+    {
+        new VendorRow { Name = "DB공급업체B" },
+        new VendorRow { Name = "DB공급업체A" },
+        new VendorRow { Name = "소개" },
+        new VendorRow { Name = "개인" },
+        new VendorRow { Name = "기타 DB" }
+    };
+
+    private bool autoDistTeam = false;
+    private bool autoDistUser = false;
+    private bool autoDistVendor = false;
+    private string selectedTeam = "TM0001";
+
+    private void SaveDistributionSettings()
+    {
+        // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+    }
+
+    // 상담구분값 관리용 모델
+    private class ConsultRow
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsSettlement { get; set; } = false;
+        public bool IsComplete { get; set; } = false;
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+        public int Order { get; set; } = 1;
+    }
+
+    private List<ConsultRow> consultRows = new();
+    private int nextConsultId = 1;
+
+    private void AddConsultRow()
+    {
+        consultRows.Add(new ConsultRow
+        {
+            Id = nextConsultId++,
+            Name = "",
+            IsSettlement = false,
+            IsComplete = false,
+            IsActive = true,
+            CreatedAt = DateTime.Now,
+            Order = consultRows.Count + 1
+        });
+    }
+
+    private void RemoveConsultRow(int id)
+    {
+        var row = consultRows.FirstOrDefault(r => r.Id == id);
+        if (row != null)
+            consultRows.Remove(row);
+    }
+
+    private void SaveConsultRows()
+    {
+        foreach (var row in consultRows)
+        {
+            row.UpdatedAt = DateTime.Now;
+        }
+        // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+        // 현재는 단순히 UpdatedAt만 갱신
+    }
+
+    // 등급관리용 모델
+    private class GradeRow
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+    }
+
+    private List<GradeRow> gradeRows = new();
+    private int nextGradeId = 1;
+
+    private void AddGradeRow()
+    {
+        gradeRows.Add(new GradeRow
+        {
+            Id = nextGradeId++,
+            Name = "",
+            Description = "",
+            IsActive = true,
+            CreatedAt = DateTime.Now
+        });
+    }
+
+    private void RemoveGradeRow(int id)
+    {
+        var row = gradeRows.FirstOrDefault(r => r.Id == id);
+        if (row != null)
+            gradeRows.Remove(row);
+    }
+
+    private void SaveGradeRows()
+    {
+        foreach (var row in gradeRows)
+        {
+            row.UpdatedAt = DateTime.Now;
+        }
+        // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+        // 현재는 단순히 UpdatedAt만 갱신
+    }
     private Tab activeTab = Tab.Explore;
 
     private IEnumerable<DbCustomer>? data;

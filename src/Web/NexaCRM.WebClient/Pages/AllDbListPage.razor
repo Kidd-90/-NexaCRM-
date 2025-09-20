@@ -124,7 +124,12 @@
     protected override async Task OnInitializedAsync()
     {
         customers = await DbDataService.GetAllDbListAsync();
-        groupOptions = customers.Select(c => c.Group).Where(g => !string.IsNullOrEmpty(g)).Distinct().OrderBy(g => g);
+        groupOptions = customers
+            .Select(c => c.Group)
+            .Where(g => !string.IsNullOrEmpty(g))
+            .Distinct()
+            .OrderBy(g => g)
+            .Cast<string>();
         filteredCustomers = customers;
     }
 
@@ -136,8 +141,8 @@
 
     private void FilterCustomers()
     {
-        filteredCustomers = customers.Where(c =>
-            (string.IsNullOrWhiteSpace(searchTerm) || c.CustomerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+        filteredCustomers = customers?.Where(c =>
+            (string.IsNullOrWhiteSpace(searchTerm) || (!string.IsNullOrEmpty(c.CustomerName) && c.CustomerName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))) &&
             (string.IsNullOrWhiteSpace(selectedGroup) || string.Equals(c.Group, selectedGroup, StringComparison.OrdinalIgnoreCase)));
     }
 

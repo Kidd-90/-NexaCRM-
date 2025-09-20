@@ -5,6 +5,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.WebClient;
+// using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
 using Microsoft.AspNetCore.Components.Authorization;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;

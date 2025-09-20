@@ -13,16 +13,16 @@ namespace NexaCRM.WebClient.Models.Db
 
         [Required(ErrorMessage = "Customer name is required.")]
         [Display(Name = "Customer Name")]
-        public string CustomerName { get; set; }
+        public string? CustomerName { get; set; }
 
         [Display(Name = "Contact")]
-        public string ContactNumber { get; set; }
+        public string? ContactNumber { get; set; }
 
         [Display(Name = "Group")]
         public string? Group { get; set; }
 
         [Display(Name = "Assigned To")]
-        public string AssignedTo { get; set; }
+        public string? AssignedTo { get; set; }
 
         [Display(Name = "Assigned Date")]
         public DateTime AssignedDate { get; set; }
@@ -37,7 +37,7 @@ namespace NexaCRM.WebClient.Models.Db
         public bool IsStarred { get; set; }
 
         [Display(Name = "Assigned By")]
-        public string Assigner { get; set; }
+        public string? Assigner { get; set; }
 
         // Optional archive flag for advanced management workflows
         public bool IsArchived { get; set; }

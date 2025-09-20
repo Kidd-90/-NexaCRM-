@@ -39,8 +39,8 @@
 
 @code {
     [Parameter] public int ContactId { get; set; }
-    private IEnumerable<Agent> agents;
-    private string selectedAgentName;
+    private IEnumerable<Agent>? agents;
+    private string? selectedAgentName;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
