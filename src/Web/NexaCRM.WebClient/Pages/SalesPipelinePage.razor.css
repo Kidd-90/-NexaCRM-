@@ -127,6 +127,130 @@
     font-weight: 600;
 }
 
+.filter-summary--loading {
+    gap: 0.75rem;
+    color: transparent;
+}
+
+.filter-summary--loading .skeleton {
+    display: block;
+    height: 0.875rem;
+    max-width: 220px;
+}
+
+.filter-summary--loading .skeleton--short {
+    max-width: 140px;
+}
+
+.filter-summary--loading .skeleton--wide {
+    max-width: 260px;
+}
+
+.pipeline-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pipeline-table__body {
+    background-color: #ffffff;
+}
+
+.pipeline-table__header {
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.pipeline-table__header:hover {
+    color: #111827;
+}
+
+.pipeline-row {
+    transition: background-color 0.24s ease, box-shadow 0.24s ease, transform 0.24s ease;
+}
+
+.pipeline-row--data {
+    background-color: #ffffff;
+    animation: pipeline-row-enter 0.32s ease both;
+}
+
+.pipeline-row--data:hover,
+.pipeline-row--data:focus-within {
+    background-color: rgba(99, 102, 241, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 30px -22px rgba(15, 23, 42, 0.55);
+}
+
+.pipeline-table__cell {
+    position: relative;
+    vertical-align: middle;
+}
+
+.pipeline-row--skeleton .pipeline-table__cell {
+    padding-block: 1.35rem;
+}
+
+.pipeline-row--skeleton .skeleton {
+    display: block;
+}
+
+.pipeline-row--skeleton .skeleton + .skeleton {
+    margin-top: 0.25rem;
+}
+
+.skeleton--text {
+    height: 0.875rem;
+    border-radius: 999px;
+}
+
+.skeleton--short,
+.skeleton--wide,
+.skeleton--stage,
+.skeleton--count,
+.skeleton--amount {
+    display: block;
+}
+
+.skeleton--short {
+    width: 36%;
+}
+
+.skeleton--wide {
+    width: 72%;
+}
+
+.skeleton--stage {
+    width: 68%;
+}
+
+.skeleton--count {
+    width: 48%;
+}
+
+.skeleton--amount {
+    width: 58%;
+}
+
+@keyframes pipeline-row-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pipeline-row,
+    .pipeline-row--data {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
 @media (max-width: 768px) {
     .pipeline-filter-control {
         min-width: 100%;
