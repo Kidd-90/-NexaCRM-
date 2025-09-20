@@ -133,15 +133,17 @@ public class MockDbDataService : IDbDataService
                 target = sel(src);
         }
 
-        FillIfEmpty(ref primary.Gender, c => c.Gender);
-        FillIfEmpty(ref primary.Address, c => c.Address);
-        FillIfEmpty(ref primary.JobTitle, c => c.JobTitle);
-        FillIfEmpty(ref primary.MaritalStatus, c => c.MaritalStatus);
-        FillIfEmpty(ref primary.ProofNumber, c => c.ProofNumber);
-        FillIfNull(ref primary.DbPrice, c => c.DbPrice);
-        FillIfEmpty(ref primary.Headquarters, c => c.Headquarters);
-        FillIfEmpty(ref primary.InsuranceName, c => c.InsuranceName);
-        FillIfNull(ref primary.CarJoinDate, c => c.CarJoinDate);
+        primary.Gender = string.IsNullOrWhiteSpace(primary.Gender) ? Latest(c => c.Gender)?.Gender ?? primary.Gender : primary.Gender;
+        primary.Address = string.IsNullOrWhiteSpace(primary.Address) ? Latest(c => c.Address)?.Address ?? primary.Address : primary.Address;
+        primary.JobTitle = string.IsNullOrWhiteSpace(primary.JobTitle) ? Latest(c => c.JobTitle)?.JobTitle ?? primary.JobTitle : primary.JobTitle;
+        primary.MaritalStatus = string.IsNullOrWhiteSpace(primary.MaritalStatus) ? Latest(c => c.MaritalStatus)?.MaritalStatus ?? primary.MaritalStatus : primary.MaritalStatus;
+        primary.ProofNumber = string.IsNullOrWhiteSpace(primary.ProofNumber) ? Latest(c => c.ProofNumber)?.ProofNumber ?? primary.ProofNumber : primary.ProofNumber;
+        if (!primary.DbPrice.HasValue)
+            primary.DbPrice = dups.OrderByDescending(x => x.AssignedDate).FirstOrDefault(x => x.DbPrice.HasValue)?.DbPrice;
+        primary.Headquarters = string.IsNullOrWhiteSpace(primary.Headquarters) ? Latest(c => c.Headquarters)?.Headquarters ?? primary.Headquarters : primary.Headquarters;
+        primary.InsuranceName = string.IsNullOrWhiteSpace(primary.InsuranceName) ? Latest(c => c.InsuranceName)?.InsuranceName ?? primary.InsuranceName : primary.InsuranceName;
+        if (!primary.CarJoinDate.HasValue)
+            primary.CarJoinDate = dups.OrderByDescending(x => x.AssignedDate).FirstOrDefault(x => x.CarJoinDate.HasValue)?.CarJoinDate;
         // Notes: append unique snippets
         if (dups.Any(d => !string.IsNullOrWhiteSpace(d.Notes)))
         {
@@ -175,16 +177,26 @@ public class MockDbDataService : IDbDataService
             field = value;
         }
 
-        SetStr(ref target.Gender, patch.Gender);
-        SetStr(ref target.Address, patch.Address);
-        SetStr(ref target.JobTitle, patch.JobTitle);
-        SetStr(ref target.MaritalStatus, patch.MaritalStatus);
-        SetStr(ref target.ProofNumber, patch.ProofNumber);
-        SetVal(ref target.DbPrice, patch.DbPrice);
-        SetStr(ref target.Headquarters, patch.Headquarters);
-        SetStr(ref target.InsuranceName, patch.InsuranceName);
-        SetVal(ref target.CarJoinDate, patch.CarJoinDate);
-        SetStr(ref target.Notes, patch.Notes);
+        if (!string.IsNullOrWhiteSpace(patch.Gender) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.Gender)))
+            target.Gender = patch.Gender;
+        if (!string.IsNullOrWhiteSpace(patch.Address) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.Address)))
+            target.Address = patch.Address;
+        if (!string.IsNullOrWhiteSpace(patch.JobTitle) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.JobTitle)))
+            target.JobTitle = patch.JobTitle;
+        if (!string.IsNullOrWhiteSpace(patch.MaritalStatus) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.MaritalStatus)))
+            target.MaritalStatus = patch.MaritalStatus;
+        if (!string.IsNullOrWhiteSpace(patch.ProofNumber) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.ProofNumber)))
+            target.ProofNumber = patch.ProofNumber;
+        if (patch.DbPrice.HasValue && (!overwriteEmptyOnly || !target.DbPrice.HasValue))
+            target.DbPrice = patch.DbPrice;
+        if (!string.IsNullOrWhiteSpace(patch.Headquarters) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.Headquarters)))
+            target.Headquarters = patch.Headquarters;
+        if (!string.IsNullOrWhiteSpace(patch.InsuranceName) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.InsuranceName)))
+            target.InsuranceName = patch.InsuranceName;
+        if (patch.CarJoinDate.HasValue && (!overwriteEmptyOnly || !target.CarJoinDate.HasValue))
+            target.CarJoinDate = patch.CarJoinDate;
+        if (!string.IsNullOrWhiteSpace(patch.Notes) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.Notes)))
+            target.Notes = patch.Notes;
 
         return Task.CompletedTask;
     }
