@@ -118,6 +118,16 @@
             </nav>
         </footer>
     }
+
+    <AuthorizeView>
+        <Authorized>
+            <!-- Bottom-right login indicator -->
+            <div class="login-status-indicator" title="Logged in">
+                <span class="indicator-dot" aria-hidden="true"></span>
+                <span class="indicator-text">@userInitials</span>
+            </div>
+        </Authorized>
+    </AuthorizeView>
 </div>
 
 @code {

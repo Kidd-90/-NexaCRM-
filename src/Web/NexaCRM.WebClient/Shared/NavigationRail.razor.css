@@ -25,15 +25,18 @@
     display: grid;
     place-items: center;
     border-radius: 12px;
-    border: 1px solid rgba(17,24,39,0.06);
-    background: rgba(255,255,255,0.9);
+    border: 1px solid transparent; /* transparent by default like notif-button */
+    background: transparent; /* transparent default */
     color: #6B7280; /* neutral icon */
     font-size: 1.1rem;
     transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    cursor: pointer;
+    overflow: visible; /* avoid clipping subtle effects */
 }
 
 .rail-icon:hover {
-    background: #FFFFFF;
+    background: rgba(243,244,246,0.85);
+    border-color: #E5E7EB;
     color: #374151; /* darker neutral */
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(17,24,39,0.07);
@@ -48,6 +51,35 @@
     border-color: #D1D5DB;
     color: #111827; /* active = near-black */
     background: #E5E7EB; /* subtle neutral highlight */
+}
+
+/* Slight hover feedback on the icon glyph */
+.rail-icon i {
+    transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.rail-icon:hover i {
+    transform: scale(1.06);
+    color: #0f172a;
+}
+
+/* Make only the profile button fully round */
+.rail-icon--profile {
+    border-radius: 999px;
+    position: relative; /* for positioning the status dot */
+}
+
+/* Green login indicator dot at bottom-right of the profile icon */
+.rail-icon--profile .indicator-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #10B981; /* emerald-500 */
+    left: 25px;
+    bottom: 8px;
+    box-shadow: 0 0 0 2px #FFFFFF; /* white ring to separate from background */
+    pointer-events: none;
 }
 
 .rail-spacer {
@@ -98,6 +130,20 @@
     border-bottom: 1px solid #E5E7EB;
 }
 
+/* When in DB panel, place the import button beneath the title */
+.panel-header--db {
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.panel-header--db .panel-title {
+    flex: 1 0 100%;
+}
+
+.panel-header--db .import-button {
+    margin-top: 0.35rem;
+}
+
 .panel-title {
     font-weight: 700;
     color: #111827; /* solid title */
@@ -118,6 +164,29 @@
 .panel-action:hover {
     color: #111827;
     background: #FFFFFF;
+}
+
+/* Import button variant for DB panel */
+.panel-action.import-button {
+    background: #ECFDF5; /* emerald-50 */
+    border-color: #A7F3D0; /* emerald-200 */
+    color: #065F46; /* emerald-800 */
+}
+
+.panel-action.import-button:hover {
+    background: #D1FAE5; /* emerald-100 */
+    border-color: #6EE7B7; /* emerald-300 */
+    color: #064E3B; /* emerald-900 */
+}
+
+.panel-action.import-button i {
+    font-size: 1rem;
+}
+
+/* Divider above the first item in DB panel */
+.panel-divider {
+    border-top: 1px solid #E5E7EB;
+    margin: 0.25rem 0 0.4rem 0;
 }
 
 .panel-section-label {

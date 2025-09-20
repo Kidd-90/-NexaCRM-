@@ -73,8 +73,8 @@
 </div>
 
 @code {
-    private IEnumerable<DbCustomer> customers;
-    private ClaimsPrincipal user;
+    private IEnumerable<DbCustomer>? customers;
+    private ClaimsPrincipal? user;
 
     protected override async Task OnInitializedAsync()
     {

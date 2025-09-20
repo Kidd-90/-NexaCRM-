@@ -45,6 +45,10 @@
         text-align: right;
     }
 
+    /* Align text and buttons neatly in action column */
+    .action-cell { white-space: nowrap; }
+    .table td, .table th { vertical-align: middle; }
+
 
     /* Show card view on mobile, hide table */
     @media (max-width: 767.98px) {

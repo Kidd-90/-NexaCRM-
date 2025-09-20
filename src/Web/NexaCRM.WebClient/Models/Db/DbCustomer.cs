@@ -38,5 +38,20 @@ namespace NexaCRM.WebClient.Models.Db
 
         [Display(Name = "Assigned By")]
         public string Assigner { get; set; }
+
+        // Optional archive flag for advanced management workflows
+        public bool IsArchived { get; set; }
+
+        // Optional extended fields for dedupe rules (all nullable)
+        public string? Gender { get; set; }
+        public string? Address { get; set; }
+        public string? JobTitle { get; set; }
+        public string? MaritalStatus { get; set; }
+        public string? ProofNumber { get; set; }
+        public decimal? DbPrice { get; set; }
+        public string? Headquarters { get; set; }
+        public string? InsuranceName { get; set; }
+        public DateTime? CarJoinDate { get; set; }
+        public string? Notes { get; set; }
     }
 }

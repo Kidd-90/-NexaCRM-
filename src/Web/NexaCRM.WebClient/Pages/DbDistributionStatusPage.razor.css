@@ -20,6 +20,24 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
+/* Align text and buttons neatly in action column */
+.action-cell {
+    white-space: nowrap;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* Standardize small action button sizing across DB tables */
+.table .action-btn {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.5rem; /* slightly smaller than default for balance */
+    line-height: 1.2;
+    border-radius: 0.35rem;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }

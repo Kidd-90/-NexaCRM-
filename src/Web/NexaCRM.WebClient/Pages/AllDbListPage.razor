@@ -55,65 +55,68 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var customer in filteredCustomers)
+                    @if (filteredCustomers != null)
                     {
-                        <tr @onclick="() => NavigateToContact(customer.ContactId)">
-                            <td>@customer.CustomerName</td>
-                            <td>@customer.ContactNumber</td>
-                            <td>@customer.Group</td>
-                            <td>@customer.AssignedTo</td>
-                            <td>@customer.AssignedDate.ToShortDateString()</td>
-                            <td>@StatusLocalizer[customer.Status.ToString()]</td>
-                            <td>@customer.LastContactDate.ToShortDateString()</td>
-                            <td>@(customer.IsStarred ? "★" : "")</td>
-                            <td>@customer.Assigner</td>
-                        </tr>
+                        foreach (var customer in filteredCustomers)
+                        {
+                            <tr @onclick="() => NavigateToContact(customer.ContactId)">
+                                <td>@customer.CustomerName</td>
+                                <td>@customer.ContactNumber</td>
+                                <td>@customer.Group</td>
+                                <td>@customer.AssignedTo</td>
+                                <td>@customer.AssignedDate.ToShortDateString()</td>
+                                <td class="@GetStatusClass(customer.Status)">@StatusLocalizer[customer.Status.ToString()]</td>
+                                <td>@customer.LastContactDate.ToShortDateString()</td>
+                                <td>@(customer.IsStarred ? "★" : "")</td>
+                                <td>@customer.Assigner</td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
         </div>
-
-        <!-- Mobile View -->
-        <div class="mobile-card-view">
-            @foreach (var customer in filteredCustomers)
+            @if (filteredCustomers != null)
             {
-                <div class="customer-card" @onclick="() => NavigateToContact(customer.ContactId)">
-                    <h5>
-                        @customer.CustomerName
-                        @if(customer.IsStarred)
-                        {
-                            <span style="color: #ffc107;">★</span>
-                        }
-                    </h5>
-                    <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["Contact"]</span>
-                        <span class="card-info-value">@customer.ContactNumber</span>
+                foreach (var customer in filteredCustomers)
+                {
+                    <div class="customer-card" @onclick="() => NavigateToContact(customer.ContactId)">
+                        <h5>
+                            @customer.CustomerName
+                            @if(customer.IsStarred)
+                            {
+                                <span style="color: #ffc107;">★</span>
+                            }
+                        </h5>
+                        <div class="card-info-row">
+                            <span class="card-info-label">@Localizer["Contact"]</span>
+                            <span class="card-info-value">@customer.ContactNumber</span>
+                        </div>
+                        <div class="card-info-row">
+                            <span class="card-info-label">@Localizer["Group"]</span>
+                            <span class="card-info-value">@customer.Group</span>
+                        </div>
+                        <div class="card-info-row">
+                            <span class="card-info-label">@Localizer["AssignedTo"]</span>
+                            <span class="card-info-value">@customer.AssignedTo</span>
+                        </div>
+                        <div class="card-info-row">
+                            <span class="card-info-label">@Localizer["Status"]</span>
+                            <span class="card-info-value @GetStatusClass(customer.Status)">@StatusLocalizer[customer.Status.ToString()]</span>
+                        </div>
+                        <div class="card-info-row">
+                            <span class="card-info-label">@Localizer["LastContact"]</span>
+                            <span class="card-info-value">@customer.LastContactDate.ToShortDateString()</span>
+                        </div>
                     </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["Group"]</span>
-                        <span class="card-info-value">@customer.Group</span>
-                    </div>
-                     <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["AssignedTo"]</span>
-                        <span class="card-info-value">@customer.AssignedTo</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["Status"]</span>
-                        <span class="card-info-value">@StatusLocalizer[customer.Status.ToString()]</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["LastContact"]</span>
-                        <span class="card-info-value">@customer.LastContactDate.ToShortDateString()</span>
-                    </div>
-                </div>
+                }
             }
-        </div>
+    }
     }
 </div>
 
 @code {
-    private IEnumerable<DbCustomer> customers;
-    private IEnumerable<DbCustomer> filteredCustomers;
+    private IEnumerable<DbCustomer>? customers;
+    private IEnumerable<DbCustomer>? filteredCustomers;
     private IEnumerable<string> groupOptions = Enumerable.Empty<string>();
     private string searchTerm = string.Empty;
     private string selectedGroup = string.Empty;
@@ -148,4 +151,15 @@
     {
         NavigationManager.NavigateTo($"/contacts/{contactId}");
     }
+
+    private static string GetStatusClass(DbStatus status) => status switch
+    {
+        DbStatus.New => "status-text status-new",
+        DbStatus.InProgress => "status-text status-inprogress",
+        DbStatus.NoAnswer => "status-text status-noanswer",
+        DbStatus.Completed => "status-text status-completed",
+        DbStatus.OnHold => "status-text status-onhold",
+        _ => "status-text"
+    };
 }
+

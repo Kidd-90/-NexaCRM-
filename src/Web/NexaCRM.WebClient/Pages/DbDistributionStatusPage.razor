@@ -41,7 +41,7 @@
 
         <h3 class="h5 mb-3">@Localizer["AllListTitle"]</h3>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>@Localizer["CustomerName"]</th>
@@ -63,7 +63,7 @@
                             <td>@customer.AssignedDate.ToShortDateString()</td>
                             <td>@StatusLocalizer[customer.Status.ToString()]</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
-                            <td>
+                            <td class="action-cell">
                                 <button class="btn btn-secondary btn-sm me-1 action-btn" @onclick="() => Redistribute(customer.ContactId)">@Localizer["Redistribute"]</button>
                                 <button class="btn btn-danger btn-sm action-btn" @onclick="() => Recall(customer.ContactId)">@Localizer["Recall"]</button>
                             </td>
@@ -76,7 +76,7 @@
 </div>
 
 @code {
-    private IEnumerable<DbCustomer> customers;
+    private IEnumerable<DbCustomer>? customers;
     private Dictionary<DbStatus, int> statusCounts = new Dictionary<DbStatus, int>();
 
     protected override async Task OnInitializedAsync()

@@ -1,0 +1,126 @@
+.advanced-db {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    /* add subtle horizontal margins so content doesn't touch edges */
+    margin-inline: clamp(0.5rem, 2vw, 1rem);
+}
+
+.advanced-db__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.advanced-db__header .toolbar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.tab {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid transparent;
+    color: #6B7280;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tab.active {
+    color: #111827;
+    border-bottom-color: #2153C8;
+}
+
+.explore {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 1rem;
+}
+
+.filters {
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.filter-group label { font-weight: 700; color: #374151; margin-bottom: 0.25rem; display:block; }
+
+.grid {
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 0.5rem;
+}
+
+/* Dedupe tab */
+.dedupe { display: flex; flex-direction: column; gap: 0.75rem; }
+.dedupe-controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.dedupe-controls .hint { font-size: 0.9rem; }
+.action-cell { white-space: nowrap; }
+.table td, .table th { vertical-align: middle; }
+.table .action-btn { font-size: 0.78rem; padding: 0.25rem 0.5rem; line-height: 1.2; border-radius: 0.35rem; }
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    display: grid;
+    place-items: center;
+    z-index: 1000;
+}
+
+.modal-panel {
+    width: min(720px, 92vw);
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.25);
+    overflow: hidden;
+}
+
+.modal-header { padding: 0.75rem 1rem; border-bottom: 1px solid #E5E7EB; }
+.modal-body { padding: 0.75rem 1rem; }
+.modal-footer { padding: 0.75rem 1rem; display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid #E5E7EB; }
+
+.dedupe-info {
+    border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    border-radius: 10px;
+    padding: 0.75rem;
+}
+
+.dedupe-info .info-list { margin: 0; padding-left: 1rem; display: grid; gap: 0.35rem; }
+.dedupe-info .muted-small { color: #6B7280; font-size: 0.9rem; margin: 0.25rem 0; }
+
+.rule-config { border: 1px solid #E5E7EB; background: #FFFFFF; border-radius: 10px; padding: 0.5rem 0.75rem; }
+.rule-config > summary { cursor: pointer; font-weight: 700; color: #111827; }
+.rule-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem 0.75rem; align-items: center; margin-top: 0.5rem; }
+.rule-row { display: contents; }
+.rule-row label { font-weight: 600; color: #374151; }
+.rule-row input[type="number"] { width: 80px; }
+
+/* Reuse status color tokens */
+.status-text { font-weight: 600; }
+.status-new { color: #2563EB; }
+.status-inprogress { color: #F59E0B; }
+.status-noanswer { color: #EF4444; }
+.status-completed { color: #10B981; }
+.status-onhold { color: #6B7280; }
+
+@media (max-width: 991px) {
+    .explore { grid-template-columns: 1fr; }
+}

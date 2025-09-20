@@ -3,8 +3,10 @@
 
 @using NexaCRM.WebClient.Models.Db
 @using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.Extensions.Localization
 
 @inject IDbDataService DbDataService
+@inject IStringLocalizer<DbStatus> StatusLocalizer
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">팀 DB 현황</h1>
@@ -39,7 +41,7 @@
                             <td>@customer.ContactNumber</td>
                             <td>@customer.AssignedTo</td>
                             <td>@customer.AssignedDate.ToShortDateString()</td>
-                            <td>@customer.Status</td>
+                            <td>@StatusLocalizer[customer.Status.ToString()]</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
                         </tr>
                     }
@@ -50,7 +52,7 @@
 </div>
 
 @code {
-    private IEnumerable<DbCustomer> customers;
+    private IEnumerable<DbCustomer>? customers;
 
     protected override async Task OnInitializedAsync()
     {

@@ -49,9 +49,34 @@
      color: #6c757d;
  }
 
- .card-info-value {
-     font-weight: 500;
- }
+.card-info-value {
+    font-weight: 500;
+}
+
+/* Status-based text colors for table and cards */
+.status-text {
+    font-weight: 600;
+}
+
+.status-new {
+    color: #2563EB; /* blue-600 */
+}
+
+.status-inprogress {
+    color: #F59E0B; /* amber-500 */
+}
+
+.status-noanswer {
+    color: #EF4444; /* red-500 */
+}
+
+.status-completed {
+    color: #10B981; /* emerald-500 */
+}
+
+.status-onhold {
+    color: #6B7280; /* gray-500 */
+}
 
 @keyframes fadeIn {
     from {

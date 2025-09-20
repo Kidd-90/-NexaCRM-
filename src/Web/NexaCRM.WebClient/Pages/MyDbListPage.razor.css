@@ -33,9 +33,17 @@
         color: #6c757d;
     }
 
-    .card-info-value {
-        font-weight: 500;
-    }
+.card-info-value {
+    font-weight: 500;
+}
+
+/* Status-based text colors to match AllDbList */
+.status-text { font-weight: 600; }
+.status-new { color: #2563EB; }
+.status-inprogress { color: #F59E0B; }
+.status-noanswer { color: #EF4444; }
+.status-completed { color: #10B981; }
+.status-onhold { color: #6B7280; }
 
 
     /* Show card view on mobile, hide table */

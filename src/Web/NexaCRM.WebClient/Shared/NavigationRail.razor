@@ -88,9 +88,14 @@
                 <i class="bi bi-gear"></i>
             </button>
             <button type="button"
-                    class="rail-icon"
+                    class="rail-icon rail-icon--profile"
                     title="프로필"
                     @onclick="@(() => NavigateAndClose("profile-settings-page"))">
+                <AuthorizeView>
+                    <Authorized>
+                        <span class="indicator-dot" title="Logged in" aria-hidden="true"></span>
+                    </Authorized>
+                </AuthorizeView>
                 <i class="bi bi-person-circle"></i>
             </button>
             <a class="rail-logo" href="/" title="회사 홈">
@@ -153,10 +158,16 @@
         }
         else if (activeCategory == Category.Db)
         {
-            <div class="panel-header">
+            <div class="panel-header panel-header--db">
                 <div class="panel-title">@Localizer["DbManagement"]</div>
+                <input id="dbImportFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" />
+                <label class="panel-action import-button" for="dbImportFile">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                    <span>고객 DB 추가하기</span>
+                </label>
             </div>
             <nav class="panel-list" aria-label="DB Management">
+                <div class="panel-divider" aria-hidden="true"></div>
                 <RoleBasedComponent RequiredRoles="Manager">
                     <NavLink class="nav-link panel-item" href="db/customer/all" @onclick="CloseMenuOnNavigate"><span>@Localizer["AllDbList"]</span></NavLink>
                 </RoleBasedComponent>

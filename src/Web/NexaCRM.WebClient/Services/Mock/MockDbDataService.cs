@@ -7,9 +7,9 @@ using NexaCRM.WebClient.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services.Mock
 {
-    public class MockDbDataService : IDbDataService
-    {
-        private readonly List<DbCustomer> _dbCustomers;
+public class MockDbDataService : IDbDataService
+{
+    private readonly List<DbCustomer> _dbCustomers;
         private const string ManagerName = "김관리";
         private const string SalesAgent1 = "이영업";
         private const string SalesAgent2 = "박세일";
@@ -40,11 +40,11 @@ namespace NexaCRM.WebClient.Services.Mock
 
         private Task<IEnumerable<DbCustomer>> FilterData(Func<DbCustomer, bool> predicate)
         {
-            return Task.FromResult(_dbCustomers.Where(predicate));
+            return Task.FromResult(_dbCustomers.Where(c => !c.IsArchived).Where(predicate));
         }
 
         // Manager Methods
-        public Task<IEnumerable<DbCustomer>> GetAllDbListAsync() => Task.FromResult(_dbCustomers.AsEnumerable());
+        public Task<IEnumerable<DbCustomer>> GetAllDbListAsync() => Task.FromResult(_dbCustomers.Where(c => !c.IsArchived).AsEnumerable());
         public Task<IEnumerable<DbCustomer>> GetTeamDbStatusAsync() => FilterData(c => !string.IsNullOrEmpty(c.AssignedTo));
         public Task<IEnumerable<DbCustomer>> GetUnassignedDbListAsync() => FilterData(c => string.IsNullOrEmpty(c.AssignedTo));
         public Task<IEnumerable<DbCustomer>> GetTodaysAssignedDbAsync() => FilterData(c => c.AssignedDate.Date == DateTime.Today);
@@ -82,6 +82,111 @@ namespace NexaCRM.WebClient.Services.Mock
         public Task<IEnumerable<DbCustomer>> GetMyAssignmentHistoryAsync(string salesAgentName) => FilterData(c => c.AssignedTo == salesAgentName);
 
         // Common Method
-        public Task<IEnumerable<DbCustomer>> GetMyDbListAsync(string agentName) => FilterData(c => c.AssignedTo == agentName);
+    public Task<IEnumerable<DbCustomer>> GetMyDbListAsync(string agentName) => FilterData(c => c.AssignedTo == agentName);
+
+    // Advanced management mock ops
+    public Task ArchiveCustomersAsync(IEnumerable<int> contactIds)
+    {
+        var set = new HashSet<int>(contactIds);
+        foreach (var c in _dbCustomers.Where(c => set.Contains(c.ContactId)))
+        {
+            c.IsArchived = true;
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteCustomersAsync(IEnumerable<int> contactIds)
+    {
+        var set = new HashSet<int>(contactIds);
+        _dbCustomers.RemoveAll(c => set.Contains(c.ContactId));
+        return Task.CompletedTask;
+    }
+
+    public Task MergeCustomersAsync(int primaryContactId, IEnumerable<int> duplicateContactIds)
+    {
+        var dupSet = new HashSet<int>(duplicateContactIds);
+        var primary = _dbCustomers.FirstOrDefault(c => c.ContactId == primaryContactId);
+        if (primary is null)
+        {
+            _dbCustomers.RemoveAll(c => dupSet.Contains(c.ContactId));
+            return Task.CompletedTask;
+        }
+
+        var dups = _dbCustomers.Where(c => dupSet.Contains(c.ContactId)).ToList();
+        // Simple merge policy: prefer primary; if empty/null, fill from newest duplicate
+        DbCustomer? Latest(Func<DbCustomer, object?> sel)
+            => dups.OrderByDescending(x => x.AssignedDate).FirstOrDefault(x => sel(x) != null && !string.IsNullOrWhiteSpace(sel(x)?.ToString()));
+
+        void FillIfEmpty(ref string? target, Func<DbCustomer, string?> sel)
+        {
+            if (!string.IsNullOrWhiteSpace(target)) return;
+            var src = Latest(sel);
+            if (src != null)
+                target = sel(src);
+        }
+
+        void FillIfNull<T>(ref T? target, Func<DbCustomer, T?> sel) where T : struct
+        {
+            if (target.HasValue) return;
+            var src = dups.OrderByDescending(x => x.AssignedDate).FirstOrDefault(x => sel(x).HasValue);
+            if (src != null)
+                target = sel(src);
+        }
+
+        FillIfEmpty(ref primary.Gender, c => c.Gender);
+        FillIfEmpty(ref primary.Address, c => c.Address);
+        FillIfEmpty(ref primary.JobTitle, c => c.JobTitle);
+        FillIfEmpty(ref primary.MaritalStatus, c => c.MaritalStatus);
+        FillIfEmpty(ref primary.ProofNumber, c => c.ProofNumber);
+        FillIfNull(ref primary.DbPrice, c => c.DbPrice);
+        FillIfEmpty(ref primary.Headquarters, c => c.Headquarters);
+        FillIfEmpty(ref primary.InsuranceName, c => c.InsuranceName);
+        FillIfNull(ref primary.CarJoinDate, c => c.CarJoinDate);
+        // Notes: append unique snippets
+        if (dups.Any(d => !string.IsNullOrWhiteSpace(d.Notes)))
+        {
+            var segments = new List<string>();
+            if (!string.IsNullOrWhiteSpace(primary.Notes)) segments.Add(primary.Notes!);
+            segments.AddRange(dups.Select(d => d.Notes).Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s!.Trim()));
+            primary.Notes = string.Join(" | ", segments.Distinct());
+        }
+
+        // Remove duplicates after merge
+        _dbCustomers.RemoveAll(c => dupSet.Contains(c.ContactId));
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateCustomerPartialAsync(int contactId, DbCustomer patch, bool overwriteEmptyOnly = false)
+    {
+        var target = _dbCustomers.FirstOrDefault(c => c.ContactId == contactId);
+        if (target is null) return Task.CompletedTask;
+
+        void SetStr(ref string? field, string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return;
+            if (overwriteEmptyOnly && !string.IsNullOrWhiteSpace(field)) return;
+            field = value;
+        }
+
+        void SetVal<T>(ref T? field, T? value) where T : struct
+        {
+            if (!value.HasValue) return;
+            if (overwriteEmptyOnly && field.HasValue) return;
+            field = value;
+        }
+
+        SetStr(ref target.Gender, patch.Gender);
+        SetStr(ref target.Address, patch.Address);
+        SetStr(ref target.JobTitle, patch.JobTitle);
+        SetStr(ref target.MaritalStatus, patch.MaritalStatus);
+        SetStr(ref target.ProofNumber, patch.ProofNumber);
+        SetVal(ref target.DbPrice, patch.DbPrice);
+        SetStr(ref target.Headquarters, patch.Headquarters);
+        SetStr(ref target.InsuranceName, patch.InsuranceName);
+        SetVal(ref target.CarJoinDate, patch.CarJoinDate);
+        SetStr(ref target.Notes, patch.Notes);
+
+        return Task.CompletedTask;
+    }
     }
 }

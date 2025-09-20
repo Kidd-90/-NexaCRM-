@@ -25,5 +25,11 @@ namespace NexaCRM.WebClient.Services.Interfaces
 
         // Common Method
         Task<IEnumerable<DbCustomer>> GetMyDbListAsync(string agentName);
+
+        // Advanced DB management (duplicates)
+        Task ArchiveCustomersAsync(IEnumerable<int> contactIds);
+        Task DeleteCustomersAsync(IEnumerable<int> contactIds);
+        Task MergeCustomersAsync(int primaryContactId, IEnumerable<int> duplicateContactIds);
+        Task UpdateCustomerPartialAsync(int contactId, DbCustomer patch, bool overwriteEmptyOnly = false);
     }
 }
