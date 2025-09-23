@@ -319,8 +319,8 @@
                     try {{
                         await navigator.clipboard.writeText(value);
                         return;
-                    }} catch (err) {{}}
-                }
+                    }} catch (err) {{ }}
+                }}
                 const textarea = document.createElement('textarea');
                 textarea.value = value;
                 textarea.setAttribute('readonly', '');
