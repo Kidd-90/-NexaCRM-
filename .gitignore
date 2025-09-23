@@ -83,5 +83,7 @@ dkms.conf
 **/[Bb]in/
 **/[Oo]bj/
 
+# Third-party assets downloaded on demand
+src/Web/NexaCRM.WebClient/wwwroot/lib/bootstrap-icons/font/
+src/Web/NexaCRM.WebClient/wwwroot/lib/open-iconic/font/
 
-.fake

@@ -236,7 +236,7 @@
         StateHasChanged();
         
         // For demo purposes, show an alert
-        await JSRuntime.InvokeVoidAsync("alert", "Mobile menu would open the sidebar navigation here");
+        await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Mobile menu would open the sidebar navigation here.");
     }
 
     private async Task ToggleMobileSearch()
@@ -326,16 +326,16 @@
         switch (action)
         {
             case "call":
-                await JSRuntime.InvokeVoidAsync("alert", $"Call action selected! On mobile, this would open the phone app.");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Call action selected! On mobile this opens the phone app.");
                 break;
             case "email":
-                await JSRuntime.InvokeVoidAsync("alert", $"Email action selected! On mobile, this would open the email app.");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Email action selected! On mobile this opens the mail app.");
                 break;
             case "meeting":
-                await JSRuntime.InvokeVoidAsync("alert", $"Meeting action selected! This would open calendar integration.");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Meeting action selected! Calendar integration launches here.");
                 break;
             case "add":
-                await JSRuntime.InvokeVoidAsync("alert", $"Add new action selected! This would open a form to add new customer/lead.");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Add action selected! This would open a new customer form.");
                 break;
         }
     }

@@ -70,21 +70,7 @@
 
         try
         {
-            // Detect if we're on mobile or desktop
-            var isMobile = await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 767px)').matches");
-            
-            if (isMobile)
-            {
-                // On mobile, use tel: protocol to open phone app
-                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = 'tel:{PhoneNumber}'");
-            }
-            else
-            {
-                // On desktop, show options (could be VoIP integration in the future)
-                await JSRuntime.InvokeVoidAsync("alert", $"Call {CustomerName ?? "customer"} at {PhoneNumber}");
-                // TODO: Integrate with VoIP solution like Twilio, Zoom Phone, etc.
-            }
-
+            await JSRuntime.InvokeVoidAsync("nexaActions.launchCall", PhoneNumber, CustomerName ?? string.Empty);
             await OnActionCompleted.InvokeAsync("call");
         }
         catch (Exception ex)
@@ -117,19 +103,14 @@
     {
         try
         {
-            // Create a calendar event - this could be enhanced to integrate with specific calendar systems
-            var startDate = DateTime.Now.AddDays(1).ToString("yyyyMMddTHHmmssZ");
-            var endDate = DateTime.Now.AddDays(1).AddHours(1).ToString("yyyyMMddTHHmmssZ");
+            var startDate = DateTime.UtcNow.AddDays(1);
+            var endDate = startDate.AddHours(1);
             var eventTitle = $"Meeting with {CustomerName ?? "Customer"}";
             var eventDetails = $"Sales meeting with {CustomerName ?? "customer"}";
-            
-            // Create .ics file content for calendar integration
-            var icsContent = $"BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NexaCRM//EN\nBEGIN:VEVENT\nUID:{Guid.NewGuid()}\nDTSTART:{startDate}\nDTEND:{endDate}\nSUMMARY:{eventTitle}\nDESCRIPTION:{eventDetails}\nEND:VEVENT\nEND:VCALENDAR";
-            
-            // For now, we'll show a notification. In production, this could integrate with calendar APIs
-            await JSRuntime.InvokeVoidAsync("alert", $"Schedule meeting with {CustomerName ?? "customer"}. Calendar integration coming soon!");
-            
-            // TODO: Integrate with calendar systems (Google Calendar, Outlook, etc.)
+
+            var icsContent = $"BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NexaCRM//EN\nBEGIN:VEVENT\nUID:{Guid.NewGuid()}\nDTSTART:{startDate:yyyyMMddTHHmmssZ}\nDTEND:{endDate:yyyyMMddTHHmmssZ}\nSUMMARY:{eventTitle}\nDESCRIPTION:{eventDetails}\nEND:VEVENT\nEND:VCALENDAR";
+
+            await JSRuntime.InvokeVoidAsync("nexaActions.downloadIcs", $"meeting-{Guid.NewGuid():N}.ics", icsContent);
             await OnActionCompleted.InvokeAsync("meeting");
         }
         catch (Exception ex)

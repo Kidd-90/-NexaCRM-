@@ -2,10 +2,12 @@
 @using System.Collections.Generic
 @using System.Globalization
 @using System.Linq
+@using Microsoft.AspNetCore.Components.Web
 @using NexaCRM.WebClient.Components.UI
 @using NexaCRM.WebClient.Models.Statistics
 @using NexaCRM.WebClient.Services.Interfaces
 @inject IStatisticsService StatisticsService
+@inject IJSRuntime JSRuntime
 
 <ResponsivePage>
     <section class="dashboard-header">
@@ -141,8 +143,19 @@
                 {
                     var gradientId = GetGradientId("logins");
                     var lastPoint = GetTrendLastPoint(stats.LoginTrend);
-                    <div class="chart-card__chart">
-                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Logins trend">
+                    <div class="chart-card__chart"
+                         @ref="loginChartHostRef"
+                         tabindex="0"
+                         role="presentation"
+                         @onpointerleave="HandleLoginPointerLeave"
+                         @onfocus="HandleLoginFocus"
+                         @onblur="HandleLoginBlur"
+                         @onkeydown="HandleLoginKeyDown">
+                        <svg viewBox="0 0 100 100"
+                             preserveAspectRatio="none"
+                             role="img"
+                             aria-label="Logins trend"
+                             @onpointermove="HandleLoginPointerMove">
                             <defs>
                                 <linearGradient id="@gradientId" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stop-color="#4c6ef5" stop-opacity="0.38" />
@@ -161,7 +174,25 @@
                             {
                                 <circle class="chart-dot" cx="@FormatDouble(point.X)" cy="@FormatDouble(point.Y)" r="1.8" fill="#4c6ef5" />
                             }
+                            @if (allowInteractiveCharts && loginTooltip.IsVisible)
+                            {
+                                <line class="chart-hover-line" x1="@FormatDouble(loginTooltip.PositionX)" x2="@FormatDouble(loginTooltip.PositionX)" y1="0" y2="100" vector-effect="non-scaling-stroke" />
+                                <circle class="chart-hover-dot" cx="@FormatDouble(loginTooltip.PositionX)" cy="@FormatDouble(loginTooltip.PositionY)" r="2.2" />
+                            }
                         </svg>
+                        @if (allowInteractiveCharts && loginTooltip.IsVisible)
+                        {
+                            <div class="chart-tooltip"
+                                 role="status"
+                                 style="--tooltip-x:@FormatDouble(loginTooltip.PositionX); --tooltip-y:@FormatDouble(loginTooltip.PositionY);">
+                                <span class="chart-tooltip__title">@loginTooltip.Label</span>
+                                <span class="chart-tooltip__value">@loginTooltip.Value.ToString("N0", CultureInfo.CurrentCulture)</span>
+                                @if (!string.IsNullOrEmpty(loginTooltip.ChangeText))
+                                {
+                                    <span class="chart-tooltip__change">@loginTooltip.ChangeText</span>
+                                }
+                            </div>
+                        }
                     </div>
                     <div class="chart-card__axis">
                         @foreach (var label in GetTrendAxisLabels(stats.LoginTrend))
@@ -202,8 +233,19 @@
                 {
                     var gradientId = GetGradientId("downloads");
                     var lastPoint = GetTrendLastPoint(stats.DownloadTrend);
-                    <div class="chart-card__chart">
-                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Downloads trend">
+                    <div class="chart-card__chart"
+                         @ref="downloadsChartHostRef"
+                         tabindex="0"
+                         role="presentation"
+                         @onpointerleave="HandleDownloadsPointerLeave"
+                         @onfocus="HandleDownloadsFocus"
+                         @onblur="HandleDownloadsBlur"
+                         @onkeydown="HandleDownloadsKeyDown">
+                        <svg viewBox="0 0 100 100"
+                             preserveAspectRatio="none"
+                             role="img"
+                             aria-label="Downloads trend"
+                             @onpointermove="HandleDownloadsPointerMove">
                             <defs>
                                 <linearGradient id="@gradientId" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.38" />
@@ -222,7 +264,25 @@
                             {
                                 <circle class="chart-dot" cx="@FormatDouble(point.X)" cy="@FormatDouble(point.Y)" r="1.8" fill="#0ea5e9" />
                             }
+                            @if (allowInteractiveCharts && downloadsTooltip.IsVisible)
+                            {
+                                <line class="chart-hover-line" x1="@FormatDouble(downloadsTooltip.PositionX)" x2="@FormatDouble(downloadsTooltip.PositionX)" y1="0" y2="100" vector-effect="non-scaling-stroke" />
+                                <circle class="chart-hover-dot" cx="@FormatDouble(downloadsTooltip.PositionX)" cy="@FormatDouble(downloadsTooltip.PositionY)" r="2.2" />
+                            }
                         </svg>
+                        @if (allowInteractiveCharts && downloadsTooltip.IsVisible)
+                        {
+                            <div class="chart-tooltip"
+                                 role="status"
+                                 style="--tooltip-x:@FormatDouble(downloadsTooltip.PositionX); --tooltip-y:@FormatDouble(downloadsTooltip.PositionY);">
+                                <span class="chart-tooltip__title">@downloadsTooltip.Label</span>
+                                <span class="chart-tooltip__value">@downloadsTooltip.Value.ToString("N0", CultureInfo.CurrentCulture)</span>
+                                @if (!string.IsNullOrEmpty(downloadsTooltip.ChangeText))
+                                {
+                                    <span class="chart-tooltip__change">@downloadsTooltip.ChangeText</span>
+                                }
+                            </div>
+                        }
                     </div>
                     <div class="chart-card__axis">
                         @foreach (var label in GetTrendAxisLabels(stats.DownloadTrend))
@@ -262,6 +322,16 @@
     private int? activeQuickRangeDays = 7;
     private StatisticsResult? stats;
     private bool isLoading = true;
+    private ElementReference loginChartHostRef;
+    private ElementReference downloadsChartHostRef;
+    private TrendTooltipState loginTooltip = TrendTooltipState.Hidden();
+    private TrendTooltipState downloadsTooltip = TrendTooltipState.Hidden();
+    private int loginTooltipIndex = -1;
+    private int downloadsTooltipIndex = -1;
+    private double loginChartWidth;
+    private double downloadsChartWidth;
+    private bool allowInteractiveCharts;
+    private bool chartsMeasured;
 
     private DateTime StartDate
     {
@@ -294,9 +364,44 @@
         await LoadStatistics();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                allowInteractiveCharts = await JSRuntime.InvokeAsync<bool>("nexaCharting.isFinePointer");
+            }
+            catch
+            {
+                allowInteractiveCharts = false;
+            }
+        }
+
+        if (!allowInteractiveCharts || stats is null || chartsMeasured)
+        {
+            return;
+        }
+
+        try
+        {
+            loginChartWidth = await JSRuntime.InvokeAsync<double>("nexaCharting.getWidth", loginChartHostRef);
+            downloadsChartWidth = await JSRuntime.InvokeAsync<double>("nexaCharting.getWidth", downloadsChartHostRef);
+            chartsMeasured = loginChartWidth > 0 && downloadsChartWidth > 0;
+        }
+        catch
+        {
+            chartsMeasured = false;
+        }
+    }
+
     private async Task LoadStatistics()
     {
         isLoading = true;
+        ResetTrendTooltips();
+        chartsMeasured = false;
+        loginChartWidth = 0;
+        downloadsChartWidth = 0;
 
         if (startDate > endDate)
         {
@@ -306,6 +411,275 @@
         stats = await StatisticsService.GetStatisticsAsync(startDate, endDate);
         AlignActiveQuickRange();
         isLoading = false;
+    }
+
+    private async Task HandleLoginPointerMove(PointerEventArgs args)
+    {
+        if (stats is null)
+        {
+            return;
+        }
+
+        await HandleTrendPointerMove("login", args, stats.LoginTrend);
+    }
+
+    private async Task HandleDownloadsPointerMove(PointerEventArgs args)
+    {
+        if (stats is null)
+        {
+            return;
+        }
+
+        await HandleTrendPointerMove("downloads", args, stats.DownloadTrend);
+    }
+
+    private async Task HandleTrendPointerMove(string key, PointerEventArgs args, List<TrendPoint> trend)
+    {
+        if (!allowInteractiveCharts || string.Equals(args.PointerType, "touch", StringComparison.OrdinalIgnoreCase) || trend.Count == 0)
+        {
+            return;
+        }
+
+        await EnsureChartWidthAsync(key);
+        var chartWidth = key == "login" ? loginChartWidth : downloadsChartWidth;
+        if (chartWidth <= 0)
+        {
+            return;
+        }
+
+        var normalizedX = Math.Clamp(args.OffsetX / chartWidth * 100d, 0d, 100d);
+        var normalized = NormalizeTrend(trend);
+        if (normalized.Count == 0)
+        {
+            return;
+        }
+
+        var index = 0;
+        var minDistance = double.MaxValue;
+        for (var i = 0; i < normalized.Count; i++)
+        {
+            var distance = Math.Abs(normalized[i].X - normalizedX);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                index = i;
+            }
+        }
+
+        UpdateTrendTooltip(key, trend, normalized, index);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task EnsureChartWidthAsync(string key)
+    {
+        if (!allowInteractiveCharts)
+        {
+            return;
+        }
+
+        try
+        {
+            if (string.Equals(key, "login", StringComparison.Ordinal) && loginChartWidth <= 0)
+            {
+                loginChartWidth = await JSRuntime.InvokeAsync<double>("nexaCharting.getWidth", loginChartHostRef);
+            }
+            else if (string.Equals(key, "downloads", StringComparison.Ordinal) && downloadsChartWidth <= 0)
+            {
+                downloadsChartWidth = await JSRuntime.InvokeAsync<double>("nexaCharting.getWidth", downloadsChartHostRef);
+            }
+        }
+        catch
+        {
+            if (string.Equals(key, "login", StringComparison.Ordinal))
+            {
+                loginChartWidth = 0;
+            }
+            else
+            {
+                downloadsChartWidth = 0;
+            }
+        }
+    }
+
+    private async Task HandleLoginPointerLeave()
+    {
+        if (!allowInteractiveCharts)
+        {
+            return;
+        }
+
+        HideTrendTooltip("login");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleDownloadsPointerLeave()
+    {
+        if (!allowInteractiveCharts)
+        {
+            return;
+        }
+
+        HideTrendTooltip("downloads");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLoginFocus(FocusEventArgs _)
+    {
+        if (!allowInteractiveCharts || stats is null || stats.LoginTrend.Count == 0)
+        {
+            return;
+        }
+
+        var normalized = NormalizeTrend(stats.LoginTrend);
+        UpdateTrendTooltip("login", stats.LoginTrend, normalized, stats.LoginTrend.Count - 1);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleDownloadsFocus(FocusEventArgs _)
+    {
+        if (!allowInteractiveCharts || stats is null || stats.DownloadTrend.Count == 0)
+        {
+            return;
+        }
+
+        var normalized = NormalizeTrend(stats.DownloadTrend);
+        UpdateTrendTooltip("downloads", stats.DownloadTrend, normalized, stats.DownloadTrend.Count - 1);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLoginBlur(FocusEventArgs _)
+    {
+        if (!allowInteractiveCharts)
+        {
+            return;
+        }
+
+        HideTrendTooltip("login");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleDownloadsBlur(FocusEventArgs _)
+    {
+        if (!allowInteractiveCharts)
+        {
+            return;
+        }
+
+        HideTrendTooltip("downloads");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLoginKeyDown(KeyboardEventArgs args)
+    {
+        if (stats is null)
+        {
+            return;
+        }
+
+        await HandleTrendKeyDown("login", args, stats.LoginTrend);
+    }
+
+    private async Task HandleDownloadsKeyDown(KeyboardEventArgs args)
+    {
+        if (stats is null)
+        {
+            return;
+        }
+
+        await HandleTrendKeyDown("downloads", args, stats.DownloadTrend);
+    }
+
+    private async Task HandleTrendKeyDown(string key, KeyboardEventArgs args, List<TrendPoint> trend)
+    {
+        if (!allowInteractiveCharts || trend.Count == 0)
+        {
+            return;
+        }
+
+        var index = key == "login" ? loginTooltipIndex : downloadsTooltipIndex;
+        if (index < 0)
+        {
+            index = trend.Count - 1;
+        }
+
+        switch (args.Key)
+        {
+            case "ArrowLeft":
+            case "ArrowDown":
+                index = Math.Max(0, index - 1);
+                break;
+            case "ArrowRight":
+            case "ArrowUp":
+                index = Math.Min(trend.Count - 1, index + 1);
+                break;
+            case "Home":
+                index = 0;
+                break;
+            case "End":
+                index = trend.Count - 1;
+                break;
+            default:
+                return;
+        }
+
+        var normalized = NormalizeTrend(trend);
+        UpdateTrendTooltip(key, trend, normalized, index);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateTrendTooltip(string key, List<TrendPoint> trend, List<(double X, double Y)> normalized, int index)
+    {
+        if (index < 0 || index >= trend.Count || normalized.Count <= index)
+        {
+            return;
+        }
+
+        var point = trend[index];
+        var normalizedPoint = normalized[index];
+        var delta = index > 0 ? point.Value - trend[index - 1].Value : 0;
+
+        var tooltip = new TrendTooltipState
+        {
+            IsVisible = true,
+            Label = point.Date.ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
+            Value = point.Value,
+            ChangeText = index > 0 ? FormatTrendChange(delta) : null,
+            PositionX = Math.Clamp(normalizedPoint.X, 4d, 96d),
+            PositionY = Math.Clamp(normalizedPoint.Y, 6d, 94d)
+        };
+
+        if (string.Equals(key, "login", StringComparison.Ordinal))
+        {
+            loginTooltip = tooltip;
+            loginTooltipIndex = index;
+        }
+        else
+        {
+            downloadsTooltip = tooltip;
+            downloadsTooltipIndex = index;
+        }
+    }
+
+    private void HideTrendTooltip(string key)
+    {
+        if (string.Equals(key, "login", StringComparison.Ordinal))
+        {
+            loginTooltip = TrendTooltipState.Hidden();
+            loginTooltipIndex = -1;
+        }
+        else
+        {
+            downloadsTooltip = TrendTooltipState.Hidden();
+            downloadsTooltipIndex = -1;
+        }
+    }
+
+    private void ResetTrendTooltips()
+    {
+        loginTooltip = TrendTooltipState.Hidden();
+        downloadsTooltip = TrendTooltipState.Hidden();
+        loginTooltipIndex = -1;
+        downloadsTooltipIndex = -1;
     }
 
     private async Task ApplyQuickRangeAsync(int days)
@@ -337,6 +711,9 @@
     private static string FormatCount(int value) => value.ToString("N0", CultureInfo.CurrentCulture);
 
     private static string GetGradientId(string key) => $"trend-gradient-{key}";
+
+    private static string FormatTrendChange(int delta)
+        => delta.ToString("+0;-0;0", CultureInfo.CurrentCulture);
 
     private static string GetTrendSubtitle(List<TrendPoint> trend)
     {
@@ -573,6 +950,18 @@
         }
 
         activeQuickRangeDays = null;
+    }
+
+    private sealed class TrendTooltipState
+    {
+        public bool IsVisible { get; set; }
+        public string Label { get; set; } = string.Empty;
+        public int Value { get; set; }
+        public string? ChangeText { get; set; }
+        public double PositionX { get; set; }
+        public double PositionY { get; set; }
+
+        public static TrendTooltipState Hidden() => new TrendTooltipState { IsVisible = false };
     }
 
     private sealed record QuickRangeOption(string Label, string Description, int Days);

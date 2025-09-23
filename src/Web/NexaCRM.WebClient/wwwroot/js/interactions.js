@@ -577,3 +577,112 @@ window.downloadFile = (fileName, content) => {
         URL.revokeObjectURL(url);
     }
 };
+
+window.nexaCharting = {
+    isFinePointer: () => {
+        try {
+            return window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        } catch (err) {
+            console.warn('Pointer detection failed', err);
+            return false;
+        }
+    },
+    getWidth: (element) => {
+        if (!element) {
+            return 0;
+        }
+        const rect = element.getBoundingClientRect();
+        return rect.width || 0;
+    }
+};
+
+(function () {
+    let toastContainer;
+
+    const ensureToastContainer = () => {
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'nexa-toast-container';
+            document.body.appendChild(toastContainer);
+        }
+        return toastContainer;
+    };
+
+    const showToast = (message) => {
+        if (!message) {
+            return;
+        }
+        const container = ensureToastContainer();
+        const toast = document.createElement('div');
+        toast.className = 'nexa-inline-toast';
+        toast.textContent = message;
+        container.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add('visible'));
+
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            setTimeout(() => toast.remove(), 200);
+        }, 2800);
+    };
+
+    const focusSelector = (selector) => {
+        if (!selector) {
+            return;
+        }
+        const element = document.querySelector(selector);
+        if (!element) {
+            return;
+        }
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof element.focus === 'function') {
+            element.focus({ preventScroll: true });
+        }
+    };
+
+    const launchCall = (phoneNumber, displayName) => {
+        if (!phoneNumber) {
+            showToast('Phone number unavailable.');
+            return;
+        }
+
+        const tempLink = document.createElement('a');
+        tempLink.href = `tel:${phoneNumber}`;
+        tempLink.style.display = 'none';
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+
+        if (navigator.clipboard && window.matchMedia('(pointer: fine)').matches) {
+            navigator.clipboard.writeText(phoneNumber).catch(() => {});
+            if (displayName) {
+                showToast(`Dialing ${displayName}`);
+            } else {
+                showToast('Dialing number');
+            }
+        }
+    };
+
+    const downloadIcs = (fileName, content) => {
+        if (!content) {
+            return;
+        }
+        const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName || 'event.ics';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('Event file ready for your calendar');
+    };
+
+    window.nexaActions = {
+        showToast,
+        focusSelector,
+        launchCall,
+        downloadIcs
+    };
+})();

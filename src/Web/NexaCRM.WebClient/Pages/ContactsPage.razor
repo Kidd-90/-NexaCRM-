@@ -1,5 +1,6 @@
 @page "/contacts"
 @using Microsoft.Extensions.Localization
+@using System.Globalization
 @inject IStringLocalizer<ContactsPage> Localizer
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
@@ -96,70 +97,194 @@
                 }
                 else
                 {
-                    <!-- Desktop/Tablet Table View -->
-                    <div class="contacts-table-container overflow-x-auto -mx-4 sm:mx-0">
-                        <div class="inline-block min-w-full align-middle">
-                            <table class="contacts-table min-w-full divide-y divide-gray-200 bg-white shadow-sm rounded-lg overflow-hidden">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["Id"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["FirstName"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["LastName"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["Email"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["PhoneNumber"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["Actions"]
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach (var contact in filteredContacts)
-                                    {
-                                        <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                @contact.Id
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                @contact.FirstName
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                @contact.LastName
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <a href="mailto:@contact.Email" class="text-indigo-600 hover:text-indigo-900 break-all">
-                                                    @contact.Email
-                                                </a>
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <a href="tel:@contact.PhoneNumber" class="text-indigo-600 hover:text-indigo-900">
-                                                    @contact.PhoneNumber
-                                                </a>
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <NexaCRM.WebClient.Components.UI.QuickActionsComponent 
-                                                    PhoneNumber="@contact.PhoneNumber"
-                                                    Email="@contact.Email"
-                                                    CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
-                                                    CustomerId="@contact.Id.ToString()"
-                                                    ShowLabels="false"
-                                                    CssClass="inline"
-                                                    OnActionCompleted="HandleQuickAction" />
-                                            </td>
+                    <!-- Desktop/Tablet Layout -->
+                    <div class="contacts-desktop-layout">
+                        <div class="contacts-table-stack">
+                            <p class="sr-only" aria-live="polite">@LiveRegionText</p>
+                            <div class="contacts-table-meta" role="status">
+                                <span>@GetTableSummaryText()</span>
+                                <button type="button"
+                                        class="contacts-table-reset"
+                                        @onclick="ResetSort"
+                                        disabled="@(!HasCustomSort)">
+                                    @Localizer["ResetSort"]
+                                </button>
+                            </div>
+                            <div class="contacts-table-sort" role="group" aria-label="@Localizer["SortGroupLabel"]">
+                                @foreach (var option in sortOptions)
+                                {
+                                    var isActive = option.Key == activeSortKey;
+                                    <button type="button"
+                                            class="@GetSortButtonClasses(option.Key)"
+                                            aria-pressed="@(isActive ? "true" : "false")"
+                                            @onclick="() => SetSort(option.Key)">
+                                        <span class="contacts-table-sort__label">@Localizer[option.LabelResource]</span>
+                                        <span class="contacts-table-sort__caption">@Localizer[option.DescriptionResource]</span>
+                                        @if (isActive)
+                                        {
+                                            <span class="contacts-table-sort__direction">@Localizer[sortAscending ? "SortDirectionAscending" : "SortDirectionDescending"]</span>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                            <div class="contacts-table-scroll">
+                                <table class="contacts-table" role="grid" aria-describedby="contacts-table-caption">
+                                    <caption id="contacts-table-caption" class="sr-only">@Localizer["Contacts"]</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">@Localizer["Id"]</th>
+                                            <th scope="col">@Localizer["FirstName"]</th>
+                                            <th scope="col">@Localizer["LastName"]</th>
+                                            <th scope="col">@Localizer["Email"]</th>
+                                            <th scope="col">@Localizer["PhoneNumber"]</th>
+                                            <th scope="col" class="contacts-table__actions-header">@Localizer["Actions"]</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var contact in filteredContacts)
+                                        {
+                                            <tr class="@GetRowClasses(contact)"
+                                                tabindex="0"
+                                                role="button"
+                                                aria-label="@GetRowAriaLabel(contact)"
+                                                data-selected="@(selectedContact?.Id == contact.Id ? "true" : "false")"
+                                                @onclick="() => SelectContact(contact)"
+                                                @onkeydown="args => HandleRowKeyDown(args, contact)">
+                                                <td class="contacts-table__cell contacts-table__cell--id">
+                                                    <span class="contacts-table__label" aria-hidden="true">@Localizer["Id"]</span>
+                                                    <span class="contacts-table__value">@contact.Id</span>
+                                                </td>
+                                                <td class="contacts-table__cell">
+                                                    <span class="contacts-table__label" aria-hidden="true">@Localizer["FirstName"]</span>
+                                                    <span class="contacts-table__value">@contact.FirstName</span>
+                                                </td>
+                                                <td class="contacts-table__cell">
+                                                    <span class="contacts-table__label" aria-hidden="true">@Localizer["LastName"]</span>
+                                                    <span class="contacts-table__value">@contact.LastName</span>
+                                                </td>
+                                                <td class="contacts-table__cell contacts-table__cell--link">
+                                                    <span class="contacts-table__label" aria-hidden="true">@Localizer["Email"]</span>
+                                                    @if (!string.IsNullOrWhiteSpace(contact.Email))
+                                                    {
+                                                        <a href="mailto:@contact.Email">@contact.Email</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="contacts-table__muted">@Localizer["ContactDetailsNoEmail"]</span>
+                                                    }
+                                                </td>
+                                                <td class="contacts-table__cell contacts-table__cell--link">
+                                                    <span class="contacts-table__label" aria-hidden="true">@Localizer["PhoneNumber"]</span>
+                                                    @if (!string.IsNullOrWhiteSpace(contact.PhoneNumber))
+                                                    {
+                                                        <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="contacts-table__muted">@Localizer["ContactDetailsNoPhone"]</span>
+                                                    }
+                                                </td>
+                                                <td class="contacts-table__cell contacts-table__cell--actions">
+                                                    <span class="contacts-table__label" aria-hidden="true">@Localizer["Actions"]</span>
+                                                    <NexaCRM.WebClient.Components.UI.QuickActionsComponent
+                                                        PhoneNumber="@contact.PhoneNumber"
+                                                        Email="@contact.Email"
+                                                        CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
+                                                        CustomerId="@contact.Id.ToString()"
+                                                        ShowLabels="false"
+                                                        CssClass="inline"
+                                                        OnActionCompleted="HandleQuickAction" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                        <aside class="contacts-detail-panel @(selectedContact is not null ? "is-active" : string.Empty)" aria-labelledby="contacts-detail-heading">
+                            <h2 id="contacts-detail-heading">@Localizer["ContactDetailsHeading"]</h2>
+                            @if (selectedContact is { } detail)
+                            {
+                                <article class="contacts-detail-card">
+                                    <header class="contacts-detail-card__header">
+                                        <div class="contacts-detail-avatar" aria-hidden="true">@GetContactInitials(detail)</div>
+                                        <div class="contacts-detail-card__identity">
+                                            <p class="contacts-detail-card__name">@GetContactDisplayName(detail)</p>
+                                            <p class="contacts-detail-card__role">@Localizer["ContactDetailsPrimary"]</p>
+                                        </div>
+                                    </header>
+                                    <dl class="contacts-detail-card__list">
+                                        <div class="contacts-detail-card__item">
+                                            <dt>@Localizer["ContactDetailsEmailLabel"]</dt>
+                                            <dd>
+                                                @if (!string.IsNullOrWhiteSpace(detail.Email))
+                                                {
+                                                    <a href="mailto:@detail.Email">@detail.Email</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="contacts-table__muted">@Localizer["ContactDetailsNoEmail"]</span>
+                                                }
+                                            </dd>
+                                        </div>
+                                        <div class="contacts-detail-card__item">
+                                            <dt>@Localizer["ContactDetailsPhoneLabel"]</dt>
+                                            <dd>
+                                                @if (!string.IsNullOrWhiteSpace(detail.PhoneNumber))
+                                                {
+                                                    <a href="tel:@detail.PhoneNumber">@detail.PhoneNumber</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="contacts-table__muted">@Localizer["ContactDetailsNoPhone"]</span>
+                                                }
+                                            </dd>
+                                        </div>
+                                        <div class="contacts-detail-card__item">
+                                            <dt>@Localizer["ContactDetailsCompanyLabel"]</dt>
+                                            <dd>
+                                                @if (!string.IsNullOrWhiteSpace(detail.Company))
+                                                {
+                                                    <span>@detail.Company</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="contacts-table__muted">@Localizer["ContactDetailsNoCompany"]</span>
+                                                }
+                                            </dd>
+                                        </div>
+                                        <div class="contacts-detail-card__item">
+                                            <dt>@Localizer["ContactDetailsTitleLabel"]</dt>
+                                            <dd>
+                                                @if (!string.IsNullOrWhiteSpace(detail.Title))
+                                                {
+                                                    <span>@detail.Title</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="contacts-table__muted">@Localizer["ContactDetailsNoTitle"]</span>
+                                                }
+                                            </dd>
+                                        </div>
+                                    </dl>
+                                    <footer class="contacts-detail-card__footer">
+                                        <span class="contacts-detail-card__footer-label">@Localizer["ContactDetailsActions"]</span>
+                                        <NexaCRM.WebClient.Components.UI.QuickActionsComponent
+                                            PhoneNumber="@detail.PhoneNumber"
+                                            Email="@detail.Email"
+                                            CustomerName="@GetContactDisplayName(detail)"
+                                            CustomerId="@detail.Id.ToString()"
+                                            ShowLabels="true"
+                                            CssClass="contacts-detail-actions"
+                                            OnActionCompleted="HandleQuickAction" />
+                                    </footer>
+                                </article>
+                            }
+                            else
+                            {
+                                <div class="contacts-detail-panel__empty">@Localizer["ContactDetailsEmpty"]</div>
+                            }
+                        </aside>
                     </div>
 
                     <!-- Mobile Card View -->
@@ -240,47 +365,93 @@
 </div>
 
 @code {
-    private IEnumerable<Contact>? contacts;
-    private IEnumerable<Contact>? filteredContacts;
+    private const string DefaultSortKey = "recent";
+    private const bool DefaultSortAscending = false;
+
+    private static readonly SortOption[] sortOptions =
+    {
+        new("recent", "SortByRecent", "SortByRecentDescription"),
+        new("name", "SortByName", "SortByNameDescription"),
+        new("email", "SortByEmail", "SortByEmailDescription")
+    };
+
+    private List<Contact>? contacts;
+    private List<Contact>? filteredContacts;
+    private Contact? selectedContact;
     private string searchQuery = string.Empty;
     private bool isMobileMenuOpen = false;
+    private string activeSortKey = DefaultSortKey;
+    private bool sortAscending = DefaultSortAscending;
+    private string? liveAnnouncement;
+    private bool announcementToggle;
+
+    private string LiveRegionText => liveAnnouncement ?? string.Empty;
+    private bool HasCustomSort => activeSortKey != DefaultSortKey || sortAscending != DefaultSortAscending;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
-        contacts = await ContactService.GetContactsAsync();
-        filteredContacts = contacts;
+        var result = await ContactService.GetContactsAsync();
+        contacts = result?.ToList();
+        ApplyFiltersAndSort(announceSelection: false);
     }
 
     private void OnSearchInput(ChangeEventArgs e)
     {
         searchQuery = e.Value?.ToString() ?? string.Empty;
-        FilterContacts();
+        ApplyFiltersAndSort(announceSelection: true);
     }
 
-    private void FilterContacts()
+    private void ApplyFiltersAndSort(bool announceSelection)
     {
-        if (contacts == null)
+        if (contacts is null)
         {
             filteredContacts = null;
+            if (announceSelection && selectedContact is not null)
+            {
+                AnnounceCleared();
+            }
+            selectedContact = null;
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(searchQuery))
+        IEnumerable<Contact> query = contacts;
+
+        if (!string.IsNullOrWhiteSpace(searchQuery))
         {
-            filteredContacts = contacts;
-        }
-        else
-        {
-            var query = searchQuery.ToLowerInvariant();
-            filteredContacts = contacts.Where(c =>
-                (!string.IsNullOrEmpty(c.FirstName) && c.FirstName.ToLowerInvariant().Contains(query)) ||
-                (!string.IsNullOrEmpty(c.LastName) && c.LastName.ToLowerInvariant().Contains(query)) ||
-                (!string.IsNullOrEmpty(c.Email) && c.Email.ToLowerInvariant().Contains(query)) ||
-                (!string.IsNullOrEmpty(c.PhoneNumber) && c.PhoneNumber.Contains(query))
+            var term = searchQuery.Trim();
+            query = query.Where(c =>
+                (!string.IsNullOrEmpty(c.FirstName) && c.FirstName.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(c.LastName) && c.LastName.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(c.Email) && c.Email.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(c.PhoneNumber) && c.PhoneNumber.Contains(term, StringComparison.OrdinalIgnoreCase))
             );
         }
-        StateHasChanged();
+
+        query = ApplySorting(query);
+
+        filteredContacts = query.ToList();
+
+        UpdateSelection(filteredContacts, announceSelection);
     }
+
+    private IEnumerable<Contact> ApplySorting(IEnumerable<Contact> source)
+    {
+        return activeSortKey switch
+        {
+            "name" when sortAscending => source.OrderBy(GetNameKey, StringComparer.CurrentCultureIgnoreCase),
+            "name" => source.OrderByDescending(GetNameKey, StringComparer.CurrentCultureIgnoreCase),
+            "email" when sortAscending => source.OrderBy(GetEmailKey, StringComparer.CurrentCultureIgnoreCase),
+            "email" => source.OrderByDescending(GetEmailKey, StringComparer.CurrentCultureIgnoreCase),
+            "recent" when sortAscending => source.OrderBy(c => c.Id),
+            _ => source.OrderByDescending(c => c.Id)
+        };
+    }
+
+    private static string GetNameKey(Contact contact)
+        => string.Join(' ', new[] { contact.FirstName, contact.LastName }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
+    private static string GetEmailKey(Contact contact)
+        => contact.Email ?? string.Empty;
 
     private void ShowNotifications()
     {
@@ -298,37 +469,213 @@
         isMobileMenuOpen = false;
     }
 
+    private void SetSort(string key)
+    {
+        if (key == activeSortKey)
+        {
+            sortAscending = !sortAscending;
+        }
+        else
+        {
+            activeSortKey = key;
+            sortAscending = key == DefaultSortKey ? DefaultSortAscending : true;
+        }
+
+        ApplyFiltersAndSort(announceSelection: false);
+    }
+
+    private void ResetSort()
+    {
+        if (!HasCustomSort)
+        {
+            return;
+        }
+
+        activeSortKey = DefaultSortKey;
+        sortAscending = DefaultSortAscending;
+        ApplyFiltersAndSort(announceSelection: false);
+    }
+
+    private string GetSortButtonClasses(string key)
+    {
+        var classes = "contacts-table-sort__button";
+        if (key == activeSortKey)
+        {
+            classes += " is-active";
+        }
+
+        return classes;
+    }
+
+    private void UpdateSelection(IReadOnlyList<Contact> results, bool announceSelection)
+    {
+        if (results.Count == 0)
+        {
+            if (announceSelection && selectedContact is not null)
+            {
+                AnnounceCleared();
+            }
+
+            selectedContact = null;
+            return;
+        }
+
+        if (selectedContact is null)
+        {
+            selectedContact = results[0];
+            if (announceSelection)
+            {
+                AnnounceSelection(results[0]);
+            }
+            return;
+        }
+
+        if (results.Any(c => c.Id == selectedContact.Id))
+        {
+            return;
+        }
+
+        selectedContact = results[0];
+        if (announceSelection)
+        {
+            AnnounceSelection(results[0]);
+        }
+    }
+
+    private void SelectContact(Contact contact)
+    {
+        if (selectedContact?.Id == contact.Id)
+        {
+            return;
+        }
+
+        selectedContact = contact;
+        AnnounceSelection(contact);
+    }
+
+    private void HandleRowKeyDown(KeyboardEventArgs args, Contact contact)
+    {
+        if (args.Key is "Enter" or " " or "Spacebar")
+        {
+            SelectContact(contact);
+        }
+    }
+
+    private string GetRowClasses(Contact contact)
+        => selectedContact?.Id == contact.Id ? "contacts-table__row is-active" : "contacts-table__row";
+
+    private string GetRowAriaLabel(Contact contact)
+    {
+        var label = Localizer["ContactRowLabel", GetContactDisplayName(contact)].Value;
+        if (selectedContact?.Id == contact.Id)
+        {
+            label += " " + Localizer["ContactRowSelected", GetContactDisplayName(contact)].Value;
+        }
+
+        return label;
+    }
+
+    private string GetTableSummaryText()
+    {
+        if (filteredContacts is not { Count: > 0 })
+        {
+            return Localizer["ContactCountSummaryEmpty"];
+        }
+
+        return Localizer["ContactCountSummary", filteredContacts.Count];
+    }
+
+    private string GetContactDisplayName(Contact contact)
+    {
+        var parts = new[] { contact.FirstName, contact.LastName }
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(s => s!.Trim())
+            .ToArray();
+
+        if (parts.Length == 0)
+        {
+            return Localizer["ContactNameFallback", contact.Id];
+        }
+
+        return string.Join(' ', parts);
+    }
+
+    private string GetContactInitials(Contact contact)
+    {
+        var initials = new[] { contact.FirstName, contact.LastName }
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(s => char.ToUpperInvariant(s![0]))
+            .Take(2)
+            .ToArray();
+
+        if (initials.Length == 0)
+        {
+            return contact.Id.ToString("D2", CultureInfo.CurrentCulture);
+        }
+
+        return string.Concat(initials);
+    }
+
+    private void AnnounceSelection(Contact contact)
+        => UpdateLiveAnnouncement(Localizer["ContactSelectedAnnouncement", GetContactDisplayName(contact)]);
+
+    private void AnnounceCleared()
+        => UpdateLiveAnnouncement(Localizer["ContactSelectionCleared"]);
+
+    private void UpdateLiveAnnouncement(LocalizedString message)
+    {
+        var value = message.Value;
+        announcementToggle = !announcementToggle;
+        liveAnnouncement = announcementToggle ? value : value + "\u200B";
+    }
+
     private async System.Threading.Tasks.Task HandleQuickAction(string action)
     {
         // This method is called when quick action buttons are clicked
         // The actual call/email/meeting functionality is handled within the QuickActionsComponent
-        // Here we can add any logging or analytics
         Console.WriteLine($"Quick action executed: {action}");
-        
-        // Could add analytics or logging here
-        // await AnalyticsService.TrackEvent($"quick_action_{action}");
     }
+
+    private Contact? GetPrimaryContact()
+        => selectedContact ?? filteredContacts?.FirstOrDefault();
 
     private async System.Threading.Tasks.Task HandleFloatingAction(string action)
     {
+        var contact = GetPrimaryContact();
+
         switch (action)
         {
             case "call":
-                // Show a message or navigate to a specific contact
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to call from the list above");
+                if (contact is not null && !string.IsNullOrWhiteSpace(contact.PhoneNumber))
+                {
+                    var name = GetContactDisplayName(contact);
+                    await JSRuntime.InvokeVoidAsync("nexaActions.launchCall", contact.PhoneNumber, name);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["ContactMissingPhone"]);
+                }
                 break;
             case "email":
-                // Show a message or navigate to a specific contact
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to email from the list above");
+                if (contact is not null && !string.IsNullOrWhiteSpace(contact.Email))
+                {
+                    var subject = Uri.EscapeDataString(Localizer["EmailSubjectDefault", GetContactDisplayName(contact)]);
+                    var body = Uri.EscapeDataString(Localizer["EmailBodyDefault"]);
+                    NavigationManager.NavigateTo($"mailto:{contact.Email}?subject={subject}&body={body}", forceLoad: true);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["ContactMissingEmail"]);
+                }
                 break;
             case "meeting":
-                // Navigate to calendar/meeting scheduling
                 NavigationManager.NavigateTo("/sales-calendar");
                 break;
             case "add":
-                // Navigate to add new contact page or show modal
-                await JSRuntime.InvokeVoidAsync("alert", "Add new contact functionality - to be implemented");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["AddContactHint"]);
                 break;
         }
     }
+
+    private sealed record SortOption(string Key, string LabelResource, string DescriptionResource);
 }

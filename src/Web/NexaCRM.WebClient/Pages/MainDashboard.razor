@@ -149,7 +149,7 @@
                 <h1 class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CRM"]</h1>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["AcmeCo"]</p>
             </div>
-            <div class="flex flex-col gap-2">
+            <nav class="flex flex-col gap-2" role="navigation" aria-label="Primary navigation">
                 <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
                 <div class="text-[#0e131b]" data-icon="House" data-size="24px" data-weight="fill">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -169,7 +169,7 @@
                                 salesLink = "/sales-manager-dashboard";
                             }
                         }
-                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;" aria-current="@GetNavAriaCurrent(salesLink)">
                             <div class="text-[#0e131b]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                                 <path
@@ -179,7 +179,7 @@
                             </div>
                             <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Sales"]</p>
                         </a>
-                        <a href="/contacts" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                        <a href="/contacts" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;" aria-current='@GetNavAriaCurrent("/contacts")'>
                             <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                                 <path
@@ -191,7 +191,7 @@
                         </a>
                     </Authorized>
                 </AuthorizeView>
-                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;" aria-current='@GetNavAriaCurrent("/marketing-campaign-management-interface")'>
                     <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                         <path
@@ -201,7 +201,7 @@
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Marketing"]</p>
                 </a>
-                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;" aria-current='@GetNavAriaCurrent("/customer-support-dashboard")'>
                     <div class="text-[#0e131b]" data-icon="Headset" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                         <path
@@ -211,7 +211,7 @@
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Service"]</p>
                 </a>
-                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;">
+                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2 nav-link" style="color: #0e131b !important;" aria-current='@GetNavAriaCurrent("/reports-page")'>
                     <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256" style="color: #0e131b !important; fill: #0e131b !important;">
                         <path
@@ -221,7 +221,7 @@
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Reports"]</p>
                 </a>
-                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2" style="color: #0e131b !important;">
+                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2" style="color: #0e131b !important;" aria-current='@GetNavAriaCurrent("/settings-page")'>
                     <div class="text-[#0e131b]" data-icon="Gear" data-size="24px" data-weight="regular" style="color: #0e131b !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
@@ -231,7 +231,7 @@
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal" style="color: #0e131b !important;">@Localizer["Settings"]</p>
                 </a>
-            </div>
+            </nav>
             </div>
         </div>
         </div>
@@ -661,6 +661,37 @@
             StateHasChanged();
             await Task.Delay(50);
         }
+    }
+
+    private string? GetNavAriaCurrent(string target)
+    {
+        if (string.IsNullOrWhiteSpace(target))
+        {
+            return null;
+        }
+
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (!relative.StartsWith('/'))
+        {
+            relative = "/" + relative;
+        }
+
+        if (!target.StartsWith('/'))
+        {
+            target = "/" + target;
+        }
+
+        if (string.Equals(relative, target, StringComparison.OrdinalIgnoreCase))
+        {
+            return "page";
+        }
+
+        if (relative.StartsWith(target + "/", StringComparison.OrdinalIgnoreCase))
+        {
+            return "page";
+        }
+
+        return null;
     }
 
     private async Task HandleMobileSearch(KeyboardEventArgs e)

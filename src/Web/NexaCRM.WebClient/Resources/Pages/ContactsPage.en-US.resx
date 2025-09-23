@@ -27,4 +27,109 @@
   <data name="Loading..." xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="ContactMissingPhone" xml:space="preserve">
+    <value>Select a contact with a phone number first.</value>
+  </data>
+  <data name="ContactMissingEmail" xml:space="preserve">
+    <value>Select a contact with an email address.</value>
+  </data>
+  <data name="AddContactHint" xml:space="preserve">
+    <value>Use the add contact action in the list to capture details.</value>
+  </data>
+  <data name="EmailSubjectDefault" xml:space="preserve">
+    <value>Follow-up with {0}</value>
+  </data>
+  <data name="EmailBodyDefault" xml:space="preserve">
+    <value>Hello,%0A%0AI wanted to follow up with you regarding our recent conversation.%0A%0ABest regards,</value>
+  </data>
+  <data name="No Name" xml:space="preserve">
+    <value>No name</value>
+  </data>
+  <data name="ResetSort" xml:space="preserve">
+    <value>Reset order</value>
+  </data>
+  <data name="SortGroupLabel" xml:space="preserve">
+    <value>Sort contacts</value>
+  </data>
+  <data name="SortByRecent" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="SortByRecentDescription" xml:space="preserve">
+    <value>Newest records first</value>
+  </data>
+  <data name="SortByName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SortByNameDescription" xml:space="preserve">
+    <value>Alphabetical by name</value>
+  </data>
+  <data name="SortByEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="SortByEmailDescription" xml:space="preserve">
+    <value>Sorted by email address</value>
+  </data>
+  <data name="SortDirectionAscending" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="SortDirectionDescending" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="ContactCountSummary" xml:space="preserve">
+    <value>Showing {0} contacts</value>
+  </data>
+  <data name="ContactCountSummaryEmpty" xml:space="preserve">
+    <value>No contacts match your filters</value>
+  </data>
+  <data name="ContactSelectedAnnouncement" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="ContactSelectionCleared" xml:space="preserve">
+    <value>Selection cleared</value>
+  </data>
+  <data name="ContactRowLabel" xml:space="preserve">
+    <value>Open details for {0}</value>
+  </data>
+  <data name="ContactRowSelected" xml:space="preserve">
+    <value>{0} currently selected</value>
+  </data>
+  <data name="ContactNameFallback" xml:space="preserve">
+    <value>Contact #{0}</value>
+  </data>
+  <data name="ContactDetailsHeading" xml:space="preserve">
+    <value>Contact details</value>
+  </data>
+  <data name="ContactDetailsEmpty" xml:space="preserve">
+    <value>Select a contact to see more info.</value>
+  </data>
+  <data name="ContactDetailsEmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="ContactDetailsPhoneLabel" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="ContactDetailsCompanyLabel" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="ContactDetailsTitleLabel" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="ContactDetailsNoCompany" xml:space="preserve">
+    <value>Company information unavailable</value>
+  </data>
+  <data name="ContactDetailsNoTitle" xml:space="preserve">
+    <value>Title information unavailable</value>
+  </data>
+  <data name="ContactDetailsNoEmail" xml:space="preserve">
+    <value>Email address unavailable</value>
+  </data>
+  <data name="ContactDetailsNoPhone" xml:space="preserve">
+    <value>Phone number unavailable</value>
+  </data>
+  <data name="ContactDetailsActions" xml:space="preserve">
+    <value>Quick actions</value>
+  </data>
+  <data name="ContactDetailsPrimary" xml:space="preserve">
+    <value>Primary contact</value>
+  </data>
 </root>

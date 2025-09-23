@@ -22,56 +22,54 @@
                 </div>
 
                 <!-- Desktop/Tablet Table View -->
-                <div class="contacts-table-container overflow-x-auto -mx-4 sm:mx-0">
-                    <div class="inline-block min-w-full align-middle">
-                        <table class="contacts-table min-w-full divide-y divide-gray-200 bg-white shadow-sm rounded-lg overflow-hidden">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Name
-                                    </th>
-                                    <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Email
-                                    </th>
-                                    <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Phone
-                                    </th>
-                                    <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Quick Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach (var contact in demoContacts)
-                                {
-                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            @contact.Name
-                                        </td>
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <a href="mailto:@contact.Email" class="text-indigo-600 hover:text-indigo-900 break-all">
-                                                @contact.Email
-                                            </a>
-                                        </td>
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <a href="tel:@contact.Phone" class="text-indigo-600 hover:text-indigo-900">
-                                                @contact.Phone
-                                            </a>
-                                        </td>
-                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <NexaCRM.WebClient.Components.UI.QuickActionsComponent 
-                                                PhoneNumber="@contact.Phone"
-                                                Email="@contact.Email"
-                                                CustomerName="@contact.Name"
-                                                CustomerId="@contact.Id.ToString()"
-                                                ShowLabels="false"
-                                                CssClass="inline"
-                                                OnActionCompleted="HandleQuickAction" />
-                                        </td>
+                <div class="contacts-desktop-layout">
+                    <div class="contacts-table-stack">
+                        <div class="contacts-table-meta" role="status">
+                            <span>@Localizer["ContactCountSummary", demoContacts.Count]</span>
+                        </div>
+                        <div class="contacts-table-scroll">
+                            <table class="contacts-table" role="grid" aria-describedby="demo-contacts-caption">
+                                <caption id="demo-contacts-caption" class="sr-only">Demo contacts</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">@Localizer["FirstName"]</th>
+                                        <th scope="col">@Localizer["Email"]</th>
+                                        <th scope="col">@Localizer["PhoneNumber"]</th>
+                                        <th scope="col" class="contacts-table__actions-header">@Localizer["Actions"]</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var contact in demoContacts)
+                                    {
+                                        <tr class="contacts-table__row">
+                                            <td class="contacts-table__cell">
+                                                <span class="contacts-table__label" aria-hidden="true">@Localizer["FirstName"]</span>
+                                                <span class="contacts-table__value">@contact.Name</span>
+                                            </td>
+                                            <td class="contacts-table__cell contacts-table__cell--link">
+                                                <span class="contacts-table__label" aria-hidden="true">@Localizer["Email"]</span>
+                                                <a href="mailto:@contact.Email">@contact.Email</a>
+                                            </td>
+                                            <td class="contacts-table__cell contacts-table__cell--link">
+                                                <span class="contacts-table__label" aria-hidden="true">@Localizer["PhoneNumber"]</span>
+                                                <a href="tel:@contact.Phone">@contact.Phone</a>
+                                            </td>
+                                            <td class="contacts-table__cell contacts-table__cell--actions">
+                                                <span class="contacts-table__label" aria-hidden="true">@Localizer["Actions"]</span>
+                                                <NexaCRM.WebClient.Components.UI.QuickActionsComponent
+                                                    PhoneNumber="@contact.Phone"
+                                                    Email="@contact.Email"
+                                                    CustomerName="@contact.Name"
+                                                    CustomerId="@contact.Id.ToString()"
+                                                    ShowLabels="false"
+                                                    CssClass="inline"
+                                                    OnActionCompleted="HandleQuickAction" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -168,16 +166,16 @@
         switch (action)
         {
             case "call":
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to call from the list above");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Select a contact to call from the list above.");
                 break;
             case "email":
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to email from the list above");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Select a contact to email from the list above.");
                 break;
             case "meeting":
-                await JSRuntime.InvokeVoidAsync("alert", "Schedule meeting functionality - would open calendar integration");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Meeting scheduling opens the calendar integration in production.");
                 break;
             case "add":
-                await JSRuntime.InvokeVoidAsync("alert", "Add new contact functionality - would open contact form");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Use the add contact form to capture new details.");
                 break;
         }
     }

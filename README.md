@@ -92,6 +92,19 @@ git clone https://github.com/your-org/nexacrm.git
 cd nexacrm
 ```
 
+### 정적 웹 자산 다운로드
+> PR 제한으로 바이너리 폰트 파일은 저장소에 포함되어 있지 않습니다.
+> 아래 스크립트를 실행하면 Bootstrap Icons(1.11.3)과 Open Iconic 폰트를 각각 GitHub 공식 저장소에서 내려받아 `wwwroot/lib` 경로에 배치합니다.
+
+```bash
+./scripts/fetch-static-assets.sh
+```
+
+> 스크립트는 `curl` 또는 `wget`을 사용하며, 이미 파일이 존재하는 경우 재다운로드하지 않습니다.
+> 다운로드 출처
+> - Bootstrap Icons: https://raw.githubusercontent.com/twbs/icons/v1.11.3/font/fonts/
+> - Open Iconic: https://raw.githubusercontent.com/iconic/open-iconic/master/font/fonts/
+
 ### 로컬 실행
 > `dotnet` CLI를 사용하여 각 서비스를 실행하거나, Visual Studio/Rider에서 솔루션을 열어 실행할 수 있습니다.
 
