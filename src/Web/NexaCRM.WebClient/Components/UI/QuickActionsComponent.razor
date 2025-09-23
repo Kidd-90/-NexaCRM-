@@ -1,5 +1,7 @@
 @using Microsoft.Extensions.Localization
 @using Microsoft.JSInterop
+@using System.Text.Json
+@using System.Linq
 @inject IStringLocalizer<QuickActionsComponent> Localizer
 @inject IJSRuntime JSRuntime
 
@@ -50,6 +52,47 @@
             </button>
         }
     </div>
+
+    <div class="quick-actions-feedback" aria-live="polite">
+        @if (!string.IsNullOrWhiteSpace(actionAnnouncement))
+        {
+            <span>@actionAnnouncement</span>
+        }
+    </div>
+
+    @if (showToast && !string.IsNullOrEmpty(toastMessage))
+    {
+        <div class="quick-actions-toast" role="status">
+            <span>@toastMessage</span>
+            <button type="button" class="quick-actions-toast__dismiss" @onclick="DismissToast">
+                <span class="sr-only">@Localizer["QuickActionsToastDismiss"]</span>
+                ×
+            </button>
+        </div>
+    }
+
+    @if (showActionSheet)
+    {
+        <div class="quick-actions-sheet-backdrop" role="presentation" @onclick="CloseActionSheet">
+            <div class="quick-actions-sheet" role="dialog" aria-modal="true" aria-labelledby="quickActionSheetTitle" aria-describedby="quickActionSheetDescription" @onclick:stopPropagation="true">
+                <header class="quick-actions-sheet__header">
+                    <h3 id="quickActionSheetTitle">@actionSheetTitle</h3>
+                    <p id="quickActionSheetDescription">@actionSheetDescription</p>
+                </header>
+                <div class="quick-actions-sheet__actions">
+                    @if (!string.IsNullOrWhiteSpace(actionSheetPrimaryHref) && !string.IsNullOrWhiteSpace(actionSheetPrimaryText))
+                    {
+                        <a class="quick-actions-sheet__primary" href="@actionSheetPrimaryHref" @onclick="async () => await ConfirmPendingActionFromLink()">@actionSheetPrimaryText</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(actionSheetSecondaryText))
+                    {
+                        <button type="button" class="quick-actions-sheet__secondary" @onclick="async () => await ExecuteSecondaryAction()">@actionSheetSecondaryText</button>
+                    }
+                    <button type="button" class="quick-actions-sheet__tertiary" @onclick="CloseActionSheet">@Localizer["QuickActionsCancel"]</button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
@@ -64,28 +107,36 @@
     [Parameter] public string CssClass { get; set; } = "";
     [Parameter] public EventCallback<string> OnActionCompleted { get; set; }
 
+    private bool showActionSheet;
+    private string? pendingAction;
+    private string? actionSheetTitle;
+    private string? actionSheetDescription;
+    private string? actionSheetPrimaryText;
+    private string? actionSheetPrimaryHref;
+    private string? actionSheetSecondaryText;
+    private Func<Task>? secondaryAction;
+    private string? actionAnnouncement;
+    private string? toastMessage;
+    private bool showToast;
+
     private async Task HandleCallAction()
     {
-        if (string.IsNullOrEmpty(PhoneNumber)) return;
+        if (string.IsNullOrEmpty(PhoneNumber))
+        {
+            return;
+        }
 
         try
         {
-            // Detect if we're on mobile or desktop
-            var isMobile = await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 767px)').matches");
-            
-            if (isMobile)
+            if (await IsMobileViewportAsync())
             {
-                // On mobile, use tel: protocol to open phone app
                 await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = 'tel:{PhoneNumber}'");
+                await AnnounceAndCompleteAsync("call", Localizer["QuickActionsCallLaunched", ResolveDisplayName(PhoneNumber)]);
             }
             else
             {
-                // On desktop, show options (could be VoIP integration in the future)
-                await JSRuntime.InvokeVoidAsync("alert", $"Call {CustomerName ?? "customer"} at {PhoneNumber}");
-                // TODO: Integrate with VoIP solution like Twilio, Zoom Phone, etc.
+                PrepareCallActionSheet();
             }
-
-            await OnActionCompleted.InvokeAsync("call");
         }
         catch (Exception ex)
         {
@@ -95,17 +146,28 @@
 
     private async Task HandleEmailAction()
     {
-        if (string.IsNullOrEmpty(Email)) return;
+        if (string.IsNullOrEmpty(Email))
+        {
+            return;
+        }
 
         try
         {
-            // Use mailto: protocol to open email client
-            var subject = $"Follow-up with {CustomerName ?? "Customer"}";
-            var body = $"Hello {CustomerName ?? ""},\n\nI wanted to follow up with you regarding...\n\nBest regards";
+            var displayName = ResolveDisplayName(Email);
+            var subject = Localizer["QuickActionsEmailSubject", displayName];
+            var body = Localizer["QuickActionsEmailBody", displayName];
             var mailtoUrl = $"mailto:{Email}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
-            
-            await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{mailtoUrl}'");
-            await OnActionCompleted.InvokeAsync("email");
+            var clipboardTemplate = Localizer["QuickActionsEmailClipboardTemplate", Email, subject, body];
+
+            if (await IsMobileViewportAsync())
+            {
+                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{mailtoUrl}'");
+                await AnnounceAndCompleteAsync("email", Localizer["QuickActionsEmailLaunched", displayName]);
+            }
+            else
+            {
+                PrepareEmailActionSheet(mailtoUrl, clipboardTemplate);
+            }
         }
         catch (Exception ex)
         {
@@ -117,24 +179,193 @@
     {
         try
         {
-            // Create a calendar event - this could be enhanced to integrate with specific calendar systems
-            var startDate = DateTime.Now.AddDays(1).ToString("yyyyMMddTHHmmssZ");
-            var endDate = DateTime.Now.AddDays(1).AddHours(1).ToString("yyyyMMddTHHmmssZ");
-            var eventTitle = $"Meeting with {CustomerName ?? "Customer"}";
-            var eventDetails = $"Sales meeting with {CustomerName ?? "customer"}";
-            
-            // Create .ics file content for calendar integration
-            var icsContent = $"BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NexaCRM//EN\nBEGIN:VEVENT\nUID:{Guid.NewGuid()}\nDTSTART:{startDate}\nDTEND:{endDate}\nSUMMARY:{eventTitle}\nDESCRIPTION:{eventDetails}\nEND:VEVENT\nEND:VCALENDAR";
-            
-            // For now, we'll show a notification. In production, this could integrate with calendar APIs
-            await JSRuntime.InvokeVoidAsync("alert", $"Schedule meeting with {CustomerName ?? "customer"}. Calendar integration coming soon!");
-            
-            // TODO: Integrate with calendar systems (Google Calendar, Outlook, etc.)
-            await OnActionCompleted.InvokeAsync("meeting");
+            var displayName = ResolveDisplayName(Localizer["QuickActionsUnknownContact"]);
+            var summary = Localizer["QuickActionsMeetingSummary", displayName];
+            var description = Localizer["QuickActionsMeetingDescription", displayName];
+            var start = DateTime.UtcNow.AddDays(1);
+            var end = start.AddHours(1);
+            var icsContent = $"BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NexaCRM//EN\nBEGIN:VEVENT\nUID:{Guid.NewGuid()}\nDTSTAMP:{DateTime.UtcNow:yyyyMMddTHHmmssZ}\nDTSTART:{start:yyyyMMddTHHmmssZ}\nDTEND:{end:yyyyMMddTHHmmssZ}\nSUMMARY:{summary}\nDESCRIPTION:{description}\nEND:VEVENT\nEND:VCALENDAR";
+            var fileName = GetMeetingFileName();
+
+            await TriggerFileDownloadAsync(fileName, icsContent);
+            await AnnounceAndCompleteAsync("meeting", Localizer["QuickActionsMeetingPrepared", displayName]);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error handling meeting action: {ex.Message}");
         }
+    }
+
+    private async Task<bool> IsMobileViewportAsync()
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 767px)').matches");
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void PrepareCallActionSheet()
+    {
+        var displayName = ResolveDisplayName(PhoneNumber);
+        pendingAction = "call";
+        actionSheetTitle = Localizer["QuickActionsCallDialogTitle", displayName];
+        actionSheetDescription = Localizer["QuickActionsCallDialogDescription", displayName];
+        actionSheetPrimaryText = Localizer["QuickActionsCallPrimary"];
+        actionSheetPrimaryHref = $"tel:{PhoneNumber}";
+        actionSheetSecondaryText = Localizer["QuickActionsCopyNumber"];
+        secondaryAction = async () =>
+        {
+            await CopyToClipboardAsync(PhoneNumber!);
+            await AnnounceAndCompleteAsync("call", Localizer["QuickActionsCopySuccess"]);
+        };
+        showActionSheet = true;
+        StateHasChanged();
+    }
+
+    private void PrepareEmailActionSheet(string mailtoUrl, string clipboardTemplate)
+    {
+        var displayName = ResolveDisplayName(Email);
+        pendingAction = "email";
+        actionSheetTitle = Localizer["QuickActionsEmailDialogTitle", displayName];
+        actionSheetDescription = Localizer["QuickActionsEmailDialogDescription"];
+        actionSheetPrimaryText = Localizer["QuickActionsEmailPrimary"];
+        actionSheetPrimaryHref = mailtoUrl;
+        actionSheetSecondaryText = Localizer["QuickActionsEmailCopy"];
+        secondaryAction = async () =>
+        {
+            await CopyToClipboardAsync(clipboardTemplate);
+            await AnnounceAndCompleteAsync("email", Localizer["QuickActionsEmailCopySuccess"]);
+        };
+        showActionSheet = true;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmPendingActionFromLink()
+    {
+        var action = pendingAction;
+        CloseActionSheet();
+
+        if (string.Equals(action, "call", StringComparison.OrdinalIgnoreCase))
+        {
+            await AnnounceAndCompleteAsync("call", Localizer["QuickActionsCallLaunched", ResolveDisplayName(PhoneNumber)]);
+        }
+        else if (string.Equals(action, "email", StringComparison.OrdinalIgnoreCase))
+        {
+            await AnnounceAndCompleteAsync("email", Localizer["QuickActionsEmailLaunched", ResolveDisplayName(Email)]);
+        }
+    }
+
+    private async Task ExecuteSecondaryAction()
+    {
+        var action = secondaryAction;
+        CloseActionSheet();
+
+        if (action is not null)
+        {
+            await action();
+        }
+    }
+
+    private void CloseActionSheet()
+    {
+        showActionSheet = false;
+        pendingAction = null;
+        actionSheetTitle = null;
+        actionSheetDescription = null;
+        actionSheetPrimaryText = null;
+        actionSheetPrimaryHref = null;
+        actionSheetSecondaryText = null;
+        secondaryAction = null;
+        StateHasChanged();
+    }
+
+    private async Task AnnounceAndCompleteAsync(string actionKey, string message)
+    {
+        actionAnnouncement = message;
+        toastMessage = message;
+        showToast = true;
+        await OnActionCompleted.InvokeAsync(actionKey);
+        StateHasChanged();
+    }
+
+    private void DismissToast()
+    {
+        showToast = false;
+        toastMessage = null;
+        StateHasChanged();
+    }
+
+    private string ResolveDisplayName(string? fallback)
+    {
+        if (!string.IsNullOrWhiteSpace(CustomerName))
+        {
+            return CustomerName!;
+        }
+
+        return string.IsNullOrWhiteSpace(fallback) ? Localizer["QuickActionsUnknownContact"] : fallback!;
+    }
+
+    private async Task CopyToClipboardAsync(string value)
+    {
+        var encoded = JsonSerializer.Serialize(value);
+        var script = $@"
+            (async () => {{
+                const value = {encoded};
+                if (navigator.clipboard && navigator.clipboard.writeText) {{
+                    try {{
+                        await navigator.clipboard.writeText(value);
+                        return;
+                    }} catch (err) {{}}
+                }
+                const textarea = document.createElement('textarea');
+                textarea.value = value;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'absolute';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }})();
+        ";
+
+        await JSRuntime.InvokeVoidAsync("eval", script);
+    }
+
+    private string GetMeetingFileName()
+    {
+        var baseName = string.IsNullOrWhiteSpace(CustomerName) ? "customer" : CustomerName!.ToLowerInvariant();
+        var sanitized = new string(baseName.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
+        if (string.IsNullOrWhiteSpace(sanitized))
+        {
+            sanitized = "customer";
+        }
+
+        return $"meeting-with-{sanitized}.ics";
+    }
+
+    private async Task TriggerFileDownloadAsync(string fileName, string content)
+    {
+        var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(content));
+        var base64Json = JsonSerializer.Serialize(base64);
+        var fileNameJson = JsonSerializer.Serialize(fileName);
+        var script = $@"
+            (function() {{
+                const data = {base64Json};
+                const fileName = {fileNameJson};
+                const link = document.createElement('a');
+                link.href = 'data:text/calendar;base64,' + data;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }})();
+        ";
+
+        await JSRuntime.InvokeVoidAsync("eval", script);
     }
 }

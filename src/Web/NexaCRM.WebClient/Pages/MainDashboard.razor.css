@@ -1,3 +1,194 @@
+:root {
+    --dashboard-shell-max-mobile: 100%;
+    --dashboard-shell-max-tablet: 62rem;
+    --dashboard-shell-max-desktop: 78rem;
+    --dashboard-sidebar-width: 19rem;
+    --dashboard-gap: 1.75rem;
+    --dashboard-surface: #f8fafc;
+    --dashboard-border: rgba(208, 217, 231, 0.65);
+    --dashboard-focus-ring: #6366f1;
+    --dashboard-main-surface: #ffffff;
+    --dashboard-main-shadow: 0 24px 56px rgba(15, 23, 42, 0.08);
+    --dashboard-panel-shadow: 0 26px 48px rgba(15, 23, 42, 0.08);
+}
+
+.dashboard-skip-link {
+    position: absolute;
+    top: -999px;
+    left: -999px;
+    z-index: 2000;
+    padding: 0.75rem 1.25rem;
+    background-color: #0f172a;
+    color: #f8fafc;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.2);
+    transition: transform 0.3s ease, top 0.3s ease, left 0.3s ease;
+}
+
+.dashboard-skip-link:focus-visible {
+    top: 1.25rem;
+    left: 1.5rem;
+    outline: 3px solid var(--dashboard-focus-ring);
+    outline-offset: 3px;
+}
+
+.dashboard-container {
+    width: min(100%, var(--dashboard-shell-max-mobile));
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.75rem 1.25rem 4.5rem;
+    transition: padding 0.25s ease;
+}
+
+.dashboard-sidebar {
+    display: none;
+}
+
+.dashboard-sidebar__panel {
+    background-color: var(--dashboard-surface);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border: 1px solid var(--dashboard-border);
+    box-shadow: var(--dashboard-panel-shadow);
+    min-height: 100%;
+}
+
+.dashboard-sidebar__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.dashboard-sidebar__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dashboard-sidebar__home {
+    margin-bottom: 0.75rem;
+}
+
+.dashboard-sidebar__nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.85rem;
+    color: #0e131b;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-sidebar__nav-link p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.dashboard-sidebar__nav-link:hover,
+.dashboard-sidebar__nav-link:focus-visible {
+    background-color: rgba(231, 236, 243, 0.9);
+    color: #0e131b;
+    outline: none;
+    transform: translateX(2px);
+}
+
+.dashboard-sidebar__nav-link:focus-visible {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+}
+
+.dashboard-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 0 3.5rem;
+    min-height: 100%;
+}
+
+.dashboard-main-content:focus-visible {
+    outline: 3px solid var(--dashboard-focus-ring);
+    outline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+    .dashboard-main-content {
+        padding-top: 70px;
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-container {
+        width: min(100%, var(--dashboard-shell-max-tablet));
+        display: grid;
+        grid-template-columns: minmax(0, var(--dashboard-sidebar-width)) minmax(0, 1fr);
+        gap: var(--dashboard-gap);
+        align-items: start;
+        padding: 2.5rem 2rem 5rem;
+    }
+
+    .dashboard-sidebar {
+        display: block;
+        position: sticky;
+        top: 1.75rem;
+        height: fit-content;
+    }
+
+    .mobile-header,
+    .mobile-quick-actions,
+    .mobile-notifications-panel {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+    .dashboard-main-content {
+        background-color: var(--dashboard-main-surface);
+        border-radius: 1.5rem;
+        padding: 2.25rem 2.25rem 3rem;
+        box-shadow: var(--dashboard-main-shadow);
+        border: 1px solid var(--dashboard-border);
+    }
+}
+
+@media (min-width: 1200px) {
+    .dashboard-container {
+        width: min(100%, var(--dashboard-shell-max-desktop));
+        padding-inline: 3rem;
+    }
+
+    .dashboard-sidebar {
+        top: 2rem;
+    }
+
+    .dashboard-main-content {
+        padding: 2.75rem 3rem 3.25rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-skip-link,
+    .dashboard-sidebar__nav-link,
+    .dashboard-button,
+    .mobile-header,
+    .mobile-quick-actions {
+        transition-duration: 0.01ms !important;
+        transition-property: none !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
 /* Dashboard base styling */
 .nav-link {
     color: #0e131b;
@@ -20,10 +211,6 @@
 
 .nav-link-text {
     margin: 0;
-}
-
-.dashboard-main-content {
-    padding-top: 70px;
 }
 
 .dashboard-button {
@@ -78,193 +265,117 @@
     color: #0e131b;
 }
 
-/* 다크 모드에서 텍스트 색상 수정 */
-[data-theme="dark"] .text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] .text-\[#4d6a99\] {
-    color: #b0b0b0 !important;
-}
-
-/* 다크 모드에서 아이콘 색상 수정 */
-[data-theme="dark"] .text-\[#0e131b\][data-icon] {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 배경과 텍스트 조합 */
-[data-theme="dark"] .bg-\[#e7ecf3\] {
-    background-color: #374151 !important;
-}
-
-[data-theme="dark"] .bg-\[#e7ecf3\].text-\[#0e131b\] {
-    background-color: #374151 !important;
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] .bg-\[#e7ecf3\].text-\[#4d6a99\] {
-    background-color: #374151 !important;
-    color: #d1d5db !important;
-}
-
-/* 다크 모드에서 플레이스홀더 텍스트 색상 */
-[data-theme="dark"] .placeholder\:text-\[#4d6a99\]::placeholder {
-    color: #9ca3af !important;
-}
-
-/* 다크 모드에서 사이드바 배경 */
-[data-theme="dark"] .bg-slate-50 {
-    background-color: #1f2937 !important;
-}
-
-/* 다크 모드에서 메인 컨테이너 배경 */
-[data-theme="dark"] .group\/design-root.bg-slate-50 {
+/* 다크 모드 토큰 및 보조 스타일 */
+[data-theme="dark"] .group\/design-root {
+    --dashboard-surface: #1f2937;
+    --dashboard-border: rgba(75, 85, 99, 0.65);
+    --dashboard-focus-ring: #a5b4fc;
+    --dashboard-main-surface: #0f172a;
+    --dashboard-main-shadow: 0 28px 60px rgba(0, 0, 0, 0.5);
+    --dashboard-panel-shadow: 0 26px 52px rgba(0, 0, 0, 0.55);
     background-color: #111827 !important;
 }
 
-/* 다크 모드에서 대시보드 카드 배경과 텍스트 */
-[data-theme="dark"] .dashboard-card {
-    background-color: #374151 !important;
-    border-color: #4b5563 !important;
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root .text-\[#0e131b\] {
+    color: #f8fafc !important;
 }
 
-[data-theme="dark"] .dashboard-card .text-\[#0e131b\] {
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root .text-\[#4d6a99\] {
+    color: #d1d5db !important;
 }
 
-[data-theme="dark"] .dashboard-card h2 {
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root .nav-link-icon,
+[data-theme="dark"] .group\/design-root .nav-link-icon-graphic,
+[data-theme="dark"] .group\/design-root .nav-link-text {
+    color: #f8fafc !important;
+    fill: currentColor !important;
 }
 
-[data-theme="dark"] .dashboard-card span {
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root .dashboard-sidebar__nav-link {
+    color: #f8fafc !important;
 }
 
-/* 다크 모드에서 모든 버튼과 링크 텍스트 */
-[data-theme="dark"] button {
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root .dashboard-sidebar__nav-link:hover,
+[data-theme="dark"] .group\/design-root .dashboard-sidebar__nav-link:focus-visible {
+    background-color: #2f3a4f !important;
+    color: #f8fafc !important;
 }
 
-[data-theme="dark"] button .text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] button h2 {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] .bg-slate-50 {
+[data-theme="dark"] .group\/design-root .bg-\[#e7ecf3\] {
     background-color: #374151 !important;
 }
 
-/* 다크 모드에서 헤더 배경과 텍스트 */
-[data-theme="dark"] .dashboard-header {
+[data-theme="dark"] .group\/design-root .bg-\[#e7ecf3\] .text-\[#0e131b\] {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .group\/design-root .placeholder\:text-\[#4d6a99\]::placeholder {
+    color: #9ca3af !important;
+}
+
+[data-theme="dark"] .group\/design-root .bg-slate-50 {
+    background-color: #1f2937 !important;
+}
+
+[data-theme="dark"] .group\/design-root .dashboard-skip-link {
+    background-color: #312e81 !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .group\/design-root .dashboard-header {
     background-color: #1f2937 !important;
     border-color: #374151 !important;
 }
 
-[data-theme="dark"] .dashboard-header .text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 버튼 색상 */
-[data-theme="dark"] .dashboard-button {
+[data-theme="dark"] .group\/design-root .dashboard-button,
+[data-theme="dark"] .group\/design-root .priority-button {
     background-color: #374151 !important;
-    color: #ffffff !important;
+    color: #f8fafc !important;
 }
 
-[data-theme="dark"] .dashboard-button:hover {
+[data-theme="dark"] .group\/design-root .dashboard-button:hover,
+[data-theme="dark"] .group\/design-root .dashboard-button:focus-visible {
     background-color: #4b5563 !important;
 }
 
-/* 다크 모드에서 입력 필드 */
-[data-theme="dark"] .form-input {
-    background-color: #374151 !important;
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root .priority-button {
     border-color: #4b5563 !important;
 }
 
-[data-theme="dark"] .form-input:focus {
+[data-theme="dark"] .group\/design-root .form-input {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .group\/design-root .form-input:focus {
     border-color: #6b7280 !important;
 }
 
-/* 다크 모드에서 웰컴 텍스트 */
-[data-theme="dark"] .dashboard-welcome {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 네비게이션 링크 */
-[data-theme="dark"] a .text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 선택된 네비게이션 아이템 */
-[data-theme="dark"] .bg-\[#e7ecf3\] {
-    background-color: #374151 !important;
-}
-
-[data-theme="dark"] .bg-\[#e7ecf3\] .text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 제목과 헤딩 */
-[data-theme="dark"] h1.text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] h2.text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] h3.text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 단락 텍스트 */
-[data-theme="dark"] p.text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] p.text-\[#4d6a99\] {
-    color: #d1d5db !important;
-}
-
-/* 다크 모드에서 테이블과 그리드 */
-[data-theme="dark"] .dashboard-grid .text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-/* 다크 모드에서 모든 div 요소의 텍스트 색상 */
-[data-theme="dark"] div.text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] div.text-\[#4d6a99\] {
-    color: #d1d5db !important;
-}
-
-/* 다크 모드에서 스팬 요소 */
-[data-theme="dark"] span.text-\[#0e131b\] {
-    color: #ffffff !important;
-}
-
-[data-theme="dark"] span.text-\[#4d6a99\] {
-    color: #d1d5db !important;
-}
-
-/* 다크 모드에서 보더 색상 */
-[data-theme="dark"] .border-\[#d0d9e7\] {
+[data-theme="dark"] .group\/design-root .dashboard-table-container {
     border-color: #4b5563 !important;
 }
 
-[data-theme="dark"] .border-b-\[#e7ecf3\] {
+[data-theme="dark"] .group\/design-root .dashboard-table-container th,
+[data-theme="dark"] .group\/design-root .dashboard-table-container td {
+    color: #f8fafc !important;
+    border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .group\/design-root .dashboard-table-container .text-\[#4d6a99\] {
+    color: #d1d5db !important;
+}
+
+[data-theme="dark"] .group\/design-root .border-\[#d0d9e7\] {
+    border-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .group\/design-root .border-b-\[#e7ecf3\] {
     border-bottom-color: #374151 !important;
 }
 
-/* 다크 모드에서 사용자 아바타 영역 주변 요소들 */
-[data-theme="dark"] .dashboard-header div {
-    color: #ffffff !important;
+[data-theme="dark"] .group\/design-root button {
+    color: #f8fafc !important;
 }
 
 /* 모바일 헤더 기본 스타일 */
@@ -367,144 +478,8 @@
     .dashboard-main-content {
         width: 100%;
         max-width: 100%;
-        padding-top: 70px;
-    }
-}
-
-/* 반응형 다크 모드 지원 */
-@media (max-width: 768px) {
-    [data-theme="dark"] .mobile-header {
-        background-color: #1f2937;
-        border-bottom-color: #374151;
     }
 
-    [data-theme="dark"] .mobile-header .mobile-title,
-    [data-theme="dark"] .mobile-header button {
-        color: #ffffff;
-    }
-    
-    /* 다크 모드에서 대시보드 카드 버튼 텍스트 */
-    [data-theme="dark"] .dashboard-card {
-        background-color: #374151 !important;
-        border-color: #4b5563 !important;
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-card h2 {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-card svg {
-        color: #ffffff !important;
-    }
-    
-    /* 다크 모드에서 모든 버튼 텍스트 */
-    [data-theme="dark"] button .text-\[#0e131b\] {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .bg-slate-50 {
-        background-color: #374151 !important;
-    }
-    
-    /* 다크 모드에서 우선순위 버튼 */
-    [data-theme="dark"] .priority-button {
-        background-color: #374151 !important;
-        color: #ffffff !important;
-        border-color: #4b5563 !important;
-    }
-    
-    [data-theme="dark"] .priority-button span {
-        color: #ffffff !important;
-    }
-    
-    /* 다크 모드에서 테이블 스타일 */
-    [data-theme="dark"] .dashboard-table-container {
-        background-color: #374151 !important;
-        border-color: #4b5563 !important;
-    }
-    
-    [data-theme="dark"] .dashboard-table-container table {
-        background-color: #374151 !important;
-    }
-    
-    [data-theme="dark"] .dashboard-table-container th {
-        background-color: #374151 !important;
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-table-container td {
-        background-color: #374151 !important;
-        color: #ffffff !important;
-        border-color: #4b5563 !important;
-    }
-    
-    [data-theme="dark"] .dashboard-table-container .text-\[#4d6a99\] {
-        color: #d1d5db !important;
-    }
-    
-    /* 다크 모드에서 사이드바 네비게이션 링크 */
-    [data-theme="dark"] .dashboard-sidebar {
-        background-color: #1f2937 !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar a {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar a p {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar a .text-\[#0e131b\] {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar a div[data-icon] {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar a svg {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar a:hover {
-        background-color: #374151 !important;
-    }
-    
-    [data-theme="dark"] .dashboard-sidebar .bg-\[#e7ecf3\] {
-        background-color: #374151 !important;
-    }
-    
-    /* 더 강력한 다크 모드 텍스트 색상 적용 */
-    [data-theme="dark"] .dashboard-sidebar * {
-        color: #ffffff !important;
-    }
-    
-    /* 네비게이션 링크 다크 모드 강화 */
-    [data-theme="dark"] .nav-link {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .nav-link * {
-        color: #ffffff !important;
-        fill: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .nav-link p {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .nav-link div {
-        color: #ffffff !important;
-    }
-    
-    [data-theme="dark"] .nav-link svg {
-        color: #ffffff !important;
-        fill: #ffffff !important;
-    }
-    
-    /* 모바일에서 대시보드 섹션 표시 */
     .dashboard-grid {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 0.75rem;
@@ -534,3 +509,17 @@
         min-height: 120px;
     }
 }
+
+/* 반응형 다크 모드 지원 */
+@media (max-width: 768px) {
+    [data-theme="dark"] .mobile-header {
+        background-color: #1f2937;
+        border-bottom-color: #374151;
+    }
+
+    [data-theme="dark"] .mobile-header .mobile-title,
+    [data-theme="dark"] .mobile-header button {
+        color: #ffffff;
+    }
+}
+

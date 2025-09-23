@@ -6,6 +6,15 @@
   <data name="AcmeCo" xml:space="preserve">
     <value>Acme Co.</value>
   </data>
+  <data name="SkipToMainContent" xml:space="preserve">
+    <value>메인 대시보드 콘텐츠로 바로가기</value>
+  </data>
+  <data name="QuickActionsLabel" xml:space="preserve">
+    <value>모바일 퀵 액션</value>
+  </data>
+  <data name="PrimaryNavigation" xml:space="preserve">
+    <value>주 탐색</value>
+  </data>
   <data name="Dashboard" xml:space="preserve">
     <value>대시보드</value>
   </data>
