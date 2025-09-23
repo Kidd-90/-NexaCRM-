@@ -18,6 +18,8 @@ public interface IOrganizationService
     Task<IEnumerable<OrganizationUser>> GetUsersAsync();
     Task UpdateUserAsync(OrganizationUser user);
     Task DeleteUserAsync(int userId);
+    Task ApproveUserAsync(int userId);
+    Task RejectUserAsync(int userId, string? reason);
     Task SetSystemAdminAsync(string userId);
     Task RegisterUserAsync(NewUserModel user);
 }

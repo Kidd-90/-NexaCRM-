@@ -1,0 +1,624 @@
+@page "/organization/user-management"
+@attribute [Authorize(Roles = "Manager,Admin")]
+
+@using System
+@using System.Collections.Generic
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
+@using Microsoft.AspNetCore.Components.Forms
+@using NexaCRM.WebClient.Models.Organization
+@using NexaCRM.WebClient.Services.Interfaces
+
+@inject IOrganizationService OrganizationService
+
+<ResponsivePage>
+    <div class="user-management-page">
+        <div class="card shadow-sm page-header">
+            <div class="page-title">
+                <h2 class="mb-2">사용자 관리</h2>
+                <p class="text-muted mb-0">관리자는 가입된 회원 정보를 확인하고 최종 승인까지 처리할 수 있습니다.</p>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <span class="summary-label">전체 사용자</span>
+                    <span class="summary-value">@_filteredUsers.Count</span>
+                </div>
+                <div class="summary-card accent">
+                    <span class="summary-label">승인 대기</span>
+                    <span class="summary-value">@PendingCount</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm filter-card">
+            <EditForm Model="_filter" OnValidSubmit="ApplyFilter">
+                <div class="row g-3 align-items-end">
+                    <div class="col-xl-4 col-lg-5 col-md-6">
+                        <label class="form-label">상세 검색</label>
+                        <InputText class="form-control" @bind-Value="_filter.Keyword" placeholder="이름, 이메일, 부서 검색" />
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4">
+                        <label class="form-label">역할</label>
+                        <InputSelect class="form-select" @bind-Value="_filter.Role">
+                            <option value="">전체</option>
+                            @foreach (var role in _availableRoles)
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4">
+                        <label class="form-label">상태</label>
+                        <InputSelect class="form-select" @bind-Value="_filter.Status">
+                            <option value="">전체</option>
+                            <option value="Pending">승인 대기</option>
+                            <option value="Active">활성</option>
+                            <option value="Inactive">사용 중지</option>
+                            <option value="Rejected">승인 거절</option>
+                        </InputSelect>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-4 d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-primary">조회</button>
+                        <button type="button" class="btn btn-outline-secondary" @onclick="ResetFilter">초기화</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        @if (PendingCount > 0)
+        {
+            <div class="card shadow-sm pending-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>승인 대기 사용자</strong>
+                    <span class="text-muted small">최근 가입 순</span>
+                </div>
+                <div class="card-body pending-list">
+                    @foreach (var pending in _pendingUsers.Take(6))
+                    {
+                        <div class="pending-item">
+                            <div class="pending-user">
+                                <div class="avatar">@GetInitials(pending.Name)</div>
+                                <div>
+                                    <div class="pending-name">@pending.Name</div>
+                                    <div class="pending-meta text-muted small">@pending.Email · 가입일 @FormatDate(pending.RegisteredAt)</div>
+                                </div>
+                            </div>
+                            <div class="pending-actions">
+                                <button type="button" class="btn btn-success btn-sm" @onclick="() => ApproveAsync(pending)">승인</button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => OpenReject(pending)">거절</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="card shadow-sm table-card">
+            @if (_isLoading)
+            {
+                <div class="table-placeholder text-center text-muted">데이터를 불러오는 중입니다...</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">NO</th>
+                                <th scope="col">사용자</th>
+                                <th scope="col">역할 / 부서</th>
+                                <th scope="col">연락처</th>
+                                <th scope="col">상태</th>
+                                <th scope="col">가입 · 승인</th>
+                                <th scope="col" class="text-end">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (_filteredUsers.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-5">조건에 맞는 사용자가 없습니다.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var (user, index) in _filteredUsers.Select((u, i) => (u, i + 1)))
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="avatar">@GetInitials(user.Name)</div>
+                                                <div>
+                                                    <div class="fw-semibold">@user.Name</div>
+                                                    <div class="text-muted small">@user.Email</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column gap-1">
+                                                <span>@(string.IsNullOrWhiteSpace(user.Role) ? "-" : user.Role)</span>
+                                                <span class="text-muted small">@(!string.IsNullOrWhiteSpace(user.Department) ? user.Department : "부서 미정")</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column gap-1">
+                                                <span>@(string.IsNullOrWhiteSpace(user.PhoneNumber) ? "-" : user.PhoneNumber)</span>
+                                                @if (!string.IsNullOrWhiteSpace(user.ApprovalMemo) && string.Equals(user.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    <span class="text-danger small">@user.ApprovalMemo</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="@GetStatusClass(user.Status)">@GetStatusLabel(user.Status)</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column gap-1 small text-muted">
+                                                <span>가입 @FormatDate(user.RegisteredAt)</span>
+                                                <span>승인 @FormatNullableDate(user.ApprovedAt)</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-flex flex-wrap justify-content-end action-buttons">
+                                                <button type="button" class="btn btn-outline-primary btn-sm" @onclick="() => OpenEdit(user)">정보 수정</button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => OpenDelete(user)">삭제</button>
+                                                @if (IsPending(user))
+                                                {
+                                                    <button type="button" class="btn btn-success btn-sm" @onclick="() => ApproveAsync(user)">최종 승인</button>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => OpenReject(user)">거절</button>
+                                                }
+                                                else if (string.Equals(user.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    <button type="button" class="btn btn-outline-success btn-sm" @onclick="() => ApproveAsync(user)">재승인</button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</ResponsivePage>
+
+@if (_showEditModal && _editUser is not null)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">사용자 정보 수정</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="_editUser" OnValidSubmit="SaveEditAsync">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">이름</label>
+                                <InputText class="form-control" @bind-Value="_editUser.Name" />
+                                <ValidationMessage For="@(() => _editUser.Name)" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">이메일</label>
+                                <InputText class="form-control" @bind-Value="_editUser.Email" />
+                                <ValidationMessage For="@(() => _editUser.Email)" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">역할</label>
+                                <InputText class="form-control" @bind-Value="_editUser.Role" placeholder="예: Admin" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">부서</label>
+                                <InputText class="form-control" @bind-Value="_editUser.Department" placeholder="소속 부서" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">연락처</label>
+                                <InputText class="form-control" @bind-Value="_editUser.PhoneNumber" placeholder="휴대전화" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">상태</label>
+                                <InputSelect class="form-select" @bind-Value="_editUser.Status">
+                                    <option value="Active">활성</option>
+                                    <option value="Pending">승인 대기</option>
+                                    <option value="Inactive">사용 중지</option>
+                                    <option value="Rejected">승인 거절</option>
+                                </InputSelect>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">가입일</label>
+                                <InputDate class="form-control" @bind-Value="_editUser.RegisteredAt" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">승인일</label>
+                                <InputDate TValue="DateTime?" class="form-control" @bind-Value="_editUser.ApprovedAt" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">관리 메모</label>
+                                <InputTextArea class="form-control" rows="3" @bind-Value="_editUser.ApprovalMemo" placeholder="승인 또는 보류 사유를 입력하세요." />
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="CloseEditModal">취소</button>
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@if (_showDeleteModal && _selectedUser is not null)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">사용자 삭제</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2"><strong>@_selectedUser.Name</strong> 사용자를 삭제하시겠습니까?</p>
+                    <p class="text-muted small mb-0">삭제 후에는 계정 정보를 복구할 수 없습니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="CloseDeleteModal">취소</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteAsync">삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@if (_showRejectModal && _rejectRequest is not null)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">가입 거절 처리</h5>
+                    <button type="button" class="btn-close" @onclick="CloseRejectModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3"><strong>@_rejectRequest.Name</strong> 회원의 가입을 거절하시겠습니까?</p>
+                    <EditForm Model="_rejectRequest" OnValidSubmit="ConfirmRejectAsync">
+                        <DataAnnotationsValidator />
+                        <div class="mb-3">
+                            <label class="form-label">거절 사유 (선택)</label>
+                            <InputTextArea class="form-control" rows="3" @bind-Value="_rejectRequest.Reason" placeholder="관리자 메모를 입력하세요." />
+                            <ValidationMessage For="@(() => _rejectRequest.Reason)" />
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="CloseRejectModal">취소</button>
+                            <button type="submit" class="btn btn-danger">거절 확정</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private readonly List<OrganizationUser> _users = new();
+    private readonly List<OrganizationUser> _filteredUsers = new();
+    private readonly List<OrganizationUser> _pendingUsers = new();
+    private readonly List<string> _availableRoles = new();
+
+    private UserFilterModel _filter = new();
+    private bool _isLoading = true;
+    private bool _showEditModal;
+    private bool _showDeleteModal;
+    private bool _showRejectModal;
+    private UserEditModel? _editUser;
+    private OrganizationUser? _selectedUser;
+    private RejectRequest? _rejectRequest;
+
+    private int PendingCount => _pendingUsers.Count;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        _isLoading = true;
+        var data = await OrganizationService.GetUsersAsync();
+        _users.Clear();
+        _users.AddRange(data);
+        UpdateAvailableRoles();
+        ApplyFilter();
+        _isLoading = false;
+    }
+
+    private void UpdateAvailableRoles()
+    {
+        _availableRoles.Clear();
+        var roles = _users
+            .Select(u => u.Role)
+            .Where(role => !string.IsNullOrWhiteSpace(role))
+            .Select(role => role!.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(role => role, StringComparer.OrdinalIgnoreCase);
+        _availableRoles.AddRange(roles);
+    }
+
+    private void ApplyFilter()
+    {
+        IEnumerable<OrganizationUser> query = _users;
+
+        if (!string.IsNullOrWhiteSpace(_filter.Keyword))
+        {
+            var keyword = _filter.Keyword.Trim();
+            query = query.Where(u =>
+                (u.Name?.Contains(keyword, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (u.Email?.Contains(keyword, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (u.Department?.Contains(keyword, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (u.PhoneNumber?.Contains(keyword, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+
+        if (!string.IsNullOrWhiteSpace(_filter.Role))
+        {
+            query = query.Where(u => string.Equals(u.Role, _filter.Role, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(_filter.Status))
+        {
+            query = query.Where(u => string.Equals(u.Status, _filter.Status, StringComparison.OrdinalIgnoreCase));
+        }
+
+        _filteredUsers.Clear();
+        _filteredUsers.AddRange(query.OrderByDescending(u => u.RegisteredAt));
+
+        _pendingUsers.Clear();
+        _pendingUsers.AddRange(_users.Where(IsPending).OrderBy(u => u.RegisteredAt));
+    }
+
+    private void ResetFilter()
+    {
+        _filter = new UserFilterModel();
+        ApplyFilter();
+        StateHasChanged();
+    }
+
+    private void OpenEdit(OrganizationUser user)
+    {
+        _editUser = new UserEditModel
+        {
+            Id = user.Id,
+            Name = user.Name ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            Role = user.Role ?? string.Empty,
+            Department = user.Department ?? string.Empty,
+            PhoneNumber = user.PhoneNumber ?? string.Empty,
+            Status = user.Status ?? "Pending",
+            RegisteredAt = user.RegisteredAt,
+            ApprovedAt = user.ApprovedAt,
+            ApprovalMemo = user.ApprovalMemo
+        };
+        _showEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        _showEditModal = false;
+        _editUser = null;
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (_editUser is null)
+        {
+            return;
+        }
+
+        var updated = new OrganizationUser
+        {
+            Id = _editUser.Id,
+            Name = _editUser.Name,
+            Email = _editUser.Email,
+            Role = NormalizeOrNull(_editUser.Role),
+            Status = NormalizeStatus(_editUser.Status),
+            Department = NormalizeOrNull(_editUser.Department),
+            PhoneNumber = NormalizeOrNull(_editUser.PhoneNumber),
+            RegisteredAt = _editUser.RegisteredAt,
+            ApprovedAt = _editUser.ApprovedAt,
+            ApprovalMemo = NormalizeOrNull(_editUser.ApprovalMemo)
+        };
+
+        await OrganizationService.UpdateUserAsync(updated);
+        await LoadUsersAsync();
+        CloseEditModal();
+    }
+
+    private void OpenDelete(OrganizationUser user)
+    {
+        _selectedUser = user;
+        _showDeleteModal = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        _showDeleteModal = false;
+        _selectedUser = null;
+    }
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_selectedUser is null)
+        {
+            return;
+        }
+
+        await OrganizationService.DeleteUserAsync(_selectedUser.Id);
+        await LoadUsersAsync();
+        CloseDeleteModal();
+    }
+
+    private void OpenReject(OrganizationUser user)
+    {
+        _rejectRequest = new RejectRequest
+        {
+            UserId = user.Id,
+            Name = user.Name ?? "이름 미확인",
+            Reason = user.ApprovalMemo
+        };
+        _showRejectModal = true;
+    }
+
+    private void CloseRejectModal()
+    {
+        _showRejectModal = false;
+        _rejectRequest = null;
+    }
+
+    private async Task ConfirmRejectAsync()
+    {
+        if (_rejectRequest is null)
+        {
+            return;
+        }
+
+        await OrganizationService.RejectUserAsync(_rejectRequest.UserId, NormalizeOrNull(_rejectRequest.Reason));
+        await LoadUsersAsync();
+        CloseRejectModal();
+    }
+
+    private async Task ApproveAsync(OrganizationUser user)
+    {
+        if (user is null)
+        {
+            return;
+        }
+
+        await OrganizationService.ApproveUserAsync(user.Id);
+        await LoadUsersAsync();
+    }
+
+    private static string? NormalizeOrNull(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string NormalizeStatus(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status))
+        {
+            return "Pending";
+        }
+
+        var normalized = status.Trim();
+        return normalized switch
+        {
+            "Active" or "Inactive" or "Pending" or "Rejected" => normalized,
+            _ => "Pending"
+        };
+    }
+
+    private static bool IsPending(OrganizationUser user) =>
+        string.Equals(user.Status, "Pending", StringComparison.OrdinalIgnoreCase);
+
+    private static string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "?";
+        }
+
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length == 0)
+        {
+            return "?";
+        }
+
+        if (parts.Length == 1)
+        {
+            var segment = parts[0];
+            return segment.Length switch
+            {
+                >= 2 => segment[..2].ToUpperInvariant(),
+                1 => segment.ToUpperInvariant(),
+                _ => "?"
+            };
+        }
+
+        var first = parts[0][0];
+        var last = parts[^1][0];
+        return string.Concat(char.ToUpperInvariant(first), char.ToUpperInvariant(last));
+    }
+
+    private static string FormatDate(DateTime value) =>
+        value == default ? "-" : value.ToString("yyyy.MM.dd");
+
+    private static string FormatNullableDate(DateTime? value)
+    {
+        if (!value.HasValue || value.Value == default)
+        {
+            return "-";
+        }
+
+        return value.Value.ToString("yyyy.MM.dd");
+    }
+
+    private static string GetStatusLabel(string? status) => status switch
+    {
+        "Active" => "활성",
+        "Inactive" => "사용 중지",
+        "Rejected" => "승인 거절",
+        "Pending" => "승인 대기",
+        _ => "미정"
+    };
+
+    private static string GetStatusClass(string? status) => status switch
+    {
+        "Active" => "status-chip status-active",
+        "Inactive" => "status-chip status-inactive",
+        "Rejected" => "status-chip status-rejected",
+        "Pending" => "status-chip status-pending",
+        _ => "status-chip"
+    };
+
+    private class UserFilterModel
+    {
+        public string Keyword { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
+
+    private class UserEditModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "이름을 입력해 주세요.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "이메일을 입력해 주세요.")]
+        [EmailAddress(ErrorMessage = "유효한 이메일 주소를 입력해 주세요.")]
+        public string Email { get; set; } = string.Empty;
+
+        public string Role { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Status { get; set; } = "Pending";
+        public DateTime RegisteredAt { get; set; } = DateTime.Today;
+        public DateTime? ApprovedAt { get; set; }
+        public string? ApprovalMemo { get; set; }
+    }
+
+    private class RejectRequest
+    {
+        public int UserId { get; set; }
+        public string Name { get; set; } = string.Empty;
+
+        [MaxLength(500, ErrorMessage = "사유는 500자 이하로 입력해 주세요.")]
+        public string? Reason { get; set; }
+    }
+}

@@ -216,7 +216,7 @@
                     <NavLink class="nav-link panel-item" href="organization/team-members" @onclick="CloseMenuOnNavigate"><span>@Localizer["TeamMemberManagement"]</span></NavLink>
                 </RoleBasedComponent>
                 <RoleBasedComponent RequiredRoles="Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="user-registration-page" @onclick="CloseMenuOnNavigate"><span>@Localizer["UserManagement"]</span></NavLink>
+                    <NavLink class="nav-link panel-item" href="organization/user-management" @onclick="CloseMenuOnNavigate"><span>@Localizer["UserManagement"]</span></NavLink>
                 </RoleBasedComponent>
                 <RoleBasedComponent RequiredRoles="Manager,Admin">
                     <NavLink class="nav-link panel-item" href="organization/stats" @onclick="CloseMenuOnNavigate"><span>@Localizer["OrganizationStats"]</span></NavLink>
