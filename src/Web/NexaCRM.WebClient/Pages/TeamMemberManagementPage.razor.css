@@ -98,6 +98,34 @@
     background-color: #f6f0ff;
 }
 
+@media (min-width: 768px) {
+    .page-header,
+    .filter-card,
+    .table-card,
+    .new-member-card {
+        padding: 2rem 2.5rem;
+        border-radius: 1.25rem;
+    }
+
+    .summary-value {
+        font-size: 2.4rem;
+    }
+
+    .filter-card .btn,
+    .action-bar .btn {
+        min-width: 7rem;
+    }
+
+    .table-card .table {
+        font-size: 1rem;
+    }
+
+    .table-card thead th,
+    .table-card tbody td {
+        padding: 1.1rem 1.25rem;
+    }
+}
+
 @media (max-width: 767.98px) {
     .page-header {
         flex-direction: column;

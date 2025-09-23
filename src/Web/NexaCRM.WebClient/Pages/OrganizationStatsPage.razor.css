@@ -1,4 +1,16 @@
-.desktop-table-view {
+.desktop-table-view .table-responsive {
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.desktop-table-view .table thead th,
+.desktop-table-view .table tbody td {
+    padding: 0.85rem 1rem;
+}
+
+.desktop-table-view .table thead th {
+    background-color: #f7f9fc;
+    font-weight: 600;
 }
 
 .mobile-card-view {
@@ -27,6 +39,22 @@
 
 .card-info-value {
     font-weight: 500;
+}
+
+@media (min-width: 768px) {
+    .desktop-table-view .table {
+        font-size: 1.05rem;
+    }
+
+    .desktop-table-view .table thead th,
+    .desktop-table-view .table tbody td {
+        padding: 1.1rem 1.25rem;
+    }
+
+    .desktop-table-view .table-responsive {
+        border-radius: 1rem;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+    }
 }
 
 @media (max-width: 767.98px) {
