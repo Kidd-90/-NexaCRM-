@@ -9,6 +9,8 @@
 @attribute [Authorize(Roles = "Sales,Manager")]
 @implements IDisposable
 
+<a href="#mainDashboardContent" class="dashboard-skip-link">@Localizer["SkipToMainContent"]</a>
+
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;' data-page="main-dashboard">
     <!-- Mobile Header Bar -->
     <div class="mobile-header mobile-header--active">
@@ -60,7 +62,7 @@
     </div>
 
     <!-- Mobile Quick Actions Bar -->
-    <div class="mobile-quick-actions">
+    <div class="mobile-quick-actions" role="navigation" aria-label="@Localizer["QuickActionsLabel"]">
         <AuthorizeView>
             <Authorized>
                 @{
@@ -154,101 +156,89 @@
     </div>
 
     <div class="layout-container flex h-full grow flex-col">
-    <div class="gap-1 px-6 flex flex-1 justify-center py-5 dashboard-container">
-        <div class="layout-content-container flex flex-col w-80 dashboard-sidebar">
-        <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
-            <div class="flex flex-col gap-4">
-            <div class="flex flex-col">
-                <h1 class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CRM"]</h1>
+        <div class="dashboard-container">
+        <aside class="dashboard-sidebar" aria-labelledby="dashboardNavigationTitle">
+            <nav class="dashboard-sidebar__panel" aria-label="@Localizer["PrimaryNavigation"]">
+            <div class="dashboard-sidebar__section">
+                <div class="dashboard-sidebar__brand">
+                <h1 id="dashboardNavigationTitle" class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CRM"]</h1>
                 <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["AcmeCo"]</p>
-            </div>
-            <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
-                <div class="text-[#0e131b]" data-icon="House" data-size="24px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                        d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"
-                    ></path>
-                    </svg>
                 </div>
-                <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Dashboard"]</p>
+                <div class="dashboard-sidebar__links" role="list">
+                <div class="dashboard-sidebar__home" role="listitem">
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
+                    <div class="text-[#0e131b]" data-icon="House" data-size="24px" data-weight="fill">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Dashboard"]</p>
+                    </div>
                 </div>
                 <AuthorizeView>
                     <Authorized>
-                        @{
-                            var salesLink = "/sales-pipeline-page";
-                            if (context.User.IsInRole("Manager"))
-                            {
-                                salesLink = "/sales-manager-dashboard";
-                            }
+                    @{
+                        var salesLink = "/sales-pipeline-page";
+                        if (context.User.IsInRole("Manager"))
+                        {
+                            salesLink = "/sales-manager-dashboard";
                         }
-                        <a href="@salesLink" class="flex items-center gap-3 px-3 py-2 nav-link">
-                            <div class="text-[#0e131b] nav-link-icon" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
-                                <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                <path
-                                    d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"
-                                ></path>
-                                </svg>
-                            </div>
-                            <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Sales"]</p>
-                        </a>
-                        <a href="/contacts" class="flex items-center gap-3 px-3 py-2 nav-link">
-                            <div class="text-[#0e131b] nav-link-icon" data-icon="Users" data-size="24px" data-weight="regular">
-                                <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                <path
-                                    d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
-                                ></path>
-                                </svg>
-                            </div>
-                            <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Contacts"]</p>
-                        </a>
+                    }
+                    <a href="@salesLink" class="dashboard-sidebar__nav-link" role="listitem">
+                        <div class="text-[#0e131b] nav-link-icon" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
+                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"></path>
+                        </svg>
+                        </div>
+                        <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Sales"]</p>
+                    </a>
+                    <a href="/contacts" class="dashboard-sidebar__nav-link" role="listitem">
+                        <div class="text-[#0e131b] nav-link-icon" data-icon="Users" data-size="24px" data-weight="regular">
+                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
+                        </svg>
+                        </div>
+                        <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Contacts"]</p>
+                    </a>
                     </Authorized>
                 </AuthorizeView>
-                <a href="/marketing-campaign-management-interface" class="flex items-center gap-3 px-3 py-2 nav-link">
+                <a href="/marketing-campaign-management-interface" class="dashboard-sidebar__nav-link" role="listitem">
                     <div class="text-[#0e131b] nav-link-icon" data-icon="Megaphone" data-size="24px" data-weight="regular">
-                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                            d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48.07,48.07,0,0,0,240,120ZM40,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C126.65,155,82.84,164.07,40,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"
-                        ></path>
-                        </svg>
+                    <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48.07,48.07,0,0,0,240,120ZM40,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C126.65,155,82.84,164.07,40,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"></path>
+                    </svg>
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Marketing"]</p>
                 </a>
-                <a href="/customer-support-dashboard" class="flex items-center gap-3 px-3 py-2 nav-link">
+                <a href="/customer-support-dashboard" class="dashboard-sidebar__nav-link" role="listitem">
                     <div class="text-[#0e131b] nav-link-icon" data-icon="Headset" data-size="24px" data-weight="regular">
-                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                            d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88.12,88.12,0,0,1,190.54,65.93,87.39,87.39,0,0,1,215.65,120H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h24a24,24,0,0,1-24,24H136a8,8,0,0,0,0,16h56a40,40,0,0,0,40-40V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm128,56a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24v56Z"
-                        ></path>
-                        </svg>
+                    <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88.12,88.12,0,0,1,190.54,65.93,87.39,87.39,0,0,1,215.65,120H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h24a24,24,0,0,1-24,24H136a8,8,0,0,0,0,16h56a40,40,0,0,0,40-40V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm128,56a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24v56Z"></path>
+                    </svg>
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Service"]</p>
                 </a>
-                <a href="/reports-page" class="flex items-center gap-3 px-3 py-2 nav-link">
+                <a href="/reports-page" class="dashboard-sidebar__nav-link" role="listitem">
                     <div class="text-[#0e131b] nav-link-icon" data-icon="PresentationChart" data-size="24px" data-weight="regular">
-                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                            d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"
-                        ></path>
-                        </svg>
+                    <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"></path>
+                    </svg>
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Reports"]</p>
                 </a>
-                <a href="/settings-page" class="flex items-center gap-3 px-3 py-2 nav-link">
+                <a href="/settings-page" class="dashboard-sidebar__nav-link" role="listitem">
                     <div class="text-[#0e131b] nav-link-icon" data-icon="Gear" data-size="24px" data-weight="regular">
-                        <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                        <path
-                            d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
-                        ></path>
-                        </svg>
+                    <svg class="nav-link-icon-graphic" xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+                    </svg>
                     </div>
                     <p class="text-[#0e131b] text-sm font-medium leading-normal nav-link-text">@Localizer["Settings"]</p>
                 </a>
+                </div>
             </div>
-            </div>
-        </div>
-        </div>
-        <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content">
+            </nav>
+        </aside>
+        <main id="mainDashboardContent" class="dashboard-main-content" tabindex="-1">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3 dashboard-header dashboard-top-nav">
             <div class="flex items-center gap-4 text-[#0e131b]">
             <div class="size-4">
@@ -553,13 +543,10 @@
                 <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 30%;"></div></div>
                 <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["EmailCampaign"]</p>
                 <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 60%;"></div></div>
-            </div>
-            </div>
-        </div>
+        </main>
         </div>
     </div>
-    </div>
-    
+
     <!-- Mobile Quick Actions Floating Button -->
     <NexaCRM.WebClient.Components.UI.FloatingActionButton 
         ShowCallAction="true" 

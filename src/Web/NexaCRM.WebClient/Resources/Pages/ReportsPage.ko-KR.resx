@@ -72,4 +72,7 @@
   <data name="Preview" xml:space="preserve">
     <value>미리보기</value>
   </data>
+  <data name="ReportsPreviewEmpty" xml:space="preserve">
+    <value>필드를 선택하고 보고서를 생성하면 미리보기가 표시됩니다.</value>
+  </data>
 </root>

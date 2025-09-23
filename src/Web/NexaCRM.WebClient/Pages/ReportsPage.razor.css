@@ -1,32 +1,293 @@
-/* ReportsPage mobile responsive styles */
+/* Reports page responsive layout */
+.reports-layout {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+}
 
-.report-form-row {
+.reports-layout__form,
+.reports-summary {
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(208, 217, 231, 0.65);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.reports-layout__title {
+    margin: 0;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #0e131b;
+}
+
+.reports-layout__form {
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: clamp(1.25rem, 3vw, 1.75rem);
 }
 
-.report-actions {
+.reports-form {
     display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+.reports-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.reports-field__label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.reports-input {
+    width: 100%;
+    min-height: 2.75rem;
+}
+
+.reports-field__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.reports-field__controls > * {
+    flex: 1 1 10rem;
+    min-width: 0;
+}
+
+.reports-field__group {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
+    flex: 1 1 12rem;
 }
 
-.report-table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+.reports-field--filters {
+    gap: 1rem;
 }
 
-@media (max-width: 640px) {
-    .report-form-row,
-    .report-actions {
+.reports-chip-button,
+.reports-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background-color: #e7ecf3;
+    color: #0e131b;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reports-chip-button:hover,
+.reports-chip-button:focus-visible,
+.reports-action:hover,
+.reports-action:focus-visible {
+    background-color: #d7e2f0;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.reports-action {
+    flex: 0 0 auto;
+    min-width: 8.75rem;
+}
+
+.reports-action--primary {
+    background-color: #4f46e5;
+    color: #ffffff;
+}
+
+.reports-action--primary:hover,
+.reports-action--primary:focus-visible {
+    background-color: #4338ca;
+}
+
+.reports-token-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reports-token-item {
+    background-color: #e7ecf3;
+    color: #0e131b;
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.reports-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-start;
+}
+
+.reports-layout__aside {
+    display: flex;
+}
+
+.reports-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.reports-summary__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0e131b;
+    margin: 0;
+}
+
+.reports-summary__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reports-summary__link {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.65rem;
+    border: 1px solid transparent;
+    background: none;
+    color: #1f2937;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.reports-summary__link:hover,
+.reports-summary__link:focus-visible {
+    background-color: #e7ecf3;
+    color: #111827;
+    outline: none;
+}
+
+.reports-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(208, 217, 231, 0.6);
+}
+
+.reports-preview__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0e131b;
+    margin: 0;
+}
+
+.reports-preview__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reports-preview__heading {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.reports-preview__table {
+    max-height: 24rem;
+    overflow: auto;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(208, 217, 231, 0.6);
+}
+
+.reports-preview__table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.reports-preview__table th,
+.reports-preview__table td {
+    padding: 0.75rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(208, 217, 231, 0.45);
+    font-size: 0.9rem;
+}
+
+.reports-preview__placeholder {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #4b5563;
+    padding: 0.75rem 0.25rem;
+}
+
+@media (min-width: 640px) {
+    .reports-field--row,
+    .reports-field--filters {
+        flex-direction: row;
+        align-items: flex-end;
+    }
+
+    .reports-field--filters {
+        align-items: stretch;
+    }
+
+    .reports-field__controls > * {
+        flex: 1 1 14rem;
+    }
+
+    .reports-form__actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (min-width: 768px) {
+    .reports-layout {
+        grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .reports-form__actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 639px) {
+    .reports-form__actions {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .report-form-row > *,
-    .report-actions > * {
+    .reports-action {
         width: 100%;
     }
+}
 
-    .report-actions button {
-        width: 100%;
+@media (prefers-reduced-motion: reduce) {
+    .reports-chip-button,
+    .reports-action,
+    .reports-summary__link {
+        transition-duration: 0.01ms !important;
+        transition-property: none !important;
     }
 }
