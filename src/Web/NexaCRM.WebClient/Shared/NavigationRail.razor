@@ -283,6 +283,9 @@
                 <RoleBasedComponent RequiredRoles="Sales,Manager">
                     <NavLink class="nav-link panel-item" href="schedule/sms" @onclick="CloseMenuOnNavigate"><span>@Localizer["SmsSchedule"]</span></NavLink>
                 </RoleBasedComponent>
+                <RoleBasedComponent RequiredRoles="Sales,Manager">
+                    <NavLink class="nav-link panel-item" href="schedule/sent-history" @onclick="CloseMenuOnNavigate"><span>@Localizer["ScheduleSentHistory"]</span></NavLink>
+                </RoleBasedComponent>
             </nav>
         }
         else if (activeCategory == Category.System)

@@ -153,6 +153,9 @@
   <data name="SmsSchedule" xml:space="preserve">
     <value>SMS Schedule</value>
   </data>
+  <data name="ScheduleSentHistory" xml:space="preserve">
+    <value>Send History</value>
+  </data>
   <data name="SmsSettings" xml:space="preserve">
     <value>SMS Settings</value>
   </data>

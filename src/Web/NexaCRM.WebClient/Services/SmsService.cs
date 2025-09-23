@@ -38,6 +38,8 @@ public class SmsService : ISmsService
             SenderId = "NEXACRM",
             DefaultTemplate = _templates.First()
         };
+
+        SeedHistory();
     }
 
     public async Task SendBulkAsync(IEnumerable<BulkSmsRequest> batches, IProgress<int>? progress = null)
@@ -49,13 +51,22 @@ public class SmsService : ISmsService
             return;
         }
 
+        var defaultSender = _senderNumbers.FirstOrDefault() ?? _settings.SenderId;
+
         for (var i = 0; i < list.Count; i++)
         {
             await Task.Delay(10);
             var request = list[i];
             foreach (var recipient in request.Recipients)
             {
-                _history.Add(new SmsHistoryItem(recipient, request.Message, DateTime.UtcNow, "Sent"));
+                _history.Add(new SmsHistoryItem(
+                    recipient,
+                    request.Message,
+                    DateTime.UtcNow,
+                    "Sent",
+                    defaultSender,
+                    string.Empty,
+                    Array.Empty<SmsAttachment>()));
             }
             progress?.Report((i + 1) * 100 / list.Count);
         }
@@ -131,6 +142,63 @@ public class SmsService : ISmsService
         }
 
         return Task.CompletedTask;
+    }
+
+    private void SeedHistory()
+    {
+        if (_history.Count > 0)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+
+        _history.AddRange(new[]
+        {
+            new SmsHistoryItem(
+                "010-1234-5678",
+                "다음 주 미팅 관련 자료 전달드립니다.",
+                now.AddHours(-3),
+                "Sent",
+                "+82 10-1234-5678",
+                "홍길동",
+                new List<SmsAttachment>
+                {
+                    new("미팅자료.pdf", 248_576, "application/pdf"),
+                    new("제품소개서.pptx", 5_242_880, "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+                }),
+            new SmsHistoryItem(
+                "010-9876-5432",
+                "상담 예약이 확인되었습니다. 일정은 5월 28일 오후 2시입니다.",
+                now.AddDays(-1).AddHours(-2),
+                "Sent",
+                "+82 10-9876-5432",
+                "김민지",
+                Array.Empty<SmsAttachment>()),
+            new SmsHistoryItem(
+                "010-5555-4444",
+                "요청하신 보험 설계안을 첨부했습니다. 확인 부탁드립니다.",
+                now.AddDays(-2).AddHours(-5),
+                "Sent",
+                "+82 10-1234-5678",
+                "박서준",
+                new List<SmsAttachment>
+                {
+                    new("설계안.pdf", 1_048_576, "application/pdf"),
+                    new("상품비교.xlsx", 384_000, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                }),
+            new SmsHistoryItem(
+                "010-3333-2222",
+                "파일 용량 제한으로 전송에 실패했습니다. 다시 시도해주세요.",
+                now.AddDays(-3).AddHours(-1),
+                "Failed",
+                "+82 10-9876-5432",
+                "최은우",
+                new List<SmsAttachment>
+                {
+                    new("프로모션영상.mp4", 45_056_000, "video/mp4")
+                })
+        });
     }
 
     private SmsSettings CloneSettings() => new()

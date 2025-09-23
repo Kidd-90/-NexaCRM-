@@ -153,6 +153,9 @@
   <data name="SmsSchedule" xml:space="preserve">
     <value>문자 예약</value>
   </data>
+  <data name="ScheduleSentHistory" xml:space="preserve">
+    <value>전송 내역</value>
+  </data>
   <data name="SmsSettings" xml:space="preserve">
     <value>문자 설정</value>
   </data>

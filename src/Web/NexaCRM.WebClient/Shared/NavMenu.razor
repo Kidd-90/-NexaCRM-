@@ -301,6 +301,11 @@
                                             <i class="bi bi-envelope-plus" aria-hidden="true"></i> @Localizer["SmsSchedule"]
                                         </NavLink>
                                     </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                                        <NavLink class="nav-link submenu-link" href="schedule/sent-history" @onclick="CloseNavMenu">
+                                            <i class="bi bi-send-check" aria-hidden="true"></i> @Localizer["ScheduleSentHistory"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
                                 </div>
                             }
                         </div>
