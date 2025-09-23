@@ -309,25 +309,43 @@
         // await AnalyticsService.TrackEvent($"quick_action_{action}");
     }
 
+    private Contact? GetPrimaryContact()
+        => filteredContacts?.FirstOrDefault();
+
     private async System.Threading.Tasks.Task HandleFloatingAction(string action)
     {
+        var contact = GetPrimaryContact();
+
         switch (action)
         {
             case "call":
-                // Show a message or navigate to a specific contact
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to call from the list above");
+                if (contact is not null && !string.IsNullOrWhiteSpace(contact.PhoneNumber))
+                {
+                    var name = $"{contact.FirstName} {contact.LastName}".Trim();
+                    await JSRuntime.InvokeVoidAsync("nexaActions.launchCall", contact.PhoneNumber, name);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["ContactMissingPhone"]);
+                }
                 break;
             case "email":
-                // Show a message or navigate to a specific contact
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to email from the list above");
+                if (contact is not null && !string.IsNullOrWhiteSpace(contact.Email))
+                {
+                    var subject = Uri.EscapeDataString(Localizer["EmailSubjectDefault", contact.FirstName ?? Localizer["Contacts"]]);
+                    var body = Uri.EscapeDataString(Localizer["EmailBodyDefault"]);
+                    NavigationManager.NavigateTo($"mailto:{contact.Email}?subject={subject}&body={body}", forceLoad: true);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["ContactMissingEmail"]);
+                }
                 break;
             case "meeting":
-                // Navigate to calendar/meeting scheduling
                 NavigationManager.NavigateTo("/sales-calendar");
                 break;
             case "add":
-                // Navigate to add new contact page or show modal
-                await JSRuntime.InvokeVoidAsync("alert", "Add new contact functionality - to be implemented");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["AddContactHint"]);
                 break;
         }
     }

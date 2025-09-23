@@ -108,4 +108,79 @@
   <data name="Loading..." xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="PipelineOverview" xml:space="preserve">
+    <value>Pipeline performance overview</value>
+  </data>
+  <data name="VisualPipeline" xml:space="preserve">
+    <value>Visual pipeline</value>
+  </data>
+  <data name="VisualPipelineSubtitle" xml:space="preserve">
+    <value>Track weighted value and conversion momentum across each stage.</value>
+  </data>
+  <data name="PipelineFlowGraphic" xml:space="preserve">
+    <value>Weighted pipeline flow chart by stage</value>
+  </data>
+  <data name="TotalPipelineValue" xml:space="preserve">
+    <value>Total pipeline value</value>
+  </data>
+  <data name="AverageDealValue" xml:space="preserve">
+    <value>Average deal value</value>
+  </data>
+  <data name="DealsCount" xml:space="preserve">
+    <value>Deals: {0}</value>
+  </data>
+  <data name="ConversionRate" xml:space="preserve">
+    <value>Conversion from first stage: {0}%</value>
+  </data>
+  <data name="ConversionShort" xml:space="preserve">
+    <value>{0}% conversion</value>
+  </data>
+  <data name="PipelineStageAria" xml:space="preserve">
+    <value>{0} stage with {1} deals worth {2}, {3}% conversion from first stage</value>
+  </data>
+  <data name="AddDealMobileHint" xml:space="preserve">
+    <value>Use the Add Deal button above to capture the details.</value>
+  </data>
+  <data name="NewDealTitle" xml:space="preserve">
+    <value>Add deal</value>
+  </data>
+  <data name="NewDealSubtitle" xml:space="preserve">
+    <value>Log a new opportunity to keep your pipeline current.</value>
+  </data>
+  <data name="DealNameLabel" xml:space="preserve">
+    <value>Deal name</value>
+  </data>
+  <data name="DealStageLabel" xml:space="preserve">
+    <value>Stage</value>
+  </data>
+  <data name="DealAmountLabel" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="DealCompanyLabel" xml:space="preserve">
+    <value>Company (optional)</value>
+  </data>
+  <data name="DealContactLabel" xml:space="preserve">
+    <value>Contact (optional)</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SaveDeal" xml:space="preserve">
+    <value>Save deal</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Saving…</value>
+  </data>
+  <data name="DealNameRequired" xml:space="preserve">
+    <value>Enter a deal name to continue.</value>
+  </data>
+  <data name="DealStageRequired" xml:space="preserve">
+    <value>Select a stage for the deal.</value>
+  </data>
+  <data name="DealAmountRequired" xml:space="preserve">
+    <value>Enter an amount greater than zero.</value>
+  </data>
+  <data name="DealSaved" xml:space="preserve">
+    <value>Deal added to the pipeline.</value>
+  </data>
 </root>

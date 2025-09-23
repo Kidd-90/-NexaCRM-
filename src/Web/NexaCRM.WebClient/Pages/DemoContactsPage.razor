@@ -168,16 +168,16 @@
         switch (action)
         {
             case "call":
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to call from the list above");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Select a contact to call from the list above.");
                 break;
             case "email":
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to email from the list above");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Select a contact to email from the list above.");
                 break;
             case "meeting":
-                await JSRuntime.InvokeVoidAsync("alert", "Schedule meeting functionality - would open calendar integration");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Meeting scheduling opens the calendar integration in production.");
                 break;
             case "add":
-                await JSRuntime.InvokeVoidAsync("alert", "Add new contact functionality - would open contact form");
+                await JSRuntime.InvokeVoidAsync("nexaActions.showToast", "Use the add contact form to capture new details.");
                 break;
         }
     }

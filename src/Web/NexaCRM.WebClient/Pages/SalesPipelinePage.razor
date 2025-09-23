@@ -1,5 +1,8 @@
 @page "/sales-pipeline-page"
 @using Microsoft.Extensions.Localization
+@using System
+@using System.Globalization
+@using System.Linq
 @inject IStringLocalizer<SalesPipelinePage> Localizer
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
@@ -79,7 +82,10 @@
             <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ManageSalesProcess"]</p>
             </div>
             <button
+            id="pipeline-add-trigger"
+            type="button"
             class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
+            @onclick="HandleAddDealButtonClick"
             >
             <span class="truncate">@Localizer["AddDeal"]</span>
             </button>
@@ -168,26 +174,279 @@
             </table>
             </div>
         </div>
+        @if (stageSummaries.Length > 0)
+        {
+            <section class="pipeline-visualization" aria-label="@Localizer["PipelineOverview"]">
+                <header class="pipeline-visualization__header">
+                    <div class="pipeline-visualization__intro">
+                        <h3>@Localizer["VisualPipeline"]</h3>
+                        <p>@Localizer["VisualPipelineSubtitle"]</p>
+                    </div>
+                    <div class="pipeline-visualization__meta">
+                        <span>
+                            <strong>@Localizer["TotalPipelineValue"]</strong>
+                            <span>@totalPipelineAmount.ToString("C0", CultureInfo.CurrentCulture)</span>
+                        </span>
+                        <span>
+                            <strong>@Localizer["AverageDealValue"]</strong>
+                            <span>@averageDealAmount.ToString("C0", CultureInfo.CurrentCulture)</span>
+                        </span>
+                    </div>
+                </header>
+                <div class="pipeline-axis" aria-hidden="true">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                </div>
+                <div class="pipeline-chart pipeline-chart--enhanced" role="img" aria-label="@Localizer["PipelineFlowGraphic"]">
+                    <svg class="pipeline-chart__canvas" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="@pipelineGradientId" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.18" />
+                                <stop offset="55%" stop-color="#4f46e5" stop-opacity="0.32" />
+                                <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.48" />
+                            </linearGradient>
+                        </defs>
+                        <g class="pipeline-chart__grid">
+                            @foreach (var tick in PipelineAxisStops)
+                            {
+                                var axisX = GetPipelineAxisX(tick);
+                                <line class="pipeline-chart__grid-line"
+                                      x1="@FormatDouble(axisX)"
+                                      y1="@FormatDouble(PipelineChartVerticalPadding)"
+                                      x2="@FormatDouble(axisX)"
+                                      y2="@FormatDouble(100d - PipelineChartVerticalPadding)" />
+                            }
+                        </g>
+                        <g class="pipeline-chart__bars">
+                            @foreach (var summary in stageSummaries)
+                            {
+                                var isActiveBar = pipelineTooltip.IsVisible && string.Equals(pipelineTooltip.Stage, summary.Stage, StringComparison.OrdinalIgnoreCase);
+                                <rect class="pipeline-chart__bar@(isActiveBar ? " pipeline-chart__bar--active" : string.Empty)"
+                                      x="@FormatDouble(summary.BarStart)"
+                                      y="@FormatDouble(summary.RowTop)"
+                                      width="@FormatDouble(summary.BarExtent)"
+                                      height="@FormatDouble(summary.RowHeight)"
+                                      rx="2.4"
+                                      stroke="rgba(79, 70, 229, 0.45)"
+                                      stroke-linejoin="round"
+                                      style="@($"--bar-index:{summary.Index};")"
+                                      fill="@($"url(#{pipelineGradientId})")" />
+                            }
+                        </g>
+                        @if (stageSummaries.Length > 1)
+                        {
+                            var flowPoints = GetPipelineFlowLinePoints();
+                            if (!string.IsNullOrEmpty(flowPoints))
+                            {
+                                <polyline class="pipeline-chart__flowline" points="@flowPoints" />
+                            }
+                        }
+                        <g class="pipeline-chart__markers">
+                            @foreach (var summary in stageSummaries)
+                            {
+                                var isActiveMarker = pipelineTooltip.IsVisible && string.Equals(pipelineTooltip.Stage, summary.Stage, StringComparison.OrdinalIgnoreCase);
+                                <circle class="pipeline-chart__marker@(isActiveMarker ? " pipeline-chart__marker--active" : string.Empty)"
+                                        cx="@FormatDouble(summary.BarEnd)"
+                                        cy="@FormatDouble(summary.RowCenter)"
+                                        r="@(isActiveMarker ? 2.6 : 1.9)" />
+                            }
+                        </g>
+                        <g class="pipeline-chart__labels">
+                            @foreach (var summary in stageSummaries)
+                            {
+                                @:<text class="pipeline-chart__label"
+                                @:      x="@FormatDouble(PipelineChartLeftPadding - 2.4d)"
+                                @:      y="@FormatDouble(summary.RowCenter)"
+                                @:      dominant-baseline="middle">@summary.Stage</text>
+                                @:<text class="pipeline-chart__value"
+                                @:      x="@FormatDouble(100d - PipelineChartRightPadding)"
+                                @:      y="@FormatDouble(summary.RowCenter)"
+                                @:      text-anchor="end"
+                                @:      dominant-baseline="middle">@summary.Amount.ToString("C0", CultureInfo.CurrentCulture)</text>
+                            }
+                        </g>
+                    </svg>
+                    <div class="pipeline-chart__hitlayer" role="list">
+                        @foreach (var summary in stageSummaries)
+                        {
+                            var isActiveStage = pipelineTooltip.IsVisible && string.Equals(pipelineTooltip.Stage, summary.Stage, StringComparison.OrdinalIgnoreCase);
+                            <button type="button"
+                                    role="listitem"
+                                    class="pipeline-hit@(isActiveStage ? " pipeline-hit--active" : string.Empty)"
+                                    aria-label="@Localizer["PipelineStageAria", summary.Stage, summary.Count, summary.Amount.ToString("C0", CultureInfo.CurrentCulture), summary.ConversionRate.ToString("F0", CultureInfo.CurrentCulture)]"
+                                    style="@($"--hit-top:{summary.RowTop.ToString("F2", CultureInfo.InvariantCulture)}%; --hit-height:{summary.RowHeight.ToString("F2", CultureInfo.InvariantCulture)}%; --hit-left:{summary.BarStart.ToString("F2", CultureInfo.InvariantCulture)}%; --hit-width:{summary.BarExtent.ToString("F2", CultureInfo.InvariantCulture)}%;")"
+                                    @onfocus="() => ShowPipelineTooltip(summary)"
+                                    @onmouseenter="() => ShowPipelineTooltip(summary)"
+                                    @onmouseleave="HidePipelineTooltip"
+                                    @onblur="HidePipelineTooltip"
+                                    @onclick="() => ShowPipelineTooltip(summary)">
+                            </button>
+                        }
+                    </div>
+                    @if (!isMobileExperience && pipelineTooltip.IsVisible)
+                    {
+                        <div class="pipeline-tooltip"
+                             role="status"
+                             style="@($"--tooltip-x:{pipelineTooltip.PositionX.ToString("F2", CultureInfo.InvariantCulture)}%; --tooltip-y:{pipelineTooltip.PositionY.ToString("F2", CultureInfo.InvariantCulture)}%;")">
+                            <span class="pipeline-tooltip__stage">@pipelineTooltip.Stage</span>
+                            <span class="pipeline-tooltip__value">@pipelineTooltip.Amount.ToString("C0", CultureInfo.CurrentCulture)</span>
+                            <span class="pipeline-tooltip__meta">@Localizer["DealsCount", pipelineTooltip.Count]</span>
+                            <span class="pipeline-tooltip__meta">@Localizer["ConversionRate", pipelineTooltip.ConversionRate.ToString("F0", CultureInfo.CurrentCulture)]</span>
+                        </div>
+                    }
+                </div>
+                <div class="pipeline-chart pipeline-chart--compact" role="list">
+                    <div class="pipeline-chart__inner">
+                        @for (var i = 0; i < stageSummaries.Length; i++)
+                        {
+                            var summary = stageSummaries[i];
+                            <button type="button"
+                                    class="pipeline-bar"
+                                    role="listitem"
+                                    style="--bar-width:@summary.DisplayWidth:F2%;"
+                                    @onfocus="() => ShowPipelineTooltip(summary)"
+                                    @onmouseenter="() => ShowPipelineTooltip(summary)"
+                                    @onmouseleave="HidePipelineTooltip"
+                                    @onblur="HidePipelineTooltip">
+                                <span class="pipeline-bar__label">@summary.Stage</span>
+                                <span class="pipeline-bar__value">@summary.Amount.ToString("C0", CultureInfo.CurrentCulture)</span>
+                            </button>
+                        }
+                    </div>
+                </div>
+                <dl class="pipeline-legend">
+                    @foreach (var summary in stageSummaries)
+                    {
+                        <div class="pipeline-legend__item">
+                            <dt>@summary.Stage</dt>
+                            <dd>
+                                <span>@Localizer["DealsCount", summary.Count]</span>
+                                <span>@summary.Amount.ToString("C0", CultureInfo.CurrentCulture)</span>
+                                <span>@Localizer["ConversionShort", summary.ConversionRate.ToString("F0", CultureInfo.CurrentCulture)]</span>
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </section>
+        }
         </div>
     </div>
     </div>
-    
+
     <!-- Mobile Quick Actions Floating Button -->
-    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
-        ShowCallAction="true" 
-        ShowEmailAction="true" 
-        ShowMeetingAction="true" 
+    <NexaCRM.WebClient.Components.UI.FloatingActionButton
+        ShowCallAction="true"
+        ShowEmailAction="true"
+        ShowMeetingAction="true"
         ShowAddAction="true"
         OnActionClicked="HandleFloatingAction" />
 </div>
 
+@if (showDealComposer && !isMobileExperience)
+{
+    <div class="deal-composer-overlay" role="dialog" aria-modal="true" aria-labelledby="dealComposerTitle">
+        <div class="deal-composer__panel">
+            <header class="deal-composer__header">
+                <div>
+                    <h3 id="dealComposerTitle">@Localizer["NewDealTitle"]</h3>
+                    <p>@Localizer["NewDealSubtitle"]</p>
+                </div>
+                <button type="button" class="deal-composer__close" @onclick="CloseDealComposer" aria-label="@Localizer["Cancel"]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                    </svg>
+                </button>
+            </header>
+            <div class="deal-composer__body">
+                <label class="deal-composer__field">
+                    <span>@Localizer["DealNameLabel"]</span>
+                    <input type="text" @bind="newDeal.Name" autocomplete="off" />
+                </label>
+                <label class="deal-composer__field">
+                    <span>@Localizer["DealStageLabel"]</span>
+                    <select @bind="newDeal.Stage">
+                        @foreach (var summary in stageSummaries)
+                        {
+                            <option value="@summary.Stage">@summary.Stage</option>
+                        }
+                    </select>
+                </label>
+                <label class="deal-composer__field">
+                    <span>@Localizer["DealAmountLabel"]</span>
+                    <input type="number" min="0" step="100" @bind-value="newDeal.Amount" @bind-value:event="oninput" />
+                </label>
+                <label class="deal-composer__field">
+                    <span>@Localizer["DealCompanyLabel"]</span>
+                    <input type="text" @bind="newDeal.Company" autocomplete="organization" />
+                </label>
+                <label class="deal-composer__field">
+                    <span>@Localizer["DealContactLabel"]</span>
+                    <input type="text" @bind="newDeal.Contact" autocomplete="name" />
+                </label>
+                @if (!string.IsNullOrEmpty(dealComposerError))
+                {
+                    <p class="deal-composer__error">@dealComposerError</p>
+                }
+            </div>
+            <footer class="deal-composer__footer">
+                <button type="button" class="deal-composer__button deal-composer__button--ghost" @onclick="CloseDealComposer">@Localizer["Cancel"]</button>
+                <button type="button" class="deal-composer__button deal-composer__button--primary" @onclick="SaveNewDealAsync" disabled="@isSavingDeal">
+                    @(isSavingDeal ? Localizer["Saving"] : Localizer["SaveDeal"])
+                </button>
+            </footer>
+        </div>
+    </div>
+}
+
 @code {
+    private const double PipelineChartLeftPadding = 8d;
+    private const double PipelineChartRightPadding = 4d;
+    private const double PipelineChartVerticalPadding = 6d;
+    private const double PipelineChartMinExtent = 1.8d;
+    private static readonly double[] PipelineAxisStops = new[] { 0d, 0.25d, 0.5d, 0.75d, 1d };
+    private readonly string pipelineGradientId = $"pipeline-gradient-{System.Guid.NewGuid():N}";
+
     private IGrouping<string, Deal>[]? dealsByStage;
+    private List<Deal> allDeals = new();
+    private StageSummary[] stageSummaries = Array.Empty<StageSummary>();
+    private PipelineTooltipState pipelineTooltip = PipelineTooltipState.Hidden();
+    private decimal totalPipelineAmount;
+    private decimal averageDealAmount;
+    private bool isMobileExperience;
+    private bool deviceInfoChecked;
+    private bool showDealComposer;
+    private DealDraft newDeal = new();
+    private string? dealComposerError;
+    private bool isSavingDeal;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
         var deals = await DealService.GetDealsAsync();
-        dealsByStage = deals.Where(d => !string.IsNullOrEmpty(d.Stage)).GroupBy(d => d.Stage!).ToArray();
+        allDeals = deals.ToList();
+        dealsByStage = allDeals.Where(d => !string.IsNullOrEmpty(d.Stage)).GroupBy(d => d.Stage!).ToArray();
+        BuildStageSummaries();
+    }
+
+    protected override async System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (deviceInfoChecked)
+        {
+            return;
+        }
+
+        try
+        {
+            isMobileExperience = await JSRuntime.InvokeAsync<bool>("deviceInfo.isMobile");
+        }
+        catch
+        {
+            isMobileExperience = false;
+        }
+
+        deviceInfoChecked = true;
     }
 
     private async System.Threading.Tasks.Task HandleFloatingAction(string action)
@@ -195,21 +454,266 @@
         switch (action)
         {
             case "call":
-                // Navigate to contacts page to select a contact to call
-                NavigationManager.NavigateTo("/contacts");
+                NavigationManager.NavigateTo("/contacts?context=call");
                 break;
             case "email":
-                // Navigate to contacts page to select a contact to email
-                NavigationManager.NavigateTo("/contacts");
+                NavigationManager.NavigateTo("/contacts?context=email");
                 break;
             case "meeting":
-                // Navigate to calendar/meeting scheduling
                 NavigationManager.NavigateTo("/sales-calendar");
                 break;
             case "add":
-                // Show add deal functionality
-                await JSRuntime.InvokeVoidAsync("alert", "Add new deal functionality - to be implemented");
+                if (isMobileExperience)
+                {
+                    await JSRuntime.InvokeVoidAsync("nexaActions.focusSelector", "#pipeline-add-trigger");
+                    await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["AddDealMobileHint"]);
+                }
+                else
+                {
+                    OpenDealComposer();
+                }
                 break;
         }
+    }
+
+    private void BuildStageSummaries()
+    {
+        if (dealsByStage is null || dealsByStage.Length == 0)
+        {
+            stageSummaries = Array.Empty<StageSummary>();
+            totalPipelineAmount = 0;
+            averageDealAmount = 0;
+            return;
+        }
+
+        var summaries = dealsByStage
+            .Select((group, index) => new StageSummary
+            {
+                Stage = group.Key,
+                Amount = group.Sum(d => d.Amount),
+                Count = group.Count(),
+                Index = index
+            })
+            .ToArray();
+
+        if (summaries.Length == 0)
+        {
+            stageSummaries = summaries;
+            totalPipelineAmount = 0;
+            averageDealAmount = 0;
+            return;
+        }
+
+        totalPipelineAmount = summaries.Sum(summary => summary.Amount);
+        var totalDeals = summaries.Sum(summary => summary.Count);
+        averageDealAmount = totalDeals > 0 ? totalPipelineAmount / totalDeals : 0m;
+
+        var maxAmount = summaries.Max(summary => summary.Amount);
+        var firstStageDeals = summaries[0].Count;
+        var availableWidth = 100d - PipelineChartLeftPadding - PipelineChartRightPadding;
+        var verticalSpace = 100d - PipelineChartVerticalPadding * 2d;
+        var rowHeight = summaries.Length > 0 ? verticalSpace / summaries.Length : 0d;
+
+        for (var i = 0; i < summaries.Length; i++)
+        {
+            var summary = summaries[i];
+            var normalized = maxAmount > 0 ? (double)(summary.Amount / maxAmount) : 0d;
+            summary.RelativeAmount = normalized;
+
+            var baseWidth = normalized * 100d;
+            summary.DisplayWidth = Math.Clamp(baseWidth, 14d, 100d);
+
+            var extent = normalized * availableWidth;
+            if (normalized > 0d)
+            {
+                extent = Math.Max(extent, PipelineChartMinExtent);
+            }
+            extent = Math.Clamp(extent, 0d, availableWidth);
+
+            summary.BarStart = PipelineChartLeftPadding;
+            summary.BarExtent = extent;
+            summary.BarEnd = summary.BarStart + extent;
+
+            var laneHeight = rowHeight;
+            var barHeight = laneHeight > 0d ? Math.Clamp(laneHeight * 0.62d, Math.Min(laneHeight, 8d), laneHeight) : 0d;
+            var rowTop = PipelineChartVerticalPadding + laneHeight * i + Math.Max((laneHeight - barHeight) / 2d, 0d);
+
+            summary.RowTop = rowTop;
+            summary.RowHeight = barHeight;
+            summary.RowCenter = rowTop + barHeight / 2d;
+            summary.ConversionRate = firstStageDeals > 0 ? (double)summary.Count / firstStageDeals * 100d : 0d;
+        }
+
+        stageSummaries = summaries;
+    }
+
+    private void ShowPipelineTooltip(StageSummary summary)
+    {
+        if (isMobileExperience)
+        {
+            return;
+        }
+
+        pipelineTooltip = new PipelineTooltipState
+        {
+            IsVisible = true,
+            Stage = summary.Stage,
+            Amount = summary.Amount,
+            Count = summary.Count,
+            ConversionRate = summary.ConversionRate,
+            PositionX = Math.Clamp(summary.BarEnd, PipelineChartLeftPadding + 4d, 100d - PipelineChartRightPadding),
+            PositionY = summary.RowCenter
+        };
+    }
+
+    private void HidePipelineTooltip()
+    {
+        pipelineTooltip = PipelineTooltipState.Hidden();
+    }
+
+    private void OpenDealComposer()
+    {
+        dealComposerError = null;
+        var defaultStage = stageSummaries.FirstOrDefault()?.Stage ?? string.Empty;
+        var suggestedAmount = averageDealAmount > 0 ? decimal.Round(averageDealAmount, 0) : 5000m;
+        newDeal = new DealDraft
+        {
+            Stage = defaultStage,
+            Amount = Math.Max(1000m, suggestedAmount)
+        };
+        showDealComposer = true;
+    }
+
+    private void CloseDealComposer()
+    {
+        showDealComposer = false;
+        newDeal = new DealDraft { Stage = newDeal.Stage };
+        dealComposerError = null;
+        isSavingDeal = false;
+    }
+
+    private async System.Threading.Tasks.Task HandleAddDealButtonClick()
+    {
+        if (isMobileExperience)
+        {
+            await JSRuntime.InvokeVoidAsync("nexaActions.focusSelector", "#pipeline-add-trigger");
+            await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["AddDealMobileHint"]);
+        }
+        else
+        {
+            OpenDealComposer();
+        }
+    }
+
+    private async System.Threading.Tasks.Task SaveNewDealAsync()
+    {
+        if (isSavingDeal)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(newDeal.Name))
+        {
+            dealComposerError = Localizer["DealNameRequired"];
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(newDeal.Stage))
+        {
+            dealComposerError = Localizer["DealStageRequired"];
+            return;
+        }
+
+        if (newDeal.Amount <= 0)
+        {
+            dealComposerError = Localizer["DealAmountRequired"];
+            return;
+        }
+
+        isSavingDeal = true;
+
+        try
+        {
+            var nextId = allDeals.Count == 0 ? 1 : allDeals.Max(deal => deal.Id) + 1;
+            var deal = new Deal
+            {
+                Id = nextId,
+                Name = newDeal.Name?.Trim(),
+                Stage = newDeal.Stage,
+                Amount = newDeal.Amount,
+                Company = newDeal.Company,
+                ContactPerson = newDeal.Contact
+            };
+
+            allDeals.Add(deal);
+            dealsByStage = allDeals.Where(d => !string.IsNullOrEmpty(d.Stage)).GroupBy(d => d.Stage!).ToArray();
+            BuildStageSummaries();
+
+            await JSRuntime.InvokeVoidAsync("nexaActions.showToast", Localizer["DealSaved"]);
+            CloseDealComposer();
+            StateHasChanged();
+        }
+        finally
+        {
+            isSavingDeal = false;
+        }
+    }
+
+    private double GetPipelineAxisX(double normalized)
+    {
+        var clamped = Math.Clamp(normalized, 0d, 1d);
+        return PipelineChartLeftPadding + clamped * (100d - PipelineChartLeftPadding - PipelineChartRightPadding);
+    }
+
+    private string GetPipelineFlowLinePoints()
+    {
+        if (stageSummaries.Length <= 1)
+        {
+            return string.Empty;
+        }
+
+        return string.Join(' ', stageSummaries.Select(summary =>
+            $"{FormatDouble(Math.Clamp(summary.BarEnd, PipelineChartLeftPadding, 100d - PipelineChartRightPadding))} {FormatDouble(Math.Clamp(summary.RowCenter, PipelineChartVerticalPadding, 100d - PipelineChartVerticalPadding))}"));
+    }
+
+    private static string FormatDouble(double value) => value.ToString("F2", CultureInfo.InvariantCulture);
+
+    private sealed class StageSummary
+    {
+        public string Stage { get; init; } = string.Empty;
+        public decimal Amount { get; init; }
+        public int Count { get; init; }
+        public int Index { get; init; }
+        public double DisplayWidth { get; set; }
+        public double ConversionRate { get; set; }
+        public double RelativeAmount { get; set; }
+        public double BarStart { get; set; }
+        public double BarEnd { get; set; }
+        public double BarExtent { get; set; }
+        public double RowTop { get; set; }
+        public double RowHeight { get; set; }
+        public double RowCenter { get; set; }
+    }
+
+    private sealed class PipelineTooltipState
+    {
+        public bool IsVisible { get; set; }
+        public string Stage { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public int Count { get; set; }
+        public double ConversionRate { get; set; }
+        public double PositionX { get; set; }
+        public double PositionY { get; set; }
+
+        public static PipelineTooltipState Hidden() => new PipelineTooltipState { IsVisible = false };
+    }
+
+    private sealed class DealDraft
+    {
+        public string? Name { get; set; }
+        public string? Stage { get; set; }
+        public decimal Amount { get; set; } = 1000m;
+        public string? Company { get; set; }
+        public string? Contact { get; set; }
     }
 }
