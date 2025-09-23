@@ -1,0 +1,420 @@
+@page "/schedule/sent-history"
+@using System.Globalization
+@using System.Linq
+@using NexaCRM.WebClient.Models.Sms
+@using NexaCRM.WebClient.Services.Interfaces
+@inject ISmsService SmsService
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SmsSentHistoryPage> Localizer
+
+<ResponsivePage>
+    <section class="sms-sent-history">
+        <header class="sent-history-header">
+            <div class="header-titles">
+                <h3>@Localizer["Title"]</h3>
+                <p>@Localizer["Subtitle"]</p>
+            </div>
+            <button type="button"
+                    class="btn btn-outline-secondary refresh-button"
+                    disabled="@_isLoading"
+                    @onclick="RefreshAsync">
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                <span class="ms-2">@Localizer["Refresh"]</span>
+            </button>
+        </header>
+
+        @{
+            var filteredItems = GetFilteredHistory().ToList();
+            var pagedItems = filteredItems
+                .Skip((_currentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            var totalPages = Math.Max(1, (int)Math.Ceiling(filteredItems.Count / (double)PageSize));
+            var startIndex = (_currentPage - 1) * PageSize;
+            var filteredWithAttachments = filteredItems.Count(item => item.HasAttachments);
+            var filteredAttachmentFiles = filteredItems.Sum(item => item.AttachmentCount);
+            var attachmentRatio = filteredItems.Count > 0
+                ? Math.Round(filteredWithAttachments * 100.0 / filteredItems.Count)
+                : 0;
+        }
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">@Localizer["SummaryTotalMessages"]</div>
+                <div class="summary-value">@filteredItems.Count</div>
+                <div class="summary-meta">@RangeDescriptionText</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">@Localizer["SummaryWithAttachments"]</div>
+                <div class="summary-value">@filteredWithAttachments</div>
+                <div class="summary-meta">@Localizer["SummaryAttachmentRatio", attachmentRatio]</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">@Localizer["SummaryAttachmentFiles"]</div>
+                <div class="summary-value">@filteredAttachmentFiles</div>
+                <div class="summary-meta">@Localizer["SummaryAttachmentFilesMeta"]</div>
+            </div>
+        </div>
+
+        <div class="card filter-card">
+            <div class="card-body">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label class="form-label">@Localizer["FilterDateRange"]</label>
+                        <div class="filter-dates">
+                            <input type="date" class="form-control" @bind="_startDate" @bind:after="OnFilterChanged" />
+                            <span class="filter-separator">~</span>
+                            <input type="date" class="form-control" @bind="_endDate" @bind:after="OnFilterChanged" />
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">@Localizer["FilterQuickSelect"]</label>
+                        <div class="quick-buttons">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="() => ApplyQuickRange(0)">@Localizer["QuickRangeToday"]</button>
+                            <button type="button" class="btn btn-outline-secondary" @onclick="() => ApplyQuickRange(7)">@Localizer["QuickRange7Days"]</button>
+                            <button type="button" class="btn btn-outline-secondary" @onclick="() => ApplyQuickRange(30)">@Localizer["QuickRange30Days"]</button>
+                            <button type="button" class="btn btn-link ms-2 p-0" @onclick="ClearDateRange">@Localizer["QuickRangeClear"]</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">@Localizer["FilterSearch"]</label>
+                        <input class="form-control"
+                               placeholder="@Localizer["FilterSearchPlaceholder"]"
+                               @bind="_searchTerm"
+                               @bind:event="oninput"
+                               @bind:after="OnFilterChanged" />
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">@Localizer["FilterStatus"]</label>
+                        <select class="form-select" @bind="_status" @bind:after="OnFilterChanged">
+                            <option value="">@Localizer["FilterStatusAll"]</option>
+                            <option value="Sent">@Localizer["FilterStatusSent"]</option>
+                            <option value="Failed">@Localizer["FilterStatusFailed"]</option>
+                            <option value="Scheduled">@Localizer["FilterStatusScheduled"]</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">@Localizer["FilterAttachment"]</label>
+                        <select class="form-select" @bind="_attachmentFilter" @bind:after="OnFilterChanged">
+                            <option value="all">@Localizer["FilterAttachmentAll"]</option>
+                            <option value="with">@Localizer["FilterAttachmentWith"]</option>
+                            <option value="without">@Localizer["FilterAttachmentWithout"]</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="loading-state">
+                <div class="spinner-border text-secondary" role="status" aria-hidden="true"></div>
+                <span class="ms-2">@Localizer["Loading"]</span>
+            </div>
+        }
+        else if (!filteredItems.Any())
+        {
+            <div class="empty-state" role="status">
+                <i class="bi bi-inbox" aria-hidden="true"></i>
+                <p class="mb-0">@Localizer["NoData"]</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive sent-history-table-wrapper">
+                <table class="table table-hover align-middle sent-history-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">@Localizer["TableNo"]</th>
+                            <th scope="col">@Localizer["TableRecipient"]</th>
+                            <th scope="col">@Localizer["TableSender"]</th>
+                            <th scope="col">@Localizer["TableRecipientName"]</th>
+                            <th scope="col" class="message-column">@Localizer["TableMessage"]</th>
+                            <th scope="col">@Localizer["TableAttachments"]</th>
+                            <th scope="col">@Localizer["TableStatus"]</th>
+                            <th scope="col">@Localizer["TableSentAt"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in pagedItems.Select((item, index) => new { item, index }))
+                        {
+                            <tr>
+                                <td>@(startIndex + entry.index + 1)</td>
+                                <td>
+                                    <div class="text-truncate" title="@entry.item.Recipient">@entry.item.Recipient</div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" title="@entry.item.SenderNumber">@entry.item.SenderNumber</div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" title="@FormatName(entry.item.RecipientName)">@FormatName(entry.item.RecipientName)</div>
+                                </td>
+                                <td class="message-column">
+                                    <div class="message-preview" title="@entry.item.Message">@entry.item.Message</div>
+                                </td>
+                                <td>
+                                    @if (entry.item.HasAttachments)
+                                    {
+                                        <details class="attachment-details">
+                                            <summary>
+                                                <span class="badge bg-primary rounded-pill">@entry.item.AttachmentCount</span>
+                                                <span class="ms-2">@Localizer["AttachmentSummary", entry.item.AttachmentCount]</span>
+                                            </summary>
+                                            <ul class="attachment-list">
+                                                @foreach (var attachment in entry.item.Attachments ?? Enumerable.Empty<SmsAttachment>())
+                                                {
+                                                    <li>
+                                                        <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                                        <span class="attachment-name">@attachment.FileName</span>
+                                                        <span class="attachment-size">@FormatFileSize(attachment.FileSizeBytes)</span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </details>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">@Localizer["AttachmentNone"]</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="status-pill @GetStatusClass(entry.item.Status)">@FormatStatus(entry.item.Status)</span>
+                                </td>
+                                <td>
+                                    <time datetime="@entry.item.SentAt.ToString("O")">@FormatSentAt(entry.item.SentAt)</time>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sent-history-pagination">
+                <button type="button" class="btn btn-outline-primary" @onclick="PrevPage" disabled="@(_currentPage == 1)">
+                    @Localizer["PaginationPrevious"]
+                </button>
+                <span class="pagination-info">@Localizer["PaginationInfo", _currentPage, totalPages, filteredItems.Count]</span>
+                <button type="button" class="btn btn-outline-primary" @onclick="NextPage" disabled="@(_currentPage >= totalPages)">
+                    @Localizer["PaginationNext"]
+                </button>
+            </div>
+        }
+    </section>
+</ResponsivePage>
+
+@code {
+    private List<SmsHistoryItem> _history = new();
+    private bool _isLoading = true;
+    private DateTime? _startDate;
+    private DateTime? _endDate;
+    private string _searchTerm = string.Empty;
+    private string _status = string.Empty;
+    private string _attachmentFilter = "all";
+    private int _currentPage = 1;
+    private const int PageSize = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHistoryAsync();
+        if (!_startDate.HasValue && !_endDate.HasValue)
+        {
+            _endDate = DateTime.Today;
+            _startDate = DateTime.Today.AddDays(-30);
+        }
+    }
+
+    private async Task LoadHistoryAsync()
+    {
+        _isLoading = true;
+        var items = await SmsService.GetHistoryAsync();
+        _history = items.OrderByDescending(item => item.SentAt).ToList();
+        _isLoading = false;
+        ResetPagination();
+    }
+
+    private async Task RefreshAsync()
+    {
+        await LoadHistoryAsync();
+    }
+
+    private IEnumerable<SmsHistoryItem> GetFilteredHistory()
+    {
+        return _history.Where(item =>
+        {
+            var localDate = item.SentAt.ToLocalTime().Date;
+            if (_startDate.HasValue && localDate < _startDate.Value.Date)
+            {
+                return false;
+            }
+
+            if (_endDate.HasValue && localDate > _endDate.Value.Date)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_status) && !string.Equals(item.Status, _status, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (!AttachmentMatches(item))
+            {
+                return false;
+            }
+
+            if (!MatchesSearch(item, _searchTerm))
+            {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(GetFilteredHistory().Count() / (double)PageSize));
+
+    private void PrevPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+        }
+    }
+
+    private void NextPage()
+    {
+        var totalPages = TotalPages;
+        if (_currentPage < totalPages)
+        {
+            _currentPage++;
+        }
+    }
+
+    private void ApplyQuickRange(int days)
+    {
+        if (days <= 0)
+        {
+            _startDate = DateTime.Today;
+            _endDate = DateTime.Today;
+        }
+        else
+        {
+            _endDate = DateTime.Today;
+            _startDate = DateTime.Today.AddDays(-(days - 1));
+        }
+
+        ResetPagination();
+    }
+
+    private void ClearDateRange()
+    {
+        _startDate = null;
+        _endDate = null;
+        ResetPagination();
+    }
+
+    private void OnFilterChanged()
+    {
+        NormalizeRange();
+        ResetPagination();
+    }
+
+    private void ResetPagination()
+    {
+        _currentPage = 1;
+    }
+
+    private void NormalizeRange()
+    {
+        if (_startDate.HasValue && _endDate.HasValue && _startDate > _endDate)
+        {
+            (_startDate, _endDate) = (_endDate, _startDate);
+        }
+    }
+
+    private bool AttachmentMatches(SmsHistoryItem item) => _attachmentFilter switch
+    {
+        "with" => item.HasAttachments,
+        "without" => !item.HasAttachments,
+        _ => true
+    };
+
+    private static bool MatchesSearch(SmsHistoryItem item, string term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return true;
+        }
+
+        var comparison = StringComparison.OrdinalIgnoreCase;
+        return item.Recipient.Contains(term, comparison)
+            || item.Message.Contains(term, comparison)
+            || item.SenderNumber.Contains(term, comparison)
+            || (!string.IsNullOrWhiteSpace(item.RecipientName) && item.RecipientName.Contains(term, comparison));
+    }
+
+    private string FormatStatus(string status) => status switch
+    {
+        "Sent" => Localizer["StatusSent"],
+        "Failed" => Localizer["StatusFailed"],
+        "Scheduled" => Localizer["StatusScheduled"],
+        _ => status
+    };
+
+    private static string GetStatusClass(string status) => status switch
+    {
+        "Failed" => "status-failed",
+        "Scheduled" => "status-scheduled",
+        _ => "status-sent"
+    };
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes <= 0)
+        {
+            return "0 B";
+        }
+
+        string[] units = { "B", "KB", "MB", "GB", "TB" };
+        double size = bytes;
+        var unitIndex = 0;
+
+        while (size >= 1024 && unitIndex < units.Length - 1)
+        {
+            size /= 1024;
+            unitIndex++;
+        }
+
+        return string.Format(CultureInfo.CurrentCulture, "{0:0.##} {1}", size, units[unitIndex]);
+    }
+
+    private string FormatName(string name) => string.IsNullOrWhiteSpace(name)
+        ? Localizer["UnknownRecipientName"]
+        : name;
+
+    private string FormatSentAt(DateTime dateTime) => dateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.CurrentCulture);
+
+    private string RangeDescriptionText
+    {
+        get
+        {
+            if (_startDate.HasValue && _endDate.HasValue)
+            {
+                return Localizer["RangeDescriptionBetween", FormatDate(_startDate.Value), FormatDate(_endDate.Value)];
+            }
+
+            if (_startDate.HasValue)
+            {
+                return Localizer["RangeDescriptionFrom", FormatDate(_startDate.Value)];
+            }
+
+            if (_endDate.HasValue)
+            {
+                return Localizer["RangeDescriptionUntil", FormatDate(_endDate.Value)];
+            }
+
+            return Localizer["RangeDescriptionAll"];
+        }
+    }
+
+    private static string FormatDate(DateTime dateTime) => dateTime.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
+}
