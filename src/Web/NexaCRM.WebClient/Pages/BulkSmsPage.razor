@@ -609,9 +609,9 @@
 
         var trimmed = value.Trim();
 
-        if (trimmed.StartsWith('+', StringComparison.Ordinal))
+        if (trimmed.StartsWith("+", StringComparison.Ordinal))
         {
-            return "+" + DigitOnlyPattern.Replace(trimmed[1..], string.Empty);
+            return "+" + DigitOnlyPattern.Replace(trimmed.Substring(1), string.Empty);
         }
 
         return DigitOnlyPattern.Replace(trimmed, string.Empty);
@@ -624,7 +624,7 @@
             return false;
         }
 
-        if (phone.StartsWith('+', StringComparison.Ordinal))
+        if (phone.StartsWith("+", StringComparison.Ordinal))
         {
             return phone.Length is >= 8 and <= 15;
         }
@@ -639,7 +639,7 @@
             return string.Empty;
         }
 
-        if (phone.StartsWith('+', StringComparison.Ordinal))
+        if (phone.StartsWith("+", StringComparison.Ordinal))
         {
             return phone;
         }
