@@ -8,7 +8,7 @@
     --input-border: rgba(148, 163, 184, 0.4);
     --input-bg: rgba(248, 250, 255, 0.85);
     --divider-color: rgba(148, 163, 184, 0.45);
-    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Pretendard', 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     background: linear-gradient(180deg, #ffffff 0%, #f1efff 100%);
     color: var(--text-color);
     min-height: 100vh;
@@ -97,6 +97,12 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+/* Ensure left rounded corners show for the username field inside input-group */
+#login-username.login-input {
+    border-top-left-radius: 18px !important;
+    border-bottom-left-radius: 18px !important;
+}
+
 .login-input::placeholder {
     color: rgba(107, 114, 128, 0.78);
 }
@@ -123,7 +129,6 @@
     padding: 4px 0;
 }
 
-.password-toggle:hover,
 .password-toggle:focus-visible {
     color: var(--brand-gradient-end);
     outline: none;
@@ -274,6 +279,17 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.social-login-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+}
+
+.social-login-btn:disabled .social-text {
+    color: var(--muted-color);
+}
+
 .social-login-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 18px 32px rgba(124, 58, 237, 0.22);
@@ -299,6 +315,13 @@
 
 .social-text {
     line-height: 1.2;
+}
+
+.social-login-notice {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted-color);
 }
 
 .naver-btn {

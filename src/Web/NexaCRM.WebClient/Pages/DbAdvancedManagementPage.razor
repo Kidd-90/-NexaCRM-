@@ -1,6 +1,1055 @@
 @page "/db/advanced"
+@using System
+@using Microsoft.AspNetCore.Components
+@using NexaCRM.WebClient.Models.Db
+@using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.Extensions.Localization
+@inject IDbDataService DbDataService
+@inject IStringLocalizer<DbStatus> StatusLocalizer
+@inject NexaCRM.WebClient.Services.Interfaces.INotificationFeedService NotificationFeed
+@inject NexaCRM.WebClient.Services.Interfaces.IDuplicateService DuplicateService
+@inject NexaCRM.WebClient.Services.Interfaces.IDedupeConfigService DedupeConfig
+@inject IJSRuntime JS
 
-<ResponsivePage>
-    <h3>Database Advanced Management</h3>
-    <p>Delete records, configure Excel exports and run advanced searches.</p>
-</ResponsivePage>
+<div class="advanced-db">
+    <header class="advanced-db__header">
+        <h1>고급 DB 관리</h1>
+        <div class="toolbar">
+            <button class="btn btn-light preview-action" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
+            <button class="btn btn-light" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
+            <button class="btn btn-light" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
+            <button class="btn btn-light preview-action" @onclick="ExportCsv" title="곧 제공 예정 기능입니다."><i class="bi bi-download"></i> 내보내기</button>
+            <label class="btn btn-success preview-action" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
+            <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
+        </div>
+    </header>
+
+    <div class="preview-banner" role="status" aria-live="polite">
+        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+        <span>저장/내보내기 기능은 현재 데모 모드로 안내되며 곧 정식 제공될 예정입니다.</span>
+    </div>
+
+    <nav class="tabs" role="tablist">
+    <button class="tab @(activeTab==Tab.Explore?"active":null)" @onclick="(()=>SetTab(Tab.Explore))">목록</button>
+    <button class="tab @(activeTab==Tab.Segments?"active":null)" @onclick="(()=>SetTab(Tab.Segments))">세그먼트</button>
+    <button class="tab @(activeTab==Tab.Imports?"active":null)" @onclick="(()=>SetTab(Tab.Imports))">가져오기</button>
+    <button class="tab @(activeTab==Tab.Dedupe?"active":null)" @onclick="(()=>SetTab(Tab.Dedupe))">중복 관리</button>
+    <button class="tab @(activeTab==Tab.Grade?"active":null)" @onclick="(()=>SetTab(Tab.Grade))">등급 관리</button>
+    <button class="tab @(activeTab==Tab.Consult?"active":null)" @onclick="(()=>SetTab(Tab.Consult))">상담 구분값</button>
+    <button class="tab @(activeTab==Tab.Distribution?"active":null)" @onclick="(()=>SetTab(Tab.Distribution))">분배설정</button>
+    <button class="tab @(activeTab==Tab.Settings?"active":null)" @onclick="(()=>SetTab(Tab.Settings))">설정</button>
+    </nav>
+
+    @if (activeTab == Tab.Explore)
+    {
+        <section class="explore">
+            <aside class="filters">
+                <div class="filter-group">
+                    <label>상태</label>
+                    <select class="form-select" @bind="filterStatus" @bind:after="ApplyFiltersAfter">
+                        <option value="">전체</option>
+                        @foreach (var s in Enum.GetValues<DbStatus>())
+                        {
+                            <option value="@s">@StatusLocalizer[s.ToString()]</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>검색</label>
+                    <input class="form-control" placeholder="이름/연락처" @bind="search" @oninput="ApplyFilters" />
+                </div>
+            </aside>
+
+            <div class="grid">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>고객명</th>
+                                <th>연락처</th>
+                                <th>그룹</th>
+                                <th>담당자</th>
+                                <th>분배일</th>
+                                <th>상태</th>
+                                <th>최종 컨택일</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (filtered?.Any() == true)
+                            {
+                                @foreach (var c in filtered)
+                                {
+                                    <tr>
+                                        <td>@c.CustomerName</td>
+                                        <td>@c.ContactNumber</td>
+                                        <td>@c.Group</td>
+                                        <td>@c.AssignedTo</td>
+                                        <td>@c.AssignedDate.ToShortDateString()</td>
+                                        <td class="@GetStatusClass(c.Status)">@StatusLocalizer[c.Status.ToString()]</td>
+                                        <td>@c.LastContactDate.ToShortDateString()</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="7" class="text-center text-muted">데이터가 없습니다.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Segments)
+    {
+        <section class="placeholder">
+            <h5>세그먼트</h5>
+            <p>조건식 기반 동적 세그먼트와 정적 세그먼트를 생성/관리합니다.</p>
+        </section>
+    }
+    else if (activeTab == Tab.Imports)
+    {
+        <section class="placeholder">
+            <h5>가져오기 기록</h5>
+            <p>업로드한 파일, 매핑, 유효성 검사 결과 및 오류 리포트를 확인합니다.</p>
+        </section>
+    }
+    else if (activeTab == Tab.Dedupe)
+    {
+        <section class="dedupe">
+            <div class="dedupe-controls">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="dedupeEnabled" @bind="dedupeEnabled" @bind:after="RecomputeDuplicatesAfter">
+                    <label class="form-check-label" for="dedupeEnabled">중복 감지 사용</label>
+                </div>
+                <div class="period">
+                    <label for="dedupeDays" class="form-label">기간(일)</label>
+                    <input id="dedupeDays" type="number" class="form-control" style="max-width: 120px;" min="1" max="365" @bind="dedupeDays" @bind:after="RecomputeDuplicatesAfter" />
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="includeFuzzy" @bind="includeFuzzy" @bind:after="RecomputeDuplicatesAfter">
+                    <label class="form-check-label" for="includeFuzzy">유사 일치 포함</label>
+                </div>
+                <div class="period">
+                    <label for="scoreThreshold" class="form-label">임계치(0-100)</label>
+                    <input id="scoreThreshold" type="number" class="form-control" style="max-width: 120px;" min="0" max="100" @bind="scoreThreshold" @bind:after="RecomputeDuplicatesAfter" />
+                </div>
+                @if (dedupeEnabled)
+                {
+                    <div class="hint text-muted">최근 @dedupeDays 일 내 분배된 항목에서 연락처 기준 중복을 검사합니다.</div>
+                }
+            </div>
+
+            <AuthorizeView Roles="Manager">
+            <details class="rule-config">
+                <summary>규칙 설정(가변 항목 사용/가중치)</summary>
+                <div class="rule-grid">
+                    @RuleRow("성별", nameof(DedupeConfig.UseGender), () => UseGender, v => UseGender = v, nameof(DedupeConfig.WeightGender), () => WeightGender, v => WeightGender = v)
+                    @RuleRow("주소", nameof(DedupeConfig.UseAddress), () => UseAddress, v => UseAddress = v, nameof(DedupeConfig.WeightAddress), () => WeightAddress, v => WeightAddress = v)
+                    @RuleRow("직업", nameof(DedupeConfig.UseJobTitle), () => UseJobTitle, v => UseJobTitle = v, nameof(DedupeConfig.WeightJobTitle), () => WeightJobTitle, v => WeightJobTitle = v)
+                    @RuleRow("결혼여부", nameof(DedupeConfig.UseMaritalStatus), () => UseMaritalStatus, v => UseMaritalStatus = v, nameof(DedupeConfig.WeightMaritalStatus), () => WeightMaritalStatus, v => WeightMaritalStatus = v)
+                    @RuleRow("납입/증빙번호", nameof(DedupeConfig.UseProofNumber), () => UseProofNumber, v => UseProofNumber = v, nameof(DedupeConfig.WeightProofNumber), () => WeightProofNumber, v => WeightProofNumber = v)
+                    @RuleRow("DB가격", nameof(DedupeConfig.UseDbPrice), () => UseDbPrice, v => UseDbPrice = v, nameof(DedupeConfig.WeightDbPrice), () => WeightDbPrice, v => WeightDbPrice = v)
+                    @RuleRow("본사", nameof(DedupeConfig.UseHeadquarters), () => UseHeadquarters, v => UseHeadquarters = v, nameof(DedupeConfig.WeightHeadquarters), () => WeightHeadquarters, v => WeightHeadquarters = v)
+                    @RuleRow("보험명", nameof(DedupeConfig.UseInsuranceName), () => UseInsuranceName, v => UseInsuranceName = v, nameof(DedupeConfig.WeightInsuranceName), () => WeightInsuranceName, v => WeightInsuranceName = v)
+                    @RuleRow("자동차가입일", nameof(DedupeConfig.UseCarJoinDate), () => UseCarJoinDate, v => UseCarJoinDate = v, nameof(DedupeConfig.WeightCarJoinDate), () => WeightCarJoinDate, v => WeightCarJoinDate = v)
+                    @RuleRow("메모", nameof(DedupeConfig.UseNotes), () => UseNotes, v => UseNotes = v, nameof(DedupeConfig.WeightNotes), () => WeightNotes, v => WeightNotes = v)
+                </div>
+            </details>
+            </AuthorizeView>
+
+            <aside class="dedupe-info" aria-live="polite">
+                <h6 class="mb-2">중복 검사 기준 안내</h6>
+                <p class="text-muted mb-2">이미지와 같이 항목 설정(고정/가변)을 기준으로 중복을 판단합니다. 기본 규칙은 아래와 같습니다.</p>
+                <ul class="info-list">
+                    <li><strong>필수 항목(고정)</strong>
+                        <ul>
+                            <li>이름: 기본은 정확 일치, <em>유사 일치 포함</em> 활성화 시 이름 앞 2자 기준 보조 매칭을 사용합니다.</li>
+                            <li>연락처: 숫자만 남겨 정규화(하이픈/공백/국가코드 제거) 후 비교합니다. 정확 일치가 최우선 키입니다.</li>
+                        </ul>
+                    </li>
+                    <li><strong>추가 항목(가변)</strong>
+                        <div class="muted-small">성별, 주소, 직업, 결혼여부, 납입/증빙번호, DB가격, 본사, 보험명, 자동차가입일, 메모 등</div>
+                        <div>사용여부가 <strong>ON</strong>인 항목은 보조 스코어로 사용되어 일치/유사 시 우선순위가 높아집니다. (현재 화면은 안내용이며, 세부 가중치는 관리 메뉴에서 조정 가능하도록 확장 예정)</div>
+                    </li>
+                    <li><strong>판정 로직</strong>
+                        <ul>
+                            <li>1차 키: 연락처 정규화 <span class="badge bg-secondary">정확 일치</span></li>
+                            <li>2차 키(옵션): 이름 2자 + 연락처 끝 4자리 <span class="badge bg-info text-dark">유사 일치</span></li>
+                            <li>보조 점수: 추가 항목 사용여부 ON 항목의 일치/불일치</li>
+                        </ul>
+                    </li>
+                </ul>
+            </aside>
+
+            <div class="grid">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>연락처</th>
+                                <th>건수</th>
+                                <th>스코어</th>
+                                <th>최근 분배일</th>
+                                <th>대표 고객명</th>
+                                <th>액션</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!dedupeEnabled)
+                            {
+                                <tr><td colspan="5" class="text-muted text-center">중복 감지가 비활성화되어 있습니다.</td></tr>
+                            }
+                            else if (duplicates?.Any() == true)
+                            {
+                                @foreach (var g in duplicates)
+                                {
+                                    <tr>
+                                        <td>@g.ContactDisplay</td>
+                                        <td>@g.Count</td>
+                                        <td>@($"{g.Score}%")</td>
+                                        <td>@g.LatestAssigned.ToShortDateString()</td>
+                                        <td>@g.SampleName</td>
+                                        <td class="action-cell">
+                                            <button class="btn btn-warning btn-sm action-btn me-1" @onclick="() => NotifyAdmin(g)">관리자 알림</button>
+                                            <button class="btn btn-outline-secondary btn-sm action-btn me-1" @onclick="() => ArchiveGroup(g)">보관 처리</button>
+                                            <button class="btn btn-outline-danger btn-sm action-btn me-2" @onclick="() => DeleteGroup(g)">삭제</button>
+                                            <select class="form-select form-select-sm d-inline-block" style="width: auto;" @bind="mergePrimary[g.Key]">
+                                                @foreach (var c in g.Candidates)
+                                                {
+                                                    <option value="@c.ContactId">@c.CustomerName (@c.ContactId)</option>
+                                                }
+                                            </select>
+                                            <button class="btn btn-primary btn-sm action-btn" @onclick="() => OpenMergeModal(g)">병합</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="5" class="text-muted text-center">중복 항목이 없습니다.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if (showMergeModal && modalGroup is not null)
+            {
+                <div class="modal-backdrop">
+                    <div class="modal-panel">
+                        <header class="modal-header">
+                            <h5>중복 병합</h5>
+                        </header>
+                        <div class="modal-body">
+                            <p class="text-muted">대표 레코드를 선택하세요. 선택된 레코드를 남기고 나머지는 병합 처리됩니다.</p>
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr><th>대표</th><th>고객명</th><th>연락처</th><th>분배일</th></tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var c in modalGroup.Candidates.OrderByDescending(x => x.AssignedDate))
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="radio" name="primaryRadio" value="@c.ContactId" @onchange="(e=> modalPrimaryId = c.ContactId)" checked="@(modalPrimaryId==c.ContactId)" />
+                                        </td>
+                                        <td>@c.CustomerName</td>
+                                        <td>@modalGroup.ContactDisplay</td>
+                                        <td>@c.AssignedDate.ToShortDateString()</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+
+                            <h6 class="mt-3">필드별 우선값 선택(선택사항)</h6>
+                            <div class="rule-grid" style="grid-template-columns: 1fr auto;">
+                                @FieldSelectRow("성별", "Gender")
+                                @FieldSelectRow("주소", "Address")
+                                @FieldSelectRow("직업", "JobTitle")
+                                @FieldSelectRow("결혼여부", "MaritalStatus")
+                                @FieldSelectRow("증빙번호", "ProofNumber")
+                                @FieldSelectRow("DB가격", "DbPrice")
+                                @FieldSelectRow("본사", "Headquarters")
+                                @FieldSelectRow("보험명", "InsuranceName")
+                                @FieldSelectRow("자동차가입일", "CarJoinDate")
+                                @FieldSelectRow("메모", "Notes")
+                            </div>
+                        </div>
+                        <footer class="modal-footer">
+                            <button class="btn btn-light" @onclick="CloseMergeModal">취소</button>
+                            <button class="btn btn-primary" @onclick="ConfirmMergeModal">병합 실행</button>
+                        </footer>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+    else if (activeTab == Tab.Grade)
+    {
+        <section class="grade-management">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>등급 구분값 관리</h5>
+                <button class="btn btn-primary" @onclick="AddGradeRow"><i class="bi bi-plus-circle"></i> 등급구분값 등록</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>NO</th>
+                            <th>구분값명</th>
+                            <th>상세설명</th>
+                            <th>사용여부</th>
+                            <th>최초등록일시</th>
+                            <th>최종수정일시</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (gradeRows.Any())
+                        {
+                            @foreach (var row in gradeRows.OrderByDescending(r => r.Id))
+                            {
+                                <tr>
+                                    <td>@row.Id</td>
+                                    <td><input class="form-control" @bind="row.Name" /></td>
+                                    <td><input class="form-control" @bind="row.Description" /></td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsActive">
+                                            <option value="true">사용중</option>
+                                            <option value="false">미사용</option>
+                                        </select>
+                                    </td>
+                                    <td>@row.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@(row.UpdatedAt.HasValue ? row.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "-")</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveGradeRow(row.Id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center text-muted">등급 데이터가 없습니다.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3 text-end">
+                <button class="btn btn-success preview-action" @onclick="SaveGradeRows" title="곧 제공 예정 기능입니다."><i class="bi bi-save"></i> 등급구분값 저장</button>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Consult)
+    {
+        <section class="consult-management">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>상담 구분값 관리</h5>
+                <button class="btn btn-primary" @onclick="AddConsultRow"><i class="bi bi-plus-circle"></i> 상담구분값 등록</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>NO</th>
+                            <th>상태값명</th>
+                            <th>정산사용여부</th>
+                            <th>상담완료여부</th>
+                            <th>사용여부</th>
+                            <th>최초등록일시</th>
+                            <th>최종수정일시</th>
+                            <th>순서</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (consultRows.Any())
+                        {
+                            @foreach (var row in consultRows.OrderByDescending(r => r.Id))
+                            {
+                                <tr>
+                                    <td>@row.Id</td>
+                                    <td><input class="form-control" @bind="row.Name" /></td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsSettlement">
+                                            <option value="true">사용중</option>
+                                            <option value="false">미사용</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsComplete">
+                                            <option value="true">완료값</option>
+                                            <option value="false">기본값</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-select" @bind="row.IsActive">
+                                            <option value="true">사용중</option>
+                                            <option value="false">미사용</option>
+                                        </select>
+                                    </td>
+                                    <td>@row.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@(row.UpdatedAt.HasValue ? row.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "-")</td>
+                                    <td><input class="form-control" type="number" min="1" @bind="row.Order" style="width:80px;" /></td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveConsultRow(row.Id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="9" class="text-center text-muted">상담 구분값 데이터가 없습니다.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3 text-end">
+                <button class="btn btn-success preview-action" @onclick="SaveConsultRows" title="곧 제공 예정 기능입니다."><i class="bi bi-save"></i> 상담구분값 저장</button>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Distribution)
+    {
+        <section class="distribution-settings">
+            <h5 class="mb-3">팀별 분배설정</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="me-2">팀분배 설정 (팀명/우선순위/기본수량)</span>
+                <div class="form-check form-switch ms-auto">
+                    <input class="form-check-input" type="checkbox" id="autoDistTeam" @bind="autoDistTeam" />
+                    <label class="form-check-label" for="autoDistTeam">자동 분배</label>
+                </div>
+            </div>
+            <div class="row mb-4">
+                @foreach (var team in teamRows)
+                {
+                    <div class="col-md-3 mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@team.Name</span>
+                            <span class="input-group-text">@team.Code</span>
+                            <span class="input-group-text">@team.Priority<span>위</span></span>
+                            <input type="number" class="form-control" min="0" @bind="team.Quantity" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <h5 class="mb-3">담당자별 분배설정</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="me-2">팀 선택</span>
+                <select class="form-select w-auto" @bind="selectedTeam">
+                    @foreach (var team in teamRows)
+                    {
+                        <option value="@team.Code">@team.Name</option>
+                    }
+                </select>
+                <div class="form-check form-switch ms-auto">
+                    <input class="form-check-input" type="checkbox" id="autoDistUser" @bind="autoDistUser" />
+                    <label class="form-check-label" for="autoDistUser">자동 분배</label>
+                </div>
+            </div>
+            <div class="row mb-4">
+                @foreach (var user in userRows.Where(u => u.TeamCode == selectedTeam))
+                {
+                    <div class="col-md-3 mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@user.Name</span>
+                            <span class="input-group-text">@user.Code</span>
+                            <span class="input-group-text">@user.Priority<span>위</span></span>
+                            <input type="number" class="form-control" min="0" @bind="user.Quantity" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <h5 class="mb-3">생산업체별 분배설정</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="me-2">생산업체(DB공급업체/소개/개인/기타) - 팀 매칭</span>
+                <div class="form-check form-switch ms-auto">
+                    <input class="form-check-input" type="checkbox" id="autoDistVendor" @bind="autoDistVendor" />
+                    <label class="form-check-label" for="autoDistVendor">자동 분배</label>
+                </div>
+            </div>
+            <div class="row mb-4">
+                @foreach (var vendor in vendorRows)
+                {
+                    <div class="col-md-6 mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">@vendor.Name</span>
+                            <select class="form-select" @bind="vendor.TeamCode">
+                                <option value="">팀 선택</option>
+                                @foreach (var team in teamRows)
+                                {
+                                    <option value="@team.Code">@team.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="mt-4 text-end">
+                <button class="btn btn-dark preview-action" @onclick="SaveDistributionSettings" title="곧 제공 예정 기능입니다."><i class="bi bi-save"></i> 저장하기</button>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Settings)
+    {
+        <AuthorizeView Roles="Manager">
+            <Authorized>
+                <section class="placeholder">
+                    <h5>모니터링 설정</h5>
+                    <div class="rule-grid" style="grid-template-columns: 1fr auto; max-width: 520px;">
+                        <div>알림 주기(분)</div>
+                        <input type="number" min="1" max="1440" value="@DedupeConfig.MonitorIntervalMinutes"
+                               @onchange="(e => DedupeConfig.MonitorIntervalMinutes = int.TryParse(e.Value?.ToString(), out var v) ? v : DedupeConfig.MonitorIntervalMinutes)" />
+
+                        <div>동일 건수도 알림</div>
+                        <input type="checkbox" checked="@DedupeConfig.NotifyOnSameCount" @onchange="(e => DedupeConfig.NotifyOnSameCount = e.Value is bool b && b)" />
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" @onclick="RunMonitorOnce">지금 검사</button>
+                    </div>
+                </section>
+            </Authorized>
+            <NotAuthorized>
+                <section class="placeholder">
+                    <p class="text-muted">이 영역은 관리자 전용입니다.</p>
+                </section>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+</div>
+
+@code {
+    private enum Tab { Explore, Segments, Imports, Dedupe, Grade, Consult, Distribution, Settings }
+
+    // 분배설정용 모델
+    private class TeamRow
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Priority { get; set; } = 1;
+        public int Quantity { get; set; } = 0;
+    }
+    private class UserRow
+    {
+        public string Code { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string TeamCode { get; set; } = "";
+        public int Priority { get; set; } = 1;
+        public int Quantity { get; set; } = 0;
+    }
+    private class VendorRow
+    {
+        public string Name { get; set; } = "";
+        public string TeamCode { get; set; } = "";
+    }
+
+    private List<TeamRow> teamRows = new()
+    {
+        new TeamRow { Code = "TM0001", Name = "직영", Priority = 1 },
+        new TeamRow { Code = "TM0002", Name = "Elite지점", Priority = 2 },
+        new TeamRow { Code = "TM0003", Name = "SKY지점", Priority = 3 }
+    };
+    private List<UserRow> userRows = new()
+    {
+        new UserRow { Code = "FC0004", Name = "차은우(영업1팀장)", TeamCode = "TM0001", Priority = 1 },
+        new UserRow { Code = "FC0005", Name = "이혜리(영업1팀원)", TeamCode = "TM0001", Priority = 2 },
+        new UserRow { Code = "FC0017", Name = "이병헌(영업2팀)", TeamCode = "TM0002", Priority = 1 }
+    };
+    private List<VendorRow> vendorRows = new()
+    {
+        new VendorRow { Name = "DB공급업체B" },
+        new VendorRow { Name = "DB공급업체A" },
+        new VendorRow { Name = "소개" },
+        new VendorRow { Name = "개인" },
+        new VendorRow { Name = "기타 DB" }
+    };
+
+    private bool autoDistTeam = false;
+    private bool autoDistUser = false;
+    private bool autoDistVendor = false;
+    private string selectedTeam = "TM0001";
+
+    private async Task SaveDistributionSettings()
+    {
+        // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+        await NotifyPreviewFeatureAsync("분배 설정 저장");
+    }
+
+    // 상담구분값 관리용 모델
+    private class ConsultRow
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsSettlement { get; set; } = false;
+        public bool IsComplete { get; set; } = false;
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+        public int Order { get; set; } = 1;
+    }
+
+    private List<ConsultRow> consultRows = new();
+    private int nextConsultId = 1;
+
+    private void AddConsultRow()
+    {
+        consultRows.Add(new ConsultRow
+        {
+            Id = nextConsultId++,
+            Name = "",
+            IsSettlement = false,
+            IsComplete = false,
+            IsActive = true,
+            CreatedAt = DateTime.Now,
+            Order = consultRows.Count + 1
+        });
+    }
+
+    private void RemoveConsultRow(int id)
+    {
+        var row = consultRows.FirstOrDefault(r => r.Id == id);
+        if (row != null)
+            consultRows.Remove(row);
+    }
+
+    private async Task SaveConsultRows()
+    {
+        foreach (var row in consultRows)
+        {
+            row.UpdatedAt = DateTime.Now;
+        }
+        // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+        // 현재는 단순히 UpdatedAt만 갱신
+        await NotifyPreviewFeatureAsync("상담 구분값 저장");
+    }
+
+    // 등급관리용 모델
+    private class GradeRow
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+    }
+
+    private List<GradeRow> gradeRows = new();
+    private int nextGradeId = 1;
+
+    private void AddGradeRow()
+    {
+        gradeRows.Add(new GradeRow
+        {
+            Id = nextGradeId++,
+            Name = "",
+            Description = "",
+            IsActive = true,
+            CreatedAt = DateTime.Now
+        });
+    }
+
+    private void RemoveGradeRow(int id)
+    {
+        var row = gradeRows.FirstOrDefault(r => r.Id == id);
+        if (row != null)
+            gradeRows.Remove(row);
+    }
+
+    private async Task SaveGradeRows()
+    {
+        foreach (var row in gradeRows)
+        {
+            row.UpdatedAt = DateTime.Now;
+        }
+        // TODO: 실제 저장 로직(예: DB/API 연동) 필요
+        // 현재는 단순히 UpdatedAt만 갱신
+        await NotifyPreviewFeatureAsync("등급 구분값 저장");
+    }
+    private Tab activeTab = Tab.Explore;
+
+    private IEnumerable<DbCustomer>? data;
+    private IEnumerable<DbCustomer>? filtered;
+    private string? search;
+    private string? filterStatus;
+    private bool dedupeEnabled;
+    private int dedupeDays = 30;
+    private bool includeFuzzy;
+    private List<NexaCRM.WebClient.Services.Interfaces.DuplicateGroup> duplicates = new();
+    private Dictionary<string, int> mergePrimary = new();
+    private int scoreThreshold;
+    private bool showMergeModal;
+    private NexaCRM.WebClient.Services.Interfaces.DuplicateGroup? modalGroup;
+    private int modalPrimaryId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        data = await DbDataService.GetAllDbListAsync();
+        ApplyFilters();
+        // Initialize from shared config
+        dedupeEnabled = DedupeConfig.Enabled;
+        dedupeDays = DedupeConfig.Days;
+        includeFuzzy = DedupeConfig.IncludeFuzzy;
+        scoreThreshold = DedupeConfig.ScoreThreshold;
+        await LoadConfigAsync();
+        await RecomputeDuplicates();
+    }
+
+    private void SetTab(Tab t) => activeTab = t;
+
+    private void ApplyFilters(ChangeEventArgs? _ = null)
+    {
+        filtered = data
+            ?.Where(c => string.IsNullOrWhiteSpace(search)
+                         || (c.CustomerName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true)
+                         || (c.ContactNumber?.Contains(search, StringComparison.OrdinalIgnoreCase) == true))
+            .Where(c => string.IsNullOrWhiteSpace(filterStatus)
+                         || string.Equals(c.Status.ToString(), filterStatus, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private async Task RecomputeDuplicates(ChangeEventArgs? _ = null)
+    {
+        // Persist shared config
+        DedupeConfig.Enabled = dedupeEnabled;
+        DedupeConfig.Days = dedupeDays;
+        DedupeConfig.IncludeFuzzy = includeFuzzy;
+        DedupeConfig.ScoreThreshold = scoreThreshold;
+        await SaveConfigAsync();
+
+        if (!dedupeEnabled)
+        {
+            duplicates = new();
+            return;
+        }
+
+        duplicates = (await DuplicateService.FindDuplicatesAsync(dedupeDays, includeFuzzy)).ToList();
+        // Initialize merge selection defaults
+        mergePrimary = duplicates.ToDictionary(d => d.Key, d => d.Candidates.OrderByDescending(c => c.AssignedDate).First().ContactId);
+    }
+
+    // Parameterless helpers for @bind:after (expects Action or Func<Task>)
+    private void ApplyFiltersAfter() => ApplyFilters();
+    private Task RecomputeDuplicatesAfter() => RecomputeDuplicates();
+
+    // Rule config bindings (checkbox+weight) with recompute
+    private bool UseGender { get => DedupeConfig.UseGender; set { DedupeConfig.UseGender = value; _ = RecomputeDuplicates(); } }
+    private int  WeightGender { get => DedupeConfig.WeightGender; set { DedupeConfig.WeightGender = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseAddress { get => DedupeConfig.UseAddress; set { DedupeConfig.UseAddress = value; _ = RecomputeDuplicates(); } }
+    private int  WeightAddress { get => DedupeConfig.WeightAddress; set { DedupeConfig.WeightAddress = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseJobTitle { get => DedupeConfig.UseJobTitle; set { DedupeConfig.UseJobTitle = value; _ = RecomputeDuplicates(); } }
+    private int  WeightJobTitle { get => DedupeConfig.WeightJobTitle; set { DedupeConfig.WeightJobTitle = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseMaritalStatus { get => DedupeConfig.UseMaritalStatus; set { DedupeConfig.UseMaritalStatus = value; _ = RecomputeDuplicates(); } }
+    private int  WeightMaritalStatus { get => DedupeConfig.WeightMaritalStatus; set { DedupeConfig.WeightMaritalStatus = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseProofNumber { get => DedupeConfig.UseProofNumber; set { DedupeConfig.UseProofNumber = value; _ = RecomputeDuplicates(); } }
+    private int  WeightProofNumber { get => DedupeConfig.WeightProofNumber; set { DedupeConfig.WeightProofNumber = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseDbPrice { get => DedupeConfig.UseDbPrice; set { DedupeConfig.UseDbPrice = value; _ = RecomputeDuplicates(); } }
+    private int  WeightDbPrice { get => DedupeConfig.WeightDbPrice; set { DedupeConfig.WeightDbPrice = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseHeadquarters { get => DedupeConfig.UseHeadquarters; set { DedupeConfig.UseHeadquarters = value; _ = RecomputeDuplicates(); } }
+    private int  WeightHeadquarters { get => DedupeConfig.WeightHeadquarters; set { DedupeConfig.WeightHeadquarters = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseInsuranceName { get => DedupeConfig.UseInsuranceName; set { DedupeConfig.UseInsuranceName = value; _ = RecomputeDuplicates(); } }
+    private int  WeightInsuranceName { get => DedupeConfig.WeightInsuranceName; set { DedupeConfig.WeightInsuranceName = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseCarJoinDate { get => DedupeConfig.UseCarJoinDate; set { DedupeConfig.UseCarJoinDate = value; _ = RecomputeDuplicates(); } }
+    private int  WeightCarJoinDate { get => DedupeConfig.WeightCarJoinDate; set { DedupeConfig.WeightCarJoinDate = Clamp01(value); _ = RecomputeDuplicates(); } }
+    private bool UseNotes { get => DedupeConfig.UseNotes; set { DedupeConfig.UseNotes = value; _ = RecomputeDuplicates(); } }
+    private int  WeightNotes { get => DedupeConfig.WeightNotes; set { DedupeConfig.WeightNotes = Clamp01(value); _ = RecomputeDuplicates(); } }
+
+    private static int Clamp01(int value) => Math.Max(0, Math.Min(10, value));
+
+    private RenderFragment RuleRow(string label, string bindName, Func<bool> getter, Action<bool> setter, string weightName, Func<int> wGetter, Action<int> wSetter) => builder =>
+    {
+        var seq = 0;
+        builder.OpenElement(seq++, "div");
+        builder.AddAttribute(seq++, "class", "rule-row");
+        builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "checked", getter());
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => setter(e.Value is bool b && b)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "min", 0);
+        builder.AddAttribute(seq++, "max", 10);
+        builder.AddAttribute(seq++, "value", wGetter());
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => {
+            if (int.TryParse(e.Value?.ToString(), out var v)) wSetter(v);
+        }));
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private async Task LoadConfigAsync()
+    {
+        try
+        {
+            var json = await JS.InvokeAsync<string>("localStorage.getItem", "dedupe-config");
+            if (string.IsNullOrWhiteSpace(json)) return;
+            var cfg = System.Text.Json.JsonSerializer.Deserialize<LocalConfig>(json);
+            if (cfg is null) return;
+            dedupeEnabled = cfg.Enabled;
+            dedupeDays = cfg.Days;
+            includeFuzzy = cfg.IncludeFuzzy;
+            scoreThreshold = cfg.ScoreThreshold;
+            DedupeConfig.UseGender = cfg.UseGender;
+            DedupeConfig.UseAddress = cfg.UseAddress;
+            DedupeConfig.UseJobTitle = cfg.UseJobTitle;
+            DedupeConfig.UseMaritalStatus = cfg.UseMaritalStatus;
+            DedupeConfig.UseProofNumber = cfg.UseProofNumber;
+            DedupeConfig.UseDbPrice = cfg.UseDbPrice;
+            DedupeConfig.UseHeadquarters = cfg.UseHeadquarters;
+            DedupeConfig.UseInsuranceName = cfg.UseInsuranceName;
+            DedupeConfig.UseCarJoinDate = cfg.UseCarJoinDate;
+            DedupeConfig.UseNotes = cfg.UseNotes;
+            DedupeConfig.WeightGender = cfg.WeightGender;
+            DedupeConfig.WeightAddress = cfg.WeightAddress;
+            DedupeConfig.WeightJobTitle = cfg.WeightJobTitle;
+            DedupeConfig.WeightMaritalStatus = cfg.WeightMaritalStatus;
+            DedupeConfig.WeightProofNumber = cfg.WeightProofNumber;
+            DedupeConfig.WeightDbPrice = cfg.WeightDbPrice;
+            DedupeConfig.WeightHeadquarters = cfg.WeightHeadquarters;
+            DedupeConfig.WeightInsuranceName = cfg.WeightInsuranceName;
+            DedupeConfig.WeightCarJoinDate = cfg.WeightCarJoinDate;
+            DedupeConfig.WeightNotes = cfg.WeightNotes;
+        }
+        catch { }
+    }
+
+    private async Task SaveConfigAsync()
+    {
+        try
+        {
+            var cfg = new LocalConfig
+            {
+                Enabled = dedupeEnabled,
+                Days = dedupeDays,
+                IncludeFuzzy = includeFuzzy,
+                ScoreThreshold = scoreThreshold,
+                UseGender = DedupeConfig.UseGender,
+                UseAddress = DedupeConfig.UseAddress,
+                UseJobTitle = DedupeConfig.UseJobTitle,
+                UseMaritalStatus = DedupeConfig.UseMaritalStatus,
+                UseProofNumber = DedupeConfig.UseProofNumber,
+                UseDbPrice = DedupeConfig.UseDbPrice,
+                UseHeadquarters = DedupeConfig.UseHeadquarters,
+                UseInsuranceName = DedupeConfig.UseInsuranceName,
+                UseCarJoinDate = DedupeConfig.UseCarJoinDate,
+                UseNotes = DedupeConfig.UseNotes,
+                WeightGender = DedupeConfig.WeightGender,
+                WeightAddress = DedupeConfig.WeightAddress,
+                WeightJobTitle = DedupeConfig.WeightJobTitle,
+                WeightMaritalStatus = DedupeConfig.WeightMaritalStatus,
+                WeightProofNumber = DedupeConfig.WeightProofNumber,
+                WeightDbPrice = DedupeConfig.WeightDbPrice,
+                WeightHeadquarters = DedupeConfig.WeightHeadquarters,
+                WeightInsuranceName = DedupeConfig.WeightInsuranceName,
+                WeightCarJoinDate = DedupeConfig.WeightCarJoinDate,
+                WeightNotes = DedupeConfig.WeightNotes
+            };
+            var json = System.Text.Json.JsonSerializer.Serialize(cfg);
+            await JS.InvokeVoidAsync("localStorage.setItem", "dedupe-config", json);
+        }
+        catch { }
+    }
+
+    private void OpenMergeModal(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    {
+        modalGroup = g;
+        showMergeModal = true;
+        if (!mergePrimary.TryGetValue(g.Key, out modalPrimaryId))
+        {
+            modalPrimaryId = g.Candidates.OrderByDescending(c => c.AssignedDate).First().ContactId;
+        }
+    }
+
+    private void CloseMergeModal()
+    {
+        showMergeModal = false;
+        modalGroup = null;
+    }
+
+    private async Task ConfirmMergeModal()
+    {
+        if (modalGroup is null) return;
+        var primaryId = modalPrimaryId;
+        var dupIds = modalGroup.ContactIds.Where(id => id != primaryId).ToList();
+        if (dupIds.Count == 0) { CloseMergeModal(); return; }
+        // Apply field overrides to primary before merge
+        var patch = await BuildPatchFromSelectionAsync(modalGroup, primaryId);
+        if (patch is not null)
+        {
+            await DbDataService.UpdateCustomerPartialAsync(primaryId, patch, overwriteEmptyOnly: false);
+        }
+        await DuplicateService.MergeAsync(primaryId, dupIds);
+        await RecomputeDuplicates();
+        CloseMergeModal();
+    }
+
+    private async Task<DbCustomer?> BuildPatchFromSelectionAsync(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup group, int primaryId)
+    {
+        if (group is null) return null;
+        if (!mergeFieldSource.TryGetValue(group.Key, out var dict) || dict.Count == 0) return null;
+
+        var all = await DbDataService.GetAllDbListAsync();
+        var byId = all.ToDictionary(c => c.ContactId, c => c);
+        var patch = new DbCustomer();
+
+        DbCustomer? From(int id) => byId.TryGetValue(id, out var c) ? c : null;
+
+        if (dict.TryGetValue("Gender", out var gId)) patch.Gender = From(gId)?.Gender;
+        if (dict.TryGetValue("Address", out var aId)) patch.Address = From(aId)?.Address;
+        if (dict.TryGetValue("JobTitle", out var jId)) patch.JobTitle = From(jId)?.JobTitle;
+        if (dict.TryGetValue("MaritalStatus", out var mId)) patch.MaritalStatus = From(mId)?.MaritalStatus;
+        if (dict.TryGetValue("ProofNumber", out var pnId)) patch.ProofNumber = From(pnId)?.ProofNumber;
+        if (dict.TryGetValue("DbPrice", out var pId)) patch.DbPrice = From(pId)?.DbPrice;
+        if (dict.TryGetValue("Headquarters", out var hId)) patch.Headquarters = From(hId)?.Headquarters;
+        if (dict.TryGetValue("InsuranceName", out var iId)) patch.InsuranceName = From(iId)?.InsuranceName;
+        if (dict.TryGetValue("CarJoinDate", out var cId)) patch.CarJoinDate = From(cId)?.CarJoinDate;
+        if (dict.TryGetValue("Notes", out var nId)) patch.Notes = From(nId)?.Notes;
+
+        return patch;
+    }
+
+    private readonly Dictionary<string, Dictionary<string, int>> mergeFieldSource = new();
+
+    private RenderFragment FieldSelectRow(string label, string field) => builder =>
+    {
+        if (modalGroup is null) return;
+        var seq = 0;
+        builder.OpenElement(seq++, "div");
+        builder.AddContent(seq++, label);
+        builder.CloseElement();
+
+        builder.OpenElement(seq++, "select");
+        builder.AddAttribute(seq++, "class", "form-select form-select-sm");
+        builder.AddAttribute(seq++, "style", "width: auto;");
+        builder.AddAttribute(seq++, "value", GetMergeFieldSource(modalGroup, field));
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e =>
+        {
+            if (modalGroup is null) return;
+            if (!mergeFieldSource.TryGetValue(modalGroup.Key, out var dict))
+            {
+                dict = new Dictionary<string, int>();
+                mergeFieldSource[modalGroup.Key] = dict;
+            }
+            if (int.TryParse(e.Value?.ToString(), out var id))
+            {
+                dict[field] = id;
+            }
+        }));
+        foreach (var c in modalGroup.Candidates.OrderByDescending(x => x.AssignedDate))
+        {
+            builder.OpenElement(seq++, "option");
+            builder.AddAttribute(seq++, "value", c.ContactId);
+            builder.AddContent(seq++, $"{c.CustomerName} ({c.ContactId})");
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    private string GetMergeFieldSource(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g, string field)
+    {
+        if (!mergeFieldSource.TryGetValue(g.Key, out var dict) || !dict.TryGetValue(field, out var id))
+        {
+            return modalPrimaryId.ToString();
+        }
+        return id.ToString();
+    }
+
+    private class LocalConfig
+    {
+        public bool Enabled { get; set; }
+        public int Days { get; set; }
+        public bool IncludeFuzzy { get; set; }
+        public int ScoreThreshold { get; set; }
+        public bool UseGender { get; set; }
+        public bool UseAddress { get; set; }
+        public bool UseJobTitle { get; set; }
+        public bool UseMaritalStatus { get; set; }
+        public bool UseProofNumber { get; set; }
+        public bool UseDbPrice { get; set; }
+        public bool UseHeadquarters { get; set; }
+        public bool UseInsuranceName { get; set; }
+        public bool UseCarJoinDate { get; set; }
+        public bool UseNotes { get; set; }
+        public int WeightGender { get; set; }
+        public int WeightAddress { get; set; }
+        public int WeightJobTitle { get; set; }
+        public int WeightMaritalStatus { get; set; }
+        public int WeightProofNumber { get; set; }
+        public int WeightDbPrice { get; set; }
+        public int WeightHeadquarters { get; set; }
+        public int WeightInsuranceName { get; set; }
+        public int WeightCarJoinDate { get; set; }
+        public int WeightNotes { get; set; }
+    }
+
+    private async Task NotifyAdmin(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    {
+        await NotificationFeed.AddAsync(new NexaCRM.WebClient.Services.Interfaces.NotificationFeedItem
+        {
+            Title = "중복 DB 감지",
+            Message = $"그룹 {g.ContactDisplay} 중복 {g.Count}건 (최근 {g.LatestAssigned:yyyy.MM.dd})",
+            Type = "warning",
+            IsRead = false,
+            TimestampUtc = DateTime.UtcNow
+        });
+    }
+
+    private async Task ArchiveGroup(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    {
+        await DuplicateService.ArchiveAsync(g);
+        await RecomputeDuplicates();
+    }
+
+    private async Task DeleteGroup(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"선택된 {g.Count}건을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
+        if (!ok) return;
+        await DuplicateService.DeleteAsync(g);
+        await RecomputeDuplicates();
+    }
+
+    private async Task MergeGroup(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    {
+        if (!mergePrimary.TryGetValue(g.Key, out var primaryId)) return;
+        var dupIds = g.ContactIds.Where(id => id != primaryId).ToList();
+        if (dupIds.Count == 0) return;
+        await DuplicateService.MergeAsync(primaryId, dupIds);
+        await RecomputeDuplicates();
+    }
+
+    private sealed class DuplicateGroup
+    {
+        public string Contact { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public DateTime LatestAssigned { get; set; }
+        public string? SampleName { get; set; }
+        public List<int> ContactIds { get; set; } = new();
+    }
+
+    private Task SaveCurrentView() => NotifyPreviewFeatureAsync("보기 저장");
+
+    private Task ExportCsv() => NotifyPreviewFeatureAsync("CSV 내보내기");
+
+    private Task OnImportFileSelected(ChangeEventArgs e) => NotifyPreviewFeatureAsync("고객 DB 추가하기");
+
+    private Task NotifyPreviewFeatureAsync(string featureName)
+    {
+        return JS.InvokeVoidAsync("alert", $"{featureName} 기능은 준비 중입니다. 곧 제공될 예정입니다.").AsTask();
+    }
+
+    private static string GetStatusClass(DbStatus status) => status switch
+    {
+        DbStatus.New => "status-text status-new",
+        DbStatus.InProgress => "status-text status-inprogress",
+        DbStatus.NoAnswer => "status-text status-noanswer",
+        DbStatus.Completed => "status-text status-completed",
+        DbStatus.OnHold => "status-text status-onhold",
+        _ => "status-text"
+    };
+
+    [Inject] private NexaCRM.WebClient.Services.Interfaces.IDuplicateMonitorService Monitor { get; set; } = default!;
+    private async Task RunMonitorOnce() => await Monitor.RunOnceAsync();
+}

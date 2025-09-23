@@ -54,6 +54,7 @@
   border-radius: 12px;
   border: 1px solid #E5E7EB;
   background: #FFFFFF;
+  transition: background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
 }
 .notif-item.unread {
   border-color: #D1D5DB;
@@ -69,3 +70,12 @@
 .notif-item .message { color: #374151; margin-top: 2px; }
 .notif-item .meta { color: #6B7280; margin-top: 2px; font-size: 12px; }
 
+/* Bulk mark-as-read visual feedback */
+.notif-item.mark-read-anim {
+  animation: notifReadPulse 800ms ease-out;
+}
+
+@keyframes notifReadPulse {
+  0% { background: #ECFDF5; border-color: #A7F3D0; box-shadow: 0 6px 14px rgba(16, 185, 129, 0.15); }
+  100% { background: #FFFFFF; border-color: #E5E7EB; box-shadow: none; }
+}

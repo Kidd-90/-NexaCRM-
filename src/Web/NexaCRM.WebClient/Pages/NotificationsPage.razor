@@ -19,9 +19,11 @@
     else
     {
         <ul class="notif-list">
-            @foreach (var n in items)
+            @for (var i = 0; i < items.Count; i++)
             {
-                <li class="notif-item @(n.IsRead ? "read" : "unread")">
+                var n = items[i];
+                var anim = justReadIndices.Contains(i) ? "mark-read-anim" : null;
+                <li class="notif-item @(n.IsRead ? "read" : "unread") @anim">
                     <div class="icon type-@n.Type.ToString().ToLower()"></div>
                     <div class="body">
                         <div class="title">@n.Title</div>
@@ -36,6 +38,7 @@
 
 @code {
     private List<NotificationItem> items = new();
+    private HashSet<int> justReadIndices = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,9 +53,35 @@
 
     private async Task MarkAllRead()
     {
-        await Feed.MarkAllReadAsync();
-        await LoadAsync();
+        // Capture indices of items that were unread, then mark as read locally for instant UI feedback
+        var toAnimate = items
+            .Select((n, idx) => new { n, idx })
+            .Where(x => !x.n.IsRead)
+            .Select(x => x.idx)
+            .ToList();
+
+        foreach (var idx in toAnimate)
+        {
+            items[idx].IsRead = true;
+        }
+
+        justReadIndices = new HashSet<int>(toAnimate);
         StateHasChanged();
+
+        // Persist read state to the feed service
+        await Feed.MarkAllReadAsync();
+
+        // Optionally clear the animation flag after a short delay
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(1200);
+                justReadIndices.Clear();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch { }
+        });
     }
 
     private static NotificationType ToType(string type) => type?.ToLowerInvariant() switch

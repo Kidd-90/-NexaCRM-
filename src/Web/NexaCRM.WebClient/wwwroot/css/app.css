@@ -52,6 +52,15 @@
     --mobile-footer-height: 4.75rem;
 }
 
+/* Global typography: Prefer Pretendard Variable with robust fallbacks */
+html, body, button, input, select, textarea {
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', Arial,
+                 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+    font-variant-numeric: tabular-nums; /* align dashboard numbers */
+    font-optical-sizing: auto;
+}
+
 /* Dark Theme Support */
 [data-theme="dark"] {
     --color-secondary: #252a4a;
@@ -1452,10 +1461,11 @@ a:hover, .btn-link:hover {
         border-radius: 0.9rem;
         display: grid;
         place-items: center;
-        border: 1px solid #E5E7EB;
-        background: #F3F4F6;
+        border: 1px solid transparent; /* transparent by default like notif-button */
+        background: transparent; /* transparent default */
         color: #111827;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        cursor: pointer;
     }
 
     .desktop-page-header .nav-menu-button:hover {
@@ -1471,6 +1481,12 @@ a:hover, .btn-link:hover {
     }
 
     /* Notification button on header-right */
+    .desktop-page-header,
+    .desktop-page-header .header-right {
+        /* ensure absolutely-positioned badge can overflow without clipping */
+        overflow: visible;
+    }
+
     .desktop-page-header .notif-button {
         position: relative;
         width: 2.6rem;
@@ -1478,14 +1494,16 @@ a:hover, .btn-link:hover {
         border-radius: 0.9rem;
         display: grid;
         place-items: center;
-        border: 1px solid #E5E7EB;
-        background: #F3F4F6;
+        border: 1px solid transparent; /* transparent by default per request */
+        background: transparent; /* transparent so the badge is clearly visible */
         color: #111827;
-        transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+        overflow: visible; /* do not clip the badge */
+        cursor: pointer;
     }
 
     .desktop-page-header .notif-button:hover {
-        background: #FFFFFF;
+        background: rgba(243, 244, 246, 0.8); /* subtle hover surface */
         border-color: #D1D5DB;
         box-shadow: 0 8px 18px rgba(17,24,39,0.08);
         transform: translateY(-1px);
@@ -1496,10 +1514,21 @@ a:hover, .btn-link:hover {
         box-shadow: 0 4px 10px rgba(17,24,39,0.06);
     }
 
+    /* hover feedback on the bell icon */
+    .desktop-page-header .notif-button i {
+        transition: transform var(--transition-fast), color var(--transition-fast);
+    }
+
+    .desktop-page-header .notif-button:hover i {
+        transform: scale(1.06);
+        color: #0f172a; /* a tad darker for emphasis */
+    }
+
     .desktop-page-header .notif-badge {
         position: absolute;
-        top: -6px;
-        right: -6px;
+        /* sit even closer to the bell */
+        top: -1px;
+        right: -1px;
         min-width: 18px;
         height: 18px;
         padding: 0 4px;
@@ -1513,6 +1542,8 @@ a:hover, .btn-link:hover {
         justify-content: center;
         border: 2px solid #FFFFFF; /* ring to separate from button */
         line-height: 1;
+        z-index: 2; /* ensure it sits above the button and header */
+        pointer-events: none; /* clicks go to the button */
     }
 
     /* Make article fill all available width, no outer chrome (match top header color) */
@@ -2392,4 +2423,39 @@ textarea::placeholder {
     .mobile-card-view {
         display: block;
     }
+}
+
+/* Bottom-right login status indicator */
+.login-status-indicator {
+    position: fixed;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.12); /* emerald-500 tint */
+    color: #065F46; /* emerald-800 */
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 40;
+    pointer-events: none; /* purely informational */
+}
+
+.login-status-indicator .indicator-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #10B981; /* emerald-500 */
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22);
+}
+
+.login-status-indicator .indicator-text {
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    font-size: 0.85rem;
+    color: #065F46;
 }

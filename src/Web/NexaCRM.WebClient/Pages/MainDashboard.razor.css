@@ -1,3 +1,83 @@
+/* Dashboard base styling */
+.nav-link {
+    color: #0e131b;
+    border-radius: 0.75rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+    background-color: #e7ecf3;
+    color: #0e131b;
+}
+
+.nav-link-icon,
+.nav-link-icon-graphic,
+.nav-link-text {
+    color: #0e131b;
+    fill: #0e131b;
+}
+
+.nav-link-text {
+    margin: 0;
+}
+
+.dashboard-main-content {
+    padding-top: 70px;
+}
+
+.dashboard-button {
+    position: relative;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-button:hover,
+.dashboard-button:focus-visible {
+    background-color: #dce4f2;
+}
+
+.dashboard-button--notifications .notification-badge {
+    top: -0.35rem;
+    right: -0.25rem;
+}
+
+.dashboard-section-title {
+    display: block;
+    visibility: visible;
+}
+
+.dashboard-section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+}
+
+.dashboard-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dashboard-chart-grid {
+    display: grid;
+    min-height: 180px;
+}
+
+.dashboard-grid {
+    display: grid;
+}
+
+.priority-button {
+    background-color: #e7ecf3;
+    color: #0e131b;
+    border: none;
+}
+
+.priority-button .priority-label {
+    color: #0e131b;
+}
+
 /* 다크 모드에서 텍스트 색상 수정 */
 [data-theme="dark"] .text-\[#0e131b\] {
     color: #ffffff !important;
@@ -189,144 +269,118 @@
 
 /* 모바일 헤더 기본 스타일 */
 .mobile-header {
-    display: none !important;
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
+.mobile-notifications-btn {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.125rem 0.375rem;
+    border-radius: 999px;
+    min-width: 1.25rem;
+    text-align: center;
+    pointer-events: none;
 }
 
 @media (max-width: 768px) {
     .mobile-header {
-        display: flex !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        z-index: 9999 !important;
-        background-color: #ffffff !important;
-        border-bottom: 1px solid #e5e7eb !important;
-        height: 60px !important;
-        width: 100vw !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        height: 60px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
-    
-    .mobile-header-content {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        width: 100% !important;
-        padding: 0 1rem !important;
-    }
-    
-    .mobile-menu-toggle,
-    .mobile-action-btn {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0.5rem !important;
-        background: none !important;
-        border: none !important;
-        color: #374151 !important;
-        cursor: pointer !important;
-    }
-    
-    .mobile-header-title {
-        display: flex !important;
-        flex: 1 !important;
-        justify-content: center !important;
-    }
-    
-    .mobile-title {
-        display: block !important;
-        font-size: 1.25rem !important;
-        font-weight: 700 !important;
-        color: #374151 !important;
-        margin: 0 !important;
-    }
-    
-    .mobile-header-actions {
-        display: flex !important;
-        gap: 0.5rem !important;
-        align-items: center !important;
-    }
-    
-    /* 모바일에서 사이드바 숨기기 */
-    .dashboard-sidebar {
-        display: none !important;
-    }
-    
-    /* 모바일에서 메인 컨텐츠 전체 너비 사용 */
-    .dashboard-main-content {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding-top: 70px !important;
-    }
-}
 
-/* 모바일에서 확실히 보이도록 추가 스타일 */
-@media screen and (max-width: 768px) {
-    .mobile-header {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        z-index: 999999 !important;
-        background: white !important;
-        width: 100% !important;
-        height: 60px !important;
-        border-bottom: 1px solid #e5e7eb !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    .mobile-header--active {
+        visibility: visible;
+        opacity: 1;
     }
-    
-    .mobile-header * {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-    
+
     .mobile-header-content {
-        width: 100% !important;
-        height: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 0 16px !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 100%;
+        padding: 0 1rem;
     }
-    
+
+    .mobile-header-title {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+    }
+
     .mobile-title {
-        color: #000000 !important;
-        font-size: 20px !important;
-        font-weight: 700 !important;
-        margin: 0 !important;
-        display: block !important;
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #374151;
     }
-    
+
     .mobile-menu-toggle,
     .mobile-action-btn {
-        background: none !important;
-        border: none !important;
-        color: #000000 !important;
-        cursor: pointer !important;
-        padding: 8px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        color: #374151;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .mobile-header-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .dashboard-sidebar {
+        display: none;
+    }
+
+    .dashboard-main-content {
+        width: 100%;
+        max-width: 100%;
+        padding-top: 70px;
     }
 }
 
 /* 반응형 다크 모드 지원 */
 @media (max-width: 768px) {
     [data-theme="dark"] .mobile-header {
-        background-color: #1f2937 !important;
-        border-bottom-color: #374151 !important;
+        background-color: #1f2937;
+        border-bottom-color: #374151;
     }
-    
-    [data-theme="dark"] .mobile-header .mobile-title {
-        color: #ffffff !important;
-    }
-    
+
+    [data-theme="dark"] .mobile-header .mobile-title,
     [data-theme="dark"] .mobile-header button {
-        color: #ffffff !important;
+        color: #ffffff;
     }
     
     /* 다크 모드에서 대시보드 카드 버튼 텍스트 */
@@ -452,47 +506,31 @@
     
     /* 모바일에서 대시보드 섹션 표시 */
     .dashboard-grid {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-        gap: 0.75rem !important;
-        padding: 1rem !important;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
     }
-    
+
     .dashboard-card {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 0.5rem !important;
-        padding: 0.75rem !important;
-        min-height: auto !important;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        min-height: auto;
     }
-    
-    /* 모바일에서 SalesPipelineSummary 섹션 표시 */
-    h2.text-\[#0e131b\] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
+
+    .dashboard-section-content {
+        gap: 1rem;
+        padding: 1rem;
     }
-    
-    /* 모바일에서 차트와 콘텐츠 영역 표시 */
-    .flex.flex-wrap.gap-4.px-4.py-6 {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 1rem !important;
-        padding: 1rem !important;
+
+    .dashboard-stat-card {
+        min-width: auto;
+        width: 100%;
+        gap: 0.5rem;
+        padding: 1rem;
     }
-    
-    .flex.min-w-72.flex-1.flex-col.gap-2.rounded-lg.border {
-        display: flex !important;
-        flex-direction: column !important;
-        min-width: auto !important;
-        width: 100% !important;
-        gap: 0.5rem !important;
-        padding: 1rem !important;
-    }
-    
-    /* 모바일에서 그리드 차트 표시 */
-    .grid.min-h-\[180px\] {
-        display: grid !important;
-        min-height: 120px !important;
+
+    .dashboard-chart-grid {
+        min-height: 120px;
     }
 }

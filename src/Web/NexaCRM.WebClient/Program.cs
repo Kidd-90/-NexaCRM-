@@ -5,6 +5,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.WebClient;
+// using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
 using Microsoft.AspNetCore.Components.Authorization;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;
@@ -38,6 +39,9 @@ builder.Services.AddScoped<IActivityService, MockActivityService>();
 builder.Services.AddScoped<ISalesManagementService, MockSalesManagementService>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 builder.Services.AddScoped<IDbDataService, MockDbDataService>();
+builder.Services.AddScoped<IDuplicateService, DuplicateService>();
+builder.Services.AddSingleton<IDedupeConfigService, DedupeConfigService>();
+builder.Services.AddScoped<IDuplicateMonitorService, DuplicateMonitorService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
@@ -57,4 +61,8 @@ var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+// Kick off duplicate monitor
+var monitor = host.Services.GetRequiredService<IDuplicateMonitorService>();
+await monitor.StartAsync();
+await host.RunAsync();

@@ -14,7 +14,7 @@
 <div class="login-container mobile-login-container">
   <div class="mobile-login-card">
     <div class="brand-section">
-      <span class="brand-logo">POOQ</span>
+      <span class="brand-logo">Nexa DB</span>
       <p class="brand-caption">@Localizer["SignInToYourAccount"]</p>
     </div>
 
@@ -92,17 +92,18 @@
     </div>
 
     <div class="social-login-grid">
-      <button class="social-login-btn naver-btn" type="button">
+      <button class="social-login-btn naver-btn" type="button" disabled aria-disabled="true" title="@Localizer["SocialLoginComingSoon"]">
         <span class="social-icon">
           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
             <rect width="32" height="32" rx="16" fill="#03C75A" />
-            <path d="M19.8 10h-3.64v5.5L12.2 10H9v12h3.6v-5.5l3.96 5.5h3.24V10z" fill="#ffffff" />
+            <!-- Center the N logo horizontally within the 32x32 rect -->
+            <path d="M19.8 10h-3.64v5.5L12.2 10H9v12h3.6v-5.5l3.96 5.5h3.24V10z" fill="#ffffff" transform="translate(1.6,0)" />
           </svg>
         </span>
         <span class="social-text">@Localizer["Naver"]</span>
       </button>
 
-      <button class="social-login-btn google-btn" type="button">
+      <button class="social-login-btn google-btn" type="button" disabled aria-disabled="true" title="@Localizer["SocialLoginComingSoon"]">
         <span class="social-icon">
           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
             <path fill="#4285F4" d="M28.16 16.26c0-.94-.08-1.8-.24-2.6H16v4.92h6.84c-.3 1.62-1.2 2.98-2.56 3.88v3.3h4.14c2.4-2.2 3.74-5.44 3.74-9.5z"/>
@@ -114,7 +115,7 @@
         <span class="social-text">@Localizer["Google"]</span>
       </button>
 
-      <button class="social-login-btn kakao-btn" type="button">
+      <button class="social-login-btn kakao-btn" type="button" disabled aria-disabled="true" title="@Localizer["SocialLoginComingSoon"]">
         <span class="social-icon">
           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
             <rect width="32" height="32" rx="16" fill="#FEE500" />
@@ -124,6 +125,7 @@
         <span class="social-text">@Localizer["Kakao"]</span>
       </button>
     </div>
+    <p class="social-login-notice">@Localizer["SocialLoginComingSoon"]</p>
   </div>
 </div>
 

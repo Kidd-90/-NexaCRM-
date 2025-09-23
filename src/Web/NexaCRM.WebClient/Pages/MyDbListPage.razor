@@ -8,6 +8,7 @@
 @inject IDbDataService DbDataService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<DbStatus> StatusLocalizer
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">내 DB 목록</h1>
@@ -42,7 +43,7 @@
                             <td>@customer.CustomerName</td>
                             <td>@customer.ContactNumber</td>
                             <td>@customer.AssignedDate.ToShortDateString()</td>
-                            <td>@customer.Status</td>
+                            <td class="@GetStatusClass(customer.Status)">@StatusLocalizer[customer.Status.ToString()]</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
                         </tr>
                     }
@@ -66,7 +67,7 @@
                     </div>
                     <div class="card-info-row">
                         <span class="card-info-label">DB 상태</span>
-                        <span class="card-info-value">@customer.Status</span>
+                        <span class="card-info-value @GetStatusClass(customer.Status)">@StatusLocalizer[customer.Status.ToString()]</span>
                     </div>
                     <div class="card-info-row">
                         <span class="card-info-label">최종 컨택일</span>
@@ -114,4 +115,14 @@
     {
         NavigationManager.NavigateTo($"/contacts/{contactId}");
     }
+
+    private static string GetStatusClass(DbStatus status) => status switch
+    {
+        DbStatus.New => "status-text status-new",
+        DbStatus.InProgress => "status-text status-inprogress",
+        DbStatus.NoAnswer => "status-text status-noanswer",
+        DbStatus.Completed => "status-text status-completed",
+        DbStatus.OnHold => "status-text status-onhold",
+        _ => "status-text"
+    };
 }

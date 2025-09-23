@@ -5,9 +5,11 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.WebClient.Models.Db
 @using NexaCRM.WebClient.Services.Interfaces
+@using Microsoft.Extensions.Localization
 @inject IDbDataService DbDataService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<DbStatus> StatusLocalizer
 
 <div class="container-fluid mt-4">
     <h1 class="mb-4">관심 DB 목록</h1>
@@ -40,7 +42,7 @@
                         <tr @onclick="() => NavigateToContact(customer.ContactId)">
                             <td>@customer.CustomerName</td>
                             <td>@customer.ContactNumber</td>
-                            <td>@customer.Status</td>
+                            <td>@StatusLocalizer[customer.Status.ToString()]</td>
                             <td>@customer.LastContactDate.ToShortDateString()</td>
                         </tr>
                     }
@@ -60,7 +62,7 @@
                     </div>
                     <div class="card-info-row">
                         <span class="card-info-label">DB 상태</span>
-                        <span class="card-info-value">@customer.Status</span>
+                        <span class="card-info-value">@StatusLocalizer[customer.Status.ToString()]</span>
                     </div>
                     <div class="card-info-row">
                         <span class="card-info-label">최종 컨택일</span>
@@ -73,8 +75,8 @@
 </div>
 
 @code {
-    private IEnumerable<DbCustomer> customers;
-    private ClaimsPrincipal user;
+    private IEnumerable<DbCustomer>? customers;
+    private ClaimsPrincipal? user;
 
     protected override async Task OnInitializedAsync()
     {

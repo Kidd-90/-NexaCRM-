@@ -59,7 +59,8 @@
             <input
                 placeholder='@Localizer["Search"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                value=""
+                @bind="DealSearchTerm"
+                @bind:event="oninput"
             />
             </div>
         </label>
@@ -108,65 +109,129 @@
                 <input
                 placeholder='@Localizer["SearchDeals"]'
                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                value=""
+                @bind="DealSearchTerm"
+                @bind:event="oninput"
                 />
             </div>
             </label>
         </div>
-        <div class="flex gap-3 p-3 flex-wrap pr-4">
-            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Owner"]</p>
-            <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+        <div class="flex gap-3 p-3 flex-wrap pr-4 pipeline-filter-row">
+            <div class="pipeline-filter-control">
+                <span class="pipeline-filter-label">@Localizer["Owner"]</span>
+                <div class="pipeline-filter-select-wrapper">
+                    <select id="owner-filter" class="pipeline-filter-select" @bind="SelectedOwner">
+                        <option value="@FilterOwnerAll">@Localizer["FilterOwnerAny"]</option>
+                        @foreach (var owner in ownerOptions)
+                        {
+                            <option value="@owner">@owner</option>
+                        }
+                    </select>
+                </div>
             </div>
-            </button>
-            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["TimePeriod"]</p>
-            <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+            <div class="pipeline-filter-control">
+                <span class="pipeline-filter-label">@Localizer["TimePeriod"]</span>
+                <div class="pipeline-filter-select-wrapper">
+                    <select id="time-filter" class="pipeline-filter-select" @bind="SelectedTimePeriod">
+                        <option value="@FilterPeriodAll">@Localizer["FilterTimeAny"]</option>
+                        <option value="@FilterPeriodLast7Days">@Localizer["FilterTimeLast7Days"]</option>
+                        <option value="@FilterPeriodLast30Days">@Localizer["FilterTimeLast30Days"]</option>
+                        <option value="@FilterPeriodQuarterToDate">@Localizer["FilterTimeQuarterToDate"]</option>
+                    </select>
+                </div>
             </div>
-            </button>
-            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#e7ecf3] pl-4 pr-2">
-            <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Amount"]</p>
-            <div class="text-[#0e131b]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+            <div class="pipeline-filter-control">
+                <span class="pipeline-filter-label">@Localizer["Amount"]</span>
+                <div class="pipeline-filter-select-wrapper">
+                    <select id="amount-filter" class="pipeline-filter-select" @bind="SelectedAmountRange">
+                        <option value="@FilterAmountAll">@Localizer["FilterAmountAny"]</option>
+                        <option value="@FilterAmountUnder25K">@Localizer["FilterAmountUnder25K"]</option>
+                        <option value="@FilterAmount25KTo50K">@Localizer["FilterAmount25KTo50K"]</option>
+                        <option value="@FilterAmountAbove50K">@Localizer["FilterAmountAbove50K"]</option>
+                    </select>
+                </div>
             </div>
-            </button>
         </div>
+
+        @if (isLoading)
+        {
+            <div class="filter-summary filter-summary--loading" aria-live="polite">
+                <span class="visually-hidden">@Localizer["Loading..."]</span>
+                <div class="skeleton skeleton--text skeleton--short"></div>
+                <div class="skeleton skeleton--text skeleton--wide"></div>
+            </div>
+        }
+        else
+        {
+            <div class="filter-summary @(HasActiveFilters ? "filter-summary--active" : string.Empty)" aria-live="polite">
+                <div class="filter-summary__meta">
+                    <span class="filter-summary__count">@string.Format(Localizer["DealsFound"], FilteredDealCount)</span>
+                    @if (HasActiveFilters)
+                    {
+                        <button type="button" class="clear-filters-button" @onclick="ClearFilters">
+                            @Localizer["ClearFilters"]
+                        </button>
+                    }
+                </div>
+                @if (HasActiveFilters)
+                {
+                    <div class="filter-summary__badges">
+                        @foreach (var description in BuildActiveFilterDescriptions())
+                        {
+                            <span class="active-filter-badge">@description</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
         <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["PipelineStages"]</h2>
         <div class="px-4 py-3 container">
             <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
-            <table class="flex-1">
+            <table class="flex-1 pipeline-table">
                 <thead>
                 <tr class="bg-slate-50">
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Stage"]</th>
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Deals"]</th>
-                    <th class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Amount"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Stage"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Deals"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Amount"]</th>
                 </tr>
                 </thead>
-                <tbody>
-                    @if (dealsByStage == null)
+                <tbody class="pipeline-table__body">
+                    @if (isLoading)
+                    {
+                        @foreach (var placeholderIndex in Enumerable.Range(0, 4))
+                        {
+                            <tr class="pipeline-row pipeline-row--skeleton border-t border-t-[#d0d9e7]">
+                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                                    @if (placeholderIndex == 0)
+                                    {
+                                        <span class="visually-hidden">@Localizer["Loading..."]</span>
+                                    }
+                                    <span class="skeleton skeleton--text skeleton--stage"></span>
+                                </td>
+                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                                    <span class="skeleton skeleton--text skeleton--count"></span>
+                                </td>
+                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                                    <span class="skeleton skeleton--text skeleton--amount"></span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else if (groupedDeals.Length == 0)
                     {
                         <tr>
-                            <td colspan="3"><em>@Localizer["Loading..."]</em></td>
+                            <td colspan="3" class="text-center text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["NoDealsMatch"]</td>
                         </tr>
                     }
                     else
                     {
-                        @foreach (var stage in dealsByStage)
+                        @foreach (var stage in groupedDeals)
                         {
-                            <tr class="border-t border-t-[#d0d9e7]">
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                            <tr class="pipeline-row pipeline-row--data border-t border-t-[#d0d9e7]">
+                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
                                 @stage.Key
                                 </td>
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Count()</td>
-                                <td class="table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Sum(d => d.Amount).ToString("C")</td>
+                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Count()</td>
+                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Sum(d => d.Amount).ToString("C")</td>
                             </tr>
                         }
                     }
