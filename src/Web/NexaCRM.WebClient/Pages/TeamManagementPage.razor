@@ -1,0 +1,299 @@
+@page "/organization/team-management"
+@attribute [Authorize(Roles = "Manager,Admin")]
+
+@using System
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
+@using NexaCRM.WebClient.Models.Teams
+@using NexaCRM.WebClient.Services.Interfaces
+
+@inject ITeamService TeamService
+
+<ResponsivePage>
+    <div class="team-management-page">
+        <div class="card shadow-sm page-header">
+            <div>
+                <h2 class="mb-1">팀 관리</h2>
+                <p class="text-muted mb-0">조직의 팀 구성과 운영 현황을 한눈에 확인하고 관리할 수 있습니다.</p>
+            </div>
+            <div class="summary-box">
+                <span class="summary-label">TOTAL</span>
+                <span class="summary-value">@_filteredTeams.Count</span>
+            </div>
+        </div>
+
+        <div class="card shadow-sm filter-card">
+            <EditForm Model="_teamFilter" OnValidSubmit="ApplyFilter">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4 col-sm-6">
+                        <label class="form-label">사용 여부</label>
+                        <InputSelect class="form-select" @bind-Value="_teamFilter.Usage">
+                            <option value="All">전체</option>
+                            <option value="Active">사용</option>
+                            <option value="Inactive">미사용</option>
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <label class="form-label">등록 기간</label>
+                        <InputSelect class="form-select" @bind-Value="_teamFilter.Period">
+                            <option value="All">전체</option>
+                            <option value="1M">1개월 이내</option>
+                            <option value="3M">3개월 이내</option>
+                            <option value="6M">6개월 이내</option>
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-4 col-sm-12 d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-primary">조회</button>
+                        <button type="button" class="btn btn-outline-secondary" @onclick="ResetFilter">초기화</button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-success" @onclick="ToggleTeamForm">
+                <i class="bi bi-plus-lg me-1"></i> 팀 등록
+            </button>
+        </div>
+
+        @if (_showTeamForm)
+        {
+            <div class="card shadow-sm new-team-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>새 팀 등록</strong>
+                    <button class="btn btn-link text-decoration-none" @onclick="ToggleTeamForm">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="_newTeam" OnValidSubmit="CreateTeamAsync">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">팀명</label>
+                                <InputText class="form-control" @bind-Value="_newTeam.Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">팀장</label>
+                                <InputText class="form-control" @bind-Value="_newTeam.ManagerName" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">팀 코드</label>
+                                <InputText class="form-control" @bind-Value="_newTeam.TeamCode" placeholder="자동 생성" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">팀 인원 수</label>
+                                <InputNumber class="form-control" @bind-Value="_newTeam.MemberCount" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">등록일</label>
+                                <InputDate class="form-control" @bind-Value="_newTeam.RegisteredAt" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">사용 여부</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="teamActiveSwitch" @bind="_newTeam.IsActive" />
+                                    <label class="form-check-label" for="teamActiveSwitch">@(_newTeam.IsActive ? "사용" : "미사용")</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-primary px-4">등록</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        }
+
+        <div class="card shadow-sm table-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">NO</th>
+                            <th scope="col">팀코드</th>
+                            <th scope="col">팀명</th>
+                            <th scope="col">담당자</th>
+                            <th scope="col">연락 수</th>
+                            <th scope="col" class="text-center">사용 여부</th>
+                            <th scope="col">등록일자</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (_filteredTeams.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">표시할 팀이 없습니다.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var (team, index) in _filteredTeams.Select((t, i) => (t, i + 1)))
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@team.TeamCode</td>
+                                    <td class="fw-semibold">@team.Name</td>
+                                    <td>@team.ManagerName</td>
+                                    <td>@team.MemberCount</td>
+                                    <td class="text-center">
+                                        <div class="form-check form-switch justify-content-center d-inline-flex">
+                                            <input class="form-check-input" id="@($"team-active-{team.Id}")" type="checkbox" role="switch" checked="@team.IsActive" @onchange="args => ToggleTeamUsageAsync(team, args)" />
+                                        </div>
+                                    </td>
+                                    <td>@team.RegisteredAt.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ResponsivePage>
+
+@code {
+    private readonly List<TeamInfo> _filteredTeams = new();
+    private List<TeamInfo> _teams = new();
+    private bool _showTeamForm;
+    private TeamFilterModel _teamFilter = new();
+    private TeamCreateModel _newTeam = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTeamsAsync();
+        _newTeam = new TeamCreateModel();
+        ApplyFilter();
+    }
+
+    private async Task LoadTeamsAsync()
+    {
+        var teams = await TeamService.GetTeamsAsync();
+        _teams = teams
+            .OrderByDescending(t => t.RegisteredAt)
+            .ToList();
+    }
+
+    private void ApplyFilter()
+    {
+        var query = _teams.AsEnumerable();
+
+        if (_teamFilter.Usage == "Active")
+        {
+            query = query.Where(t => t.IsActive);
+        }
+        else if (_teamFilter.Usage == "Inactive")
+        {
+            query = query.Where(t => !t.IsActive);
+        }
+
+        if (TryGetPeriodStart(_teamFilter.Period, out var startDate))
+        {
+            query = query.Where(t => t.RegisteredAt >= startDate);
+        }
+
+        _filteredTeams.Clear();
+        _filteredTeams.AddRange(query.OrderByDescending(t => t.RegisteredAt));
+    }
+
+    private static bool TryGetPeriodStart(string period, out DateTime startDate)
+    {
+        startDate = default;
+        var today = DateTime.Today;
+
+        return period switch
+        {
+            "1M" => Assign(today.AddMonths(-1), out startDate),
+            "3M" => Assign(today.AddMonths(-3), out startDate),
+            "6M" => Assign(today.AddMonths(-6), out startDate),
+            _ => false
+        };
+    }
+
+    private static bool Assign(DateTime value, out DateTime result)
+    {
+        result = value;
+        return true;
+    }
+
+    private void ResetFilter()
+    {
+        _teamFilter = new TeamFilterModel();
+        ApplyFilter();
+    }
+
+    private void ToggleTeamForm()
+    {
+        _showTeamForm = !_showTeamForm;
+        if (_showTeamForm)
+        {
+            _newTeam = new TeamCreateModel();
+        }
+    }
+
+    private async Task CreateTeamAsync()
+    {
+        var team = new TeamInfo
+        {
+            Name = _newTeam.Name,
+            ManagerName = _newTeam.ManagerName,
+            TeamCode = _newTeam.TeamCode,
+            MemberCount = _newTeam.MemberCount,
+            IsActive = _newTeam.IsActive,
+            RegisteredAt = _newTeam.RegisteredAt
+        };
+
+        var created = await TeamService.CreateTeamAsync(team);
+        _teams.Add(created);
+        ApplyFilter();
+        _showTeamForm = false;
+        _newTeam = new TeamCreateModel();
+    }
+
+    private async Task ToggleTeamUsageAsync(TeamInfo team, ChangeEventArgs args)
+    {
+        if (team is null)
+        {
+            return;
+        }
+
+        var value = args.Value is bool boolean
+            ? boolean
+            : bool.TryParse(args.Value?.ToString(), out var parsed) && parsed;
+
+        await TeamService.UpdateTeamStatusAsync(team.Id, value);
+
+        var target = _teams.FirstOrDefault(t => t.Id == team.Id);
+        if (target is not null)
+        {
+            target.IsActive = value;
+        }
+
+        ApplyFilter();
+    }
+
+    private class TeamFilterModel
+    {
+        public string Usage { get; set; } = "All";
+        public string Period { get; set; } = "All";
+    }
+
+    private class TeamCreateModel
+    {
+        [Required(ErrorMessage = "팀명을 입력해 주세요.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "팀장을 입력해 주세요.")]
+        public string ManagerName { get; set; } = string.Empty;
+
+        [Range(0, 999, ErrorMessage = "팀 인원 수는 0명 이상이어야 합니다.")]
+        public int MemberCount { get; set; }
+
+        public string TeamCode { get; set; } = string.Empty;
+
+        public bool IsActive { get; set; } = true;
+
+        public DateTime RegisteredAt { get; set; } = DateTime.Today;
+    }
+}
