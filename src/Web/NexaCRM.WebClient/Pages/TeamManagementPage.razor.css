@@ -1,0 +1,108 @@
+.team-management-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.page-header,
+.filter-card,
+.table-card,
+.new-team-card {
+    border: none;
+    border-radius: 1rem;
+}
+
+.page-header {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #f9fbff 0%, #f0f4ff 100%);
+    align-items: center;
+}
+
+.page-header h2 {
+    font-weight: 700;
+}
+
+.summary-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    color: #1f3c88;
+}
+
+.summary-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+
+.summary-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.filter-card,
+.new-team-card,
+.table-card {
+    padding: 1.5rem;
+    background-color: #ffffff;
+}
+
+.filter-card label,
+.new-team-card label {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.filter-card .btn,
+.action-bar .btn {
+    min-width: 6.5rem;
+}
+
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.new-team-card .card-header {
+    border-bottom: none;
+    background: transparent;
+}
+
+.new-team-card .card-body {
+    padding-top: 0;
+}
+
+.table-card table {
+    margin-bottom: 0;
+}
+
+.table-card thead th {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    background-color: #f7f9fc;
+}
+
+.table-card tbody td {
+    vertical-align: middle;
+}
+
+.table-card tbody tr:hover {
+    background-color: #f5f7fb;
+}
+
+@media (max-width: 767.98px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .summary-box {
+        align-items: flex-start;
+    }
+
+    .filter-card .row > div:last-child {
+        justify-content: flex-start !important;
+    }
+}

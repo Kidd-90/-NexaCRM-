@@ -1,0 +1,115 @@
+.team-member-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.page-header,
+.filter-card,
+.table-card,
+.new-member-card {
+    border: none;
+    border-radius: 1rem;
+}
+
+.page-header {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #fef6ff 0%, #f0f2ff 100%);
+    align-items: center;
+}
+
+.page-header h2 {
+    font-weight: 700;
+}
+
+.summary-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    color: #5a189a;
+}
+
+.summary-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+
+.summary-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.filter-card,
+.new-member-card,
+.table-card {
+    padding: 1.5rem;
+    background-color: #ffffff;
+}
+
+.filter-card label,
+.new-member-card label {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.filter-card .btn,
+.action-bar .btn {
+    min-width: 6rem;
+}
+
+.filter-card .btn.active,
+.filter-card .btn:active {
+    color: #ffffff;
+    background-color: #5a189a;
+    border-color: #5a189a;
+}
+
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.new-member-card .card-header {
+    border-bottom: none;
+    background: transparent;
+}
+
+.new-member-card .card-body {
+    padding-top: 0;
+}
+
+.table-card table {
+    margin-bottom: 0;
+}
+
+.table-card thead th {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    background-color: #f7f9fc;
+}
+
+.table-card tbody td {
+    vertical-align: middle;
+}
+
+.table-card tbody tr:hover {
+    background-color: #f6f0ff;
+}
+
+@media (max-width: 767.98px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .summary-box {
+        align-items: flex-start;
+    }
+
+    .filter-card .row > div:last-child {
+        margin-top: 0.5rem;
+    }
+}

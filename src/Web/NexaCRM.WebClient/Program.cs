@@ -56,6 +56,7 @@ builder.Services.AddScoped<IUserFavoritesService, UserFavoritesService>();
 builder.Services.AddScoped<IEmailTemplateService, MockEmailTemplateService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationFeedService, MockNotificationFeedService>();
+builder.Services.AddScoped<ITeamService, MockTeamService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;

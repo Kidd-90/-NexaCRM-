@@ -114,6 +114,12 @@
   <data name="OrganizationStructure" xml:space="preserve">
     <value>조직 구조</value>
   </data>
+  <data name="TeamManagement" xml:space="preserve">
+    <value>팀 관리</value>
+  </data>
+  <data name="TeamMemberManagement" xml:space="preserve">
+    <value>팀원 관리</value>
+  </data>
   <data name="PersonalInfo" xml:space="preserve">
     <value>개인 정보</value>
   </data>
