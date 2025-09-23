@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace NexaCRM.WebClient.Models.Organization;
@@ -20,5 +21,10 @@ public class OrganizationUser
     public string? Email { get; set; }
     public string? Role { get; set; }
     public string? Status { get; set; }
+    public string? Department { get; set; }
+    public string? PhoneNumber { get; set; }
+    public DateTime RegisteredAt { get; set; }
+    public DateTime? ApprovedAt { get; set; }
+    public string? ApprovalMemo { get; set; }
 }
 
