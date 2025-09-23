@@ -1,13 +1,20 @@
 @using Microsoft.AspNetCore.Components
-<div class="responsive-page">
-    <div class="row">
-        <div class="col-12">
-            @ChildContent
-        </div>
+<div class="responsive-page" data-layout="@LayoutMode">
+    <div class="responsive-page__inner" id="@ElementId" role="@Role">
+        @ChildContent
     </div>
 </div>
 
 @code {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string LayoutMode { get; set; } = "constrained";
+
+    [Parameter]
+    public string? ElementId { get; set; }
+
+    [Parameter]
+    public string? Role { get; set; }
 }

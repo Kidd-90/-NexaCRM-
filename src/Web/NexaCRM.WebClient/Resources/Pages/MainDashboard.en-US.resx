@@ -6,6 +6,15 @@
   <data name="AcmeCo" xml:space="preserve">
     <value>Acme Co.</value>
   </data>
+  <data name="SkipToMainContent" xml:space="preserve">
+    <value>Skip to main dashboard content</value>
+  </data>
+  <data name="QuickActionsLabel" xml:space="preserve">
+    <value>Mobile quick actions</value>
+  </data>
+  <data name="PrimaryNavigation" xml:space="preserve">
+    <value>Primary navigation</value>
+  </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>

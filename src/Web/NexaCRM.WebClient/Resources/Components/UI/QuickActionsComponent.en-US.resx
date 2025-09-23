@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="CallCustomer" xml:space="preserve">
+    <value>Call customer</value>
+  </data>
+  <data name="EmailCustomer" xml:space="preserve">
+    <value>Email customer</value>
+  </data>
+  <data name="ScheduleMeeting" xml:space="preserve">
+    <value>Schedule meeting</value>
+  </data>
+  <data name="Call" xml:space="preserve">
+    <value>Call</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Meeting" xml:space="preserve">
+    <value>Meeting</value>
+  </data>
+  <data name="QuickActionsToastDismiss" xml:space="preserve">
+    <value>Dismiss notification</value>
+  </data>
+  <data name="QuickActionsCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="QuickActionsCallDialogTitle" xml:space="preserve">
+    <value>Call {0}</value>
+  </data>
+  <data name="QuickActionsCallDialogDescription" xml:space="preserve">
+    <value>Choose how you'd like to reach {0}. We'll open your default calling app.</value>
+  </data>
+  <data name="QuickActionsCallPrimary" xml:space="preserve">
+    <value>Start call</value>
+  </data>
+  <data name="QuickActionsCopyNumber" xml:space="preserve">
+    <value>Copy number</value>
+  </data>
+  <data name="QuickActionsCallLaunched" xml:space="preserve">
+    <value>Calling {0}.</value>
+  </data>
+  <data name="QuickActionsCopySuccess" xml:space="preserve">
+    <value>Phone number copied to clipboard.</value>
+  </data>
+  <data name="QuickActionsEmailSubject" xml:space="preserve">
+    <value>Follow-up with {0}</value>
+  </data>
+  <data name="QuickActionsEmailBody" xml:space="preserve">
+    <value>Hello {0},&#x0a;&#x0a;I wanted to follow up with you regarding...&#x0a;&#x0a;Best regards</value>
+  </data>
+  <data name="QuickActionsEmailClipboardTemplate" xml:space="preserve">
+    <value>To: {0}&#x0a;Subject: {1}&#x0a;&#x0a;{2}</value>
+  </data>
+  <data name="QuickActionsEmailDialogTitle" xml:space="preserve">
+    <value>Email {0}</value>
+  </data>
+  <data name="QuickActionsEmailDialogDescription" xml:space="preserve">
+    <value>Open your email client or copy the prepared template.</value>
+  </data>
+  <data name="QuickActionsEmailPrimary" xml:space="preserve">
+    <value>Compose email</value>
+  </data>
+  <data name="QuickActionsEmailCopy" xml:space="preserve">
+    <value>Copy template</value>
+  </data>
+  <data name="QuickActionsEmailLaunched" xml:space="preserve">
+    <value>Email draft created for {0}.</value>
+  </data>
+  <data name="QuickActionsEmailCopySuccess" xml:space="preserve">
+    <value>Email template copied to clipboard.</value>
+  </data>
+  <data name="QuickActionsMeetingSummary" xml:space="preserve">
+    <value>Meeting with {0}</value>
+  </data>
+  <data name="QuickActionsMeetingDescription" xml:space="preserve">
+    <value>Sales meeting with {0}.</value>
+  </data>
+  <data name="QuickActionsMeetingPrepared" xml:space="preserve">
+    <value>Calendar invite prepared for {0}.</value>
+  </data>
+  <data name="QuickActionsUnknownContact" xml:space="preserve">
+    <value>customer</value>
+  </data>
+</root>

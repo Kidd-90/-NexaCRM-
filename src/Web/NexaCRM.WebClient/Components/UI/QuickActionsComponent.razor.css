@@ -6,6 +6,75 @@
     @apply flex items-center gap-2 flex-wrap;
 }
 
+.quick-actions-feedback {
+    @apply mt-2 text-sm text-slate-600;
+    min-height: 1.25rem;
+}
+
+.quick-actions-toast {
+    @apply mt-3 flex items-center gap-3 rounded-lg bg-slate-900/90 text-white px-4 py-2 shadow-xl;
+    backdrop-filter: blur(4px);
+    max-width: 28rem;
+    line-height: 1.35;
+}
+
+.quick-actions-toast__dismiss {
+    @apply bg-transparent border-none cursor-pointer text-white text-xl leading-none font-bold;
+}
+
+.quick-actions-sheet-backdrop {
+    @apply fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40;
+    backdrop-filter: blur(6px);
+}
+
+.quick-actions-sheet {
+    @apply flex flex-col gap-5 bg-white;
+    width: min(90%, 28rem);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+}
+
+.quick-actions-sheet__header {
+    @apply flex flex-col gap-2;
+}
+
+.quick-actions-sheet__header h3 {
+    @apply text-lg font-semibold text-slate-900;
+}
+
+.quick-actions-sheet__header p {
+    @apply text-sm text-slate-600;
+}
+
+.quick-actions-sheet__actions {
+    @apply flex flex-col gap-3;
+}
+
+.quick-actions-sheet__primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white shadow-lg transition-colors;
+}
+
+.quick-actions-sheet__primary:hover,
+.quick-actions-sheet__primary:focus-visible {
+    @apply bg-blue-700;
+    outline: none;
+}
+
+.quick-actions-sheet__secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 transition-colors;
+}
+
+.quick-actions-sheet__secondary:hover,
+.quick-actions-sheet__secondary:focus-visible {
+    @apply bg-slate-100;
+    outline: none;
+}
+
+.quick-actions-sheet__tertiary {
+    @apply text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors;
+}
+
 .quick-action-btn {
     @apply flex items-center justify-center gap-2 px-3 py-2 rounded-lg border-2 transition-all duration-200 cursor-pointer;
     min-height: 44px; /* Touch-friendly minimum size */
@@ -68,7 +137,17 @@
         @apply flex-row justify-center gap-4;
         width: 100%;
     }
-    
+
+    .quick-actions-sheet-backdrop {
+        @apply items-end;
+    }
+
+    .quick-actions-sheet {
+        width: 100%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
     .quick-action-btn {
         @apply flex-1 min-w-0;
         min-height: 48px; /* Larger touch target on mobile */
@@ -76,6 +155,17 @@
     
     .action-label {
         @apply text-xs;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quick-action-btn,
+    .quick-actions-toast,
+    .quick-actions-sheet,
+    .quick-actions-sheet__primary,
+    .quick-actions-sheet__secondary {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
     }
 }
 

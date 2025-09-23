@@ -72,4 +72,7 @@
   <data name="Preview" xml:space="preserve">
     <value>Preview</value>
   </data>
+  <data name="ReportsPreviewEmpty" xml:space="preserve">
+    <value>Select fields and generate the report to see a preview.</value>
+  </data>
 </root>

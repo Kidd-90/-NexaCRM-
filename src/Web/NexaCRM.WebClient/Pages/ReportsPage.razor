@@ -5,65 +5,97 @@
 @inject IStringLocalizer<ReportsPage> Localizer
 @inject IReportService ReportService
 
-<h1 class="text-2xl font-bold mb-4">@Localizer["ReportsTitle"]</h1>
+<ResponsivePage LayoutMode="expanded">
+    <div class="reports-layout">
+        <section class="reports-layout__form" aria-labelledby="reportBuilderTitle">
+            <h1 id="reportBuilderTitle" class="reports-layout__title">@Localizer["ReportsTitle"]</h1>
+            <EditForm Model="currentDefinition" class="reports-form">
+                <div class="reports-field">
+                    <label class="reports-field__label" for="reportNameInput">@Localizer["ReportName"]</label>
+                    <InputText id="reportNameInput" @bind-Value="currentDefinition.Name" class="form-input reports-input" />
+                </div>
 
-<EditForm Model="currentDefinition">
-    <InputText @bind-Value="currentDefinition.Name" placeholder='@Localizer["ReportName"]' class="form-input mb-2" />
-    <div class="report-form-row mb-2">
-        <InputText @bind-Value="newField" placeholder='@Localizer["Field"]' class="form-input flex-1" />
-        <button type="button" class="px-2 py-1 bg-[#e7ecf3] rounded" @onclick="AddField">@Localizer["Add"]</button>
-    </div>
-    <ul class="mb-2">
-        @foreach (var field in currentDefinition.SelectedFields)
-        {
-            <li>@field</li>
-        }
-    </ul>
-    <div class="report-form-row mb-2">
-        <InputText @bind-Value="filterKey" placeholder='@Localizer["FilterKey"]' class="form-input flex-1" />
-        <InputText @bind-Value="filterValue" placeholder='@Localizer["FilterValue"]' class="form-input flex-1" />
-        <button type="button" class="px-2 py-1 bg-[#e7ecf3] rounded" @onclick="AddFilter">@Localizer["Add"]</button>
-    </div>
-    <ul class="mb-2">
-        @foreach (var filter in currentDefinition.Filters)
-        {
-            <li>@filter.Key: @filter.Value</li>
-        }
-    </ul>
-    <div class="report-actions mb-4">
-        <button type="button" class="px-3 py-1 bg-[#e7ecf3] rounded" @onclick="SaveDefinition">@Localizer["SaveDefinition"]</button>
-        <button type="button" class="px-3 py-1 bg-[#e7ecf3] rounded" @onclick="GenerateReport">@Localizer["GenerateReport"]</button>
-    </div>
-</EditForm>
+                <div class="reports-field reports-field--row">
+                    <label class="reports-field__label" for="newFieldInput">@Localizer["Field"]</label>
+                    <div class="reports-field__controls">
+                        <InputText id="newFieldInput" @bind-Value="newField" class="form-input reports-input" />
+                        <button type="button" class="reports-chip-button" @onclick="AddField">@Localizer["Add"]</button>
+                    </div>
+                </div>
 
-<h2 class="text-xl font-bold mb-2">@Localizer["SavedReports"]</h2>
-<ul class="mb-4">
-    @foreach (var def in savedDefinitions)
-    {
-        <li><button class="underline" @onclick="() => LoadDefinition(def)">@def.Name</button></li>
-    }
-</ul>
-
-<h2 class="text-xl font-bold mb-2">@Localizer["Preview"]</h2>
-@if (preview != null)
-{
-    <div class="report-preview">
-        <h3 class="font-bold mb-2">@preview.Title</h3>
-        <div class="report-table-container">
-            <table class="table-auto border-collapse w-full">
-                <thead>
-                    <tr><th class="border px-2">Field</th><th class="border px-2">Value</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in preview.Data)
+                <ul class="reports-token-list" aria-live="polite">
+                    @foreach (var field in currentDefinition.SelectedFields)
                     {
-                        <tr><td class="border px-2">@item.Key</td><td class="border px-2">@item.Value</td></tr>
+                        <li class="reports-token-item">@field</li>
                     }
-                </tbody>
-            </table>
-        </div>
+                </ul>
+
+                <div class="reports-field reports-field--filters">
+                    <div class="reports-field__group">
+                        <label class="reports-field__label" for="filterKeyInput">@Localizer["FilterKey"]</label>
+                        <InputText id="filterKeyInput" @bind-Value="filterKey" class="form-input reports-input" />
+                    </div>
+                    <div class="reports-field__group">
+                        <label class="reports-field__label" for="filterValueInput">@Localizer["FilterValue"]</label>
+                        <InputText id="filterValueInput" @bind-Value="filterValue" class="form-input reports-input" />
+                    </div>
+                    <button type="button" class="reports-chip-button" @onclick="AddFilter">@Localizer["Add"]</button>
+                </div>
+
+                <ul class="reports-token-list reports-token-list--filters" aria-live="polite">
+                    @foreach (var filter in currentDefinition.Filters)
+                    {
+                        <li class="reports-token-item">@filter.Key: @filter.Value</li>
+                    }
+                </ul>
+
+                <div class="reports-form__actions">
+                    <button type="button" class="reports-action" @onclick="SaveDefinition">@Localizer["SaveDefinition"]</button>
+                    <button type="button" class="reports-action reports-action--primary" @onclick="GenerateReport">@Localizer["GenerateReport"]</button>
+                </div>
+            </EditForm>
+        </section>
+
+        <aside class="reports-layout__aside" aria-labelledby="savedReportsTitle">
+            <div class="reports-summary">
+                <h2 id="savedReportsTitle" class="reports-summary__title">@Localizer["SavedReports"]</h2>
+                <ul class="reports-summary__list">
+                    @foreach (var def in savedDefinitions)
+                    {
+                        <li><button class="reports-summary__link" @onclick="() => LoadDefinition(def)">@def.Name</button></li>
+                    }
+                </ul>
+
+                <section class="reports-preview" aria-labelledby="reportPreviewTitle">
+                    <h3 id="reportPreviewTitle" class="reports-preview__title">@Localizer["Preview"]</h3>
+                    @if (preview != null)
+                    {
+                        <div class="reports-preview__content">
+                            <h4 class="reports-preview__heading">@preview.Title</h4>
+                            <div class="reports-preview__table" role="region" aria-live="polite">
+                                <table class="table-auto border-collapse w-full">
+                                    <thead>
+                                        <tr><th class="border px-2">Field</th><th class="border px-2">Value</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in preview.Data)
+                                        {
+                                            <tr><td class="border px-2">@item.Key</td><td class="border px-2">@item.Value</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="reports-preview__placeholder">@Localizer["ReportsPreviewEmpty"]</p>
+                    }
+                </section>
+            </div>
+        </aside>
     </div>
-}
+</ResponsivePage>
 
 @code {
     private ReportDefinition currentDefinition = new();
