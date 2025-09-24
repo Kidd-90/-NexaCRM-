@@ -1,4 +1,5 @@
 @page "/"
+@layout LoginLayout
 @attribute [AllowAnonymous]
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
@@ -46,29 +47,29 @@
                 // 사용자 역할에 따라 적절한 대시보드로 리다이렉션
                 if (user.IsInRole("Manager"))
                 {
-                    NavigationManager.NavigateTo("/sales-manager-dashboard");
+                    NavigationManager.NavigateTo("/sales-manager-dashboard", replace: true);
                 }
                 else if (user.IsInRole("Sales"))
                 {
-                    NavigationManager.NavigateTo("/main-dashboard");
+                    NavigationManager.NavigateTo("/main-dashboard", replace: true);
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/main-dashboard");
+                    NavigationManager.NavigateTo("/main-dashboard", replace: true);
                 }
             }
             else
             {
                 await JSRuntime.InvokeVoidAsync("console.log", "User is not authenticated, redirecting to login");
                 _hasNavigated = true;
-                NavigationManager.NavigateTo("/login");
+                NavigationManager.NavigateTo("/login", replace: true);
             }
         }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("console.error", $"Error during authentication check: {ex.Message}");
             _hasNavigated = true;
-            NavigationManager.NavigateTo("/login");
+            NavigationManager.NavigateTo("/login", replace: true);
         }
     }
 }
