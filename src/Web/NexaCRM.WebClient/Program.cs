@@ -13,6 +13,7 @@ using NexaCRM.WebClient.Services.Mock;
 using NexaCRM.WebClient.Models.Db;
 using NexaCRM.WebClient.Options;
 using NexaCRM.WebClient.Services.Supabase;
+using NexaCRM.WebClient.Options;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

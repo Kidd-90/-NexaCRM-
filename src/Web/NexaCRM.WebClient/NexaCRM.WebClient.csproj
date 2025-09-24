@@ -23,6 +23,7 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
         <PackageReference Include="Supabase" Version="1.1.1" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
