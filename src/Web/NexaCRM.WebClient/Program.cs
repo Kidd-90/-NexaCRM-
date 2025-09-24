@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.WebClient;
 // using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;
 using NexaCRM.WebClient.Services.Mock;
@@ -28,11 +29,32 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSupabaseClientOptions(builder.Configuration);
+builder.Services.AddScoped<SupabaseSessionPersistence>();
+builder.Services.AddScoped<Supabase.Client>(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
+    if (string.IsNullOrWhiteSpace(options.Url) || string.IsNullOrWhiteSpace(options.AnonKey))
+    {
+        throw new InvalidOperationException("Supabase configuration must include Url and AnonKey.");
+    }
+
+    var persistence = provider.GetRequiredService<SupabaseSessionPersistence>();
+
+    var supabaseOptions = new Supabase.SupabaseOptions
+    {
+        AutoRefreshToken = true,
+        AutoConnectRealtime = true,
+        SessionHandler = persistence
+    };
+
+    return new Supabase.Client(options.Url, options.AnonKey, supabaseOptions);
+});
+builder.Services.AddScoped<SupabaseClientProvider>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
-builder.Services.AddScoped<IContactService, MockContactService>();
-builder.Services.AddScoped<IDealService, MockDealService>();
-builder.Services.AddScoped<ITaskService, MockTaskService>();
+builder.Services.AddScoped<IContactService, SupabaseContactService>();
+builder.Services.AddScoped<IDealService, SupabaseDealService>();
+builder.Services.AddScoped<ITaskService, SupabaseTaskService>();
 builder.Services.AddScoped<ISupportTicketService, MockSupportTicketService>();
 builder.Services.AddScoped<IAgentService, MockAgentService>();
 builder.Services.AddScoped<IMarketingCampaignService, MockMarketingCampaignService>();

@@ -429,7 +429,7 @@
         await CloseNavMenu();
         if (AuthStateProvider is CustomAuthStateProvider customAuthProvider)
         {
-            customAuthProvider.Logout();
+            await customAuthProvider.LogoutAsync();
         }
         await JSRuntime.InvokeVoidAsync("eval", @"
             if (window.authManager && window.authManager.logout) {

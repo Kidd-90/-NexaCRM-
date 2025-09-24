@@ -1,233 +1,207 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.JSInterop;
+using Microsoft.Extensions.Logging;
+using NexaCRM.WebClient.Models.Supabase;
+using Supabase.Gotrue;
+using Supabase.Gotrue.Interfaces;
+using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
+using SupabaseAuthState = Supabase.Gotrue.Constants.AuthState;
 
-namespace NexaCRM.WebClient.Services
+namespace NexaCRM.WebClient.Services;
+
+public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAsyncDisposable
 {
-    public class CustomAuthStateProvider : AuthenticationStateProvider
+    private readonly SupabaseClientProvider _clientProvider;
+    private readonly ILogger<CustomAuthStateProvider> _logger;
+    private readonly SemaphoreSlim _stateLock = new(1, 1);
+
+    private AuthenticationState _currentState =
+        new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+
+    private bool _initialized;
+    private IGotrueClient<User, Session>.AuthEventHandler? _authEventHandler;
+
+    public CustomAuthStateProvider(SupabaseClientProvider clientProvider, ILogger<CustomAuthStateProvider> logger)
     {
-        private const string UsernameStorageKey = "username";
-        private const string RolesStorageKey = "roles";
-        private const string DeveloperFlagStorageKey = "isDeveloper";
-        private const string DeveloperRoleName = "Developer";
+        _clientProvider = clientProvider;
+        _logger = logger;
+    }
 
-        private readonly IJSRuntime _jsRuntime;
-        private ClaimsPrincipal _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-        private bool _initialized = false;
+    public bool IsAuthenticated => _currentState.User.Identity?.IsAuthenticated ?? false;
 
-        public CustomAuthStateProvider(IJSRuntime jsRuntime)
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    {
+        await EnsureInitializedAsync();
+        return _currentState;
+    }
+
+    public async Task<bool> SignInAsync(string email, string password)
+    {
+        if (string.IsNullOrWhiteSpace(email))
         {
-            _jsRuntime = jsRuntime;
+            throw new ArgumentException("Email is required.", nameof(email));
         }
 
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+        if (string.IsNullOrWhiteSpace(password))
         {
-            if (!_initialized)
-            {
-                await LoadAuthenticationStateFromStorage();
-                _initialized = true;
-            }
-            return new AuthenticationState(_currentUser);
+            throw new ArgumentException("Password is required.", nameof(password));
         }
 
-        private async Task LoadAuthenticationStateFromStorage()
+        var client = await _clientProvider.GetClientAsync();
+
+        var session = await client.Auth.SignInWithPassword(email, password);
+        if (session is null)
         {
-            try
-            {
-                var username = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", UsernameStorageKey);
-                var rolesJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", RolesStorageKey);
-                var developerFlagRaw = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", DeveloperFlagStorageKey);
-
-                if (!string.IsNullOrEmpty(username) && username != "null")
-                {
-                    var roles = DeserializeRoles(rolesJson);
-                    var normalizedRoles = NormalizeRoles(roles, ParseBooleanFlag(developerFlagRaw));
-
-                    if (normalizedRoles.Length > 0)
-                    {
-                        SetCurrentUser(username, normalizedRoles);
-                        return;
-                    }
-                }
-
-                // 유효하지 않은 데이터가 있는 경우 localStorage 정리
-                await ClearStorageAsync();
-            }
-            catch
-            {
-                // JavaScript interop might not be available during prerendering
-                _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-                try
-                {
-                    await ClearStorageAsync();
-                }
-                catch
-                {
-                    // Silently handle errors during cleanup
-                }
-            }
+            return false;
         }
 
-        private async Task ClearStorageAsync()
+        await UpdateAuthenticationStateAsync(session);
+        return true;
+    }
+
+    public async Task LogoutAsync()
+    {
+        var client = await _clientProvider.GetClientAsync();
+        await client.Auth.SignOut();
+        await UpdateAuthenticationStateAsync(null);
+    }
+
+    private async Task EnsureInitializedAsync()
+    {
+        if (_initialized)
         {
-            try
-            {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UsernameStorageKey);
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", RolesStorageKey);
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", DeveloperFlagStorageKey);
-            }
-            catch
-            {
-                // Handle JavaScript interop errors silently
-            }
+            return;
         }
 
-        public void UpdateAuthenticationState(string? username, string[]? roles)
+        await _stateLock.WaitAsync();
+        try
         {
-            if (!string.IsNullOrEmpty(username) && roles != null && roles.Length > 0)
+            if (_initialized)
             {
-                var normalizedRoles = NormalizeRoles(roles, ContainsDeveloperRole(roles));
-                SetCurrentUser(username, normalizedRoles);
+                return;
+            }
 
-                // Store in localStorage asynchronously
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", UsernameStorageKey, username);
-                        await _jsRuntime.InvokeVoidAsync(
-                            "localStorage.setItem",
-                            RolesStorageKey,
-                            JsonSerializer.Serialize(normalizedRoles));
-                        await _jsRuntime.InvokeVoidAsync(
-                            "localStorage.setItem",
-                            DeveloperFlagStorageKey,
-                            ContainsDeveloperRole(normalizedRoles) ? "true" : "false");
+            var client = await _clientProvider.GetClientAsync();
+            _authEventHandler = async (sender, state) => await HandleAuthStateChangedAsync(sender, state);
+            client.Auth.AddStateChangedListener(_authEventHandler);
 
-                        // 세션 타임아웃 리셋 (authManager가 로드된 경우)
-                        await _jsRuntime.InvokeVoidAsync("eval", @"
-                            if (window.authManager && window.authManager.resetSessionTimeout) {
-                                window.authManager.resetSessionTimeout();
-                            }
-                        ");
-                    }
-                    catch
-                    {
-                        // Handle JavaScript interop errors silently
-                    }
-                });
+            await UpdateAuthenticationStateAsync(client.Auth.CurrentSession);
+            _initialized = true;
+        }
+        finally
+        {
+            _stateLock.Release();
+        }
+    }
+
+    private async Task HandleAuthStateChangedAsync(IGotrueClient<User, Session> sender, SupabaseAuthState state)
+    {
+        try
+        {
+            await UpdateAuthenticationStateAsync(sender.CurrentSession);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to handle Supabase auth state change: {AuthState}.", state);
+        }
+    }
+
+    private async Task UpdateAuthenticationStateAsync(Session? session)
+    {
+        await _stateLock.WaitAsync();
+        try
+        {
+            var principal = await BuildPrincipalAsync(session);
+            _currentState = new AuthenticationState(principal);
+        }
+        finally
+        {
+            _stateLock.Release();
+        }
+
+        NotifyAuthenticationStateChanged(Task.FromResult(_currentState));
+    }
+
+    private async Task<ClaimsPrincipal> BuildPrincipalAsync(Session? session)
+    {
+        if (session?.User?.Id is null)
+        {
+            return new ClaimsPrincipal(new ClaimsIdentity());
+        }
+
+        try
+        {
+            var client = await _clientProvider.GetClientAsync();
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, session.User.Id)
+            };
+
+            if (!string.IsNullOrEmpty(session.User.Email))
+            {
+                claims.Add(new Claim(ClaimTypes.Email, session.User.Email));
+                claims.Add(new Claim(ClaimTypes.Name, session.User.Email));
             }
             else
             {
-                _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
-
-                // Clear localStorage asynchronously
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UsernameStorageKey);
-                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", RolesStorageKey);
-                        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", DeveloperFlagStorageKey);
-
-                        // 세션 타임아웃 클리어 (authManager가 로드된 경우)
-                        await _jsRuntime.InvokeVoidAsync("eval", @"
-                            if (window.authManager && window.authManager.sessionTimeoutId) {
-                                clearTimeout(window.authManager.sessionTimeoutId);
-                                window.authManager.sessionTimeoutId = null;
-                            }
-                        ");
-                    }
-                    catch
-                    {
-                        // Handle JavaScript interop errors silently
-                    }
-                });
+                claims.Add(new Claim(ClaimTypes.Name, session.User.Id));
             }
 
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            foreach (var role in await LoadRolesAsync(client, session.User.Id))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            return new ClaimsPrincipal(new ClaimsIdentity(claims, "Supabase"));
         }
-
-        private void SetCurrentUser(string username, IEnumerable<string> roles)
+        catch (Exception ex)
         {
-            var identity = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, username)
-            }, "FakeAuth");
-
-            foreach (var role in roles)
-            {
-                identity.AddClaim(new Claim(ClaimTypes.Role, role));
-            }
-
-            _currentUser = new ClaimsPrincipal(identity);
+            _logger.LogError(ex, "Failed to construct authentication principal from Supabase session.");
+            return new ClaimsPrincipal(new ClaimsIdentity());
         }
+    }
 
-        public void Logout()
+    private async Task<IEnumerable<string>> LoadRolesAsync(Supabase.Client client, string userId)
+    {
+        var response = await client.From<UserRoleRecord>()
+            .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
+            .Get();
+
+        var roles = new List<string>();
+        foreach (var record in response.Models)
         {
-            UpdateAuthenticationState(null, null);
-        }
-
-        public bool IsAuthenticated => _currentUser.Identity?.IsAuthenticated ?? false;
-
-        private static string[] DeserializeRoles(string? rolesJson)
-        {
-            if (string.IsNullOrWhiteSpace(rolesJson) || rolesJson == "null")
+            if (!string.IsNullOrWhiteSpace(record.RoleCode))
             {
-                return Array.Empty<string>();
-            }
-
-            try
-            {
-                return JsonSerializer.Deserialize<string[]>(rolesJson) ?? Array.Empty<string>();
-            }
-            catch (JsonException)
-            {
-                return Array.Empty<string>();
-            }
-            catch (NotSupportedException)
-            {
-                return Array.Empty<string>();
+                roles.Add(record.RoleCode);
             }
         }
 
-        private static string[] NormalizeRoles(IEnumerable<string> roles, bool ensureDeveloperRole)
+        return roles;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_authEventHandler is null)
         {
-            var normalized = roles
-                .Where(role => !string.IsNullOrWhiteSpace(role))
-                .Select(role => role.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            if (ensureDeveloperRole && !normalized.Any(role => string.Equals(role, DeveloperRoleName, StringComparison.OrdinalIgnoreCase)))
-            {
-                normalized.Add(DeveloperRoleName);
-            }
-
-            return normalized.ToArray();
+            return;
         }
 
-        private static bool ParseBooleanFlag(string? value)
+        try
         {
-            return !string.IsNullOrWhiteSpace(value) && bool.TryParse(value, out var result) && result;
+            var client = await _clientProvider.GetClientAsync();
+            client.Auth.RemoveStateChangedListener(_authEventHandler);
         }
-
-        private static bool ContainsDeveloperRole(IEnumerable<string> roles)
+        catch (Exception ex)
         {
-            foreach (var role in roles)
-            {
-                if (string.Equals(role, DeveloperRoleName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            _logger.LogWarning(ex, "Failed to remove Supabase auth event handler during disposal.");
+        }
+        finally
+        {
+            _authEventHandler = null;
         }
     }
 }
