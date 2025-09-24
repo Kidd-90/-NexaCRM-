@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NexaCRM.WebClient.Models;
 using NexaCRM.WebClient.Models.Supabase;
 using NexaCRM.WebClient.Services.Analytics;
 using NexaCRM.WebClient.Services.Interfaces;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
+using ReportData = NexaCRM.WebClient.Models.ReportData;
+using ReportDefinition = NexaCRM.WebClient.Models.ReportDefinition;
 
 namespace NexaCRM.WebClient.Services;
 
