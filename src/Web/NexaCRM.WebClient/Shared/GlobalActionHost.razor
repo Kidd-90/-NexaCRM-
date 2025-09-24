@@ -254,7 +254,7 @@
         ActionService.ActionRequested += HandleActionRequested;
     }
 
-    private Task HandleActionRequested(GlobalActionContext context)
+    private System.Threading.Tasks.Task HandleActionRequested(GlobalActionContext context)
     {
         return InvokeAsync(async () =>
         {
@@ -267,7 +267,7 @@
         });
     }
 
-    private async Task ObserveCompletionAsync(GlobalActionContext context)
+    private async System.Threading.Tasks.Task ObserveCompletionAsync(GlobalActionContext context)
     {
         try
         {
@@ -288,7 +288,7 @@
         }
     }
 
-    private async Task LoadContextDataAsync(GlobalActionRequest request)
+    private async System.Threading.Tasks.Task LoadContextDataAsync(GlobalActionRequest request)
     {
         errorMessage = null;
         successMessage = null;
@@ -346,7 +346,7 @@
         }
     }
 
-    private async Task EnsureContactsLoadedAsync()
+    private async System.Threading.Tasks.Task EnsureContactsLoadedAsync()
     {
         if (contacts.Count > 0)
         {
@@ -401,7 +401,7 @@
         return parts.Count == 0 ? Localize("NoContactDetails") : string.Join(" · ", parts);
     }
 
-    private async Task LaunchCallAsync()
+    private async System.Threading.Tasks.Task LaunchCallAsync()
     {
         if (selectedContact is null || string.IsNullOrWhiteSpace(selectedContact.PhoneNumber))
         {
@@ -414,7 +414,7 @@
         activeContext?.Complete(GlobalActionResult.Completed);
     }
 
-    private async Task CopySelectedPhoneAsync()
+    private async System.Threading.Tasks.Task CopySelectedPhoneAsync()
     {
         if (selectedContact is null || string.IsNullOrWhiteSpace(selectedContact.PhoneNumber))
         {
@@ -425,7 +425,7 @@
         successMessage = Localize("CopiedToClipboard");
     }
 
-    private async Task LaunchEmailAsync()
+    private async System.Threading.Tasks.Task LaunchEmailAsync()
     {
         if (selectedContact is null || string.IsNullOrWhiteSpace(selectedContact.Email))
         {
@@ -441,7 +441,7 @@
         activeContext?.Complete(GlobalActionResult.Completed);
     }
 
-    private async Task ScheduleMeetingAsync()
+    private async System.Threading.Tasks.Task ScheduleMeetingAsync()
     {
         if (meetingForm.End <= meetingForm.Start)
         {
@@ -469,7 +469,7 @@
         activeContext?.Complete(GlobalActionResult.Completed);
     }
 
-    private async Task SaveContactAsync()
+    private async System.Threading.Tasks.Task SaveContactAsync()
     {
         try
         {
@@ -500,7 +500,7 @@
         }
     }
 
-    private async Task SaveDealAsync()
+    private async System.Threading.Tasks.Task SaveDealAsync()
     {
         try
         {

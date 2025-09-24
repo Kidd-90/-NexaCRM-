@@ -147,7 +147,15 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
             return;
         }
 
-        var updatedItem = item with { IsRead = true };
+        var updatedItem = new NotificationFeedItem
+        {
+            Id = item.Id,
+            Title = item.Title,
+            Message = item.Message,
+            TimestampUtc = item.TimestampUtc,
+            IsRead = true,
+            Type = item.Type
+        };
         var updatedRecord = MapToRecord(updatedItem, userId);
         await client.From<NotificationFeedRecord>()
             .Filter(x => x.Id, PostgrestOperator.Equals, id)
@@ -166,7 +174,17 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         await EnsureRealtimeSubscriptionAsync();
         var client = await _clientProvider.GetClientAsync();
         var userId = EnsureUserId(client);
-        var timestampedItem = item with { TimestampUtc = item.TimestampUtc == default ? DateTime.UtcNow : item.TimestampUtc };
+        var timestamp = item.TimestampUtc == default ? DateTime.UtcNow : item.TimestampUtc;
+        var timestampedItem = new NotificationFeedItem
+        {
+            Id = item.Id,
+            Title = item.Title,
+            Message = item.Message,
+            TimestampUtc = timestamp,
+            IsRead = item.IsRead,
+            Type = item.Type
+        };
+
         var record = MapToRecord(timestampedItem, userId);
         var response = await client.From<NotificationFeedRecord>().Insert(record);
         var inserted = response.Models.FirstOrDefault();
@@ -252,15 +270,6 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
     {
         var record = change.OldModel<NotificationFeedRecord>();
         Guid? notificationId = record?.Id;
-
-        if (!notificationId.HasValue)
-        {
-            var rawId = change.Payload?.Data?.Ids?.FirstOrDefault();
-            if (rawId is not null && Guid.TryParse(rawId.ToString(), out var parsedId))
-            {
-                notificationId = parsedId;
-            }
-        }
 
         if (!notificationId.HasValue)
         {

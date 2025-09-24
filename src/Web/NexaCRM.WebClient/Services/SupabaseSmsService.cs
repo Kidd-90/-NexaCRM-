@@ -408,9 +408,16 @@ public sealed class SupabaseSmsService : ISmsService
 
     private static SmsHistoryItem MapToHistoryItem(SmsHistoryRecord record)
     {
-        var attachments = string.IsNullOrWhiteSpace(record.AttachmentsJson)
-            ? Array.Empty<SmsAttachment>()
-            : JsonConvert.DeserializeObject<List<SmsAttachment>>(record.AttachmentsJson!) ?? new List<SmsAttachment>();
+        IReadOnlyList<SmsAttachment> attachments;
+        if (string.IsNullOrWhiteSpace(record.AttachmentsJson))
+        {
+            attachments = Array.Empty<SmsAttachment>();
+        }
+        else
+        {
+            attachments = JsonConvert.DeserializeObject<List<SmsAttachment>>(record.AttachmentsJson!)
+                ?? new List<SmsAttachment>();
+        }
 
         return new SmsHistoryItem(
             record.Recipient,
