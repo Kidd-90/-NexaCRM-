@@ -150,7 +150,7 @@
                                                     PhoneNumber="@contact.PhoneNumber"
                                                     Email="@contact.Email"
                                                     CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
-                                                    CustomerId="@contact.Id.ToString()"
+                                                    CustomerId="@(contact.SupabaseId?.ToString() ?? contact.Id.ToString())"
                                                     ShowLabels="false"
                                                     CssClass="inline"
                                                     OnActionCompleted="HandleQuickAction" />
@@ -217,7 +217,7 @@
                                         PhoneNumber="@contact.PhoneNumber"
                                         Email="@contact.Email"
                                         CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
-                                        CustomerId="@contact.Id.ToString()"
+                                        CustomerId="@(contact.SupabaseId?.ToString() ?? contact.Id.ToString())"
                                         ShowLabels="true"
                                         CssClass=""
                                         OnActionCompleted="HandleQuickAction" />
