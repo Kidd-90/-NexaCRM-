@@ -13,6 +13,7 @@ public interface INotificationFeedService
     Task AddAsync(NotificationFeedItem item);
 
     event Action<int>? UnreadCountChanged;
+    event Action<IReadOnlyList<NotificationFeedItem>>? FeedUpdated;
 }
 
 public sealed class NotificationFeedItem

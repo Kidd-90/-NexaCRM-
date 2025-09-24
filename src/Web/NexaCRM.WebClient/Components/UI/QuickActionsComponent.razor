@@ -1,9 +1,8 @@
 @using Microsoft.Extensions.Localization
-@using Microsoft.JSInterop
 @using System.Text.Json
 @using System.Linq
 @inject IStringLocalizer<QuickActionsComponent> Localizer
-@inject IJSRuntime JSRuntime
+@inject ActionInterop ActionInterop
 
 <div class="quick-actions-container @CssClass">
     <div class="quick-actions-wrapper">
@@ -130,7 +129,7 @@
         {
             if (await IsMobileViewportAsync())
             {
-                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = 'tel:{PhoneNumber}'");
+                await ActionInterop.OpenTelephoneAsync(PhoneNumber);
                 await AnnounceAndCompleteAsync("call", Localizer["QuickActionsCallLaunched", ResolveDisplayName(PhoneNumber)]);
             }
             else
@@ -161,7 +160,7 @@
 
             if (await IsMobileViewportAsync())
             {
-                await JSRuntime.InvokeVoidAsync("eval", $"window.location.href = '{mailtoUrl}'");
+                await ActionInterop.OpenMailtoAsync(mailtoUrl);
                 await AnnounceAndCompleteAsync("email", Localizer["QuickActionsEmailLaunched", displayName]);
             }
             else
@@ -196,17 +195,7 @@
         }
     }
 
-    private async Task<bool> IsMobileViewportAsync()
-    {
-        try
-        {
-            return await JSRuntime.InvokeAsync<bool>("eval", "window.matchMedia('(max-width: 767px)').matches");
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    private Task<bool> IsMobileViewportAsync() => ActionInterop.IsMobileViewportAsync();
 
     private void PrepareCallActionSheet()
     {
@@ -309,32 +298,7 @@
         return string.IsNullOrWhiteSpace(fallback) ? Localizer["QuickActionsUnknownContact"] : fallback!;
     }
 
-    private async Task CopyToClipboardAsync(string value)
-    {
-        var encoded = JsonSerializer.Serialize(value);
-        var script = $@"
-            (async () => {{
-                const value = {encoded};
-                if (navigator.clipboard && navigator.clipboard.writeText) {{
-                    try {{
-                        await navigator.clipboard.writeText(value);
-                        return;
-                    }} catch (err) {{ }}
-                }}
-                const textarea = document.createElement('textarea');
-                textarea.value = value;
-                textarea.setAttribute('readonly', '');
-                textarea.style.position = 'absolute';
-                textarea.style.left = '-9999px';
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-            }})();
-        ";
-
-        await JSRuntime.InvokeVoidAsync("eval", script);
-    }
+    private Task CopyToClipboardAsync(string value) => ActionInterop.CopyTextAsync(value);
 
     private string GetMeetingFileName()
     {
@@ -348,24 +312,9 @@
         return $"meeting-with-{sanitized}.ics";
     }
 
-    private async Task TriggerFileDownloadAsync(string fileName, string content)
+    private Task TriggerFileDownloadAsync(string fileName, string content)
     {
         var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(content));
-        var base64Json = JsonSerializer.Serialize(base64);
-        var fileNameJson = JsonSerializer.Serialize(fileName);
-        var script = $@"
-            (function() {{
-                const data = {base64Json};
-                const fileName = {fileNameJson};
-                const link = document.createElement('a');
-                link.href = 'data:text/calendar;base64,' + data;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }})();
-        ";
-
-        await JSRuntime.InvokeVoidAsync("eval", script);
+        return ActionInterop.TriggerDownloadAsync(base64, fileName, "text/calendar");
     }
 }

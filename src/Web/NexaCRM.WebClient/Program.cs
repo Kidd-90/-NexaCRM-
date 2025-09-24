@@ -54,6 +54,9 @@ builder.Services.AddScoped<Supabase.Client>(provider =>
 builder.Services.AddScoped<SupabaseClientProvider>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
+builder.Services.AddScoped<ActionInterop>();
+builder.Services.AddScoped<IMobileInteractionService, MobileInteractionService>();
+builder.Services.AddScoped<IGlobalActionService, GlobalActionService>();
 builder.Services.AddScoped<IContactService, SupabaseContactService>();
 builder.Services.AddScoped<IDealService, SupabaseDealService>();
 builder.Services.AddScoped<ITaskService, SupabaseTaskService>();

@@ -5,8 +5,8 @@
 @using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
 @inject IDealService DealService
-@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject IGlobalActionService GlobalActionService
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -445,24 +445,20 @@
 
     private async System.Threading.Tasks.Task HandleFloatingAction(string action)
     {
-        switch (action)
+        var request = action switch
         {
-            case "call":
-                // Navigate to contacts page to select a contact to call
-                NavigationManager.NavigateTo("/contacts");
-                break;
-            case "email":
-                // Navigate to contacts page to select a contact to email
-                NavigationManager.NavigateTo("/contacts");
-                break;
-            case "meeting":
-                // Navigate to calendar/meeting scheduling
-                NavigationManager.NavigateTo("/sales-calendar");
-                break;
-            case "add":
-                // Show add deal functionality
-                await JSRuntime.InvokeVoidAsync("alert", "Add new deal functionality - to be implemented");
-                break;
+            "call" => new GlobalActionRequest(GlobalActionType.Call),
+            "email" => new GlobalActionRequest(GlobalActionType.Email),
+            "meeting" => new GlobalActionRequest(GlobalActionType.ScheduleMeeting),
+            "add" => new GlobalActionRequest(GlobalActionType.AddDeal),
+            _ => null
+        };
+
+        if (request is null)
+        {
+            return;
         }
+
+        await GlobalActionService.LaunchAsync(request);
     }
 }

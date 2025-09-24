@@ -1,7 +1,6 @@
 @using Microsoft.Extensions.Localization
-@using Microsoft.JSInterop
 @inject IStringLocalizer<FloatingActionButton> Localizer
-@inject IJSRuntime JSRuntime
+@inject ActionInterop ActionInterop
 
 <div class="fab-container @(IsExpanded ? "expanded" : "") @CssClass">
     <!-- Main FAB Button -->
@@ -95,18 +94,7 @@
         StateHasChanged();
         
         // Add haptic feedback on mobile
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                if ('vibrate' in navigator) {
-                    navigator.vibrate(50);
-                }
-            ");
-        }
-        catch
-        {
-            // Vibration not supported, ignore
-        }
+        await ActionInterop.VibrateAsync(50);
     }
 
     private async Task CollapseActions()
@@ -135,19 +123,7 @@
         if (firstRender)
         {
             // Add click outside handler to close FAB when clicking elsewhere
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                document.addEventListener('click', function(e) {
-                    const fabContainer = e.target.closest('.fab-container');
-                    if (!fabContainer) {
-                        // Click was outside FAB, collapse it
-                        const fabElement = document.querySelector('.fab-container.expanded');
-                        if (fabElement) {
-                            const closeBtn = fabElement.querySelector('.fab-main');
-                            if (closeBtn) closeBtn.click();
-                        }
-                    }
-                });
-            ");
+            await ActionInterop.RegisterFabOutsideHandlerAsync();
         }
     }
 }
