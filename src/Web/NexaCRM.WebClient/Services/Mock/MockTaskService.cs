@@ -11,6 +11,9 @@ namespace NexaCRM.WebClient.Services.Mock
     {
         private readonly List<Models.Task> _tasks;
 
+        public event Action<Models.Task>? TaskUpserted;
+        public event Action<int>? TaskDeleted;
+
         public MockTaskService()
         {
             _tasks = new List<Models.Task>
@@ -36,6 +39,7 @@ namespace NexaCRM.WebClient.Services.Mock
         {
             task.Id = _tasks.Max(t => t.Id) + 1;
             _tasks.Add(task);
+            TaskUpserted?.Invoke(task);
             return System.Threading.Tasks.Task.CompletedTask;
         }
 
@@ -50,6 +54,7 @@ namespace NexaCRM.WebClient.Services.Mock
                 existingTask.IsCompleted = task.IsCompleted;
                 existingTask.Priority = task.Priority;
                 existingTask.AssignedTo = task.AssignedTo;
+                TaskUpserted?.Invoke(existingTask);
             }
             return System.Threading.Tasks.Task.CompletedTask;
         }
@@ -60,6 +65,7 @@ namespace NexaCRM.WebClient.Services.Mock
             if (task != null)
             {
                 _tasks.Remove(task);
+                TaskDeleted?.Invoke(id);
             }
             return System.Threading.Tasks.Task.CompletedTask;
         }

@@ -11,6 +11,7 @@ namespace NexaCRM.WebClient.Models
         public TicketStatus Status { get; set; }
         public TicketPriority Priority { get; set; }
         public string? CustomerName { get; set; }
+        public Guid? AgentId { get; set; }
         public string? AgentName { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? Category { get; set; }

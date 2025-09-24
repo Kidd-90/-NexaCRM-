@@ -57,7 +57,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.Get
 builder.Services.AddScoped<IContactService, SupabaseContactService>();
 builder.Services.AddScoped<IDealService, SupabaseDealService>();
 builder.Services.AddScoped<ITaskService, SupabaseTaskService>();
-builder.Services.AddScoped<ISupportTicketService, MockSupportTicketService>();
+builder.Services.AddScoped<ISupportTicketService, SupabaseSupportTicketService>();
 builder.Services.AddScoped<IAgentService, MockAgentService>();
 builder.Services.AddScoped<IMarketingCampaignService, MockMarketingCampaignService>();
 builder.Services.AddScoped<IReportService, MockReportService>();
@@ -75,13 +75,13 @@ builder.Services.AddScoped<IDbAdminService, DbAdminService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ICustomerCenterService, CustomerCenterService>();
 builder.Services.AddScoped<INoticeService, NoticeService>();
-builder.Services.AddScoped<ISmsService, SmsService>();
+builder.Services.AddScoped<ISmsService, SupabaseSmsService>();
 builder.Services.AddScoped<ISystemInfoService, SystemInfoService>();
 builder.Services.AddScoped<IFaqService, FaqService>();
 builder.Services.AddScoped<IUserFavoritesService, UserFavoritesService>();
 builder.Services.AddScoped<IEmailTemplateService, MockEmailTemplateService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<INotificationFeedService, MockNotificationFeedService>();
+builder.Services.AddScoped<INotificationFeedService, SupabaseNotificationFeedService>();
 builder.Services.AddScoped<ITeamService, MockTeamService>();
 builder.Services.AddScoped<INavigationStateService, NavigationStateService>();
 

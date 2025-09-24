@@ -10,6 +10,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Ensure UUID helpers are available for tables that rely on UUID identifiers.
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 
 -- 2. PROFILES TABLE
 -- This table stores public user information and is linked to the `auth.users` table.
@@ -175,6 +178,166 @@ CREATE INDEX idx_tasks_assigned_to ON tasks(assigned_to);
 CREATE INDEX idx_tasks_tenant_unit_id ON tasks(tenant_unit_id);
 CREATE INDEX idx_org_users_user_id ON organization_users(user_id);
 CREATE INDEX idx_user_roles_user_id ON user_roles(user_id);
+
+
+-- 12. SUPPORT & SERVICE TABLES
+CREATE TABLE support_tickets (
+  id BIGSERIAL PRIMARY KEY,
+  subject TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'Open',
+  priority TEXT NOT NULL DEFAULT 'Medium',
+  customer_id BIGINT REFERENCES contacts(id) ON DELETE SET NULL,
+  customer_name TEXT,
+  agent_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  agent_name TEXT,
+  category TEXT,
+  tenant_unit_id BIGINT REFERENCES organization_units(id) ON DELETE SET NULL,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  last_reply_at TIMESTAMPTZ
+);
+
+CREATE TABLE ticket_messages (
+  id BIGSERIAL PRIMARY KEY,
+  ticket_id BIGINT NOT NULL REFERENCES support_tickets(id) ON DELETE CASCADE,
+  sender_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  sender_name TEXT,
+  message TEXT NOT NULL,
+  is_internal BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_support_tickets_status ON support_tickets(status);
+CREATE INDEX idx_support_tickets_agent_id ON support_tickets(agent_id);
+CREATE INDEX idx_support_tickets_tenant_unit ON support_tickets(tenant_unit_id);
+CREATE INDEX idx_ticket_messages_ticket_id ON ticket_messages(ticket_id);
+
+
+-- 13. NOTIFICATION FEED TABLES
+CREATE TABLE notification_feed (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  message TEXT,
+  type TEXT DEFAULT 'info',
+  is_read BOOLEAN DEFAULT FALSE,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE notification_settings (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  new_lead_created BOOLEAN DEFAULT TRUE,
+  lead_status_updated BOOLEAN DEFAULT TRUE,
+  deal_stage_changed BOOLEAN DEFAULT TRUE,
+  deal_value_updated BOOLEAN DEFAULT TRUE,
+  new_task_assigned BOOLEAN DEFAULT TRUE,
+  task_due_date_reminder BOOLEAN DEFAULT TRUE,
+  email_notifications BOOLEAN DEFAULT TRUE,
+  in_app_notifications BOOLEAN DEFAULT TRUE,
+  push_notifications BOOLEAN DEFAULT FALSE,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_notification_feed_user_id ON notification_feed(user_id);
+CREATE INDEX idx_notification_feed_is_read ON notification_feed(is_read);
+
+
+-- 14. SMS & COMMUNICATION TABLES
+CREATE TABLE sms_settings (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  provider_api_key TEXT,
+  provider_api_secret TEXT,
+  sender_id TEXT,
+  default_template TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE sms_sender_numbers (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  number TEXT NOT NULL,
+  label TEXT,
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, number)
+);
+
+CREATE TABLE sms_templates (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  template_code TEXT,
+  content TEXT NOT NULL,
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE sms_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  recipient TEXT NOT NULL,
+  message TEXT NOT NULL,
+  sent_at TIMESTAMPTZ DEFAULT NOW(),
+  status TEXT NOT NULL,
+  sender_number TEXT,
+  recipient_name TEXT,
+  attachments JSONB,
+  error_message TEXT,
+  metadata JSONB
+);
+
+CREATE TABLE sms_schedules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  scheduled_at TIMESTAMPTZ NOT NULL,
+  payload_json JSONB NOT NULL,
+  is_cancelled BOOLEAN DEFAULT FALSE,
+  status TEXT DEFAULT 'scheduled',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  dispatched_at TIMESTAMPTZ
+);
+
+CREATE INDEX idx_sms_sender_numbers_user ON sms_sender_numbers(user_id);
+CREATE INDEX idx_sms_templates_user ON sms_templates(user_id);
+CREATE INDEX idx_sms_history_user ON sms_history(user_id);
+CREATE INDEX idx_sms_schedules_user ON sms_schedules(user_id);
+CREATE INDEX idx_sms_schedules_time ON sms_schedules(scheduled_at);
+
+
+-- 15. AUDIT & INTEGRATION TABLES
+CREATE TABLE audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  entity_type TEXT NOT NULL,
+  entity_id TEXT,
+  payload_json JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE integration_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_type TEXT NOT NULL,
+  payload_json JSONB,
+  status TEXT DEFAULT 'pending',
+  published_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_audit_logs_actor ON audit_logs(actor_id);
+CREATE INDEX idx_integration_events_type ON integration_events(event_type);
+CREATE INDEX idx_integration_events_status ON integration_events(status);
+
+
+-- Ensure realtime payloads include previous values for proper diffing.
+ALTER TABLE tasks REPLICA IDENTITY FULL;
+ALTER TABLE support_tickets REPLICA IDENTITY FULL;
+ALTER TABLE notification_feed REPLICA IDENTITY FULL;
+ALTER TABLE sms_schedules REPLICA IDENTITY FULL;
+ALTER TABLE sms_history REPLICA IDENTITY FULL;
 
 
 -- 11. TRIGGERS for updated_at

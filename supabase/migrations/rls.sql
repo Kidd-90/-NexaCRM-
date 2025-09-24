@@ -174,6 +174,147 @@ CREATE POLICY "Users can delete tasks they created"
   USING (public.user_has_role('admin') OR auth.uid() = created_by);
 
 
+-- SUPPORT & SERVICE RLS
+ALTER TABLE support_tickets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view relevant support tickets"
+  ON support_tickets FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR auth.uid() = agent_id
+    OR auth.uid() = created_by
+    OR (
+      tenant_unit_id IS NOT NULL AND EXISTS (
+        SELECT 1 FROM organization_users
+        WHERE organization_users.user_id = auth.uid()
+          AND organization_users.unit_id = support_tickets.tenant_unit_id
+          AND organization_users.status = 'approved'
+      )
+    )
+  );
+
+CREATE POLICY "Users can insert support tickets they create"
+  ON support_tickets FOR INSERT
+  WITH CHECK (public.user_has_role('admin') OR auth.uid() = created_by);
+
+CREATE POLICY "Users can update assigned support tickets"
+  ON support_tickets FOR UPDATE
+  USING (public.user_has_role('admin') OR auth.uid() = agent_id OR auth.uid() = created_by)
+  WITH CHECK (public.user_has_role('admin') OR auth.uid() = agent_id OR auth.uid() = created_by);
+
+CREATE POLICY "Users can delete support tickets they created"
+  ON support_tickets FOR DELETE
+  USING (public.user_has_role('admin') OR auth.uid() = created_by);
+
+ALTER TABLE ticket_messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view messages for accessible tickets"
+  ON ticket_messages FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR EXISTS (
+      SELECT 1 FROM support_tickets
+      WHERE support_tickets.id = ticket_messages.ticket_id
+        AND (
+          public.user_has_role('admin')
+          OR auth.uid() = support_tickets.agent_id
+          OR auth.uid() = support_tickets.created_by
+        )
+    )
+  );
+
+CREATE POLICY "Users can insert ticket messages they author"
+  ON ticket_messages FOR INSERT
+  WITH CHECK (public.user_has_role('admin') OR auth.uid() = sender_id);
+
+
+-- NOTIFICATION FEED RLS
+ALTER TABLE notification_feed ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their notifications"
+  ON notification_feed FOR SELECT
+  USING (auth.uid() = user_id OR public.user_has_role('admin'));
+
+CREATE POLICY "Users can manage their notifications"
+  ON notification_feed FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+ALTER TABLE notification_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage their notification settings"
+  ON notification_settings FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+
+-- SMS & COMMUNICATION RLS
+ALTER TABLE sms_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage their SMS settings"
+  ON sms_settings FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+ALTER TABLE sms_sender_numbers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage sender numbers"
+  ON sms_sender_numbers FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+ALTER TABLE sms_templates ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage SMS templates"
+  ON sms_templates FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+ALTER TABLE sms_history ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their SMS history"
+  ON sms_history FOR SELECT
+  USING (auth.uid() = user_id OR public.user_has_role('admin'));
+
+CREATE POLICY "Users can insert their SMS history"
+  ON sms_history FOR INSERT
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+ALTER TABLE sms_schedules ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage their SMS schedules"
+  ON sms_schedules FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+
+-- AUDIT & INTEGRATION RLS
+ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can insert their audit logs"
+  ON audit_logs FOR INSERT
+  WITH CHECK (public.user_has_role('admin') OR auth.uid() = actor_id);
+
+CREATE POLICY "Admins can view audit logs"
+  ON audit_logs FOR SELECT
+  USING (public.user_has_role('admin'));
+
+ALTER TABLE integration_events ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Authenticated users can publish integration events"
+  ON integration_events FOR INSERT
+  WITH CHECK (public.user_has_role('admin') OR auth.role() = 'authenticated');
+
+CREATE POLICY "Admins can view integration events"
+  ON integration_events FOR SELECT
+  USING (public.user_has_role('admin'));
+
+CREATE POLICY "Admins can update integration events"
+  ON integration_events FOR UPDATE
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+
 -- 8. ORGANIZATION TABLES
 ALTER TABLE organization_units ENABLE ROW LEVEL SECURITY;
 

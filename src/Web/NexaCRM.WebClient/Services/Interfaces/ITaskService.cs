@@ -1,3 +1,4 @@
+using System;
 using NexaCRM.WebClient.Models;
 using System.Collections.Generic;
 
@@ -5,6 +6,9 @@ namespace NexaCRM.WebClient.Services.Interfaces
 {
     public interface ITaskService
     {
+        event Action<Models.Task>? TaskUpserted;
+        event Action<int>? TaskDeleted;
+
         System.Threading.Tasks.Task<IEnumerable<Models.Task>> GetTasksAsync();
         System.Threading.Tasks.Task<Models.Task?> GetTaskByIdAsync(int id);
         System.Threading.Tasks.Task CreateTaskAsync(Models.Task task);
