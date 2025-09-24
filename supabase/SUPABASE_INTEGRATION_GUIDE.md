@@ -76,9 +76,9 @@ builder.Services.AddSingleton(provider =>
 - [x] 기본 스키마 및 RLS SQL 마이그레이션 초안을 저장소에 추가했습니다. (참고: `supabase/migrations/schema.sql`, `supabase/migrations/rls.sql`)
 
 ### Phase 1 — 인증 및 핵심 데이터 전환 (예상: 2024년 7월)
-- [ ] Supabase Auth를 사용하도록 CustomAuthStateProvider를 교체하고 세션 갱신 로직을 구현합니다.
-- [ ] 연락처·딜·업무 서비스의 CRUD 로직을 Supabase PostgREST 기반으로 마이그레이션합니다.
-- [ ] 조직/역할 정보를 `organization_users`, `user_roles` 테이블과 연동해 RLS 정책과 연계합니다.
+- [x] Supabase Auth를 사용하도록 CustomAuthStateProvider를 교체하고 세션 갱신 로직을 구현합니다.
+- [x] 연락처·딜·업무 서비스의 CRUD 로직을 Supabase PostgREST 기반으로 마이그레이션합니다.
+- [x] 조직/역할 정보를 `organization_users`, `user_roles` 테이블과 연동해 RLS 정책과 연계합니다.
 
 ### Phase 2 — 실시간 기능 및 통합 (예상: 2024년 8월)
 - [ ] 지원 티켓, 작업(Task), 알림(Notification) 서비스에 Supabase Realtime 구독을 연결합니다.

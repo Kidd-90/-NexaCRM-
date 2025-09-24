@@ -182,44 +182,35 @@
 
     private async Task Login()
     {
-        errorMessage = null; // Reset error message on new login attempt
-        isLoading = true; // Start loading animation
-        StateHasChanged(); // Update UI to show loading state
+        errorMessage = null;
+        isLoading = true;
+        StateHasChanged();
 
         try
         {
-            await JSRuntime.InvokeVoidAsync("console.log", "Login button clicked!");
-            await JSRuntime.InvokeVoidAsync("console.log", $"Username: {username}, Password: {password}");
+            await JSRuntime.InvokeVoidAsync("console.log", "Attempting Supabase login");
 
-            // Simulate some processing time for better UX
-            await Task.Delay(800); // Reasonable delay to show loading animation
-
-            if (username == "sales" && password == "sales")
+            var signedIn = await AuthProvider.SignInAsync(username, password);
+            if (!signedIn)
             {
-                var roles = new[] { "Sales" };
-                await JSRuntime.InvokeVoidAsync("console.log", "Setting Sales role...");
-                AuthProvider.UpdateAuthenticationState(username, roles);
-                await JSRuntime.InvokeVoidAsync("console.log", "Navigating to main dashboard");
-
-                // 약간의 지연을 두고 네비게이션
-                await Task.Delay(100);
-                NavigationManager.NavigateTo("/main-dashboard");
+                errorMessage = "사용자 이름 또는 비밀번호가 잘못되었습니다.";
+                return;
             }
-            else if (username == "manager" && password == "manager")
-            {
-                var roles = new[] { "Manager" };
-                await JSRuntime.InvokeVoidAsync("console.log", "Setting Manager role...");
-                AuthProvider.UpdateAuthenticationState(username, roles);
-                await JSRuntime.InvokeVoidAsync("console.log", "Navigating to sales manager dashboard");
 
-                // 약간의 지연을 두고 네비게이션
-                await Task.Delay(100);
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.IsInRole("Manager"))
+            {
                 NavigationManager.NavigateTo("/sales-manager-dashboard");
+            }
+            else if (user.IsInRole("Sales"))
+            {
+                NavigationManager.NavigateTo("/main-dashboard");
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("console.log", "Invalid credentials");
-                errorMessage = "사용자 이름 또는 비밀번호가 잘못되었습니다.";
+                NavigationManager.NavigateTo("/main-dashboard");
             }
         }
         catch (Exception ex)
@@ -229,8 +220,8 @@
         }
         finally
         {
-            isLoading = false; // Stop loading animation
-            StateHasChanged(); // Update UI to hide loading state
+            isLoading = false;
+            StateHasChanged();
         }
     }
 
