@@ -5,7 +5,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.WebClient;
-// using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
+using NexaCRM.WebClient.Pages; // Add this if App.razor is in Pages folder
 using Microsoft.AspNetCore.Components.Authorization;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;
@@ -13,7 +13,6 @@ using NexaCRM.WebClient.Services.Mock;
 using NexaCRM.WebClient.Models.Db;
 using NexaCRM.WebClient.Options;
 using NexaCRM.WebClient.Services.Supabase;
-using NexaCRM.WebClient.Options;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
