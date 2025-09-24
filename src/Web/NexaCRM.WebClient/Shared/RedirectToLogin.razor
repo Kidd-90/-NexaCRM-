@@ -28,13 +28,13 @@
         {
             await JSRuntime.InvokeVoidAsync("console.log", "Redirecting to login page...");
             _hasRedirected = true;
-            NavigationManager.NavigateTo("/login");
+            NavigationManager.NavigateTo("/login", replace: true);
         }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("console.error", $"Error during redirect: {ex.Message}");
             _hasRedirected = true;
-            NavigationManager.NavigateTo("/login");
+            NavigationManager.NavigateTo("/login", replace: true);
         }
     }
 }
