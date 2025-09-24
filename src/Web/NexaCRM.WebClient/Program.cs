@@ -28,7 +28,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddAuthorizationCore();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddSupabaseClientOptions(builder.Configuration);
+builder.Services.AddSupabaseClient(builder.Configuration);
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
 builder.Services.AddScoped<IContactService, SupabaseContactService>();
