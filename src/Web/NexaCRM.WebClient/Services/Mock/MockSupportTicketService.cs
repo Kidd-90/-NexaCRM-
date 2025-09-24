@@ -11,6 +11,10 @@ namespace NexaCRM.WebClient.Services.Mock
     {
         private readonly List<SupportTicket> _tickets;
 
+        public event Action<SupportTicket>? TicketUpserted;
+        public event Action<int>? TicketDeleted;
+        public event Action<int>? LiveTicketCountChanged;
+
         public MockSupportTicketService()
         {
             _tickets = new List<SupportTicket>
@@ -43,6 +47,8 @@ namespace NexaCRM.WebClient.Services.Mock
         {
             ticket.Id = _tickets.Max(t => t.Id) + 1;
             _tickets.Add(ticket);
+            TicketUpserted?.Invoke(ticket);
+            NotifyLiveCount();
             return System.Threading.Tasks.Task.CompletedTask;
         }
 
@@ -56,8 +62,11 @@ namespace NexaCRM.WebClient.Services.Mock
                 existingTicket.Status = ticket.Status;
                 existingTicket.Priority = ticket.Priority;
                 existingTicket.CustomerName = ticket.CustomerName;
+                existingTicket.AgentId = ticket.AgentId;
                 existingTicket.AgentName = ticket.AgentName;
                 existingTicket.Category = ticket.Category;
+                TicketUpserted?.Invoke(existingTicket);
+                NotifyLiveCount();
             }
             return System.Threading.Tasks.Task.CompletedTask;
         }
@@ -68,8 +77,16 @@ namespace NexaCRM.WebClient.Services.Mock
             if (ticket != null)
             {
                 _tickets.Remove(ticket);
+                TicketDeleted?.Invoke(id);
+                NotifyLiveCount();
             }
             return System.Threading.Tasks.Task.CompletedTask;
+        }
+
+        private void NotifyLiveCount()
+        {
+            var liveCount = _tickets.Count(t => t.Status == TicketStatus.Open || t.Status == TicketStatus.InProgress);
+            LiveTicketCountChanged?.Invoke(liveCount);
         }
     }
 }
