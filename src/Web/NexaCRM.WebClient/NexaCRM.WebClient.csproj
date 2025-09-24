@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
         <ProjectReference Include="..\..\Services\Admin.Core\Services.Admin.Core.csproj" />
     </ItemGroup>
 </Project>

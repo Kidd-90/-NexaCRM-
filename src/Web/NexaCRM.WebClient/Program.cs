@@ -30,7 +30,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSupabaseClientOptions(builder.Configuration);
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
-builder.Services.AddScoped<IContactService, MockContactService>();
+builder.Services.AddScoped<IContactService, SupabaseContactService>();
 builder.Services.AddScoped<IDealService, MockDealService>();
 builder.Services.AddScoped<ITaskService, MockTaskService>();
 builder.Services.AddScoped<ISupportTicketService, MockSupportTicketService>();

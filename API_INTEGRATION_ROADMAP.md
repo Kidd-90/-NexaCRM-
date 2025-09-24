@@ -211,6 +211,10 @@ The migration from mock services to live API integration will follow a systemati
    builder.Services.AddScoped<IContactService, SupabaseContactService>();
    ```
 
+**Status Update:**
+- `SupabaseContactRepository` now issues PostgREST queries for the contacts table using the admin client provider.
+- The Blazor WebAssembly client defaults to `SupabaseContactService`, mapping Supabase contact payloads and exposing Supabase IDs to the UI.
+
 **Testing Requirements:**
 - Data retrieval and filtering
 - CRUD operations validation
