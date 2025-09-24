@@ -114,8 +114,22 @@ The migration from mock services to live API integration will follow a systemati
 **Implementation Steps:**
 1. **Setup Supabase Authentication**
    ```csharp
+   using BuildingBlocks.Common.Supabase;
+
    // Update Program.cs
-   builder.Services.AddSingleton(new Supabase.Client(supabaseUrl, supabaseAnonKey));
+   builder.Services
+       .AddSupabaseCore(builder.Configuration)
+       .PostConfigure(options =>
+       {
+           options.Client = options.Client with
+           {
+               AutoRefreshToken = true,
+               AutoConnectRealtime = true
+           };
+       });
+
+   builder.Services.AddSingleton(provider =>
+       provider.GetRequiredService<ISupabaseClientFactory>().GetAnonClient());
    builder.Services.AddScoped<IAuthService, SupabaseAuthService>();
    ```
 

@@ -11,4 +11,8 @@
     <ProjectReference Include="..\..\BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Supabase" Version="1.1.1" />
+  </ItemGroup>
+
 </Project>

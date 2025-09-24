@@ -7,10 +7,10 @@ This guide provides instructions and code examples for connecting the `NexaCRM.W
 First, you need to add the `supabase-csharp` library to your Blazor project. Open a terminal in the `src/Web/NexaCRM.WebClient` directory and run the following command:
 
 ```bash
-dotnet add package supabase-csharp
+dotnet add package Supabase
 ```
 
-This will add the necessary NuGet package to your `NexaCRM.WebClient.csproj` file.
+This adds the Supabase .NET SDK. The project already references `BuildingBlocks.Common`, so the Blazor client can reuse the centralised configuration helpers out of the box.
 
 ## Step 2: Initialize the Supabase Client
 
@@ -21,34 +21,35 @@ You need to initialize the Supabase client with your project's URL and Anon Key.
 {
   "Supabase": {
     "Url": "YOUR_SUPABASE_URL",
-    "AnonKey": "YOUR_SUPABASE_ANON_KEY"
+    "AnonKey": "YOUR_SUPABASE_ANON_KEY",
+    "Client": {
+      "AutoConnectRealtime": true
+    }
   }
 }
 ```
 **Important:** The Anon Key is safe to expose in a browser client. It works with your Row-Level Security policies to allow access.
 
 **2. Register the client in `Program.cs`:**
-Modify your `src/Web/NexaCRM.WebClient/Program.cs` file to register the Supabase client as a singleton service.
+Modify your `src/Web/NexaCRM.WebClient/Program.cs` file to register Supabase via the shared factory.
 
 ```csharp
-// using Supabase; // Add this using statement
-
-// ... other using statements
+using BuildingBlocks.Common.Supabase;
+using Supabase;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// ... other services
+// ... other service registrations
 
-// Add Supabase client registration
-var supabaseUrl = builder.Configuration["Supabase:Url"];
-var supabaseAnonKey = builder.Configuration["Supabase:AnonKey"];
+builder.Services
+    .AddSupabaseCore(builder.Configuration)
+    .PostConfigure(options =>
+    {
+        options.Client = options.Client with { AutoConnectRealtime = true };
+    });
 
-builder.Services.AddSingleton(new Client(supabaseUrl, supabaseAnonKey, new Supabase.SupabaseOptions
-{
-    AutoRefreshToken = true,
-    AutoConnectRealtime = true
-}));
-
+builder.Services.AddSingleton(provider =>
+    provider.GetRequiredService<ISupabaseClientFactory>().GetAnonClient());
 
 await builder.Build().RunAsync();
 ```
