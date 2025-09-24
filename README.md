@@ -5,6 +5,7 @@ NexaCRM은 고객 관리부터 워크플로우 자동화, 보고서까지 한 �
 
 🗂️ 추후 예정된 Supabase 연동 및 서비스 고도화 계획은 [NexaCRM 고도화 및 기능 추가 로드맵](NexaCRM_Enhancement_Roadmap.md)에 정리되어 있습니다.
 🧱 Supabase로 전환할 데이터 모델과 RLS 전략은 [Supabase DB 아키텍처 가이드](supabase/DB_ARCHITECTURE.md)에서 도메인별 테이블 구조와 운영 고려 사항으로 요약돼 있습니다.
+📘 Supabase 프로젝트 준비, 패키지 설치, 단계별 체크리스트는 [Supabase 연동 가이드](supabase/SUPABASE_INTEGRATION_GUIDE.md)에서 확인할 수 있습니다.
 
 📝 개요
 NexaCRM은 고객 관리, 리드 관리, 영업 파이프라인, 워크플로우 자동화, 보고서 생성, 보안 인증을 모두 지원하는 올인원 CRM 플랫폼입니다.
