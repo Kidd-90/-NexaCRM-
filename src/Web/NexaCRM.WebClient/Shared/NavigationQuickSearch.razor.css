@@ -1,0 +1,111 @@
+.global-search {
+    position: relative;
+    flex: 1 1 280px;
+    max-width: 420px;
+}
+
+.global-search__input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding-inline: var(--spacing-sm);
+    background-color: var(--surface-muted);
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.global-search__icon {
+    color: var(--text-secondary);
+}
+
+.global-search__input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding-block: 0.6rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.global-search__input:focus {
+    outline: none;
+}
+
+.global-search__input-wrapper:focus-within {
+    border-color: color-mix(in srgb, var(--primary-color) 65%, transparent);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.global-search__results {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 0.5rem);
+    display: grid;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    margin: 0;
+    list-style: none;
+    background: var(--surface-color);
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px var(--shadow-medium);
+    border: 1px solid var(--divider-color);
+    z-index: 12;
+}
+
+.global-search__result-item {
+    border-radius: 0.75rem;
+}
+
+.global-search__result-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.65rem var(--spacing-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: inherit;
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    text-align: left;
+}
+
+.global-search__result-item.is-active .global-search__result-button,
+.global-search__result-button:hover {
+    background: var(--hover-overlay);
+    transform: translateY(-1px);
+}
+
+.global-search__result-icon {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.75rem;
+    background: var(--surface-muted);
+    color: var(--primary-color);
+}
+
+.global-search__result-title {
+    display: block;
+    font-weight: 600;
+}
+
+.global-search__result-meta {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .global-search {
+        flex: 1 1 100%;
+        max-width: none;
+    }
+
+    .global-search__results {
+        top: calc(100% + 0.25rem);
+    }
+}

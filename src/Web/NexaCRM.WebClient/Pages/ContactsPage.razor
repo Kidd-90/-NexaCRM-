@@ -1,265 +1,166 @@
 @page "/contacts"
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<ContactsPage> Localizer
-@using NexaCRM.WebClient.Models
 @using NexaCRM.WebClient.Services.Interfaces
+@using ContactModel = NexaCRM.WebClient.Models.Contact
+@using System.Linq
 @inject IContactService ContactService
-@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
-    <div class="layout-container flex h-full grow flex-col">
-        <header class="contacts-header flex flex-wrap items-center justify-between gap-3 border-b border-solid border-b-[#e7ecf3] px-4 sm:px-6 md:px-10 py-3 md:flex-nowrap md:gap-0 md:whitespace-nowrap">
-            <div class="flex items-center gap-4 sm:gap-8">
-                <div class="flex items-center gap-4 text-[#0e131b]">
-                    <div class="size-4">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor"></path>
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-[#0e131b] text-sm sm:text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["NexaCRM"]</h2>
-                </div>
-                <!-- Add navigation links for consistency with dashboard -->
-                <div class="hidden md:flex items-center gap-6 lg:gap-9">
-                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/main-dashboard">@Localizer["Dashboard"]</a>
-                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/sales-pipeline-page">@Localizer["Deals"]</a>
-                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/contacts">@Localizer["Contacts"]</a>
-                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/reports-page">@Localizer["Reports"]</a>
-                    <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tools">@Localizer["Tools"]</a>
-                </div>
-            </div>
-            <!-- Right side controls -->
-            <div class="header-controls flex w-full flex-1 flex-wrap items-center justify-start gap-2 sm:gap-4 md:gap-8 md:w-auto md:justify-end">
-                <!-- Search functionality -->
-                <label class="search-container flex w-full flex-col min-w-0 max-w-full md:w-auto md:min-w-40 md:max-w-64 md:!h-10">
-                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-                        <div class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
-                             data-icon="MagnifyingGlass" data-size="24px" data-weight="regular">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
-                            </svg>
-                        </div>
-                        <input placeholder='@Localizer["Search"]'
-                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                               @bind="searchQuery"
-                               @oninput="OnSearchInput" />
-                    </div>
-                </label>
-                <!-- Notifications button -->
-                <button class="notifications-btn flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
-                        @onclick="ShowNotifications">
-                    <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                            <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
-                        </svg>
-                    </div>
-                </button>
-                <!-- Mobile Menu Button -->
-                <button class="contacts-mobile-menu-button md:hidden" @onclick="ToggleMobileMenu">
-                    <svg class="w-6 h-6 text-[#0e131b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                <!-- User profile avatar -->
-                <div class="user-avatar bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10" 
-                     style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'></div>
-            </div>
-        </header>
-        
-        <!-- Mobile Navigation Overlay for Contacts -->
-        <div class="contacts-mobile-nav-overlay @(isMobileMenuOpen ? "active" : "")" @onclick="CloseMobileMenu"></div>
-        
-        <!-- Mobile Navigation Menu for Contacts -->
-        <nav class="contacts-mobile-nav-menu @(isMobileMenuOpen ? "active" : "")">
-            <button class="contacts-mobile-nav-close" @onclick="CloseMobileMenu">
-                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-            <ul class="contacts-mobile-nav-links">
-                <li><a class="contacts-mobile-nav-link" href="/main-dashboard" @onclick="CloseMobileMenu">@Localizer["Dashboard"]</a></li>
-                <li><a class="contacts-mobile-nav-link" href="/sales-pipeline-page" @onclick="CloseMobileMenu">@Localizer["Deals"]</a></li>
-                <li><a class="contacts-mobile-nav-link" href="/contacts" @onclick="CloseMobileMenu">@Localizer["Contacts"]</a></li>
-                <li><a class="contacts-mobile-nav-link" href="/reports-page" @onclick="CloseMobileMenu">@Localizer["Reports"]</a></li>
-                <li><a class="contacts-mobile-nav-link" href="/tools" @onclick="CloseMobileMenu">@Localizer["Tools"]</a></li>
-            </ul>
-        </nav>
-        <div class="px-4 sm:px-6 md:px-12 lg:px-40 flex flex-1 justify-center py-5">
-            <div class="layout-content-container flex flex-col w-full max-w-none sm:max-w-full md:max-w-[960px] flex-1">
-                <div class="contacts-header">
-                    <h1 class="contacts-title text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">@Localizer["Contacts"]</h1>
-                </div>
-                @if (filteredContacts == null)
-                {
-                    <p class="contacts-loading text-center py-8"><em>@Localizer["Loading..."]</em></p>
-                }
-                else
-                {
-                    <!-- Desktop/Tablet Table View -->
-                    <div class="contacts-table-container overflow-x-auto -mx-4 sm:mx-0">
-                        <div class="inline-block min-w-full align-middle">
-                            <table class="contacts-table min-w-full divide-y divide-gray-200 bg-white shadow-sm rounded-lg overflow-hidden">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["Id"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["FirstName"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["LastName"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["Email"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["PhoneNumber"]
-                                        </th>
-                                        <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            @Localizer["Actions"]
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach (var contact in filteredContacts)
-                                    {
-                                        <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                @contact.Id
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                @contact.FirstName
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                @contact.LastName
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <a href="mailto:@contact.Email" class="text-indigo-600 hover:text-indigo-900 break-all">
-                                                    @contact.Email
-                                                </a>
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <a href="tel:@contact.PhoneNumber" class="text-indigo-600 hover:text-indigo-900">
-                                                    @contact.PhoneNumber
-                                                </a>
-                                            </td>
-                                            <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <NexaCRM.WebClient.Components.UI.QuickActionsComponent 
-                                                    PhoneNumber="@contact.PhoneNumber"
-                                                    Email="@contact.Email"
-                                                    CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
-                                                    CustomerId="@contact.Id.ToString()"
-                                                    ShowLabels="false"
-                                                    CssClass="inline"
-                                                    OnActionCompleted="HandleQuickAction" />
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+<PageTitle>@Localizer["Contacts"]</PageTitle>
 
-                    <!-- Mobile Card View -->
-                    <div class="contacts-mobile-view">
+<div class="contacts-layout">
+    <div class="contacts-toolbar">
+        <label class="contacts-search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input placeholder='@Localizer["Search"]'
+                   @bind="searchQuery"
+                   @oninput="OnSearchInput" />
+        </label>
+        <button class="contacts-toolbar__button" @onclick="CreateContact">
+            <i class="bi bi-plus-circle" aria-hidden="true"></i>
+            <span>@Localizer["NewContact"]</span>
+        </button>
+    </div>
+
+    @if (filteredContacts == null)
+    {
+        <p class="contacts-loading"><em>@Localizer["Loading..."]</em></p>
+    }
+    else if (filteredContacts.Count == 0)
+    {
+        <div class="contacts-empty">
+            <i class="bi bi-people" aria-hidden="true"></i>
+            <p>@Localizer["NoContacts"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="contacts-table-container">
+            <div class="contacts-table-wrapper">
+                <table class="contacts-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Id"]</th>
+                            <th>@Localizer["FirstName"]</th>
+                            <th>@Localizer["LastName"]</th>
+                            <th>@Localizer["Email"]</th>
+                            <th>@Localizer["PhoneNumber"]</th>
+                            <th>@Localizer["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach (var contact in filteredContacts)
                         {
-                            <div class="contact-card">
-                                <div class="contact-name">
-                                    @if (!string.IsNullOrEmpty(contact.FirstName) || !string.IsNullOrEmpty(contact.LastName))
-                                    {
-                                        @($"{contact.FirstName} {contact.LastName}".Trim())
-                                    }
-                                    else
-                                    {
-                                        <span class="text-gray-500">@Localizer["No Name"]</span>
-                                    }
-                                </div>
-                                <div class="contact-id">ID: @contact.Id</div>
-                                
-                                <div class="contact-info">
+                            <tr>
+                                <td>@contact.Id</td>
+                                <td>@contact.FirstName</td>
+                                <td>@contact.LastName</td>
+                                <td>
                                     @if (!string.IsNullOrEmpty(contact.Email))
                                     {
-                                        <div class="contact-info-item">
-                                            <svg class="contact-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                            </svg>
-                                            <div class="contact-info-content">
-                                                <div class="contact-info-label">@Localizer["Email"]</div>
-                                                <div class="contact-info-value">
-                                                    <a href="mailto:@contact.Email">@contact.Email</a>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <a href="mailto:@contact.Email">@contact.Email</a>
                                     }
-                                    
+                                </td>
+                                <td>
                                     @if (!string.IsNullOrEmpty(contact.PhoneNumber))
                                     {
-                                        <div class="contact-info-item">
-                                            <svg class="contact-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                            </svg>
-                                            <div class="contact-info-content">
-                                                <div class="contact-info-label">@Localizer["PhoneNumber"]</div>
-                                                <div class="contact-info-value">
-                                                    <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
                                     }
-                                </div>
-                                
-                                <!-- Quick Actions for Mobile -->
-                                <div class="contact-actions">
-                                    <NexaCRM.WebClient.Components.UI.QuickActionsComponent 
+                                </td>
+                                <td>
+                                    <NexaCRM.WebClient.Components.UI.QuickActionsComponent
                                         PhoneNumber="@contact.PhoneNumber"
                                         Email="@contact.Email"
                                         CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
                                         CustomerId="@contact.Id.ToString()"
-                                        ShowLabels="true"
-                                        CssClass=""
+                                        ShowLabels="false"
+                                        CssClass="inline"
                                         OnActionCompleted="HandleQuickAction" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="contacts-mobile-view">
+            @foreach (var contact in filteredContacts)
+            {
+                <div class="contact-card">
+                    <div class="contact-name">
+                        @if (!string.IsNullOrEmpty(contact.FirstName) || !string.IsNullOrEmpty(contact.LastName))
+                        {
+                            @($"{contact.FirstName} {contact.LastName}".Trim())
+                        }
+                        else
+                        {
+                            <span class="text-muted">@Localizer["No Name"]</span>
+                        }
+                    </div>
+                    <div class="contact-id">ID: @contact.Id</div>
+
+                    <div class="contact-info">
+                        @if (!string.IsNullOrEmpty(contact.Email))
+                        {
+                            <div class="contact-info-item">
+                                <i class="bi bi-envelope" aria-hidden="true"></i>
+                                <div>
+                                    <span class="contact-info-label">@Localizer["Email"]</span>
+                                    <a href="mailto:@contact.Email">@contact.Email</a>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(contact.PhoneNumber))
+                        {
+                            <div class="contact-info-item">
+                                <i class="bi bi-telephone" aria-hidden="true"></i>
+                                <div>
+                                    <span class="contact-info-label">@Localizer["PhoneNumber"]</span>
+                                    <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
                                 </div>
                             </div>
                         }
                     </div>
-                }
-            </div>
+
+                    <div class="contact-actions">
+                        <NexaCRM.WebClient.Components.UI.QuickActionsComponent
+                            PhoneNumber="@contact.PhoneNumber"
+                            Email="@contact.Email"
+                            CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
+                            CustomerId="@contact.Id.ToString()"
+                            ShowLabels="true"
+                            CssClass="inline"
+                            OnActionCompleted="HandleQuickAction" />
+                    </div>
+                </div>
+            }
         </div>
-    </div>
-    
-    <!-- Mobile Quick Actions Floating Button -->
-    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
-        ShowCallAction="true" 
-        ShowEmailAction="true" 
-        ShowMeetingAction="true" 
-        ShowAddAction="true"
-        OnActionClicked="HandleFloatingAction" />
+    }
 </div>
 
 @code {
-    private IEnumerable<Contact>? contacts;
-    private IEnumerable<Contact>? filteredContacts;
+    private List<ContactModel>? contacts;
+    private List<ContactModel>? filteredContacts;
     private string searchQuery = string.Empty;
-    private bool isMobileMenuOpen = false;
 
-    protected override async System.Threading.Tasks.Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        contacts = await ContactService.GetContactsAsync();
+        contacts = (await ContactService.GetContactsAsync()).ToList();
         filteredContacts = contacts;
     }
 
     private void OnSearchInput(ChangeEventArgs e)
     {
         searchQuery = e.Value?.ToString() ?? string.Empty;
-        FilterContacts();
+        ApplyFilter();
     }
 
-    private void FilterContacts()
+    private void ApplyFilter()
     {
-        if (contacts == null)
+        if (contacts is null)
         {
             filteredContacts = null;
             return;
@@ -268,67 +169,26 @@
         if (string.IsNullOrWhiteSpace(searchQuery))
         {
             filteredContacts = contacts;
+            return;
         }
-        else
-        {
-            var query = searchQuery.ToLowerInvariant();
-            filteredContacts = contacts.Where(c =>
-                (!string.IsNullOrEmpty(c.FirstName) && c.FirstName.ToLowerInvariant().Contains(query)) ||
-                (!string.IsNullOrEmpty(c.LastName) && c.LastName.ToLowerInvariant().Contains(query)) ||
-                (!string.IsNullOrEmpty(c.Email) && c.Email.ToLowerInvariant().Contains(query)) ||
-                (!string.IsNullOrEmpty(c.PhoneNumber) && c.PhoneNumber.Contains(query))
-            );
-        }
-        StateHasChanged();
+
+        var query = searchQuery.Trim();
+        filteredContacts = contacts
+            .Where(contact =>
+                (!string.IsNullOrEmpty(contact.FirstName) && contact.FirstName.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(contact.LastName) && contact.LastName.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(contact.Email) && contact.Email.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(contact.PhoneNumber) && contact.PhoneNumber.Contains(query, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
     }
 
-    private void ShowNotifications()
+    private void HandleQuickAction(string action)
     {
-        // Placeholder for notifications functionality
-        // This can be implemented later with a notification service
+        // Placeholder for future quick action handling (toast notifications etc.)
     }
 
-    private void ToggleMobileMenu()
+    private void CreateContact()
     {
-        isMobileMenuOpen = !isMobileMenuOpen;
-    }
-
-    private void CloseMobileMenu()
-    {
-        isMobileMenuOpen = false;
-    }
-
-    private async System.Threading.Tasks.Task HandleQuickAction(string action)
-    {
-        // This method is called when quick action buttons are clicked
-        // The actual call/email/meeting functionality is handled within the QuickActionsComponent
-        // Here we can add any logging or analytics
-        Console.WriteLine($"Quick action executed: {action}");
-        
-        // Could add analytics or logging here
-        // await AnalyticsService.TrackEvent($"quick_action_{action}");
-    }
-
-    private async System.Threading.Tasks.Task HandleFloatingAction(string action)
-    {
-        switch (action)
-        {
-            case "call":
-                // Show a message or navigate to a specific contact
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to call from the list above");
-                break;
-            case "email":
-                // Show a message or navigate to a specific contact
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to email from the list above");
-                break;
-            case "meeting":
-                // Navigate to calendar/meeting scheduling
-                NavigationManager.NavigateTo("/sales-calendar");
-                break;
-            case "add":
-                // Navigate to add new contact page or show modal
-                await JSRuntime.InvokeVoidAsync("alert", "Add new contact functionality - to be implemented");
-                break;
-        }
+        NavigationManager.NavigateTo("/contacts/new");
     }
 }

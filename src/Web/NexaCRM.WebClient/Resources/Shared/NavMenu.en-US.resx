@@ -195,4 +195,31 @@
   <data name="UserManagement" xml:space="preserve">
     <value>User Management</value>
   </data>
+  <data name="NavigationOverview" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="SalesWorkspace" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="Engagement" xml:space="preserve">
+    <value>Engagement</value>
+  </data>
+  <data name="Insights" xml:space="preserve">
+    <value>Insights</value>
+  </data>
+  <data name="Favorites" xml:space="preserve">
+    <value>Favorites</value>
+  </data>
+  <data name="RecentlyVisited" xml:space="preserve">
+    <value>Recently visited</value>
+  </data>
+  <data name="ClearRecent" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="SearchNavigation" xml:space="preserve">
+    <value>Search navigation</value>
+  </data>
+  <data name="GlobalSearchPlaceholder" xml:space="preserve">
+    <value>Search pages, data and tools</value>
+  </data>
 </root>

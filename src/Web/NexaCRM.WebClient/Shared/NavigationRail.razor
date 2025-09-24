@@ -1,331 +1,169 @@
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Routing
+@using System.Linq
+@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IRolePermissionService RolePermissionService
 @inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
-@using NexaCRM.WebClient.Shared
+@using NexaCRM.WebClient.Models.Navigation
 
-<div class="nav-rail" role="navigation" aria-label="Primary">
+<div class="nav-rail" role="navigation" aria-label="@Localizer["MainNavigation"]">
     <div class="nav-rail__icons" role="tablist" aria-orientation="vertical">
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.Dashboard ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.Dashboard)"
-                title="@Localizer["Dashboard"]"
-                @onclick="() => SetActive(Category.Dashboard)">
-            <i class="bi bi-speedometer2"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.BasicSettings ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.BasicSettings)"
-                title="@Localizer["BasicSettings"]"
-                @onclick="() => SetActive(Category.BasicSettings)">
-            <i class="bi bi-gear"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.Organization ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.Organization)"
-                title="@Localizer["OrganizationManagement"]"
-                @onclick="() => SetActive(Category.Organization)">
-            <i class="bi bi-people"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.Db ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.Db)"
-                title="@Localizer["DbManagement"]"
-                @onclick="() => SetActive(Category.Db)">
-            <i class="bi bi-database"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.Statistics ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.Statistics)"
-                title="@Localizer["Statistics"]"
-                @onclick="() => SetActive(Category.Statistics)">
-            <i class="bi bi-graph-up"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.CustomerCenter ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.CustomerCenter)"
-                title="@Localizer["CustomerCenter"]"
-                @onclick="() => SetActive(Category.CustomerCenter)">
-            <i class="bi bi-headset"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.Schedule ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.Schedule)"
-                title="@Localizer["ScheduleManagement"]"
-                @onclick="() => SetActive(Category.Schedule)">
-            <i class="bi bi-calendar-event"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.Sms ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.Sms)"
-                title="@Localizer["Sms"]"
-                @onclick="() => SetActive(Category.Sms)">
-            <i class="bi bi-chat-dots"></i>
-        </button>
-        <button type="button"
-                class="rail-icon @(activeCategory == Category.System ? "active" : null)"
-                role="tab"
-                aria-selected="@(activeCategory == Category.System)"
-                title="@Localizer["SystemInfo"]"
-                @onclick="() => SetActive(Category.System)">
-            <i class="bi bi-info-circle"></i>
-        </button>
-
-        <div class="nav-rail__bottom" aria-hidden="false">
+        @for (var index = 0; index < groups.Count; index++)
+        {
+            var group = groups[index];
             <button type="button"
-                    class="rail-icon"
-                    title="설정"
-                    @onclick="@(() => NavigateAndClose("settings-page"))">
-                <i class="bi bi-gear"></i>
+                    class="rail-icon @(index == activeGroupIndex ? "active" : null)"
+                    role="tab"
+                    title="@group.DisplayName"
+                    aria-selected="@(index == activeGroupIndex)"
+                    @onclick="() => SetActive(index)">
+                <i class="@group.IconCss" aria-hidden="true"></i>
             </button>
-            <button type="button"
-                    class="rail-icon rail-icon--profile"
-                    title="프로필"
-                    @onclick="@(() => NavigateAndClose("profile-settings-page"))">
-                <AuthorizeView>
-                    <Authorized>
-                        <span class="indicator-dot" title="Logged in" aria-hidden="true"></span>
-                    </Authorized>
-                </AuthorizeView>
-                <i class="bi bi-person-circle"></i>
-            </button>
-            <a class="rail-logo" href="/" title="회사 홈">
-                <img src="images/company-logo.svg" alt="Company logo" />
-            </a>
-        </div>
+        }
     </div>
 
     <div class="nav-rail__panel" role="tabpanel">
-        @if (activeCategory == Category.Dashboard)
+        @if (groups.Count == 0)
         {
             <div class="panel-header">
-                <div class="panel-title">@Localizer["Dashboard"]</div>
+                <div class="panel-title">@Localizer["MenuBrandTitle"]</div>
             </div>
-            <div class="panel-list">
-                <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="main-dashboard" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["Dashboard"]</span>
+            <p class="text-muted">@Localizer["Favorites"]</p>
+        }
+        else
+        {
+            var group = groups[activeGroupIndex];
+            <div class="panel-header">
+                <div class="panel-title">@group.DisplayName</div>
+            </div>
+            <nav class="panel-list">
+                @foreach (var link in group.Links)
+                {
+                    <NavLink class="nav-link panel-item" href="@link.Href" @onclick="CloseMenuOnNavigate">
+                        <span>@link.DisplayName</span>
                     </NavLink>
-                </RoleBasedComponent>
-            </div>
-        }
-        else if (activeCategory == Category.BasicSettings)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["BasicSettings"]</div>
-            </div>
-            <nav class="panel-list" aria-label="Basic Settings">
-                <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="settings/company-info" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["CompanyInfo"]</span>
-                    </NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager,Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="profile-settings-page" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["PersonalInfo"]</span>
-                    </NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="settings-page" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["ThemeSettings"]</span>
-                    </NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="settings/security" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["SecuritySettings"]</span>
-                    </NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="settings/sms" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["SmsSettings"]</span>
-                    </NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager,Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="notification-settings-page" @onclick="CloseMenuOnNavigate">
-                        <span>@Localizer["NotificationSettings"]</span>
-                    </NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.Db)
-        {
-            <div class="panel-header panel-header--db">
-                <div class="panel-title">@Localizer["DbManagement"]</div>
-                <input id="dbImportFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" />
-                <label class="panel-action import-button" for="dbImportFile">
-                    <i class="bi bi-person-plus" aria-hidden="true"></i>
-                    <span>고객 DB 추가하기</span>
-                </label>
-            </div>
-            <nav class="panel-list" aria-label="DB Management">
-                <div class="panel-divider" aria-hidden="true"></div>
-                <RoleBasedComponent RequiredRoles="Manager">
-                    <NavLink class="nav-link panel-item" href="db/customer/all" @onclick="CloseMenuOnNavigate"><span>@Localizer["AllDbList"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales">
-                    <NavLink class="nav-link panel-item" href="db/customer/new" @onclick="CloseMenuOnNavigate"><span>@Localizer["NewDbList"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales">
-                    <NavLink class="nav-link panel-item" href="db/customer/starred" @onclick="CloseMenuOnNavigate"><span>@Localizer["StarredDbList"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager">
-                    <NavLink class="nav-link panel-item" href="db/customer/assigned-today" @onclick="CloseMenuOnNavigate"><span>@Localizer["TodaysAssignedDb"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager">
-                    <NavLink class="nav-link panel-item" href="db/distribution/unassigned" @onclick="CloseMenuOnNavigate"><span>@Localizer["UnassignedDbList"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales">
-                    <NavLink class="nav-link panel-item" href="db/distribution/newly-assigned" @onclick="CloseMenuOnNavigate"><span>@Localizer["NewlyAssignedDb"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager">
-                    <NavLink class="nav-link panel-item" href="db/distribution/status" @onclick="CloseMenuOnNavigate"><span>@Localizer["DbDistributionStatus"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales">
-                    <NavLink class="nav-link panel-item" href="db/distribution/my-history" @onclick="CloseMenuOnNavigate"><span>@Localizer["MyAssignmentHistory"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Developer">
-                    <NavLink class="nav-link panel-item" href="db/advanced" @onclick="CloseMenuOnNavigate"><span>@Localizer["DbAdvanced"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Sales">
-                    <NavLink class="nav-link panel-item" href="db/customer/my-list" @onclick="CloseMenuOnNavigate"><span>@Localizer["MyDbList"]</span></NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.Organization)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["OrganizationManagement"]</div>
-            </div>
-            <nav class="panel-list" aria-label="Organization">
-                <RoleBasedComponent RequiredRoles="Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="organization/structure" @onclick="CloseMenuOnNavigate"><span>@Localizer["OrganizationStructure"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="organization/team-management" @onclick="CloseMenuOnNavigate"><span>@Localizer["TeamManagement"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="organization/team-members" @onclick="CloseMenuOnNavigate"><span>@Localizer["TeamMemberManagement"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="organization/user-management" @onclick="CloseMenuOnNavigate"><span>@Localizer["UserManagement"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="organization/stats" @onclick="CloseMenuOnNavigate"><span>@Localizer["OrganizationStats"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="organization/system-admin" @onclick="CloseMenuOnNavigate"><span>@Localizer["SystemAdmin"]</span></NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.Statistics)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["Statistics"]</div>
-            </div>
-            <nav class="panel-list" aria-label="Statistics">
-                <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="statistics/dashboard" @onclick="CloseMenuOnNavigate"><span>@Localizer["StatisticsDashboard"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Manager,Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="reports-page" @onclick="CloseMenuOnNavigate"><span>@Localizer["Reports"]</span></NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.Sms)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["Sms"]</div>
-            </div>
-            <nav class="panel-list" aria-label="Messaging">
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="sms/bulk" @onclick="CloseMenuOnNavigate"><span>@Localizer["BulkSms"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="sms/history" @onclick="CloseMenuOnNavigate"><span>@Localizer["SmsHistory"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="sms/senders" @onclick="CloseMenuOnNavigate"><span>@Localizer["SenderNumbers"]</span></NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.CustomerCenter)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["CustomerCenter"]</div>
-            </div>
-            <nav class="panel-list" aria-label="Customer Center">
-                <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="support/notices" @onclick="CloseMenuOnNavigate"><span>@Localizer["Notices"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager,Admin">
-                    <NavLink class="nav-link panel-item" href="support/faq" @onclick="CloseMenuOnNavigate"><span>@Localizer["Faq"]</span></NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.Schedule)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["ScheduleManagement"]</div>
-            </div>
-            <nav class="panel-list" aria-label="Schedule">
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="sales-calendar" @onclick="CloseMenuOnNavigate"><span>@Localizer["SalesCalendar"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="schedule/sms" @onclick="CloseMenuOnNavigate"><span>@Localizer["SmsSchedule"]</span></NavLink>
-                </RoleBasedComponent>
-                <RoleBasedComponent RequiredRoles="Sales,Manager">
-                    <NavLink class="nav-link panel-item" href="schedule/sent-history" @onclick="CloseMenuOnNavigate"><span>@Localizer["ScheduleSentHistory"]</span></NavLink>
-                </RoleBasedComponent>
-            </nav>
-        }
-        else if (activeCategory == Category.System)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["SystemInfo"]</div>
-            </div>
-            <nav class="panel-list" aria-label="System">
-                <RoleBasedComponent RequiredRoles="Admin,Developer">
-                    <NavLink class="nav-link panel-item" href="system/info" @onclick="CloseMenuOnNavigate"><span>@Localizer["SystemInformation"]</span></NavLink>
-                </RoleBasedComponent>
+                }
             </nav>
         }
     </div>
 </div>
 
 @code {
-    private enum Category { Dashboard, BasicSettings, Organization, Db, Statistics, CustomerCenter, Schedule, Sms, System }
-    private Category activeCategory = Category.Dashboard;
+    private readonly List<NavigationGroupViewModel> groups = new();
+    private int activeGroupIndex;
+    private string[] userRoles = Array.Empty<string>();
 
-    private void SetActive(Category category)
+    protected override async Task OnInitializedAsync()
     {
-        activeCategory = category;
+        await base.OnInitializedAsync();
+        await LoadRolesAsync();
+        BuildGroups();
     }
 
-    private void NavigateAndClose(string uri)
+    private async Task LoadRolesAsync()
     {
-        NavigationManager.NavigateTo(uri);
-        _ = CloseMenuOnNavigate();
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            userRoles = await RolePermissionService.GetUserRolesAsync(authState.User);
+        }
+        catch
+        {
+            userRoles = Array.Empty<string>();
+        }
+    }
+
+    private void BuildGroups()
+    {
+        groups.Clear();
+        var roleSet = new HashSet<string>(userRoles ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var group in NavigationCatalog.Groups)
+        {
+            var accessibleLinks = new List<NavigationLinkViewModel>();
+            foreach (var link in group.Links)
+            {
+                if (!IsAccessible(link, roleSet))
+                {
+                    continue;
+                }
+
+                accessibleLinks.Add(new NavigationLinkViewModel(GetHref(link.Href), Localizer[link.ResourceKey]?.Value ?? link.ResourceKey));
+            }
+
+            if (accessibleLinks.Count == 0)
+            {
+                continue;
+            }
+
+            groups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass, accessibleLinks));
+        }
+
+        if (groups.Count == 0)
+        {
+            return;
+        }
+
+        activeGroupIndex = 0;
+    }
+
+    private static bool IsAccessible(NavigationLinkDefinition link, HashSet<string> roles)
+    {
+        if (link.RequiredRoles.Count == 0)
+        {
+            return true;
+        }
+
+        if (roles.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (var role in link.RequiredRoles)
+        {
+            if (roles.Contains(role))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string GetHref(string href)
+    {
+        if (string.IsNullOrWhiteSpace(href))
+        {
+            return "/";
+        }
+
+        return href.StartsWith('/') ? href : $"/{href}";
+    }
+
+    private void SetActive(int index)
+    {
+        if (index < 0 || index >= groups.Count)
+        {
+            return;
+        }
+
+        activeGroupIndex = index;
     }
 
     private async Task CloseMenuOnNavigate()
     {
         try
         {
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.toggleMenu", true);
+            await JSRuntime.InvokeVoidAsync("layoutInterop.toggleMenu", true);
         }
         catch
         {
-            // no-op
+            // ignore
         }
     }
+
+    private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationLinkViewModel> Links);
+
+    private sealed record NavigationLinkViewModel(string Href, string DisplayName);
 }

@@ -1,0 +1,229 @@
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Models.Navigation
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IStringLocalizer<NavMenu> Localizer
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IRolePermissionService RolePermissionService
+
+<div class="global-search" @onfocusout="HandleFocusOut">
+    <label class="global-search__input-wrapper" aria-label="@Localizer["SearchNavigation"]">
+        <i class="bi bi-search global-search__icon" aria-hidden="true"></i>
+        <input data-global-search
+               class="global-search__input"
+               type="search"
+               placeholder='@Localizer["GlobalSearchPlaceholder"]'
+               value="@query"
+               @oninput="OnQueryChanged"
+               @onkeydown="OnKeyDown" />
+    </label>
+
+    @if (ShowResults)
+    {
+        <ul class="global-search__results" role="listbox">
+            @for (var i = 0; i < filteredResults.Count; i++)
+            {
+                var result = filteredResults[i];
+                var isActive = activeIndex == i;
+                <li class="global-search__result-item @(isActive ? "is-active" : null)" role="option" aria-selected="@isActive">
+                    <button type="button"
+                            class="global-search__result-button"
+                            @onclick="() => NavigateTo(result)"
+                            @onmouseenter="() => activeIndex = i">
+                        <span class="global-search__result-icon"><i class="@result.IconCss" aria-hidden="true"></i></span>
+                        <span class="global-search__result-text">
+                            <span class="global-search__result-title">@result.DisplayName</span>
+                            <span class="global-search__result-meta">@result.GroupName</span>
+                        </span>
+                    </button>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback OnNavigate { get; set; }
+
+    private readonly List<SearchResult> allEntries = new();
+    private readonly List<SearchResult> filteredResults = new();
+    private string query = string.Empty;
+    private int activeIndex = -1;
+    private string[] userRoles = Array.Empty<string>();
+
+    private bool ShowResults => filteredResults.Count > 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadUserRolesAsync();
+        BuildSearchIndex();
+    }
+
+    private async Task LoadUserRolesAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            userRoles = await RolePermissionService.GetUserRolesAsync(authState.User);
+        }
+        catch
+        {
+            userRoles = Array.Empty<string>();
+        }
+    }
+
+    private void BuildSearchIndex()
+    {
+        allEntries.Clear();
+        var userRoleSet = new HashSet<string>(userRoles ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var group in NavigationCatalog.Groups)
+        {
+            var groupName = Localizer[group.ResourceKey]?.Value ?? group.ResourceKey;
+            foreach (var link in group.Links)
+            {
+                if (!IsAccessible(link, userRoleSet))
+                {
+                    continue;
+                }
+
+                var label = Localizer[link.ResourceKey]?.Value ?? link.ResourceKey;
+                allEntries.Add(new SearchResult(link.Href, label, groupName, link.IconCssClass, link.Keywords));
+            }
+        }
+    }
+
+    private static bool IsAccessible(NavigationLinkDefinition link, HashSet<string> roles)
+    {
+        if (link.RequiredRoles.Count == 0)
+        {
+            return true;
+        }
+
+        if (roles.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (var role in link.RequiredRoles)
+        {
+            if (roles.Contains(role))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void OnQueryChanged(ChangeEventArgs args)
+    {
+        query = args.Value?.ToString() ?? string.Empty;
+        UpdateResults();
+    }
+
+    private void UpdateResults()
+    {
+        filteredResults.Clear();
+        activeIndex = -1;
+
+        var normalized = query.Trim();
+        if (normalized.Length < 2)
+        {
+            StateHasChanged();
+            return;
+        }
+
+        foreach (var entry in allEntries)
+        {
+            if (filteredResults.Count >= 7)
+            {
+                break;
+            }
+
+            if (entry.Matches(normalized))
+            {
+                filteredResults.Add(entry);
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnKeyDown(KeyboardEventArgs args)
+    {
+        if (!ShowResults)
+        {
+            return;
+        }
+
+        switch (args.Key)
+        {
+            case "ArrowDown":
+                activeIndex = Math.Min(activeIndex + 1, filteredResults.Count - 1);
+                StateHasChanged();
+                break;
+            case "ArrowUp":
+                activeIndex = Math.Max(activeIndex - 1, 0);
+                StateHasChanged();
+                break;
+            case "Enter":
+                if (activeIndex >= 0 && activeIndex < filteredResults.Count)
+                {
+                    NavigateTo(filteredResults[activeIndex]);
+                }
+                break;
+            case "Escape":
+                filteredResults.Clear();
+                activeIndex = -1;
+                StateHasChanged();
+                break;
+        }
+    }
+
+    private async Task NavigateTo(SearchResult result)
+    {
+        if (result is null)
+        {
+            return;
+        }
+
+        filteredResults.Clear();
+        activeIndex = -1;
+
+        var target = string.IsNullOrWhiteSpace(result.Href) ? "/" : $"/{result.Href.Trim('/')}";
+        NavigationManager.NavigateTo(target);
+        StateHasChanged();
+
+        if (OnNavigate.HasDelegate)
+        {
+            await OnNavigate.InvokeAsync();
+        }
+    }
+
+    private void HandleFocusOut(FocusEventArgs args)
+    {
+        // Delay clearing to allow click events to propagate
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(150);
+            filteredResults.Clear();
+            activeIndex = -1;
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private sealed record SearchResult(string Href, string DisplayName, string GroupName, string IconCss, IReadOnlyList<string> Keywords)
+    {
+        public bool Matches(string term)
+        {
+            return DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase)
+                   || GroupName.Contains(term, StringComparison.OrdinalIgnoreCase)
+                   || Keywords.Any(keyword => keyword.Contains(term, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+}
