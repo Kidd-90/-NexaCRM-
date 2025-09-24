@@ -73,6 +73,7 @@ builder.Services.AddSingleton<IDedupeConfigService, DedupeConfigService>();
 builder.Services.AddScoped<IDuplicateMonitorService, DuplicateMonitorService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<ISettingsCustomizationService, SupabaseSettingsCustomizationService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IDbAdminService, DbAdminService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
@@ -87,6 +88,10 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationFeedService, SupabaseNotificationFeedService>();
 builder.Services.AddScoped<ITeamService, MockTeamService>();
 builder.Services.AddScoped<INavigationStateService, NavigationStateService>();
+builder.Services.AddScoped<IUserGovernanceService, SupabaseUserGovernanceService>();
+builder.Services.AddScoped<IFileHubService, SupabaseFileHubService>();
+builder.Services.AddScoped<ICommunicationHubService, SupabaseCommunicationHubService>();
+builder.Services.AddScoped<ISyncOrchestrationService, SupabaseSyncOrchestrationService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;

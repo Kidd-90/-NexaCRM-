@@ -154,10 +154,115 @@ public interface ITaskService
 **CreateTaskAsync(Models.Task task)**
 - **Purpose**: Creates a new task in the system
 - **Return Type**: `Task` (void)
-- **Parameters**: 
+- **Parameters**:
   - `task` (Models.Task): Task object with required properties
 - **Validation**: Title and assigned user are required
 - **Exceptions**: `ValidationException`, `ServiceException`
+
+---
+
+### IUserGovernanceService - Account Lifecycle and Security Governance
+
+**Purpose**: Manages the full lifecycle of authenticated users including provisioning, role assignment, password resets, and security policy enforcement.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Key Methods
+- `CreateUserAsync(string email, string displayName, IEnumerable<string> roles, CancellationToken ct)`
+  - Creates a new Supabase-backed identity and assigns initial roles.
+- `AssignRolesAsync(Guid userId, IEnumerable<string> roles, CancellationToken ct)`
+  - Persists role membership ensuring audit logging is written.
+- `CreatePasswordResetTicketAsync(Guid userId, CancellationToken ct)`
+  - Issues a reset ticket and records it within Supabase for secure delivery.
+- `GetAuditTrailAsync(Guid organizationId, CancellationToken ct)`
+  - Fetches recent security events for admin review and compliance.
+
+**Implementation Notes**
+- Uses Supabase PostgREST tables for `user_accounts`, `user_roles`, and `audit_logs`.
+- All mutating operations produce audit entries to keep a traceable history.
+- Designed for integration with admin UI to expose activation, suspension, and password flows.
+
+---
+
+### ISettingsCustomizationService - Personalization and Feature Flags
+
+**Purpose**: Provides APIs to load and persist organization-wide and user-specific personalization, including dashboard widgets and KPI snapshots.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Key Methods
+- `GetOrganizationSettingsAsync(Guid organizationId, CancellationToken ct)` / `SaveOrganizationSettingsAsync(...)`
+  - Manages localization, timezone, and organization-level feature flags.
+- `GetUserPreferencesAsync(Guid userId, CancellationToken ct)` / `SaveUserPreferencesAsync(...)`
+  - Tracks per-user theme, notification preferences, and widget metadata.
+- `GetDashboardLayoutAsync(Guid userId, CancellationToken ct)` / `SaveDashboardLayoutAsync(...)`
+  - Supports configurable widget ordering and layout persistence.
+- `GetKpiSnapshotsAsync(string metric, DateTime since, CancellationToken ct)`
+  - Retrieves historical KPI values for dashboard charts.
+
+**Implementation Notes**
+- Persists data in `organization_settings`, `user_preferences`, `dashboard_widgets`, and `kpi_snapshots` Supabase tables.
+- Uses JSON serialization to flexibly capture dynamic widget and flag metadata.
+- Built to back advanced dashboard customization screens within the admin area.
+
+---
+
+### IFileHubService - Storage, Versioning, and Threaded Collaboration
+
+**Purpose**: Coordinates file upload flows, metadata registration, version history, and threaded communications for attached documents.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Key Methods
+- `CreateUploadUrlAsync(FileUploadRequest request, CancellationToken ct)`
+  - Generates signed Supabase Storage URLs with the correct headers and path scoping.
+- `RegisterUploadAsync(Guid userId, string objectPath, FileUploadRequest request, CancellationToken ct)`
+  - Stores file metadata and creates the first version entry.
+- `GetFileVersionsAsync(Guid fileId, CancellationToken ct)`
+  - Returns ordered version history for auditability.
+- `EnsureThreadAsync(string entityType, string entityId, string channel, CancellationToken ct)`
+  - Lazily creates or loads a communication thread per entity and channel.
+- `SendThreadMessageAsync(Guid threadId, Guid senderId, string body, IEnumerable<string> channels, CancellationToken ct)`
+  - Records a message and dispatches integration events for downstream email/SMS delivery.
+
+**Implementation Notes**
+- Storage paths follow a deterministic convention allowing RLS policies to guard access per entity.
+- Integrates with Supabase `file_documents`, `file_versions`, `communication_threads`, and `thread_messages` tables.
+- Automatically logs file events into the shared `audit_logs` stream.
+
+---
+
+### ICommunicationHubService - Email, SMS, and Push Abstraction
+
+**Purpose**: Centralizes queuing of multi-channel outbound communications for asynchronous processing.
+
+**Key Methods**
+- `SendEmailAsync(Guid senderId, IEnumerable<string> recipients, string subject, string body, CancellationToken ct)`
+- `SendSmsAsync(Guid senderId, IEnumerable<string> recipients, string message, CancellationToken ct)`
+- `EnqueuePushNotificationAsync(Guid userId, string title, string message, CancellationToken ct)`
+
+**Implementation Notes**
+- Creates integration events (`communication.email`, `communication.sms`, `notification.push`) consumed by worker services.
+- Performs validation on recipients and ensures duplicate suppression per request.
+
+---
+
+### ISyncOrchestrationService - Offline Cache and Conflict Resolution
+
+**Purpose**: Supplies server-generated sync plans, accepts client deltas, and coordinates conflict resolution for offline-capable clients.
+
+**Key Methods**
+- `BuildSyncPlanAsync(Guid userId, SyncPolicy policy, CancellationToken ct)`
+  - Produces ordered payloads for entities that changed since the last refresh.
+- `RecordClientEnvelopeAsync(SyncEnvelope envelope, CancellationToken ct)`
+  - Stores client-side updates and attaches them to sync envelopes.
+- `GetConflictsAsync(Guid userId, CancellationToken ct)` / `ResolveConflictsAsync(...)`
+  - Surfaces pending conflicts and records their resolution strategies.
+
+**Implementation Notes**
+- Utilizes Supabase tables `sync_envelopes`, `sync_items`, and `sync_conflicts`.
+- Emits `sync.conflict.resolved` integration events so background workers can reconcile server data.
+- Designed for progressive enhancement: policies control refresh cadence and entity scope for constrained devices.
 
 **UpdateTaskAsync(Models.Task task)**
 - **Purpose**: Updates an existing task with new information
