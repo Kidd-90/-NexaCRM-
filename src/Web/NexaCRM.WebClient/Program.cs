@@ -43,7 +43,9 @@ builder.Services.AddScoped<Supabase.Client>(provider =>
     var supabaseOptions = new Supabase.SupabaseOptions
     {
         AutoRefreshToken = true,
-        AutoConnectRealtime = true,
+        // WebAssembly 환경에서는 Supabase Realtime이 사용하는 Websocket.Client가 지원되지 않으므로
+        // 자동 연결을 비활성화해 초기 렌더링 중 PlatformNotSupported 예외가 발생하지 않도록 한다.
+        AutoConnectRealtime = false,
         SessionHandler = persistence
     };
 
