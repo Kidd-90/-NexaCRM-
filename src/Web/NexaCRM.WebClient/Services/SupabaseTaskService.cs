@@ -297,15 +297,6 @@ public sealed class SupabaseTaskService : ITaskService, IAsyncDisposable
 
         if (taskId is null)
         {
-            var firstId = change.Payload?.Data?.Ids?.FirstOrDefault();
-            if (firstId.HasValue)
-            {
-                taskId = firstId.Value;
-            }
-        }
-
-        if (taskId is null)
-        {
             return;
         }
 

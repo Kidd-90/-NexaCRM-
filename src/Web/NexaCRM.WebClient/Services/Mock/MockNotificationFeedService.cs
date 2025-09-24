@@ -17,18 +17,28 @@ public class MockNotificationFeedService : INotificationFeedService
 
     public event Action<int>? UnreadCountChanged;
 
+    public event Action<IReadOnlyList<NotificationFeedItem>>? FeedUpdated;
+
     public Task<IReadOnlyList<NotificationFeedItem>> GetAsync()
-        => Task.FromResult((IReadOnlyList<NotificationFeedItem>)Store
+    {
+        var snapshot = Store
             .OrderByDescending(x => x.TimestampUtc)
-            .ToList());
+            .ToList();
+
+        return Task.FromResult((IReadOnlyList<NotificationFeedItem>)snapshot);
+    }
 
     public Task<int> GetUnreadCountAsync()
         => Task.FromResult(Store.Count(x => !x.IsRead));
 
     public Task MarkAllReadAsync()
     {
-        foreach (var i in Store) i.IsRead = true;
-        UnreadCountChanged?.Invoke(0);
+        foreach (var item in Store)
+        {
+            item.IsRead = true;
+        }
+
+        NotifyObservers();
         return Task.CompletedTask;
     }
 
@@ -38,8 +48,9 @@ public class MockNotificationFeedService : INotificationFeedService
         if (item != null)
         {
             item.IsRead = true;
-            UnreadCountChanged?.Invoke(Store.Count(x => !x.IsRead));
+            NotifyObservers();
         }
+
         return Task.CompletedTask;
     }
 
@@ -47,8 +58,19 @@ public class MockNotificationFeedService : INotificationFeedService
     {
         item.Id = item.Id == Guid.Empty ? Guid.NewGuid() : item.Id;
         Store.Add(item);
-        UnreadCountChanged?.Invoke(Store.Count(x => !x.IsRead));
+        NotifyObservers();
         return Task.CompletedTask;
+    }
+
+    private void NotifyObservers()
+    {
+        var unread = Store.Count(x => !x.IsRead);
+        var snapshot = (IReadOnlyList<NotificationFeedItem>)Store
+            .OrderByDescending(x => x.TimestampUtc)
+            .ToList();
+
+        UnreadCountChanged?.Invoke(unread);
+        FeedUpdated?.Invoke(snapshot);
     }
 }
 

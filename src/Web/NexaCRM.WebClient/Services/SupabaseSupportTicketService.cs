@@ -327,15 +327,6 @@ public sealed class SupabaseSupportTicketService : ISupportTicketService, IAsync
         int? ticketId = change.OldModel<SupportTicketRecord>()?.Id;
         if (ticketId is null)
         {
-            var firstId = change.Payload?.Data?.Ids?.FirstOrDefault();
-            if (firstId.HasValue)
-            {
-                ticketId = firstId.Value;
-            }
-        }
-
-        if (ticketId is null)
-        {
             return;
         }
 
