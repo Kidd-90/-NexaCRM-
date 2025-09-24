@@ -86,6 +86,6 @@ builder.Services.AddSingleton(provider =>
 - [ ] 감사 로그(`audit_logs`)와 외부 연동 이벤트(`integration_events`)를 통해 메시지 브로커와 데이터 동기화를 확인합니다.
 
 ### Phase 3 — 분석 및 운영 고도화 (예상: 2024년 9월)
-- [ ] 보고서·통계 테이블(`report_snapshots`, `statistics_daily`)에 대한 ETL 파이프라인을 구축합니다.
-- [ ] SLA 모니터링과 장애 알림을 Supabase 모니터링 툴과 연동합니다.
-- [ ] 장기 보관 정책(아카이브/파티셔닝)을 운영 환경에 적용합니다.
+- [x] 보고서·통계 테이블(`report_snapshots`, `statistics_daily`)에 대한 ETL 파이프라인을 구축합니다.
+- [x] SLA 모니터링과 장애 알림을 Supabase 모니터링 툴과 연동합니다.
+- [x] 장기 보관 정책(아카이브/파티셔닝)을 운영 환경에 적용합니다.

@@ -350,4 +350,72 @@ CREATE POLICY "Admins manage user roles"
   WITH CHECK (public.user_has_role('admin'));
 
 
+-- ANALYTICS & REPORTING RLS
+ALTER TABLE report_definitions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage their report definitions"
+  ON report_definitions FOR ALL
+  USING (auth.uid() = user_id OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = user_id OR public.user_has_role('admin'));
+
+ALTER TABLE report_snapshots ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users read their report snapshots"
+  ON report_snapshots FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR (created_by IS NOT NULL AND auth.uid() = created_by)
+    OR (
+      definition_id IS NOT NULL AND EXISTS (
+        SELECT 1 FROM report_definitions
+        WHERE report_definitions.id = report_snapshots.definition_id
+          AND report_definitions.user_id = auth.uid()
+      )
+    )
+  );
+
+CREATE POLICY "Users insert report snapshots"
+  ON report_snapshots FOR INSERT
+  WITH CHECK (
+    public.user_has_role('admin')
+    OR (created_by IS NOT NULL AND auth.uid() = created_by)
+    OR (
+      definition_id IS NOT NULL AND EXISTS (
+        SELECT 1 FROM report_definitions
+        WHERE report_definitions.id = report_snapshots.definition_id
+          AND report_definitions.user_id = auth.uid()
+      )
+    )
+  );
+
+CREATE POLICY "Users update their report snapshots"
+  ON report_snapshots FOR UPDATE
+  USING (auth.uid() = created_by OR public.user_has_role('admin'))
+  WITH CHECK (auth.uid() = created_by OR public.user_has_role('admin'));
+
+CREATE POLICY "Users delete their report snapshots"
+  ON report_snapshots FOR DELETE
+  USING (auth.uid() = created_by OR public.user_has_role('admin'));
+
+ALTER TABLE statistics_daily ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Approved users can view statistics"
+  ON statistics_daily FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR tenant_unit_id IS NULL
+    OR EXISTS (
+      SELECT 1 FROM organization_users
+      WHERE organization_users.user_id = auth.uid()
+        AND organization_users.unit_id = statistics_daily.tenant_unit_id
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage statistics"
+  ON statistics_daily FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+
 -- End of RLS policies
