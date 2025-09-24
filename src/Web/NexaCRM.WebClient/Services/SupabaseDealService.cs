@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NexaCRM.WebClient.Models;
@@ -44,6 +45,76 @@ public sealed class SupabaseDealService : IDealService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to load deals from Supabase.");
+            throw;
+        }
+    }
+
+    public async Task<IReadOnlyList<DealStage>> GetDealStagesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = await _clientProvider.GetClientAsync();
+            var response = await client.From<DealStageRecord>()
+                .Order(x => x.SortOrder, PostgrestOrdering.Ascending)
+                .Get(cancellationToken: cancellationToken);
+
+            if (response.Models.Count == 0)
+            {
+                return Array.Empty<DealStage>();
+            }
+
+            return response.Models
+                .Select(stage => new DealStage
+                {
+                    Id = stage.Id,
+                    Name = stage.Name,
+                    SortOrder = stage.SortOrder
+                })
+                .OrderBy(stage => stage.SortOrder)
+                .ThenBy(stage => stage.Name)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load deal stages from Supabase.");
+            throw;
+        }
+    }
+
+    public async Task<Deal> CreateDealAsync(DealCreateRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request is null)
+        {
+            throw new ArgumentNullException(nameof(request));
+        }
+
+        try
+        {
+            var client = await _clientProvider.GetClientAsync();
+            var now = DateTime.UtcNow;
+            var record = new DealRecord
+            {
+                Name = request.Name,
+                StageId = request.StageId,
+                Value = request.Amount,
+                CompanyName = request.Company,
+                ContactName = request.ContactName,
+                AssignedToName = request.Owner,
+                ExpectedCloseDate = request.ExpectedCloseDate,
+                CreatedAt = now
+            };
+
+            var response = await client.From<DealRecord>()
+                .Insert(record, cancellationToken: cancellationToken);
+
+            var created = response.Models.FirstOrDefault() ?? record;
+
+            var stageLookup = await LoadStageLookupAsync(client, new[] { created.StageId });
+            return MapToDeal(created, stageLookup);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create deal in Supabase.");
             throw;
         }
     }

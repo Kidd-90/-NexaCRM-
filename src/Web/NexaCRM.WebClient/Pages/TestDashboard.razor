@@ -1,8 +1,13 @@
 @page "/test-dashboard"
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Services.Interfaces
 @inject IStringLocalizer<MainDashboard> Localizer
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
+@inject IMobileInteractionService MobileInteractions
+@inject ActionInterop ActionInterop
+@inject IGlobalActionService GlobalActionService
+@implements IDisposable
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;' data-page="main-dashboard">
     <!-- Mobile Header Bar -->
@@ -28,13 +33,16 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
                     </svg>
-                    <span class="notification-badge">3</span>
+                    @if (demoUnreadCount > 0)
+                    {
+                        <span class="notification-badge">@demoUnreadCount</span>
+                    }
                 </button>
             </div>
         </div>
         
         <!-- Mobile Search Bar (collapsed by default) -->
-        <div class="mobile-search-bar @(showMobileSearch ? "expanded" : "collapsed")">
+        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ? "expanded" : "collapsed")">
             <div class="mobile-search-input">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
@@ -81,7 +89,7 @@
     </div>
 
     <!-- Mobile Notifications Panel (collapsed by default) -->
-    <div class="mobile-notifications-panel @(showMobileNotifications ? "expanded" : "collapsed")">
+    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ? "expanded" : "collapsed")">
         <div class="mobile-notifications-header">
             <h3>@Localizer["Notifications"]</h3>
             <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
@@ -200,98 +208,50 @@
 </div>
 
 @code {
-    private bool showMobileSearch = false;
-    private bool showMobileNotifications = false;
-    private string mobileSearchQuery = "";
+    private string mobileSearchQuery = string.Empty;
+    private int demoUnreadCount = 3;
+
+    protected override void OnInitialized()
+    {
+        MobileInteractions.StateChanged += HandleMobileStateChanged;
+    }
+
+    private void HandleMobileStateChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
 
     private async Task NavigateToPage(string url)
     {
-        // Close any open mobile panels first
         await CloseMobilePanels();
-        
-        // Add visual feedback before navigation
         await Task.Delay(150);
         NavigationManager.NavigateTo(url);
     }
 
     private async Task ScrollToSection(string sectionId)
     {
-        // Close any open mobile panels first
         await CloseMobilePanels();
-        
-        // Use JavaScript to smooth scroll to section
-        await JSRuntime.InvokeVoidAsync("eval", $@"
-            const element = document.getElementById('{sectionId}');
-            if (element) {{
-                element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
-            }}
-        ");
+        await MobileInteractions.ScrollToAsync(sectionId);
     }
 
-    private async Task ToggleMobileMenu()
-    {
-        // Close other mobile panels first
-        showMobileSearch = false;
-        showMobileNotifications = false;
-        StateHasChanged();
-        
-        // For demo purposes, show an alert
-        await JSRuntime.InvokeVoidAsync("alert", "Mobile menu would open the sidebar navigation here");
-    }
+    private Task ToggleMobileMenu() => MobileInteractions.ToggleMenuAsync();
 
-    private async Task ToggleMobileSearch()
-    {
-        showMobileSearch = !showMobileSearch;
-        
-        // Close notifications if search is opening
-        if (showMobileSearch)
-        {
-            showMobileNotifications = false;
-        }
-        
-        StateHasChanged();
-        
-        // Focus on search input if opening
-        if (showMobileSearch)
-        {
-            await Task.Delay(100); // Wait for animation
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                const searchInput = document.querySelector('.mobile-search-input input');
-                if (searchInput) {
-                    searchInput.focus();
-                }
-            ");
-        }
-    }
+    private Task ToggleMobileSearch() => MobileInteractions.ToggleSearchAsync();
 
     private async Task ToggleMobileNotifications()
     {
-        showMobileNotifications = !showMobileNotifications;
-        
-        // Close search if notifications is opening
-        if (showMobileNotifications)
+        await MobileInteractions.ToggleNotificationsAsync();
+        if (MobileInteractions.AreNotificationsOpen)
         {
-            showMobileSearch = false;
+            demoUnreadCount = 0;
+            _ = InvokeAsync(StateHasChanged);
         }
-        
-        StateHasChanged();
-        await Task.Delay(50); // Small delay for smooth animation
     }
 
-    private async Task CloseMobilePanels()
-    {
-        if (showMobileSearch || showMobileNotifications)
-        {
-            showMobileSearch = false;
-            showMobileNotifications = false;
-            StateHasChanged();
-            await Task.Delay(50);
-        }
-    }
+    private Task CloseMobilePanels() => MobileInteractions.CloseAllAsync();
 
     private async Task HandleMobileSearch(KeyboardEventArgs e)
     {
-        // Handle search on Enter key
         if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(mobileSearchQuery))
         {
             await PerformMobileSearch();
@@ -300,43 +260,49 @@
 
     private async Task PerformMobileSearch()
     {
-        // Close search panel
-        showMobileSearch = false;
-        StateHasChanged();
-        
-        // Perform search navigation
+        await MobileInteractions.CloseAllAsync();
         var searchUrl = $"/search?q={Uri.EscapeDataString(mobileSearchQuery)}";
         NavigationManager.NavigateTo(searchUrl);
-        
-        // Clear search query
-        mobileSearchQuery = "";
+        mobileSearchQuery = string.Empty;
+        await Task.Delay(10);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // Initialize mobile dashboard navigation after render
-            await JSRuntime.InvokeVoidAsync("window.navigationHelper.setupMobileDashboardNavigation");
+            try
+            {
+                await ActionInterop.SetupMobileDashboardAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Mobile dashboard setup error: {ex.Message}");
+            }
         }
     }
 
-    private async System.Threading.Tasks.Task HandleFloatingAction(string action)
+    private async Task HandleFloatingAction(string action)
     {
-        switch (action)
+        var request = action switch
         {
-            case "call":
-                await JSRuntime.InvokeVoidAsync("alert", $"Call action selected! On mobile, this would open the phone app.");
-                break;
-            case "email":
-                await JSRuntime.InvokeVoidAsync("alert", $"Email action selected! On mobile, this would open the email app.");
-                break;
-            case "meeting":
-                await JSRuntime.InvokeVoidAsync("alert", $"Meeting action selected! This would open calendar integration.");
-                break;
-            case "add":
-                await JSRuntime.InvokeVoidAsync("alert", $"Add new action selected! This would open a form to add new customer/lead.");
-                break;
+            "call" => new GlobalActionRequest(GlobalActionType.Call),
+            "email" => new GlobalActionRequest(GlobalActionType.Email),
+            "meeting" => new GlobalActionRequest(GlobalActionType.ScheduleMeeting),
+            "add" => new GlobalActionRequest(GlobalActionType.AddContact),
+            _ => null
+        };
+
+        if (request is null)
+        {
+            return;
         }
+
+        await GlobalActionService.LaunchAsync(request);
+    }
+
+    public void Dispose()
+    {
+        MobileInteractions.StateChanged -= HandleMobileStateChanged;
     }
 }

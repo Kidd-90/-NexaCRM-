@@ -28,6 +28,7 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
     private Guid? _userId;
 
     public event Action<int>? UnreadCountChanged;
+    public event Action<IReadOnlyList<NotificationFeedItem>>? FeedUpdated;
 
     public SupabaseNotificationFeedService(
         SupabaseClientProvider clientProvider,
@@ -63,6 +64,7 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
             }
 
             NotifyUnreadCount();
+            NotifyFeedUpdated(items);
             return items;
         }
         catch (Exception ex)
@@ -279,6 +281,8 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         {
             NotifyUnreadCount(currentUnread);
         }
+
+        NotifyFeedUpdated();
     }
 
     private void StoreNotification(NotificationFeedRecord record) => StoreNotification(MapToItem(record));
@@ -299,6 +303,8 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         {
             NotifyUnreadCount(currentUnread);
         }
+
+        NotifyFeedUpdated();
     }
 
     private NotificationFeedRecord MapToRecord(NotificationFeedItem item, Guid userId)
@@ -328,6 +334,32 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
             IsRead = record.IsRead,
             Type = record.Type ?? "info"
         };
+    }
+
+    private void NotifyFeedUpdated(IReadOnlyList<NotificationFeedItem>? snapshot = null)
+    {
+        var handler = FeedUpdated;
+        if (handler is null)
+        {
+            return;
+        }
+
+        IReadOnlyList<NotificationFeedItem> items;
+        if (snapshot is not null)
+        {
+            items = snapshot;
+        }
+        else
+        {
+            lock (_syncRoot)
+            {
+                items = _cache.Values
+                    .OrderByDescending(item => item.TimestampUtc)
+                    .ToList();
+            }
+        }
+
+        handler(items);
     }
 
     private void NotifyUnreadCount(int? countOverride = null)

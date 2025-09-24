@@ -1,8 +1,9 @@
 @page "/demo-contacts"
 @using Microsoft.Extensions.Localization
+@using NexaCRM.WebClient.Services.Interfaces
 @inject IStringLocalizer<ContactsPage> Localizer
-@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject IGlobalActionService GlobalActionService
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
     <div class="layout-container flex h-full grow flex-col">
@@ -165,20 +166,20 @@
 
     private async System.Threading.Tasks.Task HandleFloatingAction(string action)
     {
-        switch (action)
+        var request = action switch
         {
-            case "call":
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to call from the list above");
-                break;
-            case "email":
-                await JSRuntime.InvokeVoidAsync("alert", "Select a contact to email from the list above");
-                break;
-            case "meeting":
-                await JSRuntime.InvokeVoidAsync("alert", "Schedule meeting functionality - would open calendar integration");
-                break;
-            case "add":
-                await JSRuntime.InvokeVoidAsync("alert", "Add new contact functionality - would open contact form");
-                break;
+            "call" => new GlobalActionRequest(GlobalActionType.Call),
+            "email" => new GlobalActionRequest(GlobalActionType.Email),
+            "meeting" => new GlobalActionRequest(GlobalActionType.ScheduleMeeting),
+            "add" => new GlobalActionRequest(GlobalActionType.AddContact),
+            _ => null
+        };
+
+        if (request is null)
+        {
+            return;
         }
+
+        await GlobalActionService.LaunchAsync(request);
     }
 }

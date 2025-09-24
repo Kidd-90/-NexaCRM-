@@ -1,0 +1,683 @@
+@using System.ComponentModel.DataAnnotations
+@using NexaCRM.WebClient.Models
+@using NexaCRM.WebClient.Services.Interfaces
+@inject IGlobalActionService ActionService
+@inject IContactService ContactService
+@inject IDealService DealService
+@inject ActionInterop ActionInterop
+@inject IMobileInteractionService MobileInteractionService
+@implements IDisposable
+
+@if (activeContext is not null)
+{
+    <div class="global-action-overlay" role="presentation">
+        <div class="global-action-dialog" role="dialog" aria-modal="true" aria-live="polite">
+            <header class="global-action-dialog__header">
+                <h2>@GetDialogTitle(activeContext.Request.Type)</h2>
+                <button type="button" class="global-action-dialog__close" @onclick="CancelAction" aria-label="Close">×</button>
+            </header>
+
+            <div class="global-action-dialog__body">
+                @if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    <div class="global-action-alert global-action-alert--error">@errorMessage</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(successMessage))
+                {
+                    <div class="global-action-alert global-action-alert--success">@successMessage</div>
+                }
+
+                @if (activeContext.Request.Type == GlobalActionType.Call)
+                {
+                    <section class="global-action-section">
+                        <label class="global-action-field">
+                            <span>@Localize("SelectContact")</span>
+                            <input type="search"
+                                   class="global-action-input"
+                                   placeholder="@Localize("SearchContacts")"
+                                   @bind="callSearchTerm"
+                                   @bind:event="oninput" />
+                        </label>
+
+                        <ul class="global-action-contact-list">
+                            @foreach (var contact in FilteredContacts)
+                            {
+                                var isActive = selectedContact?.Id == contact.Id;
+                                <li class="global-action-contact-item @(isActive ? "is-active" : null)" @onclick="() => SelectContact(contact)" role="button">
+                                    <div class="global-action-contact-name">@(!string.IsNullOrWhiteSpace(contact.DisplayName) ? contact.DisplayName : Localize("UnknownContact"))</div>
+                                    <div class="global-action-contact-meta">@FormatContactMeta(contact)</div>
+                                </li>
+                            }
+                        </ul>
+
+                        @if (selectedContact is not null)
+                        {
+                            <div class="global-action-actions">
+                                <button class="global-action-primary" @onclick="LaunchCallAsync">@Localize("StartCall")</button>
+                                @if (!string.IsNullOrWhiteSpace(selectedContact.PhoneNumber))
+                                {
+                                    <button class="global-action-secondary" @onclick="CopySelectedPhoneAsync">@Localize("CopyNumber")</button>
+                                }
+                            </div>
+                        }
+                    </section>
+                }
+                else if (activeContext.Request.Type == GlobalActionType.Email)
+                {
+                    <section class="global-action-section">
+                        @if (selectedContact is not null)
+                        {
+                            <p class="global-action-context">@string.Format(Localize("EmailingContactFormat"), selectedContact.DisplayName)</p>
+                        }
+                        <EditForm Model="emailForm" OnValidSubmit="LaunchEmailAsync">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <label class="global-action-field">
+                                <span>@Localize("EmailSubject")</span>
+                                <InputText class="global-action-input" @bind-Value="emailForm.Subject" />
+                            </label>
+
+                            <label class="global-action-field">
+                                <span>@Localize("EmailBody")</span>
+                                <InputTextArea class="global-action-textarea" Rows="6" @bind-Value="emailForm.Body" />
+                            </label>
+
+                            <div class="global-action-actions">
+                                <button type="submit" class="global-action-primary">@Localize("SendEmail")</button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+                else if (activeContext.Request.Type == GlobalActionType.ScheduleMeeting)
+                {
+                    <section class="global-action-section">
+                        @if (selectedContact is not null)
+                        {
+                            <p class="global-action-context">@string.Format(Localize("MeetingWithContactFormat"), selectedContact.DisplayName)</p>
+                        }
+                        <EditForm Model="meetingForm" OnValidSubmit="ScheduleMeetingAsync">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <label class="global-action-field">
+                                <span>@Localize("MeetingTitle")</span>
+                                <InputText class="global-action-input" @bind-Value="meetingForm.Title" />
+                            </label>
+
+                            <div class="global-action-date-grid">
+                                <label>
+                                    <span>@Localize("MeetingStart")</span>
+                                    <InputDate class="global-action-input" @bind-Value="meetingForm.Start" />
+                                </label>
+                                <label>
+                                    <span>@Localize("MeetingEnd")</span>
+                                    <InputDate class="global-action-input" @bind-Value="meetingForm.End" />
+                                </label>
+                            </div>
+
+                            <label class="global-action-field">
+                                <span>@Localize("MeetingNotes")</span>
+                                <InputTextArea class="global-action-textarea" Rows="4" @bind-Value="meetingForm.Description" />
+                            </label>
+
+                            <div class="global-action-actions">
+                                <button type="submit" class="global-action-primary">@Localize("CreateInvite")</button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+                else if (activeContext.Request.Type == GlobalActionType.AddContact)
+                {
+                    <section class="global-action-section">
+                        <EditForm Model="contactForm" OnValidSubmit="SaveContactAsync">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <label class="global-action-field">
+                                <span>@Localize("FirstName")</span>
+                                <InputText class="global-action-input" @bind-Value="contactForm.FirstName" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("LastName")</span>
+                                <InputText class="global-action-input" @bind-Value="contactForm.LastName" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("Email")</span>
+                                <InputText class="global-action-input" type="email" @bind-Value="contactForm.Email" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("PhoneNumber")</span>
+                                <InputText class="global-action-input" type="tel" @bind-Value="contactForm.PhoneNumber" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("Company")</span>
+                                <InputText class="global-action-input" @bind-Value="contactForm.Company" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("Title")</span>
+                                <InputText class="global-action-input" @bind-Value="contactForm.Title" />
+                            </label>
+
+                            <div class="global-action-actions">
+                                <button type="submit" class="global-action-primary">@Localize("SaveContact")</button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+                else if (activeContext.Request.Type == GlobalActionType.AddDeal)
+                {
+                    <section class="global-action-section">
+                        <EditForm Model="dealForm" OnValidSubmit="SaveDealAsync">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <label class="global-action-field">
+                                <span>@Localize("DealName")</span>
+                                <InputText class="global-action-input" @bind-Value="dealForm.Name" />
+                            </label>
+
+                            <label class="global-action-field">
+                                <span>@Localize("DealStage")</span>
+                                <InputSelect class="global-action-input" @bind-Value="dealForm.StageId">
+                                    <option value="">@Localize("SelectOption")</option>
+                                    @foreach (var stage in dealStages)
+                                    {
+                                        <option value="@stage.Id">@stage.Name</option>
+                                    }
+                                </InputSelect>
+                            </label>
+
+                            <label class="global-action-field">
+                                <span>@Localize("DealAmount")</span>
+                                <InputNumber class="global-action-input" @bind-Value="dealForm.Amount" />
+                            </label>
+
+                            <label class="global-action-field">
+                                <span>@Localize("Company")</span>
+                                <InputText class="global-action-input" @bind-Value="dealForm.Company" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("PrimaryContact")</span>
+                                <InputText class="global-action-input" @bind-Value="dealForm.ContactName" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("Owner")</span>
+                                <InputText class="global-action-input" @bind-Value="dealForm.Owner" />
+                            </label>
+                            <label class="global-action-field">
+                                <span>@Localize("ExpectedCloseDate")</span>
+                                <InputDate class="global-action-input" @bind-Value="dealForm.ExpectedCloseDate" />
+                            </label>
+
+                            <div class="global-action-actions">
+                                <button type="submit" class="global-action-primary">@Localize("CreateDeal")</button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+            </div>
+
+            <footer class="global-action-dialog__footer">
+                <button type="button" class="global-action-secondary" @onclick="CancelAction">@Localize("Cancel")</button>
+            </footer>
+        </div>
+    </div>
+}
+
+@code {
+    private GlobalActionContext? activeContext;
+    private List<ContactOption> contacts = new();
+    private ContactOption? selectedContact;
+    private string callSearchTerm = string.Empty;
+    private EmailFormModel emailForm = new();
+    private MeetingFormModel meetingForm = new();
+    private ContactFormModel contactForm = new();
+    private DealFormModel dealForm = new();
+    private IReadOnlyList<DealStage> dealStages = Array.Empty<DealStage>();
+    private string? errorMessage;
+    private string? successMessage;
+
+    private IEnumerable<ContactOption> FilteredContacts => string.IsNullOrWhiteSpace(callSearchTerm)
+        ? contacts.Take(12)
+        : contacts
+            .Where(c =>
+                (!string.IsNullOrWhiteSpace(c.DisplayName) && c.DisplayName.Contains(callSearchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrWhiteSpace(c.Email) && c.Email.Contains(callSearchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrWhiteSpace(c.PhoneNumber) && c.PhoneNumber.Contains(callSearchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrWhiteSpace(c.Company) && c.Company.Contains(callSearchTerm, StringComparison.OrdinalIgnoreCase)))
+            .Take(12);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ActionService.ActionRequested += HandleActionRequested;
+    }
+
+    private Task HandleActionRequested(GlobalActionContext context)
+    {
+        return InvokeAsync(async () =>
+        {
+            await MobileInteractionService.CloseAllAsync().ConfigureAwait(false);
+            activeContext = context;
+            ResetForms();
+            await LoadContextDataAsync(context.Request).ConfigureAwait(false);
+            StateHasChanged();
+            _ = ObserveCompletionAsync(context);
+        });
+    }
+
+    private async Task ObserveCompletionAsync(GlobalActionContext context)
+    {
+        try
+        {
+            await context.Completion.ConfigureAwait(false);
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                if (ReferenceEquals(activeContext, context))
+                {
+                    activeContext = null;
+                }
+
+                ResetForms();
+                StateHasChanged();
+            });
+        }
+    }
+
+    private async Task LoadContextDataAsync(GlobalActionRequest request)
+    {
+        errorMessage = null;
+        successMessage = null;
+
+        if (request.Type is GlobalActionType.Call or GlobalActionType.Email or GlobalActionType.ScheduleMeeting or GlobalActionType.AddDeal)
+        {
+            await EnsureContactsLoadedAsync().ConfigureAwait(false);
+
+            if (!string.IsNullOrWhiteSpace(request.TargetId) && int.TryParse(request.TargetId, out var id))
+            {
+                selectedContact = contacts.FirstOrDefault(c => c.Id == id);
+            }
+
+            if (selectedContact is null && !string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                selectedContact = contacts.FirstOrDefault(c => string.Equals(c.PhoneNumber, request.PhoneNumber, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (selectedContact is null && !string.IsNullOrWhiteSpace(request.Email))
+            {
+                selectedContact = contacts.FirstOrDefault(c => string.Equals(c.Email, request.Email, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (selectedContact is null && !string.IsNullOrWhiteSpace(request.TargetName))
+            {
+                selectedContact = contacts.FirstOrDefault(c => string.Equals(c.DisplayName, request.TargetName, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        if (request.Type == GlobalActionType.Email)
+        {
+            emailForm = new EmailFormModel
+            {
+                Subject = request.Metadata?.TryGetValue("subject", out var subject) == true ? subject : Localize("DefaultEmailSubject"),
+                Body = request.Metadata?.TryGetValue("body", out var body) == true ? body : string.Empty
+            };
+        }
+        else if (request.Type == GlobalActionType.ScheduleMeeting)
+        {
+            meetingForm = new MeetingFormModel
+            {
+                Title = string.IsNullOrWhiteSpace(request.TargetName) ? Localize("DefaultMeetingTitle") : string.Format(Localize("MeetingWithContactFormat"), request.TargetName),
+                Start = DateTimeOffset.Now.AddMinutes(30),
+                End = DateTimeOffset.Now.AddMinutes(60)
+            };
+        }
+        else if (request.Type == GlobalActionType.AddDeal)
+        {
+            dealStages = await DealService.GetDealStagesAsync().ConfigureAwait(false);
+            if (selectedContact is not null)
+            {
+                dealForm.ContactName = selectedContact.DisplayName;
+                dealForm.Company ??= selectedContact.Company;
+            }
+        }
+    }
+
+    private async Task EnsureContactsLoadedAsync()
+    {
+        if (contacts.Count > 0)
+        {
+            return;
+        }
+
+        var list = await ContactService.GetContactsAsync().ConfigureAwait(false);
+        contacts = list
+            .Select(c => new ContactOption(
+                c.Id,
+                string.Join(" ", new[] { c.FirstName, c.LastName }.Where(part => !string.IsNullOrWhiteSpace(part))).Trim(),
+                c.Email ?? string.Empty,
+                c.PhoneNumber ?? string.Empty,
+                c.Company ?? string.Empty))
+            .OrderBy(c => c.DisplayName)
+            .ToList();
+    }
+
+    private void ResetForms()
+    {
+        callSearchTerm = string.Empty;
+        emailForm = new EmailFormModel();
+        meetingForm = new MeetingFormModel();
+        contactForm = new ContactFormModel();
+        dealForm = new DealFormModel { ExpectedCloseDate = DateTime.Today.AddDays(14) };
+        errorMessage = null;
+        successMessage = null;
+        selectedContact = null;
+    }
+
+    private void SelectContact(ContactOption contact)
+    {
+        selectedContact = contact;
+        successMessage = null;
+    }
+
+    private string FormatContactMeta(ContactOption option)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(option.Email))
+        {
+            parts.Add(option.Email);
+        }
+        if (!string.IsNullOrWhiteSpace(option.PhoneNumber))
+        {
+            parts.Add(option.PhoneNumber);
+        }
+        if (!string.IsNullOrWhiteSpace(option.Company))
+        {
+            parts.Add(option.Company);
+        }
+        return parts.Count == 0 ? Localize("NoContactDetails") : string.Join(" · ", parts);
+    }
+
+    private async Task LaunchCallAsync()
+    {
+        if (selectedContact is null || string.IsNullOrWhiteSpace(selectedContact.PhoneNumber))
+        {
+            errorMessage = Localize("SelectContactForCall");
+            return;
+        }
+
+        await ActionInterop.OpenTelephoneAsync(selectedContact.PhoneNumber).ConfigureAwait(false);
+        successMessage = Localize("CallLaunched");
+        activeContext?.Complete(GlobalActionResult.Completed);
+    }
+
+    private async Task CopySelectedPhoneAsync()
+    {
+        if (selectedContact is null || string.IsNullOrWhiteSpace(selectedContact.PhoneNumber))
+        {
+            return;
+        }
+
+        await ActionInterop.CopyTextAsync(selectedContact.PhoneNumber).ConfigureAwait(false);
+        successMessage = Localize("CopiedToClipboard");
+    }
+
+    private async Task LaunchEmailAsync()
+    {
+        if (selectedContact is null || string.IsNullOrWhiteSpace(selectedContact.Email))
+        {
+            errorMessage = Localize("SelectContactForEmail");
+            return;
+        }
+
+        var subject = Uri.EscapeDataString(emailForm.Subject ?? string.Empty);
+        var body = Uri.EscapeDataString(emailForm.Body ?? string.Empty);
+        var mailto = $"mailto:{selectedContact.Email}?subject={subject}&body={body}";
+        await ActionInterop.OpenMailtoAsync(mailto).ConfigureAwait(false);
+        successMessage = Localize("EmailClientOpened");
+        activeContext?.Complete(GlobalActionResult.Completed);
+    }
+
+    private async Task ScheduleMeetingAsync()
+    {
+        if (meetingForm.End <= meetingForm.Start)
+        {
+            errorMessage = Localize("MeetingEndAfterStart");
+            return;
+        }
+
+        var summary = meetingForm.Title ?? Localize("DefaultMeetingTitle");
+        if (selectedContact is not null)
+        {
+            summary = string.Format(Localize("MeetingWithContactFormat"), selectedContact.DisplayName);
+        }
+
+        var description = meetingForm.Description ?? string.Empty;
+        if (selectedContact is not null && !string.IsNullOrWhiteSpace(selectedContact.Email))
+        {
+            description += $"\nAttendee: {selectedContact.Email}";
+        }
+
+        var ics = BuildIcs(summary, description, meetingForm.Start.UtcDateTime, meetingForm.End.UtcDateTime);
+        var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(ics));
+        var fileName = selectedContact is null ? "meeting.ics" : $"meeting-{Sanitize(selectedContact.DisplayName)}.ics";
+        await ActionInterop.TriggerDownloadAsync(base64, fileName, "text/calendar").ConfigureAwait(false);
+        successMessage = Localize("MeetingInviteCreated");
+        activeContext?.Complete(GlobalActionResult.Completed);
+    }
+
+    private async Task SaveContactAsync()
+    {
+        try
+        {
+            var contact = new Contact
+            {
+                FirstName = contactForm.FirstName,
+                LastName = contactForm.LastName,
+                Email = contactForm.Email,
+                PhoneNumber = contactForm.PhoneNumber,
+                Company = contactForm.Company,
+                Title = contactForm.Title
+            };
+
+            var created = await ContactService.CreateContactAsync(contact).ConfigureAwait(false);
+            successMessage = Localize("ContactCreated");
+            contacts.Add(new ContactOption(
+                created.Id,
+                string.Join(" ", new[] { created.FirstName, created.LastName }.Where(part => !string.IsNullOrWhiteSpace(part))).Trim(),
+                created.Email ?? string.Empty,
+                created.PhoneNumber ?? string.Empty,
+                created.Company ?? string.Empty));
+            contacts = contacts.OrderBy(c => c.DisplayName).ToList();
+            activeContext?.Complete(GlobalActionResult.Completed);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = string.Format(Localize("ContactCreationFailed"), ex.Message);
+        }
+    }
+
+    private async Task SaveDealAsync()
+    {
+        try
+        {
+            if (!dealForm.StageId.HasValue)
+            {
+                errorMessage = Localize("SelectDealStage");
+                return;
+            }
+
+            var request = new DealCreateRequest
+            {
+                Name = dealForm.Name!,
+                StageId = dealForm.StageId.Value,
+                Amount = dealForm.Amount ?? 0,
+                Company = dealForm.Company,
+                ContactName = dealForm.ContactName,
+                Owner = dealForm.Owner,
+                ExpectedCloseDate = dealForm.ExpectedCloseDate
+            };
+
+            await DealService.CreateDealAsync(request).ConfigureAwait(false);
+            successMessage = Localize("DealCreated");
+            activeContext?.Complete(GlobalActionResult.Completed);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = string.Format(Localize("DealCreationFailed"), ex.Message);
+        }
+    }
+
+    private static string BuildIcs(string summary, string description, DateTime startUtc, DateTime endUtc)
+    {
+        return $"BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NexaCRM//EN\nBEGIN:VEVENT\nUID:{Guid.NewGuid()}\nDTSTAMP:{DateTime.UtcNow:yyyyMMddTHHmmssZ}\nDTSTART:{startUtc:yyyyMMddTHHmmssZ}\nDTEND:{endUtc:yyyyMMddTHHmmssZ}\nSUMMARY:{Escape(summary)}\nDESCRIPTION:{Escape(description)}\nEND:VEVENT\nEND:VCALENDAR";
+    }
+
+    private static string Escape(string value) => value.Replace("\\", "\\\\").Replace("\n", "\\n").Replace(",", "\\,");
+
+    private static string Sanitize(string value)
+    {
+        var chars = value.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray();
+        return chars.Length == 0 ? "meeting" : new string(chars).ToLowerInvariant();
+    }
+
+    private string Localize(string key) => key switch
+    {
+        "Cancel" => "취소",
+        "SelectContact" => "연락처 선택",
+        "SearchContacts" => "연락처 검색",
+        "UnknownContact" => "알 수 없음",
+        "NoContactDetails" => "연락처 정보 없음",
+        "StartCall" => "전화하기",
+        "CopyNumber" => "번호 복사",
+        "CallLaunched" => "전화 앱을 열었습니다.",
+        "CopiedToClipboard" => "클립보드에 복사되었습니다.",
+        "SelectContactForCall" => "전화를 걸 연락처를 선택하세요.",
+        "EmailSubject" => "제목",
+        "EmailBody" => "본문",
+        "EmailingContactFormat" => "{0}에게 이메일을 보냅니다.",
+        "SendEmail" => "이메일 열기",
+        "SelectContactForEmail" => "이메일을 보낼 연락처를 선택하세요.",
+        "EmailClientOpened" => "기본 이메일 앱을 열었습니다.",
+        "DefaultEmailSubject" => "안녕하세요",
+        "MeetingTitle" => "회의 제목",
+        "MeetingStart" => "시작 시간",
+        "MeetingEnd" => "종료 시간",
+        "MeetingNotes" => "메모",
+        "DefaultMeetingTitle" => "고객 미팅",
+        "MeetingWithContactFormat" => "{0}와(과)의 미팅",
+        "CreateInvite" => "초대장 생성",
+        "MeetingEndAfterStart" => "종료 시간은 시작 시간보다 이후여야 합니다.",
+        "MeetingInviteCreated" => "캘린더 초대장을 다운로드했습니다.",
+        "FirstName" => "이름",
+        "LastName" => "성",
+        "Email" => "이메일",
+        "PhoneNumber" => "전화",
+        "Company" => "회사",
+        "Title" => "직함",
+        "SaveContact" => "연락처 저장",
+        "ContactCreated" => "새 연락처가 저장되었습니다.",
+        "ContactCreationFailed" => "연락처 저장 실패: {0}",
+        "DealName" => "딜 이름",
+        "DealStage" => "영업 단계",
+        "DealAmount" => "금액",
+        "PrimaryContact" => "주 연락처",
+        "Owner" => "담당자",
+        "ExpectedCloseDate" => "예상 마감일",
+        "CreateDeal" => "딜 생성",
+        "SelectDealStage" => "딜 단계를 선택하세요.",
+        "DealCreated" => "새로운 딜이 생성되었습니다.",
+        "DealCreationFailed" => "딜 생성 실패: {0}",
+        _ => key
+    };
+
+    private string GetDialogTitle(GlobalActionType type) => type switch
+    {
+        GlobalActionType.Call => Localize("StartCall"),
+        GlobalActionType.Email => Localize("SendEmail"),
+        GlobalActionType.ScheduleMeeting => Localize("CreateInvite"),
+        GlobalActionType.AddContact => Localize("SaveContact"),
+        GlobalActionType.AddDeal => Localize("CreateDeal"),
+        _ => "Action"
+    };
+
+    private void CancelAction()
+    {
+        activeContext?.Cancel();
+        activeContext = null;
+        ResetForms();
+    }
+
+    public void Dispose()
+    {
+        ActionService.ActionRequested -= HandleActionRequested;
+    }
+
+    private sealed record ContactOption(int Id, string DisplayName, string Email, string PhoneNumber, string Company);
+
+    private sealed class EmailFormModel
+    {
+        [Required]
+        public string? Subject { get; set; }
+
+        [Required]
+        public string? Body { get; set; }
+    }
+
+    private sealed class MeetingFormModel
+    {
+        [Required]
+        public string? Title { get; set; }
+
+        [Required]
+        public DateTimeOffset Start { get; set; }
+
+        [Required]
+        public DateTimeOffset End { get; set; }
+
+        public string? Description { get; set; }
+    }
+
+    private sealed class ContactFormModel
+    {
+        [Required]
+        public string? FirstName { get; set; }
+
+        [Required]
+        public string? LastName { get; set; }
+
+        [EmailAddress]
+        public string? Email { get; set; }
+
+        [Phone]
+        public string? PhoneNumber { get; set; }
+
+        public string? Company { get; set; }
+
+        public string? Title { get; set; }
+    }
+
+    private sealed class DealFormModel
+    {
+        [Required]
+        public string? Name { get; set; }
+
+        [Required]
+        public int? StageId { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public decimal? Amount { get; set; }
+
+        public string? Company { get; set; }
+
+        public string? ContactName { get; set; }
+
+        public string? Owner { get; set; }
+
+        [Required]
+        public DateTime? ExpectedCloseDate { get; set; }
+    }
+}

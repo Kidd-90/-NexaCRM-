@@ -1,0 +1,217 @@
+.global-action-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(12, 18, 28, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 1.5rem;
+}
+
+.global-action-dialog {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(11, 27, 51, 0.25);
+    max-width: min(720px, 100%);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.global-action-dialog__header,
+.global-action-dialog__footer {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e1e8f5;
+}
+
+.global-action-dialog__footer {
+    border-top: 1px solid #e1e8f5;
+    border-bottom: none;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.global-action-dialog__header h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0e131b;
+}
+
+.global-action-dialog__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #4d6a99;
+}
+
+.global-action-dialog__body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.global-action-alert {
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+}
+
+.global-action-alert--error {
+    background: #ffe1e1;
+    color: #a11a1a;
+}
+
+.global-action-alert--success {
+    background: #e6f6ed;
+    color: #176437;
+}
+
+.global-action-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.global-action-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    color: #0e131b;
+}
+
+.global-action-input,
+.global-action-textarea,
+.global-action-field input,
+.global-action-field select {
+    border: 1px solid #cdd6e6;
+    border-radius: 12px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.global-action-input:focus,
+.global-action-textarea:focus,
+.global-action-field input:focus,
+.global-action-field select:focus {
+    outline: none;
+    border-color: #4072ee;
+    box-shadow: 0 0 0 3px rgba(64, 114, 238, 0.18);
+}
+
+.global-action-textarea {
+    resize: vertical;
+}
+
+.global-action-contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.global-action-contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #dde5f5;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.global-action-contact-item:hover,
+.global-action-contact-item.is-active {
+    border-color: #4072ee;
+    background: #f1f5ff;
+}
+
+.global-action-contact-name {
+    font-weight: 600;
+    color: #0e131b;
+}
+
+.global-action-contact-meta {
+    font-size: 0.85rem;
+    color: #4d6a99;
+}
+
+.global-action-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.global-action-primary,
+.global-action-secondary {
+    border-radius: 999px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.global-action-primary {
+    background: linear-gradient(135deg, #4072ee, #324ad2);
+    color: #fff;
+    box-shadow: 0 12px 20px rgba(64, 114, 238, 0.24);
+}
+
+.global-action-secondary {
+    background: #f2f6ff;
+    color: #234073;
+}
+
+.global-action-primary:hover,
+.global-action-secondary:hover {
+    transform: translateY(-1px);
+}
+
+.global-action-context {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4d6a99;
+}
+
+.global-action-date-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (max-width: 720px) {
+    .global-action-dialog {
+        border-radius: 0;
+        height: 100vh;
+        max-height: 100vh;
+    }
+
+    .global-action-dialog__body {
+        padding: 1.25rem;
+    }
+
+    .global-action-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .global-action-primary,
+    .global-action-secondary {
+        width: 100%;
+    }
+}

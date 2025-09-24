@@ -2,10 +2,14 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Localization
 @using NexaCRM.WebClient.Services.Interfaces
+@using System.Globalization
+@using System.Linq
 @inject IStringLocalizer<MainDashboard> Localizer
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
 @inject INotificationFeedService NotificationFeed
+@inject IMobileInteractionService MobileInteractions
+@inject IGlobalActionService GlobalActionService
+@inject ActionInterop ActionInterop
 @attribute [Authorize(Roles = "Sales,Manager")]
 @implements IDisposable
 
@@ -46,7 +50,7 @@
         </div>
         
         <!-- Mobile Search Bar (collapsed by default) -->
-        <div class="mobile-search-bar @(showMobileSearch ? "expanded" : "collapsed")">
+        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ? "expanded" : "collapsed")">
             <div class="mobile-search-input">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
@@ -104,7 +108,7 @@
     </div>
 
     <!-- Mobile Notifications Panel (collapsed by default) -->
-    <div class="mobile-notifications-panel @(showMobileNotifications ? "expanded" : "collapsed")">
+    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ? "expanded" : "collapsed")">
         <div class="mobile-notifications-header">
             <h3>@Localizer["Notifications"]</h3>
             <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
@@ -114,43 +118,28 @@
             </button>
         </div>
         <div class="mobile-notifications-content">
-            @foreach (var notification in mobileNotifications)
+            @if (mobileNotifications.Count == 0)
             {
-                <div class="notification-item">
-                    <div class="notification-icon">
-                        @switch (notification.Icon)
-                        {
-                            case NotificationIconType.Lead:
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
-                                </svg>
-                                break;
-                            case NotificationIconType.Deal:
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
-                                </svg>
-                                break;
-                            case NotificationIconType.Task:
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path>
-                                </svg>
-                                break;
-                        }
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">@Localizer[notification.TitleKey]</div>
-                        <div class="notification-time">
-                            @if (!string.IsNullOrWhiteSpace(notification.TimeValue))
+                <div class="notification-empty">@ResolveString("NotificationEmpty", "새 알림이 없습니다.")</div>
+            }
+            else
+            {
+                @foreach (var notification in mobileNotifications)
+                {
+                    <div class="notification-item @(notification.IsRead ? string.Empty : "notification-item--unread")">
+                        <div class="notification-icon">
+                            <i class="@ResolveNotificationIcon(notification)" aria-hidden="true"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">@notification.Title</div>
+                            @if (!string.IsNullOrWhiteSpace(notification.Message))
                             {
-                                <span>@notification.TimeValue @Localizer[notification.TimeKey]</span>
+                                <div class="notification-message">@notification.Message</div>
                             }
-                            else
-                            {
-                                <span>@Localizer[notification.TimeKey]</span>
-                            }
+                            <div class="notification-time">@FormatRelativeTime(notification.TimestampUtc)</div>
                         </div>
                     </div>
-                </div>
+                }
             }
         </div>
     </div>
@@ -568,33 +557,47 @@
 </div>
 
 @code {
+    private const int MobileNotificationLimit = 12;
     private int unreadNotificationsCount;
+    private List<NotificationFeedItem> mobileNotifications = new();
+    private string mobileSearchQuery = string.Empty;
+    private int UnreadMobileNotificationsCount => mobileNotifications.Count(item => !item.IsRead);
 
     protected override async Task OnInitializedAsync()
     {
         NotificationFeed.UnreadCountChanged += HandleUnreadCountChanged;
+        NotificationFeed.FeedUpdated += HandleFeedUpdated;
+        MobileInteractions.StateChanged += HandleMobileStateChanged;
+
         unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
+        await LoadInitialNotificationsAsync();
     }
 
-    private static readonly MobileNotification[] mobileNotifications =
-    [
-        new(NotificationIconType.Lead, "NewLead", "2", "MinutesAgo"),
-        new(NotificationIconType.Deal, "DealClosed", "15", "MinutesAgo"),
-        new(NotificationIconType.Task, "TaskReminder", "1", "HourAgo")
-    ];
-
-    private bool showMobileSearch = false;
-    private bool showMobileNotifications = false;
-    private string mobileSearchQuery = "";
-    private int UnreadMobileNotificationsCount => mobileNotifications.Length;
-
-    private sealed record MobileNotification(NotificationIconType Icon, string TitleKey, string TimeValue, string TimeKey);
-
-    private enum NotificationIconType
+    private async Task LoadInitialNotificationsAsync()
     {
-        Lead,
-        Deal,
-        Task
+        try
+        {
+            var items = await NotificationFeed.GetAsync();
+            UpdateMobileNotifications(items);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load notifications: {ex.Message}");
+        }
+    }
+
+    private void HandleFeedUpdated(IReadOnlyList<NotificationFeedItem> items)
+    {
+        _ = InvokeAsync(() =>
+        {
+            UpdateMobileNotifications(items);
+            StateHasChanged();
+        });
+    }
+
+    private void HandleMobileStateChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private async Task NavigateToPage(string url)
@@ -616,87 +619,22 @@
     {
         // Close any open mobile panels first
         await CloseMobilePanels();
-        
-        // Use JavaScript to smooth scroll to section
-        await JSRuntime.InvokeVoidAsync("eval", $@"
-            const element = document.getElementById('{sectionId}');
-            if (element) {{
-                element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
-            }}
-        ");
+
+        await MobileInteractions.ScrollToAsync(sectionId);
     }
 
-    private async Task ToggleMobileMenu()
-    {
-        // Close other mobile panels first
-        showMobileSearch = false;
-        showMobileNotifications = false;
-        StateHasChanged();
-        
-        // Toggle the main navigation menu - with error handling
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                if (window.navigationHelper && window.navigationHelper.toggleMenu) {
-                    window.navigationHelper.toggleMenu(false);
-                }
-            ");
-        }
-        catch (Exception ex)
-        {
-            // Log error but don't break functionality
-            Console.WriteLine($"Navigation helper error: {ex.Message}");
-        }
-    }
+    private Task ToggleMobileMenu() => MobileInteractions.ToggleMenuAsync();
 
-    private async Task ToggleMobileSearch()
-    {
-        showMobileSearch = !showMobileSearch;
-        
-        // Close notifications if search is opening
-        if (showMobileSearch)
-        {
-            showMobileNotifications = false;
-        }
-        
-        StateHasChanged();
-        
-        // Focus on search input if opening - with error handling
-        if (showMobileSearch)
-        {
-            await Task.Delay(100); // Wait for animation
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("eval", @"
-                    try {
-                        const searchInput = document.querySelector('.mobile-search-input input');
-                        if (searchInput) {
-                            searchInput.focus();
-                        }
-                    } catch (e) {
-                        console.warn('Search input focus failed:', e);
-                    }
-                ");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Search input focus error: {ex.Message}");
-            }
-        }
-    }
+    private Task ToggleMobileSearch() => MobileInteractions.ToggleSearchAsync();
 
     private async Task ToggleMobileNotifications()
     {
-        showMobileNotifications = !showMobileNotifications;
-
-        // Close search if notifications is opening
-        if (showMobileNotifications)
+        await MobileInteractions.ToggleNotificationsAsync();
+        if (MobileInteractions.AreNotificationsOpen && mobileNotifications.Any(item => !item.IsRead))
         {
-            showMobileSearch = false;
+            await NotificationFeed.MarkAllReadAsync();
+            MarkLocalNotificationsRead();
         }
-
-        StateHasChanged();
-        await Task.Delay(50); // Small delay for smooth animation
     }
 
     private void HandleUnreadCountChanged(int count)
@@ -705,16 +643,105 @@
         _ = InvokeAsync(StateHasChanged);
     }
 
-    private async Task CloseMobilePanels()
+    private void UpdateMobileNotifications(IReadOnlyList<NotificationFeedItem> items)
     {
-        if (showMobileSearch || showMobileNotifications)
+        if (items is null)
         {
-            showMobileSearch = false;
-            showMobileNotifications = false;
-            StateHasChanged();
-            await Task.Delay(50);
+            return;
         }
+
+        mobileNotifications = items
+            .OrderByDescending(item => item.TimestampUtc)
+            .Take(MobileNotificationLimit)
+            .Select(CloneNotification)
+            .ToList();
     }
+
+    private static NotificationFeedItem CloneNotification(NotificationFeedItem item)
+    {
+        return new NotificationFeedItem
+        {
+            Id = item.Id,
+            Title = item.Title,
+            Message = item.Message,
+            TimestampUtc = item.TimestampUtc,
+            IsRead = item.IsRead,
+            Type = item.Type
+        };
+    }
+
+    private void MarkLocalNotificationsRead()
+    {
+        if (mobileNotifications.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var notification in mobileNotifications)
+        {
+            notification.IsRead = true;
+        }
+
+        StateHasChanged();
+    }
+
+    private string ResolveNotificationIcon(NotificationFeedItem notification)
+    {
+        var type = notification.Type?.ToLowerInvariant();
+
+        return type switch
+        {
+            "deal" or "pipeline" or "opportunity" => "bi bi-kanban",
+            "task" or "todo" => "bi bi-check2-circle",
+            "meeting" or "event" or "calendar" => "bi bi-calendar-event",
+            "lead" or "contact" => "bi bi-person-plus",
+            "warning" or "alert" => "bi bi-exclamation-triangle",
+            "message" or "communication" or "chat" => "bi bi-chat-dots",
+            _ => "bi bi-bell"
+        };
+    }
+
+    private string FormatRelativeTime(DateTime timestampUtc)
+    {
+        var difference = DateTime.UtcNow - timestampUtc;
+        if (difference < TimeSpan.Zero)
+        {
+            difference = TimeSpan.Zero;
+        }
+
+        if (difference < TimeSpan.FromMinutes(1))
+        {
+            return ResolveString("NotificationJustNow", "방금 전");
+        }
+
+        if (difference < TimeSpan.FromHours(1))
+        {
+            var minutes = Math.Max(1, (int)Math.Floor(difference.TotalMinutes));
+            return string.Format(CultureInfo.CurrentCulture, ResolveString("NotificationMinutesAgo", "{0}분 전"), minutes);
+        }
+
+        if (difference < TimeSpan.FromDays(1))
+        {
+            var hours = Math.Max(1, (int)Math.Floor(difference.TotalHours));
+            return string.Format(CultureInfo.CurrentCulture, ResolveString("NotificationHoursAgo", "{0}시간 전"), hours);
+        }
+
+        if (difference < TimeSpan.FromDays(7))
+        {
+            var days = Math.Max(1, (int)Math.Floor(difference.TotalDays));
+            return string.Format(CultureInfo.CurrentCulture, ResolveString("NotificationDaysAgo", "{0}일 전"), days);
+        }
+
+        return timestampUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.CurrentCulture);
+    }
+
+    private string ResolveString(string key, string fallback)
+    {
+        var localized = Localizer[key];
+        return localized.ResourceNotFound ? fallback : localized.Value;
+    }
+
+    private Task CloseMobilePanels() => MobileInteractions.CloseAllAsync();
 
     private async Task HandleMobileSearch(KeyboardEventArgs e)
     {
@@ -728,9 +755,8 @@
     private async Task PerformMobileSearch()
     {
         // Close search panel
-        showMobileSearch = false;
-        StateHasChanged();
-        
+        await MobileInteractions.CloseAllAsync();
+
         // Perform search navigation
         var searchUrl = $"/search?q={Uri.EscapeDataString(mobileSearchQuery)}";
         NavigationManager.NavigateTo(searchUrl);
@@ -746,85 +772,9 @@
     {
         if (firstRender)
         {
-            // Initialize mobile dashboard navigation after render - with error handling
             try
             {
-                await JSRuntime.InvokeVoidAsync("eval", @"
-                    try {
-                        if (window.navigationHelper && window.navigationHelper.setupMobileDashboardNavigation) {
-                            window.navigationHelper.setupMobileDashboardNavigation();
-                        }
-                    } catch (e) {
-                        console.warn('Navigation helper setup failed:', e);
-                    }
-                ");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Navigation helper setup error: {ex.Message}");
-            }
-            
-            // Setup mobile dashboard specific functionality - with error handling
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("eval", @"
-                    try {
-                        const mobileHeader = document.querySelector('.mobile-header');
-                        if (mobileHeader) {
-                            mobileHeader.classList.add('mobile-header--active');
-                        }
-
-                        const handleBackdropClick = (event) => {
-                            if (!event.target || !event.target.classList) {
-                                return;
-                            }
-
-                            if (event.target.classList.contains('mobile-search-bar') && event.target.classList.contains('expanded')) {
-                                const closeSearch = document.querySelector('.mobile-search-close');
-                                if (closeSearch) {
-                                    closeSearch.click();
-                                }
-                            }
-
-                            if (event.target.classList.contains('mobile-notifications-panel') && event.target.classList.contains('expanded')) {
-                                const closeNotifications = document.querySelector('.mobile-notifications-close');
-                                if (closeNotifications) {
-                                    closeNotifications.click();
-                                }
-                            }
-                        };
-
-                        document.addEventListener('click', handleBackdropClick);
-
-                        let touchStartY = 0;
-                        document.addEventListener('touchstart', (event) => {
-                            if (event.touches && event.touches[0]) {
-                                touchStartY = event.touches[0].clientY;
-                            }
-                        }, { passive: true });
-
-                        document.addEventListener('touchend', (event) => {
-                            if (!event.changedTouches || !event.changedTouches[0]) {
-                                return;
-                            }
-
-                            const touchEndY = event.changedTouches[0].clientY;
-                            const diff = touchStartY - touchEndY;
-
-                            if (diff > 50) {
-                                const expandedPanels = document.querySelectorAll('.mobile-search-bar.expanded, .mobile-notifications-panel.expanded');
-                                expandedPanels.forEach((panel) => {
-                                    const closeBtn = panel.querySelector('.mobile-search-close, .mobile-notifications-close');
-                                    if (closeBtn) {
-                                        closeBtn.click();
-                                    }
-                                });
-                            }
-                        }, { passive: true });
-                    } catch (setupError) {
-                        console.warn('Mobile dashboard setup failed:', setupError);
-                    }
-                ");
+                await ActionInterop.SetupMobileDashboardAsync();
             }
             catch (Exception ex)
             {
@@ -835,28 +785,21 @@
 
     private async Task HandleFloatingAction(string action)
     {
-        switch (action)
+        var request = action switch
         {
-            case "call":
-                // Navigate to contacts page to select a contact to call
-                NavigationManager.NavigateTo("/contacts");
-                break;
-            case "email":
-                // Navigate to contacts page to select a contact to email
-                NavigationManager.NavigateTo("/contacts");
-                break;
-            case "meeting":
-                // Navigate to calendar/meeting scheduling
-                NavigationManager.NavigateTo("/sales-calendar");
-                break;
-            case "add":
-                // Navigate to add new contact/lead page
-                NavigationManager.NavigateTo("/contacts");
-                break;
+            "call" => new GlobalActionRequest(GlobalActionType.Call),
+            "email" => new GlobalActionRequest(GlobalActionType.Email),
+            "meeting" => new GlobalActionRequest(GlobalActionType.ScheduleMeeting),
+            "add" => new GlobalActionRequest(GlobalActionType.AddContact),
+            _ => null
+        };
+
+        if (request is null)
+        {
+            return;
         }
-        
-        // Add a small delay to ensure navigation is processed
-        await Task.Delay(10);
+
+        await GlobalActionService.LaunchAsync(request);
     }
 
     public void Dispose()
@@ -864,6 +807,9 @@
         if (NotificationFeed is not null)
         {
             NotificationFeed.UnreadCountChanged -= HandleUnreadCountChanged;
+            NotificationFeed.FeedUpdated -= HandleFeedUpdated;
         }
+
+        MobileInteractions.StateChanged -= HandleMobileStateChanged;
     }
 }
