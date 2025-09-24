@@ -195,4 +195,31 @@
   <data name="UserManagement" xml:space="preserve">
     <value>사용자 관리</value>
   </data>
+  <data name="NavigationOverview" xml:space="preserve">
+    <value>개요</value>
+  </data>
+  <data name="SalesWorkspace" xml:space="preserve">
+    <value>업무 공간</value>
+  </data>
+  <data name="Engagement" xml:space="preserve">
+    <value>참여</value>
+  </data>
+  <data name="Insights" xml:space="preserve">
+    <value>인사이트</value>
+  </data>
+  <data name="Favorites" xml:space="preserve">
+    <value>즐겨찾기</value>
+  </data>
+  <data name="RecentlyVisited" xml:space="preserve">
+    <value>최근 방문</value>
+  </data>
+  <data name="ClearRecent" xml:space="preserve">
+    <value>지우기</value>
+  </data>
+  <data name="SearchNavigation" xml:space="preserve">
+    <value>내비게이션 검색</value>
+  </data>
+  <data name="GlobalSearchPlaceholder" xml:space="preserve">
+    <value>페이지·데이터·도구 검색</value>
+  </data>
 </root>

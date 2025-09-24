@@ -27,4 +27,10 @@
   <data name="Loading..." xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="NewContact" xml:space="preserve">
+    <value>New Contact</value>
+  </data>
+  <data name="NoContacts" xml:space="preserve">
+    <value>No contacts found</value>
+  </data>
 </root>
