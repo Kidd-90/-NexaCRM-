@@ -124,7 +124,17 @@
                                         </NavLink>
                                     </RoleBasedComponent>
                                     <RoleBasedComponent RequiredRoles="Manager,Admin">
-                                        <NavLink class="nav-link submenu-link" href="user-registration-page" @onclick="CloseNavMenu">
+                                        <NavLink class="nav-link submenu-link" href="organization/team-management" @onclick="CloseNavMenu">
+                                            <i class="bi bi-people-fill" aria-hidden="true"></i> @Localizer["TeamManagement"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="organization/team-members" @onclick="CloseNavMenu">
+                                            <i class="bi bi-person-badge" aria-hidden="true"></i> @Localizer["TeamMemberManagement"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Manager,Admin">
+                                        <NavLink class="nav-link submenu-link" href="organization/user-management" @onclick="CloseNavMenu">
                                             <i class="bi bi-person-plus" aria-hidden="true"></i> @Localizer["UserManagement"]
                                         </NavLink>
                                     </RoleBasedComponent>
@@ -289,6 +299,11 @@
                                     <RoleBasedComponent RequiredRoles="Sales,Manager">
                                         <NavLink class="nav-link submenu-link" href="schedule/sms" @onclick="CloseNavMenu">
                                             <i class="bi bi-envelope-plus" aria-hidden="true"></i> @Localizer["SmsSchedule"]
+                                        </NavLink>
+                                    </RoleBasedComponent>
+                                    <RoleBasedComponent RequiredRoles="Sales,Manager">
+                                        <NavLink class="nav-link submenu-link" href="schedule/sent-history" @onclick="CloseNavMenu">
+                                            <i class="bi bi-send-check" aria-hidden="true"></i> @Localizer["ScheduleSentHistory"]
                                         </NavLink>
                                     </RoleBasedComponent>
                                 </div>

@@ -1,101 +1,342 @@
 @page "/sms/bulk"
+@using System.IO
+@using System.Linq
+@using System.Text
 @using System.Text.RegularExpressions
 @using NexaCRM.WebClient.Models.Sms
 @using NexaCRM.WebClient.Services.Interfaces
 @inject ISmsService SmsService
 
 <ResponsivePage>
-    <div class="bulk-sms-container">
-        <h3>Bulk SMS Sending</h3>
-        <p>Send SMS messages to multiple recipients.</p>
-
-        <div class="mb-3">
-            <label class="form-label">Recipients</label>
-            <select multiple class="form-select" @onchange="OnRecipientsChanged">
-                @foreach (var r in AvailableRecipients)
-                {
-                    <option value="@r" selected="@SelectedRecipients.Contains(r)">@r</option>
-                }
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Template</label>
-            <select class="form-select" @onchange="OnTemplateChanged">
-                <option value="">-- Select template --</option>
-                @foreach (var t in Templates)
-                {
-                    <option value="@t.Id" selected="@Equals(t.Id, SelectedTemplateId)">@t.Id</option>
-                }
-            </select>
-        </div>
-
-        @if (SelectedTemplate != null)
-        {
-            foreach (var placeholder in Placeholders)
-            {
-                <div class="mb-2">
-                    <label class="form-label">@placeholder</label>
-                    <InputText class="form-control placeholder-input"
-                               placeholder="@placeholder"
-                               Value="@PlaceholderValues[placeholder]"
-                               ValueChanged="value => OnPlaceholderChanged(placeholder, value)" />
+    <div class="sms-page">
+        <section class="sms-card sms-page-header">
+            <div class="sms-page-title">
+                <h2 class="sms-title">문자메세지발송</h2>
+                <p class="sms-subtitle">대량 발송 전 템플릿과 수신자를 미리 확인하세요.</p>
+            </div>
+            <div class="sms-stats-grid">
+                <div class="sms-stat-card">
+                    <span class="sms-stat-label">총 발송건수</span>
+                    <span class="sms-stat-value">@Summary.TotalMessages.ToString("N0")</span>
                 </div>
-            }
-        }
-
-        <div class="mb-3">
-            <label class="form-label">Message</label>
-            <textarea class="form-control" rows="5" @bind="Message"></textarea>
-        </div>
-
-        <button class="btn btn-primary bulk-sms-send-btn" @onclick="SendAsync" disabled="@SendDisabled">
-            @(IsSending ? "Sending..." : "Send")
-        </button>
-
-        @if (IsSending)
-        {
-            <div class="mt-3">
-                <div class="progress bulk-sms-progress">
-                    <div class="progress-bar" role="progressbar" style="width:@Progress%" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@Progress%</div>
+                <div class="sms-stat-card">
+                    <span class="sms-stat-label">오늘 발송</span>
+                    <span class="sms-stat-value">@Summary.TodaySent.ToString("N0")</span>
+                </div>
+                <div class="sms-stat-card">
+                    <span class="sms-stat-label">보유 포인트</span>
+                    <span class="sms-stat-value">@Summary.AvailablePoints.ToString("N0")</span>
+                </div>
+                <div class="sms-stat-card">
+                    <span class="sms-stat-label">잔여 포인트</span>
+                    <span class="sms-stat-value">@Summary.RemainingPoints.ToString("N0")</span>
                 </div>
             </div>
-        }
+        </section>
+
+        <div class="sms-warning sms-card">
+            <div class="sms-warning-icon">!</div>
+            <div>
+                <h6 class="sms-warning-title">발송 전 확인해주세요</h6>
+                <p class="sms-warning-text mb-0">
+                    발신번호 사전등록 및 광고성 정보 발송 시 관련 법령을 반드시 준수해주세요. 고객이 수신 거부를 요청한 경우 즉시 반영해야 합니다.
+                </p>
+            </div>
+        </div>
+
+        <div class="sms-content-grid">
+            <section class="sms-card sms-message-card">
+                <div class="sms-section-title">
+                    <span class="sms-section-badge">STEP 1</span>
+                    <div>
+                        <h4 class="mb-1">메시지 작성</h4>
+                        <p class="text-muted mb-0">템플릿을 선택하고 플레이스홀더를 채워 맞춤형 문자를 완성하세요.</p>
+                    </div>
+                </div>
+
+                <div class="sms-phone-preview">
+                    <div class="sms-phone-shell">
+                        <div class="sms-phone-notch"></div>
+                        <div class="sms-phone-header">
+                            <span class="sms-phone-time">@DateTime.Now.ToString("HH:mm")</span>
+                            <span class="sms-phone-sender">Nexa CRM</span>
+                        </div>
+                        <div class="sms-phone-screen">
+                            <div class="sms-preview-bubble">
+                                <pre>@MessagePreview</pre>
+                            </div>
+                            <div class="sms-preview-hint">※ 실제 수신화면과 다를 수 있습니다.</div>
+                        </div>
+                        <div class="sms-phone-input">
+                            <div class="sms-phone-placeholder">메시지를 입력하세요...</div>
+                            <div class="sms-phone-send">⏎</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sms-form-group">
+                    <label class="form-label fw-semibold">템플릿 선택</label>
+                    <select class="form-select" @onchange="OnTemplateChanged">
+                        <option value="">템플릿을 선택하거나 직접 작성하세요</option>
+                        @foreach (var template in Templates)
+                        {
+                            <option value="@template.Id" selected="@Equals(template.Id, SelectedTemplateId)">@template.Title</option>
+                        }
+                    </select>
+                    @if (SelectedTemplate is not null)
+                    {
+                        <div class="sms-template-description">
+                            <span class="badge text-bg-light">@SelectedTemplate.Category</span>
+                            <span>@SelectedTemplate.Description</span>
+                        </div>
+                    }
+                </div>
+
+                @if (Placeholders.Any())
+                {
+                    <div class="sms-placeholder-grid">
+                        @foreach (var placeholder in Placeholders)
+                        {
+                            <div class="sms-placeholder-field">
+                                <label class="form-label">@placeholder</label>
+                                <InputText class="form-control"
+                                           placeholder="@($"{placeholder} 입력")"
+                                           Value="@(PlaceholderValues.TryGetValue(placeholder, out var value) ? value : string.Empty)"
+                                           ValueChanged="value => OnPlaceholderChanged(placeholder, value)" />
+                            </div>
+                        }
+                    </div>
+                }
+
+                <div class="sms-form-group">
+                    <label class="form-label fw-semibold">문자 내용</label>
+                    <InputTextArea class="form-control sms-message-textarea"
+                                   rows="6"
+                                   @bind-Value="Message" />
+                    <div class="sms-message-meta">
+                        <span>문자 길이</span>
+                        <span><strong>@MessageByteCount</strong> / @MessageByteLimit byte</span>
+                    </div>
+                    <div class="sms-message-meta">
+                        <span>예상 발송 건수</span>
+                        <span><strong>@EstimatedSegments</strong>건 · 예상 포인트 <strong>@EstimatedPointCost.ToString("N0")</strong>P</span>
+                    </div>
+                </div>
+
+                <div class="sms-options">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoLineBreakSwitch" checked="@AutoLineBreak" @onchange="OnAutoLineBreakChanged">
+                        <label class="form-check-label" for="autoLineBreakSwitch">자동 줄바꿈 (SMS/LMS 용량 자동 계산)</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="includeOptOutSwitch" checked="@IncludeOptOut" @onchange="OnIncludeOptOutChanged">
+                        <label class="form-check-label" for="includeOptOutSwitch">수신거부 문구 자동 추가</label>
+                    </div>
+                </div>
+
+                <div class="sms-send-footer">
+                    <div class="sms-selected-info">
+                        <div>선택된 수신자 <strong>@SelectedRecipientPhones.Count</strong>명</div>
+                        <div class="text-muted">총 예상 발송량 <strong>@(SelectedRecipientPhones.Count * EstimatedSegments)</strong>건</div>
+                    </div>
+                    <button class="btn btn-primary sms-send-btn" type="button" @onclick="SendAsync" disabled="@SendDisabled">
+                        @(IsSending ? "발송 중..." : "문자 발송")
+                    </button>
+                </div>
+
+                @if (IsSending)
+                {
+                    <div class="progress sms-progress mt-3">
+                        <div class="progress-bar" role="progressbar" style="width:@Progress%" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100">@Progress%</div>
+                    </div>
+                }
+            </section>
+
+            <aside class="sms-card sms-address-card">
+                <div class="sms-section-title">
+                    <span class="sms-section-badge">STEP 2</span>
+                    <div>
+                        <h4 class="mb-1">SMS 주소록 선택</h4>
+                        <p class="text-muted mb-0">필요한 고객을 검색하거나 추가해 발송 대상을 구성하세요.</p>
+                    </div>
+                </div>
+
+                <div class="sms-address-actions">
+                    <div class="sms-upload-wrapper">
+                        <label class="btn btn-outline-secondary btn-sm mb-0">
+                            엑셀 추가
+                            <InputFile OnChange="OnRecipientsFileUploaded" accept=".csv,.txt" class="d-none" />
+                        </label>
+                        <span class="text-muted small">CSV(이름,연락처) 형식 지원</span>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm" type="button" @onclick="RemoveSelectedRecipients" disabled="@(SelectedRecipientPhones.Count == 0)">선택 삭제</button>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(ImportFeedback))
+                {
+                    <div class="sms-import-feedback">@ImportFeedback</div>
+                }
+
+                <div class="sms-search-row">
+                    <div class="input-group">
+                        <span class="input-group-text">🔍</span>
+                        <InputText class="form-control" @bind-Value="RecipientSearch" placeholder="이름 또는 연락처 검색" />
+                    </div>
+                </div>
+
+                <div class="sms-add-recipient">
+                    <div class="row g-2">
+                        <div class="col-12 col-md-4">
+                            <InputText class="form-control" @bind-Value="NewRecipientName" placeholder="이름" />
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <InputText class="form-control" @bind-Value="NewRecipientPhone" placeholder="연락처 (숫자만)" />
+                        </div>
+                        <div class="col-12 col-md-3 d-grid">
+                            <button class="btn btn-outline-primary" type="button" @onclick="AddRecipient">추가</button>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(AddRecipientError))
+                    {
+                        <div class="text-danger small mt-1">@AddRecipientError</div>
+                    }
+                </div>
+
+                <div class="sms-table-wrapper">
+                    <table class="table sms-recipient-table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">
+                                    <input type="checkbox" class="form-check-input" checked="@AreAllFilteredSelected" @onchange="ToggleAllFiltered" />
+                                </th>
+                                <th scope="col">이름</th>
+                                <th scope="col">연락처</th>
+                                <th scope="col" class="text-end">상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!FilteredRecipients.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">검색 결과가 없습니다.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var recipient in FilteredRecipients)
+                                {
+                                    <tr class="@GetRecipientRowClass(recipient)">
+                                        <td class="text-center">
+                                            <input type="checkbox"
+                                                   class="form-check-input"
+                                                   checked="@IsRecipientSelected(recipient)"
+                                                   @onchange="(_) => ToggleRecipient(recipient)" />
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">@recipient.Name</div>
+                                            <div class="sms-recipient-tags">
+                                                <span class="badge rounded-pill text-bg-light">@recipient.Group</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-nowrap">@FormatPhone(recipient.Phone)</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-link btn-sm text-decoration-none p-0"
+                                                    type="button"
+                                                    @onclick="() => ToggleRecipient(recipient)">
+                                                @(IsRecipientSelected(recipient) ? "해제" : "추가")
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="sms-selected-summary">
+                    <div>총 <strong>@FilteredRecipients.Count()</strong>명 중 <strong>@SelectedRecipientPhones.Count</strong>명 선택됨</div>
+                    <div class="text-muted">Excel 업로드 또는 직접 추가로 주소록을 확장할 수 있습니다.</div>
+                </div>
+            </aside>
+        </div>
     </div>
 </ResponsivePage>
 
 @code {
-    private List<string> AvailableRecipients = new() { "+15551234567", "+15557654321", "+15559876543" };
-    private List<string> SelectedRecipients = new();
+    private readonly SmsSummary Summary = new(1_039_998, 142, 1_000_000, 857_438);
 
-    private List<SmsTemplate> Templates = new()
+    private readonly List<TemplateOption> Templates = new()
     {
-        new("Promotion", "Hi {Name}, check out our {Product}!"),
-        new("Reminder", "Dear {Name}, your appointment is on {Date}.")
+        new("promotion", "신규 프로모션 안내", "안녕하세요 {Name} 고객님!\n이번 주만 진행되는 {Product} 특별 혜택을 놓치지 마세요.", "신규 이벤트 및 프로모션 안내", "프로모션"),
+        new("reservation", "예약 일정 알림", "{Name} 고객님, {Date} {Time}에 예약이 예정되어 있습니다.\n방문이 어려우시면 미리 연락 부탁드립니다.", "예약 및 일정 알림", "안내"),
+        new("survey", "만족도 조사 참여 요청", "{Name} 고객님, 서비스 만족도 조사를 도와주시면 다음 상담에 더 나은 혜택을 드릴게요.\n링크: {Link}", "만족도 및 설문 요청", "피드백")
     };
 
-    private string? SelectedTemplateId;
-    private SmsTemplate? SelectedTemplate => Templates.FirstOrDefault(t => t.Id == SelectedTemplateId);
+    private List<SmsRecipient> AvailableRecipients = new()
+    {
+        new("김영수", "01012345678", "VIP"),
+        new("박민지", "01098765432", "신규"),
+        new("이서준", "01034567890", "장기고객"),
+        new("최지우", "01045671234", "관심고객"),
+        new("정하늘", "01067891234", "세미나참석"),
+        new("홍지민", "01078901234", "B2B"),
+        new("남도현", "01023456789", "구독"),
+        new("서윤아", "01011223344", "휴면")
+    };
 
-    private List<string> Placeholders = new();
-    private Dictionary<string, string> PlaceholderValues = new();
+    private readonly HashSet<string> SelectedRecipientPhones = new(StringComparer.Ordinal);
+    private readonly List<string> Placeholders = new();
+    private readonly Dictionary<string, string> PlaceholderValues = new();
+
+    private string? SelectedTemplateId;
+    private TemplateOption? SelectedTemplate => Templates.FirstOrDefault(t => t.Id == SelectedTemplateId);
 
     private string Message = string.Empty;
-
+    private bool AutoLineBreak = true;
+    private bool IncludeOptOut;
+    private string RecipientSearch = string.Empty;
+    private string NewRecipientName = string.Empty;
+    private string NewRecipientPhone = string.Empty;
+    private string? AddRecipientError;
+    private string? ImportFeedback;
     private bool IsSending;
     private int Progress;
 
-    private void OnRecipientsChanged(ChangeEventArgs e)
+    private const int ShortMessageLimit = 90;
+    private const int LongMessageLimit = 2000;
+    private const int PointsPerSegment = 15;
+    private const string OptOutText = "[수신거부 080-123-4567]";
+
+    private static readonly Regex PlaceholderPattern = new(@"{(.*?)}", RegexOptions.Compiled);
+    private static readonly Regex DigitOnlyPattern = new(@"[^0-9]", RegexOptions.Compiled);
+
+    private IEnumerable<SmsRecipient> FilteredRecipients
     {
-        if (e.Value is IEnumerable<string> values)
+        get
         {
-            SelectedRecipients = values.ToList();
-        }
-        else
-        {
-            SelectedRecipients.Clear();
+            if (string.IsNullOrWhiteSpace(RecipientSearch))
+            {
+                return AvailableRecipients;
+            }
+
+            var query = RecipientSearch.Trim();
+            var normalized = NormalizePhoneNumber(query);
+
+            return AvailableRecipients.Where(r =>
+                r.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (!string.IsNullOrEmpty(normalized) && r.Phone.Contains(normalized, StringComparison.Ordinal)));
         }
     }
+
+    private bool AreAllFilteredSelected =>
+        FilteredRecipients.Any() && FilteredRecipients.All(r => SelectedRecipientPhones.Contains(r.Phone));
+
+    private int MessageByteLimit => AutoLineBreak ? ShortMessageLimit : LongMessageLimit;
+    private int MessageByteCount => Encoding.UTF8.GetByteCount(Message ?? string.Empty);
+    private int EstimatedSegments => Math.Max(1, (int)Math.Ceiling(Math.Max(1, MessageByteCount) / (double)MessageByteLimit));
+    private int EstimatedPointCost => SelectedRecipientPhones.Count * EstimatedSegments * PointsPerSegment;
+    private string MessagePreview => string.IsNullOrWhiteSpace(Message) ? "메시지 내용을 입력하거나 템플릿을 선택하세요." : Message;
+    private bool SendDisabled => !SelectedRecipientPhones.Any() || string.IsNullOrWhiteSpace(Message) || IsSending;
 
     private void OnTemplateChanged(ChangeEventArgs e)
     {
@@ -103,12 +344,17 @@
         Placeholders.Clear();
         PlaceholderValues.Clear();
 
-        if (SelectedTemplate != null)
+        if (SelectedTemplate is null)
         {
-            var matches = Regex.Matches(SelectedTemplate.Content, "{(.*?)}");
-            foreach (Match match in matches)
+            Message = string.Empty;
+            return;
+        }
+
+        foreach (Match match in PlaceholderPattern.Matches(SelectedTemplate.Content))
+        {
+            var key = match.Groups[1].Value;
+            if (!Placeholders.Contains(key))
             {
-                var key = match.Groups[1].Value;
                 Placeholders.Add(key);
                 PlaceholderValues[key] = string.Empty;
             }
@@ -125,28 +371,312 @@
 
     private void UpdateMessage()
     {
-        if (SelectedTemplate != null)
+        if (SelectedTemplate is null)
         {
-            Message = SelectedTemplate.Content;
-            foreach (var kv in PlaceholderValues)
+            return;
+        }
+
+        var content = SelectedTemplate.Content;
+        foreach (var placeholder in Placeholders)
+        {
+            var replacement = PlaceholderValues.TryGetValue(placeholder, out var value)
+                ? value ?? string.Empty
+                : string.Empty;
+
+            content = content.Replace($"{{{placeholder}}}", replacement, StringComparison.Ordinal);
+        }
+
+        Message = content;
+
+        if (IncludeOptOut)
+        {
+            AppendOptOutText();
+        }
+    }
+
+    private void OnAutoLineBreakChanged(ChangeEventArgs e)
+    {
+        AutoLineBreak = e.Value is bool value && value;
+    }
+
+    private void OnIncludeOptOutChanged(ChangeEventArgs e)
+    {
+        var newValue = e.Value is bool value && value;
+        if (IncludeOptOut == newValue)
+        {
+            return;
+        }
+
+        IncludeOptOut = newValue;
+
+        if (IncludeOptOut)
+        {
+            AppendOptOutText();
+        }
+        else
+        {
+            Message = RemoveOptOutText(Message);
+        }
+    }
+
+    private void AppendOptOutText()
+    {
+        if (string.IsNullOrWhiteSpace(Message))
+        {
+            Message = OptOutText;
+            return;
+        }
+
+        if (!Message.Contains(OptOutText, StringComparison.Ordinal))
+        {
+            Message = $"{Message.TrimEnd()}\n{OptOutText}";
+        }
+    }
+
+    private static string RemoveOptOutText(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        var cleaned = text
+            .Replace($"\r\n{OptOutText}", string.Empty, StringComparison.Ordinal)
+            .Replace($"\n{OptOutText}", string.Empty, StringComparison.Ordinal)
+            .Replace(OptOutText, string.Empty, StringComparison.Ordinal);
+
+        return cleaned.TrimEnd();
+    }
+
+    private void ToggleRecipient(SmsRecipient recipient)
+    {
+        if (SelectedRecipientPhones.Contains(recipient.Phone))
+        {
+            SelectedRecipientPhones.Remove(recipient.Phone);
+        }
+        else
+        {
+            SelectedRecipientPhones.Add(recipient.Phone);
+        }
+    }
+
+    private bool IsRecipientSelected(SmsRecipient recipient) => SelectedRecipientPhones.Contains(recipient.Phone);
+
+    private string GetRecipientRowClass(SmsRecipient recipient) => IsRecipientSelected(recipient) ? "selected" : string.Empty;
+
+    private void ToggleAllFiltered(ChangeEventArgs e)
+    {
+        var shouldSelect = e.Value is bool value && value;
+        var recipients = FilteredRecipients.ToList();
+
+        if (shouldSelect)
+        {
+            foreach (var recipient in recipients)
             {
-                Message = Message.Replace($"{{{kv.Key}}}", kv.Value);
+                SelectedRecipientPhones.Add(recipient.Phone);
+            }
+        }
+        else
+        {
+            foreach (var recipient in recipients)
+            {
+                SelectedRecipientPhones.Remove(recipient.Phone);
             }
         }
     }
 
-    private bool SendDisabled => !SelectedRecipients.Any() || string.IsNullOrWhiteSpace(Message) || IsSending;
+    private void RemoveSelectedRecipients()
+    {
+        if (!SelectedRecipientPhones.Any())
+        {
+            return;
+        }
+
+        AvailableRecipients.RemoveAll(r => SelectedRecipientPhones.Contains(r.Phone));
+        SelectedRecipientPhones.Clear();
+    }
+
+    private void AddRecipient()
+    {
+        AddRecipientError = null;
+        ImportFeedback = null;
+
+        if (string.IsNullOrWhiteSpace(NewRecipientName))
+        {
+            AddRecipientError = "이름을 입력해주세요.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NewRecipientPhone))
+        {
+            AddRecipientError = "연락처를 입력해주세요.";
+            return;
+        }
+
+        var name = NewRecipientName.Trim();
+        var normalizedPhone = NormalizePhoneNumber(NewRecipientPhone);
+
+        if (!IsValidPhoneNumber(normalizedPhone))
+        {
+            AddRecipientError = "올바른 연락처 형식을 입력해주세요.";
+            return;
+        }
+
+        if (AvailableRecipients.Any(r => r.Phone == normalizedPhone))
+        {
+            AddRecipientError = "이미 등록된 연락처입니다.";
+            return;
+        }
+
+        AvailableRecipients.Add(new SmsRecipient(name, normalizedPhone, "직접 추가"));
+        SelectedRecipientPhones.Add(normalizedPhone);
+
+        NewRecipientName = string.Empty;
+        NewRecipientPhone = string.Empty;
+    }
+
+    private async Task OnRecipientsFileUploaded(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file is null)
+        {
+            return;
+        }
+
+        using var stream = file.OpenReadStream(512_000);
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+
+        var added = 0;
+        while (!reader.EndOfStream)
+        {
+            var line = await reader.ReadLineAsync() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            var parts = line.Split(new[] { ',', ';', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var name = parts.Length > 0 ? parts[0].Trim() : string.Empty;
+            var phone = parts.Length > 1 ? parts[1].Trim() : parts[0].Trim();
+
+            if (AddRecipientInternal(name, phone, "엑셀 업로드"))
+            {
+                added++;
+            }
+        }
+
+        ImportFeedback = added > 0
+            ? $"{added}명의 수신자가 추가되었습니다."
+            : "추가된 수신자가 없습니다. 파일 형식을 확인해주세요.";
+    }
+
+    private bool AddRecipientInternal(string? name, string? phone, string group, bool select = true)
+    {
+        var resolvedName = string.IsNullOrWhiteSpace(name) ? "이름없음" : name.Trim();
+        var normalizedPhone = NormalizePhoneNumber(phone);
+
+        if (!IsValidPhoneNumber(normalizedPhone))
+        {
+            return false;
+        }
+
+        if (AvailableRecipients.Any(r => r.Phone == normalizedPhone))
+        {
+            if (select)
+            {
+                SelectedRecipientPhones.Add(normalizedPhone);
+            }
+
+            return false;
+        }
+
+        AvailableRecipients.Add(new SmsRecipient(resolvedName, normalizedPhone, group));
+
+        if (select)
+        {
+            SelectedRecipientPhones.Add(normalizedPhone);
+        }
+
+        return true;
+    }
+
+    private static string NormalizePhoneNumber(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = value.Trim();
+
+        if (trimmed.StartsWith("+", StringComparison.Ordinal))
+        {
+            return "+" + DigitOnlyPattern.Replace(trimmed.Substring(1), string.Empty);
+        }
+
+        return DigitOnlyPattern.Replace(trimmed, string.Empty);
+    }
+
+    private static bool IsValidPhoneNumber(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return false;
+        }
+
+        if (phone.StartsWith("+", StringComparison.Ordinal))
+        {
+            return phone.Length is >= 8 and <= 15;
+        }
+
+        return phone.Length is >= 9 and <= 11;
+    }
+
+    private string FormatPhone(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return string.Empty;
+        }
+
+        if (phone.StartsWith("+", StringComparison.Ordinal))
+        {
+            return phone;
+        }
+
+        return phone.Length switch
+        {
+            11 => $"{phone[..3]}-{phone.Substring(3, 4)}-{phone.Substring(7)}",
+            10 => $"{phone[..3]}-{phone.Substring(3, 3)}-{phone.Substring(6)}",
+            8 => $"{phone[..4]}-{phone.Substring(4)}",
+            _ => phone
+        };
+    }
 
     private async Task SendAsync()
     {
-        var batches = SelectedRecipients
+        var recipients = AvailableRecipients
+            .Where(r => SelectedRecipientPhones.Contains(r.Phone))
+            .Select(r => r.Phone)
+            .ToList();
+
+        if (!recipients.Any())
+        {
+            return;
+        }
+
+        var batches = recipients
             .Chunk(10)
             .Select(chunk => new BulkSmsRequest(chunk.ToList(), Message))
             .ToList();
 
         IsSending = true;
         Progress = 0;
-        var progress = new Progress<int>(p => { Progress = p; InvokeAsync(StateHasChanged); });
+        var progress = new Progress<int>(p =>
+        {
+            Progress = p;
+            InvokeAsync(StateHasChanged);
+        });
 
         try
         {
@@ -157,4 +687,8 @@
             IsSending = false;
         }
     }
+
+    private record SmsRecipient(string Name, string Phone, string Group);
+    private record TemplateOption(string Id, string Title, string Content, string Description, string Category);
+    private record SmsSummary(int TotalMessages, int TodaySent, int AvailablePoints, int RemainingPoints);
 }

@@ -29,9 +29,45 @@ public class OrganizationService : IOrganizationService
 
     private readonly List<OrganizationUser> _users =
     [
-        new() { Id = 1, Name = "Alice Kim", Email = "alice.kim@example.com", Role = "Admin", Status = "Active" },
-        new() { Id = 2, Name = "Brian Lee", Email = "brian.lee@example.com", Role = "Manager", Status = "Active" },
-        new() { Id = 3, Name = "Chloe Park", Email = "chloe.park@example.com", Role = "Analyst", Status = "Inactive" }
+        new()
+        {
+            Id = 1,
+            Name = "Alice Kim",
+            Email = "alice.kim@example.com",
+            Role = "Admin",
+            Status = "Active",
+            Department = "Operations",
+            PhoneNumber = "010-1234-5678",
+            RegisteredAt = DateTime.Today.AddMonths(-12),
+            ApprovedAt = DateTime.Today.AddMonths(-12),
+            ApprovalMemo = "최초 관리자 계정"
+        },
+        new()
+        {
+            Id = 2,
+            Name = "Brian Lee",
+            Email = "brian.lee@example.com",
+            Role = "Manager",
+            Status = "Active",
+            Department = "Sales",
+            PhoneNumber = "010-3456-7890",
+            RegisteredAt = DateTime.Today.AddMonths(-6),
+            ApprovedAt = DateTime.Today.AddMonths(-6),
+            ApprovalMemo = "영업 총괄 승인"
+        },
+        new()
+        {
+            Id = 3,
+            Name = "Chloe Park",
+            Email = "chloe.park@example.com",
+            Role = "Analyst",
+            Status = "Inactive",
+            Department = "Marketing",
+            PhoneNumber = "010-9876-5432",
+            RegisteredAt = DateTime.Today.AddMonths(-2),
+            ApprovedAt = DateTime.Today.AddMonths(-2),
+            ApprovalMemo = "휴직 처리"
+        }
     ];
 
     private readonly List<AgentModel> _admins =
@@ -120,6 +156,11 @@ public class OrganizationService : IOrganizationService
             existing.Email = user.Email;
             existing.Role = user.Role;
             existing.Status = user.Status;
+            existing.Department = user.Department;
+            existing.PhoneNumber = user.PhoneNumber;
+            existing.RegisteredAt = user.RegisteredAt;
+            existing.ApprovedAt = user.ApprovedAt;
+            existing.ApprovalMemo = user.ApprovalMemo;
         }
 
         return Task.CompletedTask;
@@ -128,6 +169,32 @@ public class OrganizationService : IOrganizationService
     public Task DeleteUserAsync(int userId)
     {
         _users.RemoveAll(u => u.Id == userId);
+        return Task.CompletedTask;
+    }
+
+    public Task ApproveUserAsync(int userId)
+    {
+        var existing = _users.FirstOrDefault(u => u.Id == userId);
+        if (existing is not null)
+        {
+            existing.Status = "Active";
+            existing.ApprovedAt = DateTime.Now;
+            existing.ApprovalMemo = null;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task RejectUserAsync(int userId, string? reason)
+    {
+        var existing = _users.FirstOrDefault(u => u.Id == userId);
+        if (existing is not null)
+        {
+            existing.Status = "Rejected";
+            existing.ApprovedAt = null;
+            existing.ApprovalMemo = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();
+        }
+
         return Task.CompletedTask;
     }
 
@@ -143,7 +210,9 @@ public class OrganizationService : IOrganizationService
             Name = user.FullName,
             Email = user.Email,
             Role = "Member",
-            Status = "Pending"
+            Status = "Pending",
+            Department = "미지정",
+            RegisteredAt = DateTime.Now
         });
 
         return Task.CompletedTask;
@@ -174,7 +243,12 @@ public class OrganizationService : IOrganizationService
         Name = source.Name,
         Email = source.Email,
         Role = source.Role,
-        Status = source.Status
+        Status = source.Status,
+        Department = source.Department,
+        PhoneNumber = source.PhoneNumber,
+        RegisteredAt = source.RegisteredAt,
+        ApprovedAt = source.ApprovedAt,
+        ApprovalMemo = source.ApprovalMemo
     };
 
     private static AgentModel CloneAdmin(AgentModel source) => new()

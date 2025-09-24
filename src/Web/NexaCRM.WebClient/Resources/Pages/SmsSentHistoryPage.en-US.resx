@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Title" xml:space="preserve">
+    <value>Send History</value>
+  </data>
+  <data name="Subtitle" xml:space="preserve">
+    <value>Review scheduled SMS deliveries and verify attachment usage.</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="SummaryTotalMessages" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="SummaryWithAttachments" xml:space="preserve">
+    <value>With attachments</value>
+  </data>
+  <data name="SummaryAttachmentRatio" xml:space="preserve">
+    <value>{0}% with files</value>
+  </data>
+  <data name="SummaryAttachmentFiles" xml:space="preserve">
+    <value>Attachment files</value>
+  </data>
+  <data name="SummaryAttachmentFilesMeta" xml:space="preserve">
+    <value>Across selected records</value>
+  </data>
+  <data name="FilterDateRange" xml:space="preserve">
+    <value>Date range</value>
+  </data>
+  <data name="FilterQuickSelect" xml:space="preserve">
+    <value>Quick select</value>
+  </data>
+  <data name="QuickRangeToday" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="QuickRange7Days" xml:space="preserve">
+    <value>7 days</value>
+  </data>
+  <data name="QuickRange30Days" xml:space="preserve">
+    <value>30 days</value>
+  </data>
+  <data name="QuickRangeClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="FilterSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="FilterSearchPlaceholder" xml:space="preserve">
+    <value>Recipient, name or content</value>
+  </data>
+  <data name="FilterStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="FilterStatusAll" xml:space="preserve">
+    <value>All statuses</value>
+  </data>
+  <data name="FilterStatusSent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="FilterStatusFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="FilterStatusScheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="FilterAttachment" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
+  <data name="FilterAttachmentAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="FilterAttachmentWith" xml:space="preserve">
+    <value>With attachments</value>
+  </data>
+  <data name="FilterAttachmentWithout" xml:space="preserve">
+    <value>Without attachments</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading history...</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No send history matches the current filters.</value>
+  </data>
+  <data name="TableNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="TableRecipient" xml:space="preserve">
+    <value>Recipient</value>
+  </data>
+  <data name="TableSender" xml:space="preserve">
+    <value>Sender</value>
+  </data>
+  <data name="TableRecipientName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="TableMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="TableAttachments" xml:space="preserve">
+    <value>Attachments</value>
+  </data>
+  <data name="TableStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="TableSentAt" xml:space="preserve">
+    <value>Sent at</value>
+  </data>
+  <data name="AttachmentSummary" xml:space="preserve">
+    <value>{0} file(s)</value>
+  </data>
+  <data name="AttachmentNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="PaginationPrevious" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="PaginationNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="PaginationInfo" xml:space="preserve">
+    <value>Page {0} of {1} · {2} records</value>
+  </data>
+  <data name="StatusSent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="StatusScheduled" xml:space="preserve">
+    <value>Scheduled</value>
+  </data>
+  <data name="UnknownRecipientName" xml:space="preserve">
+    <value>Not provided</value>
+  </data>
+  <data name="RangeDescriptionBetween" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="RangeDescriptionFrom" xml:space="preserve">
+    <value>From {0}</value>
+  </data>
+  <data name="RangeDescriptionUntil" xml:space="preserve">
+    <value>Until {0}</value>
+  </data>
+  <data name="RangeDescriptionAll" xml:space="preserve">
+    <value>All time</value>
+  </data>
+</root>

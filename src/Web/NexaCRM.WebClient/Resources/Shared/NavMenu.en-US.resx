@@ -114,6 +114,12 @@
   <data name="OrganizationStructure" xml:space="preserve">
     <value>Organization Structure</value>
   </data>
+  <data name="TeamManagement" xml:space="preserve">
+    <value>Team Management</value>
+  </data>
+  <data name="TeamMemberManagement" xml:space="preserve">
+    <value>Team Member Management</value>
+  </data>
   <data name="PersonalInfo" xml:space="preserve">
     <value>Personal Information</value>
   </data>
@@ -146,6 +152,9 @@
   </data>
   <data name="SmsSchedule" xml:space="preserve">
     <value>SMS Schedule</value>
+  </data>
+  <data name="ScheduleSentHistory" xml:space="preserve">
+    <value>Send History</value>
   </data>
   <data name="SmsSettings" xml:space="preserve">
     <value>SMS Settings</value>
