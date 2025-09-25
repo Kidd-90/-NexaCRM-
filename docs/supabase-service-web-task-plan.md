@@ -62,8 +62,8 @@ This plan is derived from `supabase/SUPABASE_INTEGRATION_GUIDE.md` and organizes
 
 ## Monitoring & Operations
 - **Service**
-  - [ ] Feed Supabase metrics (query latency, connection counts, error rates) into existing monitoring dashboards.
-  - [ ] Establish backup, PITR policies, and disaster recovery runbooks aligned with Supabase capabilities.
+  - [x] Feed Supabase metrics (query latency, connection counts, error rates) into existing monitoring dashboards. (SupabaseMonitoringService → Grafana)
+  - [x] Establish backup, PITR policies, and disaster recovery runbooks aligned with Supabase capabilities. (`supabase/BACKUP_AND_RECOVERY.md`)
 - **Web**
   - [ ] Surface user-facing alerts when Supabase availability degrades (e.g., banner notifications).
   - [ ] Instrument client metrics to detect auth or realtime failures.
@@ -81,7 +81,7 @@ This plan is derived from `supabase/SUPABASE_INTEGRATION_GUIDE.md` and organizes
   - Service: Complete auth replacement, migrate contact/deal/task CRUD, connect org/role tables.
   - Web: Implement Supabase Auth provider, refactor CRUD data flows, update UI for role-driven permissions.
 - **Phase 2 (Realtime & Integrations – 2024-08)**
-  - Service: Link realtime handlers, move scheduled jobs to Edge Functions, verify integration event flows.
+  - Service: ✅ Link realtime handlers, move scheduled jobs to Edge Functions, verify integration event flows.
   - Web: Subscribe to realtime updates in support/ticket modules, display job statuses, handle event-driven UI updates.
 - **Phase 3 (Analytics & Operations – 2024-09)**
   - Service: ✅ Build ETL pipelines for analytics tables, integrate Supabase monitoring, apply retention policies.

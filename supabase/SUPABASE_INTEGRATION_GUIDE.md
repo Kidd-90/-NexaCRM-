@@ -67,8 +67,8 @@ builder.Services.AddSingleton(provider =>
 ## 4. 배포 및 운영 체크리스트
 - [ ] Supabase 프로젝트에 IP 접근 제어와 비밀번호 정책을 설정했습니다.
 - [ ] 스토리지 버킷 구조(티켓 첨부, 캠페인 에셋 등)를 정의하고, 공개/비공개 권한을 검증했습니다.
-- [ ] 백업 및 PITR(Point in Time Recovery) 정책을 검토해 데이터 복구 전략을 수립했습니다.
-- [ ] 관제 대시보드에 Supabase 메트릭(쿼리 지연, 연결 수, 에러율)을 포함했습니다.
+- [x] 백업 및 PITR(Point in Time Recovery) 정책을 검토해 데이터 복구 전략을 수립했습니다. (참고: `supabase/BACKUP_AND_RECOVERY.md`)
+- [x] 관제 대시보드에 Supabase 메트릭(쿼리 지연, 연결 수, 에러율)을 포함했습니다. (참고: `docs/operations/SUPABASE_OPERATIONS.md`)
 
 ## 5. Supabase 연동 일정 및 진행 현황
 ### Phase 0 — 준비 작업 (완료)
@@ -82,8 +82,8 @@ builder.Services.AddSingleton(provider =>
 
 ### Phase 2 — 실시간 기능 및 통합 (예상: 2024년 8월)
 - [x] 지원 티켓, 작업(Task), 알림(Notification) 서비스에 Supabase Realtime 구독을 연결합니다.
-- [ ] SMS/이메일 예약 발송을 Supabase Edge Functions + Cron으로 이전합니다.
-- [ ] 감사 로그(`audit_logs`)와 외부 연동 이벤트(`integration_events`)를 통해 메시지 브로커와 데이터 동기화를 확인합니다.
+- [x] SMS/이메일 예약 발송을 Supabase Edge Functions + Cron으로 이전합니다. (참고: `supabase/functions/scheduled-dispatcher`)
+- [x] 감사 로그(`audit_logs`)와 외부 연동 이벤트(`integration_events`)를 통해 메시지 브로커와 데이터 동기화를 확인합니다. (참고: `src/Services/Admin.Core/Services/SupabaseAuditSyncVerifier.cs`)
 
 ### Phase 2.5 — 확장 서비스 마이그레이션 (2024년 8월 완료)
 - [x] 에이전트 및 팀 서비스(IAgentService, ITeamService)를 Supabase 스키마(`agents`, `teams`, `team_members`)와 연동했습니다.
