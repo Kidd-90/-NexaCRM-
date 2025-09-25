@@ -38,9 +38,7 @@ graph TD
     end
 
     subgraph "Services"
-        C[Contact.API]
-        D[Deal.API]
-        E[Identity.API]
+        C[Admin.Core]
     end
 
     subgraph "Building Blocks"
@@ -55,21 +53,12 @@ graph TD
 
     A --> B
     B --> C
-    B --> D
-    B --> E
 
     C --> H
-    D --> H
-    E --> H
-
     C --> I
-    D --> I
-    E --> I
 
     F --> I
     C --> G
-    D --> G
-    E --> G
     F --> G
 ```
 
@@ -105,10 +94,9 @@ docker-compose up -d
 ```
 
 #### 백엔드 서비스 실행
+`Services.Admin.Core`로 업무 로직이 통합되면서 별도의 마이크로서비스 실행은 필요하지 않습니다. 게이트웨이나 웹 클라이언트를 실행하면 내부적으로 해당 라이브러리를 통해 도메인 기능을 사용할 수 있습니다.
 ```bash
-dotnet run --project src/Services/Contact.API/Services.Contact.API.csproj
-dotnet run --project src/Services/Deal.API/Services.Deal.API.csproj
-# ... 다른 서비스들도 동일하게 실행
+dotnet run --project src/ApiGateway/NexaCrm.ApiGateway.csproj
 ```
 
 #### 프론트엔드 실행
@@ -127,8 +115,6 @@ dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 
 ### 접속 정보
 -   **Web UI**: `https://localhost:7001`
--   **Contact API Swagger**: `https://localhost:7011/swagger`
--   **Deal API Swagger**: `https://localhost:7021/swagger`
 
 📁 폴더 구조
 ```
@@ -145,20 +131,12 @@ dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 |   |       `-- BuildingBlocks.Common.csproj
 |   |
 |   |-- /Services
-|   |   |-- /Contact.API
-|   |   |   `-- Services.Contact.API.csproj
-|   |   |-- /Deal.API
-|   |   |   `-- Services.Deal.API.csproj
-|   |   `-- /Identity.API
-|   |       `-- Services.Identity.API.csproj
+|   |   `-- /Admin.Core
+|   |       `-- Services.Admin.Core.csproj
 |   |
 |   `-- /Web
 |       `-- /NexaCRM.WebClient
 |           `-- NexaCRM.WebClient.csproj
-|
-|-- /tests
-|   |-- /Services.Contact.UnitTests
-|   |   `-- Services.Contact.UnitTests.csproj
 |
 `-- NexaCrmSolution.sln
 ```
