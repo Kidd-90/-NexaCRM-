@@ -461,7 +461,23 @@
 
     private async Task UpdateUnreadNotificationsAsync()
     {
-        unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            try
+            {
+                unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
+            }
+            catch (Exception ex)
+            {
+                Console.Error?.WriteLine($"Failed to update unread notifications: {ex.Message}");
+                unreadNotificationsCount = 0;
+            }
+        }
+        else
+        {
+            unreadNotificationsCount = 0;
+        }
     }
 
     private void OnNotificationsClick() => NavigationManager.NavigateTo("/notifications");

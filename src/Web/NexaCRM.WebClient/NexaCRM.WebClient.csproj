@@ -8,6 +8,11 @@
         <!-- ConvertDllsToWebCil 단계에서 파일 잠금 오류 방지를 위해 WebCIL 변환 비활성화 -->
         <WasmEnableWebcil>false</WasmEnableWebcil>
     </PropertyGroup>
+        
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
 
     <!-- net8.0 타겟에만 Blazor WebAssembly 8.0 패키지 참조 -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
