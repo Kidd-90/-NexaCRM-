@@ -12,6 +12,9 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>portable</DebugType>
+        <Optimize>false</Optimize>
+        <BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+        <DebuggerSupport>true</DebuggerSupport>
     </PropertyGroup>
 
     <!-- net8.0 타겟에만 Blazor WebAssembly 8.0 패키지 참조 -->
