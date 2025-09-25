@@ -8,23 +8,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.EventBus", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Common", "src\BuildingBlocks\Common\BuildingBlocks.Common.csproj", "{C3C3C3C3-3333-3333-3333-333333333333}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Contact.API", "src\Services\Contact.API\Services.Contact.API.csproj", "{D4D4D4D4-4444-4444-4444-444444444444}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Deal.API", "src\Services\Deal.API\Services.Deal.API.csproj", "{E5E5E5E5-5555-5555-5555-555555555555}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Identity.API", "src\Services\Identity.API\Services.Identity.API.csproj", "{F6F6F6F6-6666-6666-6666-666666666666}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Admin.Core", "src\Services\Admin.Core\Services.Admin.Core.csproj", "{5597EC33-A95A-4ADA-BE7C-21C57CCCCB03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient", "src\Web\NexaCRM.WebClient\NexaCRM.WebClient.csproj", "{A7A7A7A7-7777-7777-7777-777777777777}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Contact.UnitTests", "tests\Services.Contact.UnitTests\Services.Contact.UnitTests.csproj", "{B8B8B8B8-8888-8888-8888-888888888888}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient.UnitTests", "tests\NexaCRM.WebClient.UnitTests\NexaCRM.WebClient.UnitTests.csproj", "{C9C9C9C9-9999-9999-9999-999999999999}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Deal.API.UnitTests", "tests\Services.Deal.API.UnitTests\Services.Deal.API.UnitTests.csproj", "{D0D0D0D0-0000-0000-0000-000000000000}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Identity.API.UnitTests", "tests\Services.Identity.API.UnitTests\Services.Identity.API.UnitTests.csproj", "{E1E1E1E1-1111-1111-1111-111111111111}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCrm.ApiGateway.UnitTests", "tests\NexaCrm.ApiGateway.UnitTests\NexaCrm.ApiGateway.UnitTests.csproj", "{F2F2F2F2-2222-2222-2222-222222222222}"
 EndProject
@@ -50,18 +38,6 @@ Global
 		{C3C3C3C3-3333-3333-3333-333333333333}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3C3C3C3-3333-3333-3333-333333333333}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3C3C3C3-3333-3333-3333-333333333333}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4D4D4D4-4444-4444-4444-444444444444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4D4D4D4-4444-4444-4444-444444444444}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4D4D4D4-4444-4444-4444-444444444444}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4D4D4D4-4444-4444-4444-444444444444}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5E5E5E5-5555-5555-5555-555555555555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5E5E5E5-5555-5555-5555-555555555555}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5E5E5E5-5555-5555-5555-555555555555}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5E5E5E5-5555-5555-5555-555555555555}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6F6F6F6-6666-6666-6666-666666666666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6F6F6F6-6666-6666-6666-666666666666}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6F6F6F6-6666-6666-6666-666666666666}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6F6F6F6-6666-6666-6666-666666666666}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5597EC33-A95A-4ADA-BE7C-21C57CCCCB03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5597EC33-A95A-4ADA-BE7C-21C57CCCCB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5597EC33-A95A-4ADA-BE7C-21C57CCCCB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,22 +46,10 @@ Global
 		{A7A7A7A7-7777-7777-7777-777777777777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7A7A7A7-7777-7777-7777-777777777777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7A7A7A7-7777-7777-7777-777777777777}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8B8B8B8-8888-8888-8888-888888888888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8B8B8B8-8888-8888-8888-888888888888}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8B8B8B8-8888-8888-8888-888888888888}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8B8B8B8-8888-8888-8888-888888888888}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0D0D0D0-0000-0000-0000-000000000000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0D0D0D0-0000-0000-0000-000000000000}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0D0D0D0-0000-0000-0000-000000000000}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0D0D0D0-0000-0000-0000-000000000000}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1E1E1E1-1111-1111-1111-111111111111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1E1E1E1-1111-1111-1111-111111111111}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1E1E1E1-1111-1111-1111-111111111111}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1E1E1E1-1111-1111-1111-111111111111}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2F2F2F2-2222-2222-2222-222222222222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2F2F2F2-2222-2222-2222-222222222222}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2F2F2F2-2222-2222-2222-222222222222}.Release|Any CPU.ActiveCfg = Release|Any CPU
