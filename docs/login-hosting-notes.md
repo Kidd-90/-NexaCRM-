@@ -5,12 +5,11 @@
 - Prevent hard refresh navigation to `/login` that can break on static hosting platforms without custom rewrite rules.
 
 ## Implementation Details
-- `App.razor` renders `RedirectToLogin` whenever the router resolves the landing routes (`/`, `/index`, `/index.html`). The component performs a client-side redirect to `/login` using SPA navigation so the first-render experience always shows the login form without triggering a hard refresh.
-- `AuthorizeRouteView` remains wrapped around every protected page to display `RedirectToLogin` during the `Authorizing` and `NotAuthorized` states, ensuring unauthorized users are pushed back to the login flow before any dashboard content renders.
+- `LoginPage.razor` now declares both `/login` and `/` routes. Anonymous visitors landing on the site root immediately render the full login layout instead of a temporary redirect shell, while authenticated users continue to be forwarded to their dashboards during initialization.
+- `App.razor` uses the standard `AuthorizeRouteView` pipeline with a lightweight `LoadingScreen` for the authorizing state and `RedirectToLogin` for unauthorized attempts. This keeps the router logic simple while still pushing protected routes back to the login experience.
 - `Pages/_Imports.razor` continues to apply `[Authorize]` to every page by default while the authentication flows (`LoginPage`, `FindIdPage`, `PasswordResetPage`, and `UserRegistrationPage`) opt-in to `[AllowAnonymous]`, preventing unauthenticated users from landing on internal dashboards when the app first renders.
-- The login page (`LoginPage.razor`) still performs an authentication check on initialization to send already authenticated users to the appropriate dashboard, ensuring the redirect path does not interfere with existing role-based routing.
 
 ## Testing Guidance
 - Build the solution with `dotnet build --configuration Release`.
 - Run the UI test suite with `dotnet test ./tests/BlazorWebApp.Tests --configuration Release`.
-- After publishing or hosting, open the site root (`/`) and verify the browser is redirected to `/login` without a full page reload or 404.
+- After publishing or hosting, open the site root (`/`) and verify the login layout renders immediately. Confirm that submitting valid credentials transitions to the appropriate dashboard without a full page reload or 404.
