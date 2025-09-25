@@ -7,6 +7,7 @@
 ## Implementation Details
 - `App.razor` inspects the current relative URI and renders the `RedirectToLogin` helper when the app is opened on the root path or the generated `index.html` variants.
 - `RedirectToLogin.razor` performs an in-app navigation to `/login` using Blazor's `NavigationOptions` to replace the history entry, preserving any query string or fragment during the redirect.
+- `Pages/_Imports.razor` now applies `[Authorize]` to every page by default while the authentication flows (`LoginPage`, `FindIdPage`, `PasswordResetPage`, and `UserRegistrationPage`) opt-in to `[AllowAnonymous]`, preventing unauthenticated users from landing on internal dashboards when the app first renders.
 - The login page (`LoginPage.razor`) still performs an authentication check on initialization to send already authenticated users to the appropriate dashboard, ensuring the new redirect path does not interfere with existing role-based routing.
 
 ## Testing Guidance
