@@ -108,6 +108,7 @@ CREATE TABLE activities (
   contact_id BIGINT REFERENCES contacts(id) ON DELETE CASCADE,
   deal_id BIGINT REFERENCES deals(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_by_name TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -171,7 +172,127 @@ CREATE TABLE tasks (
 COMMENT ON TABLE tasks IS 'User tasks tracked for follow-up and workflow management.';
 
 
--- 10. INDEXES FOR PERFORMANCE
+-- 10. AGENT & TEAM TABLES
+CREATE TABLE agents (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  display_name TEXT NOT NULL,
+  email TEXT,
+  role TEXT NOT NULL DEFAULT 'agent',
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE teams (
+  id BIGSERIAL PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  manager_name TEXT,
+  member_count INT NOT NULL DEFAULT 0,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  registered_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE team_members (
+  id BIGSERIAL PRIMARY KEY,
+  team_id BIGINT REFERENCES teams(id) ON DELETE CASCADE,
+  team_name TEXT,
+  role TEXT NOT NULL,
+  employee_code TEXT,
+  username TEXT NOT NULL,
+  full_name TEXT NOT NULL,
+  allow_excel_upload BOOLEAN NOT NULL DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  registered_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_teams_active ON teams(is_active);
+CREATE INDEX idx_team_members_team_id ON team_members(team_id);
+
+
+-- 11. SALES MANAGEMENT TABLES
+CREATE TABLE sales_appointments (
+  id BIGSERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  start_datetime TIMESTAMPTZ NOT NULL,
+  end_datetime TIMESTAMPTZ NOT NULL,
+  contact_id BIGINT REFERENCES contacts(id) ON DELETE SET NULL,
+  contact_name TEXT,
+  contact_company TEXT,
+  type TEXT NOT NULL,
+  status TEXT NOT NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  location TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE consultation_notes (
+  id BIGSERIAL PRIMARY KEY,
+  contact_id BIGINT REFERENCES contacts(id) ON DELETE SET NULL,
+  contact_name TEXT,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  tags TEXT,
+  priority TEXT NOT NULL DEFAULT 'Medium',
+  is_follow_up_required BOOLEAN NOT NULL DEFAULT FALSE,
+  follow_up_date TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_sales_appointments_user ON sales_appointments(user_id);
+CREATE INDEX idx_sales_appointments_start ON sales_appointments(start_datetime);
+CREATE INDEX idx_consultation_notes_user ON consultation_notes(user_id);
+CREATE INDEX idx_consultation_notes_contact ON consultation_notes(contact_id);
+
+
+-- 12. MARKETING CAMPAIGN TABLES
+CREATE TABLE marketing_campaigns (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT,
+  status TEXT NOT NULL DEFAULT 'Draft',
+  start_date DATE,
+  end_date DATE,
+  budget NUMERIC DEFAULT 0,
+  roi NUMERIC DEFAULT 0,
+  owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_marketing_campaigns_status ON marketing_campaigns(status);
+CREATE INDEX idx_marketing_campaigns_start ON marketing_campaigns(start_date);
+
+
+-- 13. EMAIL TEMPLATE TABLES
+CREATE TABLE email_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  subject TEXT,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE email_blocks (
+  id BIGSERIAL PRIMARY KEY,
+  template_id UUID NOT NULL REFERENCES email_templates(id) ON DELETE CASCADE,
+  block_order INT NOT NULL,
+  block_type TEXT NOT NULL,
+  content TEXT NOT NULL
+);
+
+CREATE INDEX idx_email_blocks_template ON email_blocks(template_id);
+
+
+-- 14. INDEXES FOR PERFORMANCE
 CREATE INDEX idx_contacts_email ON contacts(email);
 CREATE INDEX idx_deals_stage_id ON deals(stage_id);
 CREATE INDEX idx_tasks_assigned_to ON tasks(assigned_to);
@@ -180,7 +301,7 @@ CREATE INDEX idx_org_users_user_id ON organization_users(user_id);
 CREATE INDEX idx_user_roles_user_id ON user_roles(user_id);
 
 
--- 12. SUPPORT & SERVICE TABLES
+-- 15. SUPPORT & SERVICE TABLES
 CREATE TABLE support_tickets (
   id BIGSERIAL PRIMARY KEY,
   subject TEXT NOT NULL,
@@ -215,7 +336,7 @@ CREATE INDEX idx_support_tickets_tenant_unit ON support_tickets(tenant_unit_id);
 CREATE INDEX idx_ticket_messages_ticket_id ON ticket_messages(ticket_id);
 
 
--- 13. NOTIFICATION FEED TABLES
+-- 16. NOTIFICATION FEED TABLES
 CREATE TABLE notification_feed (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -246,7 +367,7 @@ CREATE INDEX idx_notification_feed_user_id ON notification_feed(user_id);
 CREATE INDEX idx_notification_feed_is_read ON notification_feed(is_read);
 
 
--- 14. SMS & COMMUNICATION TABLES
+-- 17. SMS & COMMUNICATION TABLES
 CREATE TABLE sms_settings (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   provider_api_key TEXT,
@@ -307,7 +428,7 @@ CREATE INDEX idx_sms_schedules_user ON sms_schedules(user_id);
 CREATE INDEX idx_sms_schedules_time ON sms_schedules(scheduled_at);
 
 
--- 15. AUDIT & INTEGRATION TABLES
+-- 18. AUDIT & INTEGRATION TABLES
 CREATE TABLE audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -332,7 +453,7 @@ CREATE INDEX idx_integration_events_type ON integration_events(event_type);
 CREATE INDEX idx_integration_events_status ON integration_events(status);
 
 
--- 16. ANALYTICS & REPORTING TABLES
+-- 19. ANALYTICS & REPORTING TABLES
 CREATE TABLE report_definitions (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -383,7 +504,7 @@ ALTER TABLE sms_schedules REPLICA IDENTITY FULL;
 ALTER TABLE sms_history REPLICA IDENTITY FULL;
 
 
--- 11. TRIGGERS for updated_at
+-- 20. TRIGGERS for updated_at
 -- Apply the `handle_updated_at` trigger to all tables that have an `updated_at` column.
 CREATE TRIGGER on_profiles_updated
   BEFORE UPDATE ON profiles
@@ -403,6 +524,34 @@ CREATE TRIGGER on_deals_updated
 
 CREATE TRIGGER on_tasks_updated
   BEFORE UPDATE ON tasks
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_agents_updated
+  BEFORE UPDATE ON agents
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_teams_updated
+  BEFORE UPDATE ON teams
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_team_members_updated
+  BEFORE UPDATE ON team_members
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_sales_appointments_updated
+  BEFORE UPDATE ON sales_appointments
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_consultation_notes_updated
+  BEFORE UPDATE ON consultation_notes
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_marketing_campaigns_updated
+  BEFORE UPDATE ON marketing_campaigns
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_email_templates_updated
+  BEFORE UPDATE ON email_templates
   FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
 
 CREATE TRIGGER on_organization_units_updated
