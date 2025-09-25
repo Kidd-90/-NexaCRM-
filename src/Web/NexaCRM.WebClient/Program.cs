@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.WebClient;
 // using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;
@@ -100,7 +102,21 @@ CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 var host = builder.Build();
-// Kick off duplicate monitor
-var monitor = host.Services.GetRequiredService<IDuplicateMonitorService>();
-await monitor.StartAsync();
+
+await StartDuplicateMonitorAsync(host.Services);
 await host.RunAsync();
+
+static async Task StartDuplicateMonitorAsync(IServiceProvider services)
+{
+    try
+    {
+        var monitor = services.GetRequiredService<IDuplicateMonitorService>();
+        await monitor.StartAsync();
+    }
+    catch (Exception ex)
+    {
+        var loggerFactory = services.GetService<ILoggerFactory>();
+        var logger = loggerFactory?.CreateLogger("Startup");
+        logger?.LogError(ex, "Failed to start the duplicate monitor service.");
+    }
+}
