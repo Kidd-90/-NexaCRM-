@@ -5,19 +5,25 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using NexaCRM.WebClient.Shared
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthStateProvider
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="AuthorizeNavigationAsync">
+    <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                <Authorizing>
-                    <RedirectToLogin />
-                </Authorizing>
-                <NotAuthorized>
-                    <RedirectToLogin />
-                </NotAuthorized>
-            </AuthorizeRouteView>
+            @if (IsLandingRoute(NavigationManager.ToBaseRelativePath(NavigationManager.Uri)))
+            {
+                <RedirectToLogin />
+            }
+            else
+            {
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <Authorizing>
+                        <RedirectToLogin />
+                    </Authorizing>
+                    <NotAuthorized>
+                        <RedirectToLogin />
+                    </NotAuthorized>
+                </AuthorizeRouteView>
+            }
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
@@ -36,8 +42,6 @@
 </CascadingAuthenticationState>
 
 @code {
-    private static readonly NavigationOptions LoginNavigationOptions = new() { ReplaceHistoryEntry = true };
-
     private static readonly HashSet<string> LandingRoutes = new(StringComparer.OrdinalIgnoreCase)
     {
         string.Empty,
@@ -45,47 +49,14 @@
         "index.html"
     };
 
-    private static readonly HashSet<string> AnonymousRoutes = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "login",
-        "find-id-page",
-        "password-reset-page",
-        "user-registration-page"
-    };
-
-    private async Task AuthorizeNavigationAsync(NavigationContext context)
-    {
-        var normalizedPath = Normalize(context.Path);
-
-        if (LandingRoutes.Contains(normalizedPath))
-        {
-            context.PreventNavigation();
-            NavigationManager.NavigateTo("/login", LoginNavigationOptions);
-            return;
-        }
-
-        if (AnonymousRoutes.Contains(normalizedPath))
-        {
-            return;
-        }
-
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
-        {
-            return;
-        }
-
-        context.PreventNavigation();
-        NavigationManager.NavigateTo("/login", LoginNavigationOptions);
-    }
-
-    private static string Normalize(string? path)
+    private static bool IsLandingRoute(string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            return string.Empty;
+            return true;
         }
 
-        return path.Trim('/');
+        var normalized = path.Trim('/');
+        return LandingRoutes.Contains(normalized);
     }
 }
