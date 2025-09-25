@@ -332,6 +332,49 @@ CREATE INDEX idx_integration_events_type ON integration_events(event_type);
 CREATE INDEX idx_integration_events_status ON integration_events(status);
 
 
+-- 16. ANALYTICS & REPORTING TABLES
+CREATE TABLE report_definitions (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  selected_fields TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+  filters_json JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, name)
+);
+
+CREATE TABLE report_snapshots (
+  id BIGSERIAL PRIMARY KEY,
+  definition_id BIGINT REFERENCES report_definitions(id) ON DELETE CASCADE,
+  generated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  payload_json JSONB NOT NULL,
+  format TEXT NOT NULL DEFAULT 'json',
+  metrics_summary JSONB,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_report_snapshots_definition ON report_snapshots(definition_id);
+CREATE INDEX idx_report_snapshots_created_by ON report_snapshots(created_by);
+CREATE INDEX idx_report_snapshots_generated_at ON report_snapshots(generated_at DESC);
+
+CREATE TABLE statistics_daily (
+  id BIGSERIAL PRIMARY KEY,
+  metric_date DATE NOT NULL,
+  tenant_unit_id BIGINT REFERENCES organization_units(id) ON DELETE SET NULL,
+  total_members INT NOT NULL DEFAULT 0,
+  total_logins INT NOT NULL DEFAULT 0,
+  total_downloads INT NOT NULL DEFAULT 0,
+  active_users INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (metric_date, tenant_unit_id)
+);
+
+CREATE INDEX idx_statistics_daily_metric_date ON statistics_daily(metric_date);
+CREATE INDEX idx_statistics_daily_tenant ON statistics_daily(tenant_unit_id);
+
+
 -- Ensure realtime payloads include previous values for proper diffing.
 ALTER TABLE tasks REPLICA IDENTITY FULL;
 ALTER TABLE support_tickets REPLICA IDENTITY FULL;
@@ -372,6 +415,18 @@ CREATE TRIGGER on_organization_users_updated
 
 CREATE TRIGGER on_user_roles_updated
   BEFORE UPDATE ON user_roles
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_report_definitions_updated
+  BEFORE UPDATE ON report_definitions
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_report_snapshots_updated
+  BEFORE UPDATE ON report_snapshots
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+CREATE TRIGGER on_statistics_daily_updated
+  BEFORE UPDATE ON statistics_daily
   FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
 
 
