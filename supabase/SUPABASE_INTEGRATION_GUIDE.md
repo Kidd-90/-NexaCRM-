@@ -81,9 +81,14 @@ builder.Services.AddSingleton(provider =>
 - [x] 조직/역할 정보를 `organization_users`, `user_roles` 테이블과 연동해 RLS 정책과 연계합니다.
 
 ### Phase 2 — 실시간 기능 및 통합 (예상: 2024년 8월)
-- [ ] 지원 티켓, 작업(Task), 알림(Notification) 서비스에 Supabase Realtime 구독을 연결합니다.
+- [x] 지원 티켓, 작업(Task), 알림(Notification) 서비스에 Supabase Realtime 구독을 연결합니다.
 - [ ] SMS/이메일 예약 발송을 Supabase Edge Functions + Cron으로 이전합니다.
 - [ ] 감사 로그(`audit_logs`)와 외부 연동 이벤트(`integration_events`)를 통해 메시지 브로커와 데이터 동기화를 확인합니다.
+
+### Phase 2.5 — 확장 서비스 마이그레이션 (2024년 8월 완료)
+- [x] 에이전트 및 팀 서비스(IAgentService, ITeamService)를 Supabase 스키마(`agents`, `teams`, `team_members`)와 연동했습니다.
+- [x] 영업 활동 관리(IActivityService, ISalesManagementService)를 위한 `sales_appointments`, `consultation_notes`, `activities` 확장 컬럼을 구현했습니다.
+- [x] 마케팅 및 콘텐츠 서비스(IMarketingCampaignService, IEmailTemplateService)를 `marketing_campaigns`, `email_templates`, `email_blocks` 테이블과 연결했습니다.
 
 ### Phase 3 — 분석 및 운영 고도화 (예상: 2024년 9월)
 - [x] 보고서·통계 테이블(`report_snapshots`, `statistics_daily`)에 대한 ETL 파이프라인을 구축합니다.

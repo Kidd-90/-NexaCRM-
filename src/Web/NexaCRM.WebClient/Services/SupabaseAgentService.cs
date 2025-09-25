@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using NexaCRM.WebClient.Models;
+using NexaCRM.WebClient.Models.Supabase;
+using NexaCRM.WebClient.Services.Interfaces;
+using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
+
+namespace NexaCRM.WebClient.Services;
+
+public sealed class SupabaseAgentService : IAgentService
+{
+    private readonly SupabaseClientProvider _clientProvider;
+    private readonly ILogger<SupabaseAgentService> _logger;
+
+    public SupabaseAgentService(SupabaseClientProvider clientProvider, ILogger<SupabaseAgentService> logger)
+    {
+        _clientProvider = clientProvider;
+        _logger = logger;
+    }
+
+    public async Task<IEnumerable<Agent>> GetAgentsAsync()
+    {
+        try
+        {
+            var client = await _clientProvider.GetClientAsync();
+            var response = await client.From<AgentRecord>()
+                .Order(x => x.DisplayName, PostgrestOrdering.Ascending)
+                .Get();
+
+            var records = response.Models ?? new List<AgentRecord>();
+            if (records.Count == 0)
+            {
+                return Array.Empty<Agent>();
+            }
+
+            return records
+                .Where(record => record.IsActive)
+                .Select(MapToAgent)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load agents from Supabase.");
+            throw;
+        }
+    }
+
+    private static Agent MapToAgent(AgentRecord record)
+    {
+        return new Agent
+        {
+            Id = record.Id,
+            Name = record.DisplayName,
+            Email = record.Email,
+            Role = record.Role
+        };
+    }
+}
