@@ -1,7 +1,7 @@
 using System;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.WebClient.Services
+namespace NexaCRM.Services.Admin
 {
     public class DedupeConfigService : IDedupeConfigService
     {

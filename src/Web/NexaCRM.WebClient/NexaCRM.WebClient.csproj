@@ -28,6 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Services\Admin.Core\Services.Admin.Core.csproj" />
+    <ProjectReference Include="..\..\Services\Admin.Abstractions\Services.Admin.Abstractions.csproj" />
     </ItemGroup>
 </Project>

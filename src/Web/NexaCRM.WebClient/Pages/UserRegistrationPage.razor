@@ -2,7 +2,8 @@
 @layout LoginLayout
 @attribute [AllowAnonymous]
 @using Microsoft.Extensions.Localization
-@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.Services.Admin.Interfaces
+@using NexaCRM.Services.Admin.Models
 @inject IStringLocalizer<UserRegistrationPage> Localizer
 @inject IOrganizationService OrganizationService
 @inject NavigationManager NavigationManager
@@ -94,7 +95,7 @@
     </div>
 
 @code {
-    private NexaCRM.WebClient.Models.NewUser newUser = new();
+    private NewUser newUser = new();
     private string? successMessage;
     private string? errorMessage;
 

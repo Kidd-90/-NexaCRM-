@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Organization;
-using NexaCRM.WebClient.Services.Interfaces;
-using AgentModel = NexaCRM.WebClient.Models.Agent;
-using NewUserModel = NexaCRM.WebClient.Models.NewUser;
+using NexaCRM.Services.Admin.Models.Organization;
+using NexaCRM.Services.Admin.Interfaces;
+using AgentModel = NexaCRM.Services.Admin.Models.Agent;
+using NewUserModel = NexaCRM.Services.Admin.Models.NewUser;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Services.Admin;
 
 public class OrganizationService : IOrganizationService
 {

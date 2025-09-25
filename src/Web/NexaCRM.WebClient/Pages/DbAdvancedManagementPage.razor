@@ -1,14 +1,14 @@
 @page "/db/advanced"
 @using System
 @using Microsoft.AspNetCore.Components
-@using NexaCRM.WebClient.Models.Db
-@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.Services.Admin.Models.Db
+@using NexaCRM.Services.Admin.Interfaces
 @using Microsoft.Extensions.Localization
 @inject IDbDataService DbDataService
 @inject IStringLocalizer<DbStatus> StatusLocalizer
-@inject NexaCRM.WebClient.Services.Interfaces.INotificationFeedService NotificationFeed
-@inject NexaCRM.WebClient.Services.Interfaces.IDuplicateService DuplicateService
-@inject NexaCRM.WebClient.Services.Interfaces.IDedupeConfigService DedupeConfig
+@inject INotificationFeedService NotificationFeed
+@inject IDuplicateService DuplicateService
+@inject IDedupeConfigService DedupeConfig
 @inject IJSRuntime JS
 
 <div class="advanced-db">
@@ -676,11 +676,11 @@
     private bool dedupeEnabled;
     private int dedupeDays = 30;
     private bool includeFuzzy;
-    private List<NexaCRM.WebClient.Services.Interfaces.DuplicateGroup> duplicates = new();
+    private List<DuplicateGroup> duplicates = new();
     private Dictionary<string, int> mergePrimary = new();
     private int scoreThreshold;
     private bool showMergeModal;
-    private NexaCRM.WebClient.Services.Interfaces.DuplicateGroup? modalGroup;
+    private DuplicateGroup? modalGroup;
     private int modalPrimaryId;
 
     protected override async Task OnInitializedAsync()
@@ -853,7 +853,7 @@
         catch { }
     }
 
-    private void OpenMergeModal(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    private void OpenMergeModal(DuplicateGroup g)
     {
         modalGroup = g;
         showMergeModal = true;
@@ -886,7 +886,7 @@
         CloseMergeModal();
     }
 
-    private async Task<DbCustomer?> BuildPatchFromSelectionAsync(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup group, int primaryId)
+    private async Task<DbCustomer?> BuildPatchFromSelectionAsync(DuplicateGroup group, int primaryId)
     {
         if (group is null) return null;
         if (!mergeFieldSource.TryGetValue(group.Key, out var dict) || dict.Count == 0) return null;
@@ -948,7 +948,7 @@
         builder.CloseElement();
     };
 
-    private string GetMergeFieldSource(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g, string field)
+    private string GetMergeFieldSource(DuplicateGroup g, string field)
     {
         if (!mergeFieldSource.TryGetValue(g.Key, out var dict) || !dict.TryGetValue(field, out var id))
         {
@@ -985,9 +985,9 @@
         public int WeightNotes { get; set; }
     }
 
-    private async Task NotifyAdmin(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    private async Task NotifyAdmin(DuplicateGroup g)
     {
-        await NotificationFeed.AddAsync(new NexaCRM.WebClient.Services.Interfaces.NotificationFeedItem
+        await NotificationFeed.AddAsync(new NotificationFeedItem
         {
             Title = "중복 DB 감지",
             Message = $"그룹 {g.ContactDisplay} 중복 {g.Count}건 (최근 {g.LatestAssigned:yyyy.MM.dd})",
@@ -997,13 +997,13 @@
         });
     }
 
-    private async Task ArchiveGroup(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    private async Task ArchiveGroup(DuplicateGroup g)
     {
         await DuplicateService.ArchiveAsync(g);
         await RecomputeDuplicates();
     }
 
-    private async Task DeleteGroup(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    private async Task DeleteGroup(DuplicateGroup g)
     {
         var ok = await JS.InvokeAsync<bool>("confirm", $"선택된 {g.Count}건을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
         if (!ok) return;
@@ -1011,7 +1011,7 @@
         await RecomputeDuplicates();
     }
 
-    private async Task MergeGroup(NexaCRM.WebClient.Services.Interfaces.DuplicateGroup g)
+    private async Task MergeGroup(DuplicateGroup g)
     {
         if (!mergePrimary.TryGetValue(g.Key, out var primaryId)) return;
         var dupIds = g.ContactIds.Where(id => id != primaryId).ToList();
@@ -1050,6 +1050,6 @@
         _ => "status-text"
     };
 
-    [Inject] private NexaCRM.WebClient.Services.Interfaces.IDuplicateMonitorService Monitor { get; set; } = default!;
+    [Inject] private IDuplicateMonitorService Monitor { get; set; } = default!;
     private async Task RunMonitorOnce() => await Monitor.RunOnceAsync();
 }

@@ -1,8 +1,8 @@
 @page "/db/distribution/unassigned"
 @attribute [Authorize(Roles = "Manager")]
 
-@using NexaCRM.WebClient.Models.Db
-@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.Services.Admin.Models.Db
+@using NexaCRM.Services.Admin.Interfaces
 
 @inject IDbDataService DbDataService
 @inject NavigationManager NavigationManager

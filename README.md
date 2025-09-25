@@ -38,6 +38,7 @@ graph TD
     end
 
     subgraph "Services"
+        D[Admin.Abstractions]
         C[Admin.Core]
     end
 
@@ -51,7 +52,8 @@ graph TD
         I[(RabbitMQ)]
     end
 
-    A --> B
+    A --> D
+    D --> C
     B --> C
 
     C --> H
@@ -94,7 +96,7 @@ docker-compose up -d
 ```
 
 #### 백엔드 서비스 실행
-`Services.Admin.Core`로 업무 로직이 통합되면서 별도의 마이크로서비스 실행은 필요하지 않습니다. 게이트웨이나 웹 클라이언트를 실행하면 내부적으로 해당 라이브러리를 통해 도메인 기능을 사용할 수 있습니다.
+`Services.Admin.Abstractions` 프로젝트가 웹 클라이언트와 게이트웨이가 공유하는 도메인 계약(모델·인터페이스)을 제공하며, `Services.Admin.Core`는 해당 계약을 구현하는 서버 전용 구성요소입니다. WebAssembly 환경에서는 구현 라이브러리를 직접 참조하지 않아도 되므로 WASM0005 경고 없이 안전하게 도메인 모델을 활용할 수 있습니다. 게이트웨이나 웹 클라이언트를 실행하면 내부적으로 `Services.Admin.Core` 라이브러리를 통해 도메인 기능을 사용할 수 있습니다.
 ```bash
 dotnet run --project src/ApiGateway/NexaCrm.ApiGateway.csproj
 ```
@@ -131,6 +133,8 @@ dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 |   |       `-- BuildingBlocks.Common.csproj
 |   |
 |   |-- /Services
+|   |   |-- /Admin.Abstractions
+|   |   |   `-- Services.Admin.Abstractions.csproj
 |   |   `-- /Admin.Core
 |   |       `-- Services.Admin.Core.csproj
 |   |
@@ -140,6 +144,11 @@ dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 |
 `-- NexaCrmSolution.sln
 ```
+#### 모듈 책임 구분
+- **Web/NexaCRM.WebClient**: Blazor WebAssembly UI. 도메인 계약만 참조하여 클라이언트 런타임에서 금지된 API 의존성을 제거했습니다.
+- **Services/Admin.Abstractions**: Admin 도메인 모델과 서비스 인터페이스를 정의하는 공유 계층. WebAssembly와 서버가 동일한 타입을 활용합니다.
+- **Services/Admin.Core**: Admin 도메인의 서버 구현. 백엔드 또는 서버 사이드 호스팅 환경에서만 로드되므로 보안 비즈니스 로직을 안전하게 캡슐화합니다.
+- **BuildingBlocks/**: 옵션/이벤트 버스 등 전역 공통 유틸리티.
 ☁️ 배포
 Docker 이미지 빌드
 

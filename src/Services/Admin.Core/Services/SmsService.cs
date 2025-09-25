@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Settings;
-using NexaCRM.WebClient.Models.Sms;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Models.Settings;
+using NexaCRM.Services.Admin.Models.Sms;
+using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Services.Admin;
 
 public class SmsService : ISmsService
 {
