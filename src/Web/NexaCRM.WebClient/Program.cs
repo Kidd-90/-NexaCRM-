@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using NexaCRM.WebClient.Services;
 using NexaCRM.WebClient.Services.Interfaces;
 using NexaCRM.WebClient.Services.Mock;
+using NexaCRM.WebClient.Services.SupabaseEnterprise;
 using NexaCRM.WebClient.Models.Db;
 using NexaCRM.WebClient.Options;
 
@@ -87,6 +88,12 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationFeedService, SupabaseNotificationFeedService>();
 builder.Services.AddScoped<ITeamService, MockTeamService>();
 builder.Services.AddScoped<INavigationStateService, NavigationStateService>();
+builder.Services.AddSingleton<SupabaseEnterpriseDataStore>();
+builder.Services.AddScoped<IUserGovernanceService, SupabaseUserGovernanceService>();
+builder.Services.AddScoped<ISettingsCustomizationService, SupabaseSettingsCustomizationService>();
+builder.Services.AddScoped<IFileHubService, SupabaseFileHubService>();
+builder.Services.AddScoped<ICommunicationHubService, SupabaseCommunicationHubService>();
+builder.Services.AddScoped<ISyncOrchestrationService, SupabaseSyncOrchestrationService>();
 
 var culture = new CultureInfo("ko-KR");
 CultureInfo.DefaultThreadCurrentCulture = culture;

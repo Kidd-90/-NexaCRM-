@@ -852,3 +852,135 @@ public interface ITaskService
 - [API_INTEGRATION_ROADMAP.md](./API_INTEGRATION_ROADMAP.md) - Migration strategy from mock to real services
 - [FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md) - Supabase integration implementation guide
 - [README.md](./README.md) - Project overview and getting started guide
+### IUserGovernanceService - Account Governance and Security
+
+**Purpose**: Manages Supabase 기반 사용자 수명주기, 역할, 보안 정책, 감사 로그를 처리합니다.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Interface Definition
+```csharp
+public interface IUserGovernanceService
+{
+    Task<UserAccount> CreateUserAsync(Guid organizationId, string email, string displayName, IEnumerable<string> roles, CancellationToken cancellationToken = default);
+    Task<UserAccount?> GetUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<UserAccount>> GetUsersAsync(UserQueryOptions query, CancellationToken cancellationToken = default);
+    Task AssignRolesAsync(Guid userId, IEnumerable<string> roles, CancellationToken cancellationToken = default);
+    Task<PasswordResetTicket> CreatePasswordResetTicketAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task DisableUserAsync(Guid userId, string reason, CancellationToken cancellationToken = default);
+    Task<SecurityPolicy> GetSecurityPolicyAsync(Guid organizationId, CancellationToken cancellationToken = default);
+    Task SaveSecurityPolicyAsync(Guid organizationId, SecurityPolicy policy, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<SecurityAuditLogEntry>> GetAuditTrailAsync(Guid organizationId, CancellationToken cancellationToken = default);
+}
+```
+
+#### Implementation Notes
+- `SupabaseUserGovernanceService`는 인메모리 Supabase 저장소를 사용해 개발 환경에서도 즉시 동작합니다.
+- 감사 로그는 `SecurityAuditLogEntry`로 관리하며, 조직별 역순 정렬된 결과를 제공합니다.
+- 향후 실제 Supabase 테이블 연동 시 PostgREST 호출로 대체 가능합니다.
+
+---
+
+### ISettingsCustomizationService - Personalization and Dashboard Layouts
+
+**Purpose**: 조직/사용자별 환경설정, 기능 플래그, 대시보드 위젯, KPI 스냅샷을 관리합니다.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Interface Definition
+```csharp
+public interface ISettingsCustomizationService
+{
+    Task<OrganizationSettings> GetOrganizationSettingsAsync(Guid organizationId, CancellationToken cancellationToken = default);
+    Task SaveOrganizationSettingsAsync(OrganizationSettings settings, CancellationToken cancellationToken = default);
+    Task<UserPreferences> GetUserPreferencesAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task SaveUserPreferencesAsync(UserPreferences preferences, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<DashboardWidget>> GetDashboardLayoutAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task SaveDashboardLayoutAsync(Guid userId, IEnumerable<DashboardWidget> widgets, CancellationToken cancellationToken = default);
+    Task RecordKpiSnapshotAsync(KpiSnapshot snapshot, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<KpiSnapshot>> GetKpiHistoryAsync(Guid organizationId, CancellationToken cancellationToken = default);
+}
+```
+
+#### Implementation Notes
+- 대시보드 위젯은 저장 시 자동으로 순서를 재배치하여 UI와 일관성을 유지합니다.
+- KPI 스냅샷은 조직별 히스토리를 최근순으로 제공합니다.
+- 인메모리 저장소를 사용하므로 단위 테스트가 간단하며, 실 서비스에서는 Supabase 테이블로 교체 가능합니다.
+
+---
+
+### IFileHubService - File Lifecycle & Collaboration
+
+**Purpose**: 파일 등록, 버전 관리, 문서별 커뮤니케이션 스레드를 제공합니다.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Interface Definition
+```csharp
+public interface IFileHubService
+{
+    Task<FileDocument> CreateDocumentAsync(Guid organizationId, Guid ownerId, string name, string category, IReadOnlyDictionary<string, string>? tags, CancellationToken cancellationToken = default);
+    Task<FileVersion> AddVersionAsync(Guid documentId, Guid authorId, string storagePath, string contentHash, long sizeInBytes, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FileDocument>> GetDocumentsAsync(Guid organizationId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FileVersion>> GetDocumentVersionsAsync(Guid documentId, CancellationToken cancellationToken = default);
+    Task<CommunicationThread> StartThreadAsync(Guid documentId, string topic, IEnumerable<Guid> participantIds, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<CommunicationThread>> GetThreadsForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default);
+    Task<ThreadMessage> AppendMessageAsync(Guid threadId, Guid authorId, string channel, string body, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ThreadMessage>> GetThreadMessagesAsync(Guid threadId, CancellationToken cancellationToken = default);
+}
+```
+
+#### Implementation Notes
+- 문서 생성 시 태그와 기본 버전/스레드 컨테이너를 초기화합니다.
+- 메시지는 작성 시각 기준 오름차순으로 반환되어 UI 타임라인과 매칭됩니다.
+- 향후 Supabase Storage 및 Edge Functions로 파일 업로드/알림을 확장할 수 있습니다.
+
+---
+
+### ICommunicationHubService - Multi-Channel Conversations
+
+**Purpose**: 영업/지원 등 다양한 시나리오에서 사용하는 독립 커뮤니케이션 스레드를 제공합니다.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Interface Definition
+```csharp
+public interface ICommunicationHubService
+{
+    Task<CommunicationThread> StartThreadAsync(Guid organizationId, string topic, IEnumerable<Guid> participantIds, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<CommunicationThread>> GetThreadsForParticipantAsync(Guid participantId, CancellationToken cancellationToken = default);
+    Task<ThreadMessage> AppendMessageAsync(Guid threadId, Guid authorId, string channel, string body, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ThreadMessage>> GetMessagesAsync(Guid threadId, CancellationToken cancellationToken = default);
+}
+```
+
+#### Implementation Notes
+- 참여자 기준으로 스레드를 검색해 최근 커뮤니케이션을 빠르게 확인할 수 있습니다.
+- 채널 명칭은 `email`, `sms`, `push`, `internal` 등으로 확장 가능합니다.
+
+---
+
+### ISyncOrchestrationService - Offline Envelope & Conflict Handling
+
+**Purpose**: 모바일/현장 사용자를 위한 오프라인 동기화 envelope과 충돌 관리를 담당합니다.
+
+**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+
+#### Interface Definition
+```csharp
+public interface ISyncOrchestrationService
+{
+    Task<SyncEnvelope> RegisterEnvelopeAsync(Guid envelopeId, Guid organizationId, Guid userId, IEnumerable<SyncItem> items, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<SyncEnvelope>> GetPendingEnvelopesAsync(Guid organizationId, CancellationToken cancellationToken = default);
+    Task MarkEnvelopeAsAppliedAsync(Guid envelopeId, DateTime appliedAtUtc, CancellationToken cancellationToken = default);
+    Task<SyncConflict> RegisterConflictAsync(SyncConflict conflict, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<SyncConflict>> GetConflictsAsync(Guid organizationId, CancellationToken cancellationToken = default);
+}
+```
+
+#### Implementation Notes
+- Envelope 등록 시 항목 식별자가 비어 있으면 자동으로 GUID를 부여합니다.
+- `RegisterConflictAsync`는 감지 시간을 자동으로 채워주므로 클라이언트에서 별도 처리 없이 기록할 수 있습니다.
+- 적용 완료된 envelope은 `MarkEnvelopeAsAppliedAsync`를 통해 중복 동기화를 방지합니다.
+
+---
