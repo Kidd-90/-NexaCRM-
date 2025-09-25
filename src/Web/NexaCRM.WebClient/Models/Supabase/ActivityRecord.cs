@@ -1,0 +1,21 @@
+using System;
+using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
+
+namespace NexaCRM.WebClient.Models.Supabase;
+
+[Table("activities")]
+public sealed class ActivityRecord : BaseModel
+{
+    [PrimaryKey("id")]
+    public int Id { get; set; }
+
+    [Column("type")]
+    public string? Type { get; set; }
+
+    [Column("activity_date")]
+    public DateTime ActivityDate { get; set; }
+
+    [Column("user_id")]
+    public Guid? UserId { get; set; }
+}
