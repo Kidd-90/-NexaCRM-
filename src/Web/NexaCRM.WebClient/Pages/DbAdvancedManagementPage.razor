@@ -1020,15 +1020,6 @@
         await RecomputeDuplicates();
     }
 
-    private sealed class DuplicateGroup
-    {
-        public string Contact { get; set; } = string.Empty;
-        public int Count { get; set; }
-        public DateTime LatestAssigned { get; set; }
-        public string? SampleName { get; set; }
-        public List<int> ContactIds { get; set; } = new();
-    }
-
     private Task SaveCurrentView() => NotifyPreviewFeatureAsync("보기 저장");
 
     private Task ExportCsv() => NotifyPreviewFeatureAsync("CSV 내보내기");
