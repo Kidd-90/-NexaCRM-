@@ -45,6 +45,17 @@ src/Web/NexaCRM.WebClient/
 | **Build Tool** | MSBuild | .NET 8 SDK |
 | **IDE Support** | Visual Studio 2022, VS Code | Latest |
 
+### Debugging Configuration
+
+To ensure that breakpoints are respected when running the Web Client in Debug mode, the project is configured with the following settings:
+
+- **Portable Debug Symbols**: Generates portable PDB files so that Visual Studio and modern editors can map breakpoints correctly during WebAssembly debugging.
+- **Disabled Linker in Debug**: Disables the Blazor WebAssembly linker for Debug builds to prevent method trimming that would otherwise interfere with debugging.
+- **Debugger Support Enabled**: Explicitly enables the WebAssembly debugger pipeline so that the runtime loads the metadata required for managed debugging sessions.
+- **No Compiler Optimizations**: Keeps optimizations disabled in Debug builds to preserve the original control flow and variable lifetimes for accurate breakpoint evaluation.
+
+These settings are defined in the `NexaCRM.WebClient.csproj` file and apply automatically when the project is built with the `Debug` configuration.
+
 ### Key Features and Capabilities
 
 **Current Implemented Features:**
