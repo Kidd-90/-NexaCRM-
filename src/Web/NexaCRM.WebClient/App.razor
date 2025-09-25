@@ -1,34 +1,23 @@
 @using System
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 @using NexaCRM.WebClient.Shared
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly">
+    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="AuthorizeNavigationAsync">
         <Found Context="routeData">
-            @{
-                var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-                var shouldRedirectToLogin = string.IsNullOrWhiteSpace(relativePath)
-                    || relativePath.StartsWith("?", StringComparison.Ordinal)
-                    || relativePath.Equals("index", StringComparison.OrdinalIgnoreCase)
-                    || relativePath.Equals("index.html", StringComparison.OrdinalIgnoreCase);
-            }
-
-            @if (shouldRedirectToLogin)
-            {
-                <RedirectToLogin />
-            }
-            else
-            {
-                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                    <Authorizing>
-                        <RedirectToLogin />
-                    </Authorizing>
-                    <NotAuthorized>
-                        <RedirectToLogin />
-                    </NotAuthorized>
-                </AuthorizeRouteView>
-            }
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <RedirectToLogin />
+                </Authorizing>
+                <NotAuthorized>
+                    <RedirectToLogin />
+                </NotAuthorized>
+            </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
@@ -45,3 +34,58 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    private static readonly NavigationOptions LoginNavigationOptions = new() { ReplaceHistoryEntry = true };
+
+    private static readonly HashSet<string> LandingRoutes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        string.Empty,
+        "index",
+        "index.html"
+    };
+
+    private static readonly HashSet<string> AnonymousRoutes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "login",
+        "find-id-page",
+        "password-reset-page",
+        "user-registration-page"
+    };
+
+    private async Task AuthorizeNavigationAsync(NavigationContext context)
+    {
+        var normalizedPath = Normalize(context.Path);
+
+        if (LandingRoutes.Contains(normalizedPath))
+        {
+            context.PreventNavigation();
+            NavigationManager.NavigateTo("/login", LoginNavigationOptions);
+            return;
+        }
+
+        if (AnonymousRoutes.Contains(normalizedPath))
+        {
+            return;
+        }
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+        NavigationManager.NavigateTo("/login", LoginNavigationOptions);
+    }
+
+    private static string Normalize(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return string.Empty;
+        }
+
+        return path.Trim('/');
+    }
+}
