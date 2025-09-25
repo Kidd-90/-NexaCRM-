@@ -159,6 +159,16 @@ All services currently use mock implementations to enable rapid development and 
 - **Performance**: Async/await patterns maintained for future API compatibility
 - **Error Simulation**: Capability to simulate various error conditions for testing
 
+### Customer Center & FAQ Modules
+
+- **CustomerCenterService** now implements the shared `ICustomerCenterService` contract, providing in-memory notice and FAQ
+  management with optimistic upsert behaviour for rapid prototyping.
+- **FaqService** (registered under `NexaCRM.WebClient.Services`) mirrors the admin abstraction and supports deterministic
+  ordering via the `ReorderFaqsAsync` helper.
+- **Customer Center Models** are exposed in `Models/CustomerCenter` to bridge the admin abstractions with Blazor components while
+  keeping validation attributes intact.
+- **Agent Model** has been promoted into `Models/Agent` so UI components and mock services share a consistent agent representation.
+
 ## Runtime Reliability Enhancements
 
 - **Duplicate Monitor Startup Guard**: The `DuplicateMonitorService` now starts through a guarded helper inside `Program.cs`, ensuring that missing Supabase configuration or other initialization issues do not prevent the Blazor WebAssembly host from rendering. Failures are logged via `ILogger` without crashing the application startup.

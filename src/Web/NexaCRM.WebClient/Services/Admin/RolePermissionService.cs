@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.WebClient.Services.Admin;
+namespace NexaCRM.WebClient.Services;
 
 public sealed class RolePermissionService : IRolePermissionService
 {

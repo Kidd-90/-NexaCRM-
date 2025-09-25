@@ -198,16 +198,86 @@ public sealed class OrganizationService : IOrganizationService
         return Task.CompletedTask;
     }
 
+    public Task SetSystemAdminAsync(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Task.CompletedTask;
+        }
+
+        if (!int.TryParse(userId, out var parsedId))
+        {
+            return Task.CompletedTask;
+        }
+
+        var user = _users.FirstOrDefault(u => u.Id == parsedId);
+        if (user is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        user.Role = "Admin";
+        user.Status = "Active";
+        user.ApprovedAt ??= DateTime.UtcNow;
+        user.ApprovalMemo = "Elevated to system administrator";
+
+        if (_admins.All(a => a.Id != parsedId))
+        {
+            _admins.Add(new AgentModel
+            {
+                Id = parsedId,
+                Name = user.Name,
+                Email = user.Email,
+                Role = "Admin"
+            });
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task RegisterUserAsync(NewUserModel user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (string.IsNullOrWhiteSpace(user.FullName))
+        {
+            throw new ArgumentException("Full name is required.", nameof(user));
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            throw new ArgumentException("Email is required.", nameof(user));
+        }
+
+        var newUser = new OrganizationUser
+        {
+            Id = GenerateUserId(),
+            Name = user.FullName.Trim(),
+            Email = user.Email.Trim(),
+            Role = "Member",
+            Status = "Pending",
+            Department = string.Empty,
+            PhoneNumber = string.Empty,
+            RegisteredAt = DateTime.UtcNow,
+            ApprovedAt = null,
+            ApprovalMemo = "Registration requested"
+        };
+
+        _users.Add(newUser);
+        return Task.CompletedTask;
+    }
+
     public Task<IEnumerable<NewUserModel>> GetPendingUsersAsync()
     {
         var pending = _users
             .Where(u => string.Equals(u.Status, "Pending", StringComparison.OrdinalIgnoreCase))
             .Select(u => new NewUserModel
             {
+                FullName = u.Name ?? string.Empty,
                 Email = u.Email,
-                Name = u.Name,
-                Department = u.Department,
-                RequestedRole = u.Role
+                Password = string.Empty,
+                ConfirmPassword = string.Empty,
+                TermsAccepted = true
             })
             .ToList();
 
@@ -222,14 +292,17 @@ public sealed class OrganizationService : IOrganizationService
         }
 
         var id = GenerateUserId();
+        var name = string.IsNullOrWhiteSpace(newUser.FullName)
+            ? $"Invited {id}"
+            : newUser.FullName.Trim();
         _users.Add(new OrganizationUser
         {
             Id = id,
-            Name = newUser.Name ?? $"Invited {id}",
-            Email = newUser.Email,
-            Role = newUser.RequestedRole ?? "Member",
+            Name = name,
+            Email = newUser.Email.Trim(),
+            Role = "Member",
             Status = "Pending",
-            Department = newUser.Department ?? "",
+            Department = string.Empty,
             RegisteredAt = DateTime.UtcNow,
             ApprovalMemo = "Invitation sent"
         });
