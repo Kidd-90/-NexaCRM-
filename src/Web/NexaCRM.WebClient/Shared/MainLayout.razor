@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 @using System.Globalization
+@inject AuthenticationStateProvider AuthStateProvider
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
@@ -254,7 +255,12 @@
             await layoutModule.InvokeVoidAsync("initializeShell", new { isMobile });
             await NavigationStateService.InitializeAsync();
             recentLinks = NavigationStateService.RecentLinks;
-            await UpdateUnreadNotificationsAsync();
+            // 인증된 사용자일 때만 알림 조회
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            if (authState.User.Identity?.IsAuthenticated == true)
+            {
+                await UpdateUnreadNotificationsAsync();
+            }
             await TrackCurrentPageAsync();
             if (isMobile)
             {

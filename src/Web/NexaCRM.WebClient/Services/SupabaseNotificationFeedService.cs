@@ -87,7 +87,12 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         }
 
         var client = await _clientProvider.GetClientAsync();
-        var userId = EnsureUserId(client);
+        var rawId = client.Auth.CurrentUser?.Id;
+        if (string.IsNullOrWhiteSpace(rawId) || !Guid.TryParse(rawId, out var userId))
+        {
+            // 로그인되지 않은 경우 예외 대신 0 반환
+            return 0;
+        }
 
         var response = await client.From<NotificationFeedRecord>()
             .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
