@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.WebClient.Services
+namespace NexaCRM.Services.Admin
 {
     public class RolePermissionService : IRolePermissionService
     {

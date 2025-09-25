@@ -1,8 +1,8 @@
-using NexaCRM.WebClient.Models.Settings;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Models.Settings;
+using NexaCRM.Services.Admin.Interfaces;
 using System.Threading.Tasks;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Services.Admin;
 
 public class SettingsService : ISettingsService
 {

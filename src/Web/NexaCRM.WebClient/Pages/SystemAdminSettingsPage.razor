@@ -1,9 +1,9 @@
 @page "/organization/system-admin"
 @attribute [Authorize(Roles = "Admin")]
 @using System.Linq
-@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.Services.Admin.Interfaces
 @using NexaCRM.WebClient.Components.UI
-@using AgentModel = NexaCRM.WebClient.Models.Agent
+@using AgentModel = NexaCRM.Services.Admin.Models.Agent
 @inject IOrganizationService OrganizationService
 
 <ResponsivePage>

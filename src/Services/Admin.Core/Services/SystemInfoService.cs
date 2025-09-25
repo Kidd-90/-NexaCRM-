@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Configuration;
-using NexaCRM.WebClient.Models.SystemInfo;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Models.SystemInfo;
+using NexaCRM.Services.Admin.Interfaces;
 using System.Threading.Tasks;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Services.Admin;
 
 public class SystemInfoService : ISystemInfoService
 {

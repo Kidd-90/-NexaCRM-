@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Statistics;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Models.Statistics;
+using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Services.Admin;
 
 public class StatisticsService : IStatisticsService
 {

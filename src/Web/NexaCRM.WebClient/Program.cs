@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.Services.Admin.Models.Db;
 using NexaCRM.WebClient;
 // using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
 using Microsoft.AspNetCore.Components.Authorization;
@@ -11,10 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.WebClient.Services;
+using NexaCRM.WebClient.Services.Admin;
 using NexaCRM.WebClient.Services.Interfaces;
 using NexaCRM.WebClient.Services.Mock;
 using NexaCRM.WebClient.Services.SupabaseEnterprise;
-using NexaCRM.WebClient.Models.Db;
 using NexaCRM.WebClient.Options;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -76,6 +78,7 @@ builder.Services.AddSingleton<IDedupeConfigService, DedupeConfigService>();
 builder.Services.AddScoped<IDuplicateMonitorService, DuplicateMonitorService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<ISecurityService, SecurityService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IDbAdminService, DbAdminService>();
 builder.Services.AddScoped<IStatisticsService, SupabaseStatisticsService>();

@@ -1,10 +1,10 @@
-using NexaCRM.WebClient.Models.Db;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Models.Db;
+using NexaCRM.Services.Admin.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Services.Admin;
 
 public class DbAdminService : IDbAdminService
 {

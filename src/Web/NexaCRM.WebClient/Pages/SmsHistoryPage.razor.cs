@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using NexaCRM.WebClient.Models.Sms;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.Services.Admin.Models.Sms;
+using NexaCRM.Services.Admin.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
