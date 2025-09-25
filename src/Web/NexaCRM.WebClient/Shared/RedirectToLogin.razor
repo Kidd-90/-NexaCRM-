@@ -1,3 +1,5 @@
+@using System
+@using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -15,7 +17,8 @@
 }
 
 @code {
-    private bool _hasRedirected = false;
+    private static readonly NavigationOptions LoginNavigationOptions = new() { ReplaceHistoryEntry = true };
+    private bool _hasRedirected;
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,15 +29,34 @@
     {
         try
         {
+            if (_hasRedirected)
+            {
+                return;
+            }
+
+            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            if (relativePath.StartsWith("login", StringComparison.OrdinalIgnoreCase))
+            {
+                _hasRedirected = true;
+                return;
+            }
+
             await JSRuntime.InvokeVoidAsync("console.log", "Redirecting to login page...");
             _hasRedirected = true;
-            NavigationManager.NavigateTo("/login", replace: true);
+
+            var currentUri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var queryAndFragment = string.Concat(currentUri.Query, currentUri.Fragment);
+            var targetUri = string.IsNullOrEmpty(queryAndFragment)
+                ? "/login"
+                : $"/login{queryAndFragment}";
+
+            NavigationManager.NavigateTo(targetUri, LoginNavigationOptions);
         }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("console.error", $"Error during redirect: {ex.Message}");
             _hasRedirected = true;
-            NavigationManager.NavigateTo("/login", replace: true);
+            NavigationManager.NavigateTo("/login", LoginNavigationOptions);
         }
     }
 }

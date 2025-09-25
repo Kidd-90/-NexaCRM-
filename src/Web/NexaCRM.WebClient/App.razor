@@ -1,3 +1,4 @@
+@using System
 @using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.WebClient.Shared
 @inject NavigationManager NavigationManager
@@ -5,9 +6,17 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            @if (NavigationManager.ToBaseRelativePath(NavigationManager.Uri) == "")
+            @{
+                var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+                var shouldRedirectToLogin = string.IsNullOrWhiteSpace(relativePath)
+                    || relativePath.StartsWith("?", StringComparison.Ordinal)
+                    || relativePath.Equals("index", StringComparison.OrdinalIgnoreCase)
+                    || relativePath.Equals("index.html", StringComparison.OrdinalIgnoreCase);
+            }
+
+            @if (shouldRedirectToLogin)
             {
-                NavigationManager.NavigateTo("/login", true);
+                <RedirectToLogin />
             }
             else
             {
