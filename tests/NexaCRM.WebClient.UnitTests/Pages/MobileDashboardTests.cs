@@ -2,32 +2,43 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
-using NexaCRM.WebClient.Pages;
 using NexaCRM.WebClient.Components.UI;
+using NexaCRM.WebClient.Pages;
+using NexaCRM.WebClient.Services;
+using NexaCRM.WebClient.Services.Interfaces;
 using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Microsoft.AspNetCore.Components;
-using Moq;
 using AngleSharp.Dom;
 
 namespace NexaCRM.WebClient.UnitTests.Pages
 {
-    public class MobileDashboardTests : TestContext
+    public class MobileDashboardTests
     {
-        public MobileDashboardTests()
+        private static TestContext CreateTestContext()
         {
-            // Setup services
-            Services.AddSingleton<NavigationManager>(new MockNavigationManager());
-            Services.AddSingleton(Mock.Of<IJSRuntime>());
-            Services.AddSingleton<IStringLocalizer<MainDashboard>>(new MockStringLocalizer<MainDashboard>());
-            Services.AddSingleton<IStringLocalizer<FloatingActionButton>>(new MockStringLocalizer<FloatingActionButton>());
+            var context = new TestContext();
+
+            context.Services.AddSingleton<NavigationManager, MockNavigationManager>();
+            context.Services.AddSingleton<IJSRuntime, FakeJsRuntime>();
+            context.Services.AddSingleton<IStringLocalizer<MainDashboard>, MockStringLocalizer<MainDashboard>>();
+            context.Services.AddSingleton<IStringLocalizer<FloatingActionButton>, MockStringLocalizer<FloatingActionButton>>();
+            context.Services.AddSingleton<IMobileInteractionService, StubMobileInteractionService>();
+            context.Services.AddSingleton<ActionInterop>(static sp => new ActionInterop(sp.GetRequiredService<IJSRuntime>()));
+            context.Services.AddSingleton<IGlobalActionService, GlobalActionService>();
+
+            return context;
         }
 
         [Fact]
         public void TestDashboard_RendersCorrectly()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert
             Assert.NotNull(component);
@@ -40,7 +51,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void MobileHeader_ContainsRequiredElements()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check for mobile header elements
             var hamburgerMenu = component.Find(".mobile-menu-toggle");
@@ -61,7 +73,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void MobileQuickActions_ContainsAllButtons()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check for quick action buttons
             var quickActionButtons = component.FindAll(".quick-action-btn");
@@ -79,7 +92,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void DashboardGrid_ContainsRequiredCards()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check for dashboard cards
             var dashboardCards = component.FindAll(".dashboard-card");
@@ -97,7 +111,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void MobileSearchBar_InitiallyCollapsed()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert
             var searchBar = component.Find(".mobile-search-bar");
@@ -109,7 +124,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void MobileNotificationsPanel_InitiallyCollapsed()
         {
             // Arrange & Act  
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert
             var notificationsPanel = component.Find(".mobile-notifications-panel");
@@ -121,7 +137,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void NotificationsPanel_ContainsNotificationItems()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check for notification items
             var notificationItems = component.FindAll(".notification-item");
@@ -138,7 +155,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void MobileHeader_HasProperAccessibilityAttributes()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check accessibility attributes
             var hamburgerMenu = component.Find(".mobile-menu-toggle");
@@ -155,7 +173,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void QuickActionButtons_HaveProperStructure()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check quick action button structure
             var quickActionButtons = component.FindAll(".quick-action-btn");
@@ -176,7 +195,8 @@ namespace NexaCRM.WebClient.UnitTests.Pages
         public void DashboardCards_HaveProperClickHandlers()
         {
             // Arrange & Act
-            var component = RenderComponent<TestDashboard>();
+            using var ctx = CreateTestContext();
+            var component = ctx.RenderComponent<TestDashboard>();
 
             // Assert - Check dashboard cards have click handlers
             var dashboardCards = component.FindAll(".dashboard-card");
@@ -234,5 +254,68 @@ namespace NexaCRM.WebClient.UnitTests.Pages
                 _ => key
             };
         }
+
+        private sealed class StubMobileInteractionService : IMobileInteractionService
+        {
+            public bool IsSearchOpen { get; private set; }
+
+            public bool AreNotificationsOpen { get; private set; }
+
+            public event Action? StateChanged;
+
+            public Task ToggleMenuAsync() => Task.CompletedTask;
+
+            public Task ToggleSearchAsync()
+            {
+                IsSearchOpen = !IsSearchOpen;
+                StateChanged?.Invoke();
+                return Task.CompletedTask;
+            }
+
+            public Task ToggleNotificationsAsync()
+            {
+                AreNotificationsOpen = !AreNotificationsOpen;
+                StateChanged?.Invoke();
+                return Task.CompletedTask;
+            }
+
+            public Task CloseAllAsync()
+            {
+                IsSearchOpen = false;
+                AreNotificationsOpen = false;
+                StateChanged?.Invoke();
+                return Task.CompletedTask;
+            }
+
+            public Task ScrollToAsync(string elementId) => Task.CompletedTask;
+        }
+
+        private sealed class FakeJsRuntime : IJSRuntime
+        {
+            public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
+            {
+                if (typeof(TValue) == typeof(IJSObjectReference))
+                {
+                    return new ValueTask<TValue>((TValue)(object)new FakeJsObjectReference());
+                }
+
+                return new ValueTask<TValue>(default(TValue)!);
+            }
+
+            public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
+                => InvokeAsync<TValue>(identifier, args);
+
+            private sealed class FakeJsObjectReference : IJSObjectReference
+            {
+                public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+
+                public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args)
+                    => new(default(TValue)!);
+
+                public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
+                    => new(default(TValue)!);
+            }
+        }
+
     }
 }
