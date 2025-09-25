@@ -1,19 +1,20 @@
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 @using NexaCRM.WebClient.Shared
-@inject NavigationManager NavigationManager
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            @if (NavigationManager.ToBaseRelativePath(NavigationManager.Uri) == "")
+            @if (IsAnonymousRoute(routeData.PageType))
             {
-                NavigationManager.NavigateTo("/login", true);
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             }
             else
             {
                 <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                     <Authorizing>
-                        <RedirectToLogin />
+                        <LoadingScreen />
                     </Authorizing>
                     <NotAuthorized>
                         <RedirectToLogin />
@@ -36,3 +37,15 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    private static bool IsAnonymousRoute(Type pageType)
+    {
+        if (pageType is null)
+        {
+            return false;
+        }
+
+        return Attribute.IsDefined(pageType, typeof(AllowAnonymousAttribute), inherit: true);
+    }
+}

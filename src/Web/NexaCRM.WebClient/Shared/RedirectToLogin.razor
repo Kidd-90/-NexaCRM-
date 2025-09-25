@@ -1,40 +1,59 @@
+@using System
+@using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
+@using NexaCRM.WebClient.Pages
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-@if (!_hasRedirected)
-{
-    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">로그인 페이지로 이동 중...</span>
-            </div>
-            <p class="mt-3">로그인 페이지로 이동 중입니다...</p>
-        </div>
-    </div>
-}
+<LoginPage />
 
 @code {
-    private bool _hasRedirected = false;
+    private static readonly NavigationOptions LoginNavigationOptions = new() { ReplaceHistoryEntry = true };
+    private bool _hasRedirected;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await RedirectToLoginPage();
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await RedirectToLoginPageAsync();
     }
 
-    private async Task RedirectToLoginPage()
+    private async Task RedirectToLoginPageAsync()
     {
         try
         {
-            await JSRuntime.InvokeVoidAsync("console.log", "Redirecting to login page...");
+            if (_hasRedirected)
+            {
+                return;
+            }
+
+            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            if (relativePath.StartsWith("login", StringComparison.OrdinalIgnoreCase))
+            {
+                _hasRedirected = true;
+                return;
+            }
+
             _hasRedirected = true;
-            NavigationManager.NavigateTo("/login", replace: true);
+
+            await JSRuntime.InvokeVoidAsync("console.log", "Redirecting to login page...");
+
+            var currentUri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var queryAndFragment = string.Concat(currentUri.Query, currentUri.Fragment);
+            var targetUri = string.IsNullOrEmpty(queryAndFragment)
+                ? "/login"
+                : $"/login{queryAndFragment}";
+
+            NavigationManager.NavigateTo(targetUri, LoginNavigationOptions);
         }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("console.error", $"Error during redirect: {ex.Message}");
             _hasRedirected = true;
-            NavigationManager.NavigateTo("/login", replace: true);
+            NavigationManager.NavigateTo("/login", LoginNavigationOptions);
         }
     }
 }
