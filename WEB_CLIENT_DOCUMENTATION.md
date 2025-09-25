@@ -159,6 +159,10 @@ All services currently use mock implementations to enable rapid development and 
 - **Performance**: Async/await patterns maintained for future API compatibility
 - **Error Simulation**: Capability to simulate various error conditions for testing
 
+## Runtime Reliability Enhancements
+
+- **Duplicate Monitor Startup Guard**: The `DuplicateMonitorService` now starts through a guarded helper inside `Program.cs`, ensuring that missing Supabase configuration or other initialization issues do not prevent the Blazor WebAssembly host from rendering. Failures are logged via `ILogger` without crashing the application startup.
+
 **Service Registration in Program.cs:**
 ```csharp
 builder.Services.AddScoped<IContactService, MockContactService>();
