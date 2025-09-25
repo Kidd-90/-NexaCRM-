@@ -1,6 +1,7 @@
 @page "/main-dashboard"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Logging
 @using NexaCRM.WebClient.Services.Interfaces
 @using System.Globalization
 @using System.Linq
@@ -10,6 +11,7 @@
 @inject IMobileInteractionService MobileInteractions
 @inject IGlobalActionService GlobalActionService
 @inject ActionInterop ActionInterop
+@inject ILogger<MainDashboard> Logger
 @attribute [Authorize(Roles = "Sales,Manager")]
 @implements IDisposable
 
@@ -560,21 +562,52 @@
     private const int MobileNotificationLimit = 12;
     private int unreadNotificationsCount;
     private List<NotificationFeedItem> mobileNotifications = new();
+    private bool notificationsFeatureEnabled;
     private string mobileSearchQuery = string.Empty;
     private int UnreadMobileNotificationsCount => mobileNotifications.Count(item => !item.IsRead);
 
     protected override async Task OnInitializedAsync()
     {
-        NotificationFeed.UnreadCountChanged += HandleUnreadCountChanged;
-        NotificationFeed.FeedUpdated += HandleFeedUpdated;
+        if (NotificationFeed is null)
+        {
+            Logger.LogError("Notification feed service is unavailable. Notifications will be disabled on the dashboard.");
+        }
+        else
+        {
+            NotificationFeed.UnreadCountChanged += HandleUnreadCountChanged;
+            NotificationFeed.FeedUpdated += HandleFeedUpdated;
+            notificationsFeatureEnabled = true;
+        }
+
         MobileInteractions.StateChanged += HandleMobileStateChanged;
 
-        unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
+        if (!notificationsFeatureEnabled)
+        {
+            unreadNotificationsCount = 0;
+            mobileNotifications.Clear();
+            return;
+        }
+
+        try
+        {
+            var unreadCount = await NotificationFeed.GetUnreadCountAsync();
+            unreadNotificationsCount = Math.Max(0, unreadCount);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to retrieve unread notification count. Defaulting to zero.");
+            unreadNotificationsCount = 0;
+        }
         await LoadInitialNotificationsAsync();
     }
 
     private async Task LoadInitialNotificationsAsync()
     {
+        if (!notificationsFeatureEnabled || NotificationFeed is null)
+        {
+            return;
+        }
+
         try
         {
             var items = await NotificationFeed.GetAsync();
@@ -582,12 +615,17 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load notifications: {ex.Message}");
+            Logger.LogError(ex, "Failed to load notifications from the feed.");
         }
     }
 
     private void HandleFeedUpdated(IReadOnlyList<NotificationFeedItem> items)
     {
+        if (!notificationsFeatureEnabled)
+        {
+            return;
+        }
+
         _ = InvokeAsync(() =>
         {
             UpdateMobileNotifications(items);
@@ -630,6 +668,11 @@
     private async Task ToggleMobileNotifications()
     {
         await MobileInteractions.ToggleNotificationsAsync();
+        if (!notificationsFeatureEnabled || NotificationFeed is null)
+        {
+            return;
+        }
+
         if (MobileInteractions.AreNotificationsOpen && mobileNotifications.Any(item => !item.IsRead))
         {
             await NotificationFeed.MarkAllReadAsync();
@@ -639,6 +682,11 @@
 
     private void HandleUnreadCountChanged(int count)
     {
+        if (!notificationsFeatureEnabled)
+        {
+            return;
+        }
+
         unreadNotificationsCount = Math.Max(0, count);
         _ = InvokeAsync(StateHasChanged);
     }
@@ -778,7 +826,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Mobile dashboard setup error: {ex.Message}");
+                Logger.LogWarning(ex, "Failed to set up mobile dashboard interactions.");
             }
         }
     }
