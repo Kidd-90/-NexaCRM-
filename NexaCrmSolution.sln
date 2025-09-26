@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Admin.Abstractions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient", "src\Web\NexaCRM.WebClient\NexaCRM.WebClient.csproj", "{A7A7A7A7-7777-7777-7777-777777777777}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient.WasmHost", "src\Web\NexaCRM.WebClient.WasmHost\NexaCRM.WebClient.WasmHost.csproj", "{020DB995-6F64-4C07-B238-6F2C3921EE8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient.ServerHost", "src\Web\NexaCRM.WebClient.ServerHost\NexaCRM.WebClient.ServerHost.csproj", "{339246C6-4992-4FD6-8C98-056B0DDD53BB}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient.UnitTests", "tests\NexaCRM.WebClient.UnitTests\NexaCRM.WebClient.UnitTests.csproj", "{C9C9C9C9-9999-9999-9999-999999999999}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCrm.ApiGateway.UnitTests", "tests\NexaCrm.ApiGateway.UnitTests\NexaCrm.ApiGateway.UnitTests.csproj", "{F2F2F2F2-2222-2222-2222-222222222222}"
@@ -52,6 +56,14 @@ Global
 		{A7A7A7A7-7777-7777-7777-777777777777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7A7A7A7-7777-7777-7777-777777777777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7A7A7A7-7777-7777-7777-777777777777}.Release|Any CPU.Build.0 = Release|Any CPU
+                {020DB995-6F64-4C07-B238-6F2C3921EE8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {020DB995-6F64-4C07-B238-6F2C3921EE8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {020DB995-6F64-4C07-B238-6F2C3921EE8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {020DB995-6F64-4C07-B238-6F2C3921EE8E}.Release|Any CPU.Build.0 = Release|Any CPU
+                {339246C6-4992-4FD6-8C98-056B0DDD53BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {339246C6-4992-4FD6-8C98-056B0DDD53BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {339246C6-4992-4FD6-8C98-056B0DDD53BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {339246C6-4992-4FD6-8C98-056B0DDD53BB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9C9C9C9-9999-9999-9999-999999999999}.Release|Any CPU.ActiveCfg = Release|Any CPU
