@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BuildingBlocks\EventBus\BuildingBlocks.EventBus.csproj" />
+    <ProjectReference Include="..\..\src\NexaCRM.BuildingBlocks\EventBus\BuildingBlocks.EventBus.csproj" />
   </ItemGroup>
 
 </Project>

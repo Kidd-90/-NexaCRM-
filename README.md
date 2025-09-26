@@ -98,7 +98,7 @@ docker-compose up -d
 #### 백엔드 서비스 실행
 `Services.Admin.Abstractions` 프로젝트가 웹 클라이언트와 게이트웨이가 공유하는 도메인 계약(모델·인터페이스)을 제공하며, `Services.Admin.Core`는 해당 계약을 구현하는 서버 전용 구성요소입니다. WebAssembly 환경에서는 구현 라이브러리를 직접 참조하지 않아도 되므로 WASM0005 경고 없이 안전하게 도메인 모델을 활용할 수 있습니다. 게이트웨이나 웹 클라이언트를 실행하면 내부적으로 `Services.Admin.Core` 라이브러리를 통해 도메인 기능을 사용할 수 있습니다.
 ```bash
-dotnet run --project src/ApiGateway/NexaCrm.ApiGateway.csproj
+dotnet run --project src/NexaCRM.ApiGateway/NexaCrm.ApiGateway.csproj
 ```
 
 #### 프론트엔드 실행
@@ -123,16 +123,16 @@ dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 /NexaCRMSolution
 |
 |-- /src
-|   |-- /ApiGateway
+|   |-- /NexaCRM.ApiGateway
 |   |   `-- NexaCrm.ApiGateway.csproj
 |   |
-|   |-- /BuildingBlocks
+|   |-- /NexaCRM.BuildingBlocks
 |   |   |-- /EventBus
 |   |   |   `-- BuildingBlocks.EventBus.csproj
 |   |   `-- /Common
 |   |       `-- BuildingBlocks.Common.csproj
 |   |
-|   |-- /Services
+|   |-- /NexaCRM.Service
 |   |   |-- /Admin.Abstractions
 |   |   |   `-- Services.Admin.Abstractions.csproj
 |   |   `-- /Admin.Core

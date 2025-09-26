@@ -36,7 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-    <ProjectReference Include="..\..\Services\Admin.Abstractions\Services.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\NexaCRM.Service\Admin.Abstractions\Services.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\NexaCRM.UI\NexaCRM.UI.csproj" />
     </ItemGroup>
 </Project>

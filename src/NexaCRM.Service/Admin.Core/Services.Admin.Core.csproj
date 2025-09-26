@@ -13,6 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Admin.Abstractions\Services.Admin.Abstractions.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
+    <ProjectReference Include="..\..\NexaCRM.BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
   </ItemGroup>
 </Project>

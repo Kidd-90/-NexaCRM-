@@ -24,8 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\\..\\src\\Web\\NexaCRM.WebClient\\NexaCRM.WebClient.csproj" />
-    <ProjectReference Include="..\\..\\src\\Services\\Admin.Core\\Services.Admin.Core.csproj" />
-    <ProjectReference Include="..\\..\\src\\BuildingBlocks\\Common\\BuildingBlocks.Common.csproj" />
+    <ProjectReference Include="..\\..\\src\\NexaCRM.Service\\Admin.Core\\Services.Admin.Core.csproj" />
+    <ProjectReference Include="..\\..\\src\\NexaCRM.BuildingBlocks\\Common\\BuildingBlocks.Common.csproj" />
   </ItemGroup>
 
 </Project>
