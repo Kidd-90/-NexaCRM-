@@ -2,7 +2,7 @@ using NexaCRM.UI.Models;
 using NexaCRM.UI.Services.Interfaces;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Services.Mock
+namespace NexaCRM.UI.Services.Mock
 {
     public class MockAgentService : IAgentService
     {

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NexaCRM.WebClient.Services.Mock
+namespace NexaCRM.UI.Services.Mock
 {
     public class MockSupportTicketService : ISupportTicketService
     {

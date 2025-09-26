@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.UI.Services;
 
 public sealed class ActionInterop : IAsyncDisposable
 {

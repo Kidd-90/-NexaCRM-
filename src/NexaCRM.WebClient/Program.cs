@@ -14,9 +14,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.Services.Admin;
 using NexaCRM.UI.Options;
+using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.WebClient.Services;
-using NexaCRM.WebClient.Services.Mock;
+using NexaCRM.UI.Services.Mock;
 using NexaCRM.WebClient.Services.SupabaseEnterprise;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -59,6 +60,7 @@ builder.Services.AddScoped<Supabase.Client>(provider =>
 builder.Services.AddScoped<SupabaseClientProvider>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
+builder.Services.AddScoped<IAuthenticationService>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
 builder.Services.AddScoped<ActionInterop>();
 builder.Services.AddScoped<IMobileInteractionService, MobileInteractionService>();
 builder.Services.AddScoped<IGlobalActionService, GlobalActionService>();

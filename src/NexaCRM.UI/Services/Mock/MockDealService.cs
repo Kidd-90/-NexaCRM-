@@ -5,7 +5,7 @@ using System.Threading;
 using NexaCRM.UI.Models;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services.Mock
+namespace NexaCRM.UI.Services.Mock
 {
     public class MockDealService : IDealService
     {

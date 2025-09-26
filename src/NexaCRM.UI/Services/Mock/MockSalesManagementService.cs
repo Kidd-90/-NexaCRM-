@@ -2,7 +2,7 @@ using NexaCRM.UI.Models;
 using NexaCRM.UI.Models.Enums;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services.Mock
+namespace NexaCRM.UI.Services.Mock
 {
     public class MockSalesManagementService : ISalesManagementService
     {

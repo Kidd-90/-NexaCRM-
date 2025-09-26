@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NexaCRM.UI.Models.Teams;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services.Mock;
+namespace NexaCRM.UI.Services.Mock;
 
 public class MockTeamService : ITeamService
 {

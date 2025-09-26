@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NexaCRM.UI.Models;
+using NexaCRM.UI.Models.Teams;
 
 namespace NexaCRM.UI.Services.Interfaces;
 

@@ -7,16 +7,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using NexaCRM.UI.Models.Supabase;
+using NexaCRM.UI.Services.Interfaces;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Exceptions;
 using Supabase.Gotrue.Interfaces;
 using Supabase.Postgrest.Exceptions;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using SupabaseAuthState = Supabase.Gotrue.Constants.AuthState;
+using LoginFailureReason = NexaCRM.UI.Models.LoginFailureReason;
+using LoginResult = NexaCRM.UI.Models.LoginResult;
 
 namespace NexaCRM.WebClient.Services;
 
-public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAsyncDisposable
+public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuthenticationService, IAsyncDisposable
 {
     private readonly SupabaseClientProvider _clientProvider;
     private readonly ILogger<CustomAuthStateProvider> _logger;
