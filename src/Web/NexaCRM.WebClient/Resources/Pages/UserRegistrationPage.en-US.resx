@@ -66,6 +66,15 @@
   <data name="EnterFullName" xml:space="preserve">
     <value>Enter your full name</value>
   </data>
+  <data name="UserId" xml:space="preserve">
+    <value>User ID</value>
+  </data>
+  <data name="EnterUserId" xml:space="preserve">
+    <value>Create a secure user ID</value>
+  </data>
+  <data name="UserIdRequirements" xml:space="preserve">
+    <value>Use 6-20 characters with at least one of . _ @ - and avoid repeated or sequential characters.</value>
+  </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
@@ -77,6 +86,9 @@
   </data>
   <data name="EnterPassword" xml:space="preserve">
     <value>Enter your password</value>
+  </data>
+  <data name="PasswordRequirements" xml:space="preserve">
+    <value>Use 10-64 characters including uppercase, lowercase, numbers, special symbols, and avoid sequences.</value>
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>

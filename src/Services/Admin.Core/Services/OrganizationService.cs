@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using NexaCRM.Services.Admin.Models.Organization;
@@ -32,6 +33,7 @@ public class OrganizationService : IOrganizationService
         new()
         {
             Id = 1,
+            UserId = "alice.kim-1",
             Name = "Alice Kim",
             Email = "alice.kim@example.com",
             Role = "Admin",
@@ -45,6 +47,7 @@ public class OrganizationService : IOrganizationService
         new()
         {
             Id = 2,
+            UserId = "brian.lee-2",
             Name = "Brian Lee",
             Email = "brian.lee@example.com",
             Role = "Manager",
@@ -58,6 +61,7 @@ public class OrganizationService : IOrganizationService
         new()
         {
             Id = 3,
+            UserId = "chloe.park-3",
             Name = "Chloe Park",
             Email = "chloe.park@example.com",
             Role = "Analyst",
@@ -204,11 +208,29 @@ public class OrganizationService : IOrganizationService
     {
         ArgumentNullException.ThrowIfNull(user);
 
+        var results = new List<ValidationResult>();
+        var context = new ValidationContext(user);
+
+        if (!Validator.TryValidateObject(user, context, results, validateAllProperties: true))
+        {
+            var message = string.Join(" ", results
+                .Select(result => result.ErrorMessage)
+                .Where(error => !string.IsNullOrWhiteSpace(error)));
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                message = "Validation failed for user registration.";
+            }
+
+            throw new ValidationException(message);
+        }
+
         _users.Add(new OrganizationUser
         {
             Id = GenerateUserId(),
-            Name = user.FullName,
-            Email = user.Email,
+            UserId = user.UserId.Trim(),
+            Name = user.FullName.Trim(),
+            Email = user.Email.Trim(),
             Role = "Member",
             Status = "Pending",
             Department = "미지정",
@@ -240,6 +262,7 @@ public class OrganizationService : IOrganizationService
     private static OrganizationUser CloneUser(OrganizationUser source) => new()
     {
         Id = source.Id,
+        UserId = source.UserId,
         Name = source.Name,
         Email = source.Email,
         Role = source.Role,

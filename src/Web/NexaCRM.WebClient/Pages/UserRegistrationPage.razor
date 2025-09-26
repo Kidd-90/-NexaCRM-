@@ -47,6 +47,16 @@
                   </div>
                   <div class="mb-4">
                     <label class="flex flex-col">
+                      <p class="register-form-label text-base font-medium leading-normal pb-2">@Localizer["UserId"]</p>
+                      <input @bind="newUser.UserId"
+                        placeholder="@Localizer["EnterUserId"]"
+                        class="register-form-input flex w-full resize-none overflow-hidden rounded-lg focus:outline-0 focus:ring-0 border h-12 px-4 text-base font-normal leading-normal" />
+                      <p class="text-sm text-slate-500 mt-1">@Localizer["UserIdRequirements"]</p>
+                      <ValidationMessage For="@(() => newUser.UserId)" />
+                    </label>
+                  </div>
+                  <div class="mb-4">
+                    <label class="flex flex-col">
                       <p class="register-form-label text-base font-medium leading-normal pb-2">@Localizer["Email"]</p>
                       <input @bind="newUser.Email"
                         placeholder="@Localizer["EnterEmail"]"
@@ -60,6 +70,7 @@
                       <input @bind="newUser.Password" type="password"
                         placeholder="@Localizer["EnterPassword"]"
                         class="register-form-input flex w-full resize-none overflow-hidden rounded-lg focus:outline-0 focus:ring-0 border h-12 px-4 text-base font-normal leading-normal" />
+                      <p class="text-sm text-slate-500 mt-1">@Localizer["PasswordRequirements"]</p>
                       <ValidationMessage For="@(() => newUser.Password)" />
                     </label>
                   </div>
