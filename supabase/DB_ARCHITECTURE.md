@@ -14,7 +14,12 @@ graph TD
         PF[profiles]
         OU[organization_units]
         ORG_USERS[organization_users]
+        ORGCOMP[org_companies]
+        ORGBR[org_branches]
+        ORGBRLIST[org_company_branch_lists]
         TEAMS[teams]
+        ORGTEAMLIST[org_company_team_lists]
+        USERDIR[user_directory_entries]
     end
     subgraph CRM Core
         CO[companies]
@@ -51,7 +56,12 @@ graph TD
 
     AU --> PF
     PF --> ORG_USERS
-    ORG_USERS --> TEAMS
+    ORG_USERS --> ORGCOMP
+    ORGCOMP --> ORGBR
+    ORGBR --> ORGBRLIST
+    ORGBRLIST --> TEAMS
+    TEAMS --> ORGTEAMLIST
+    TEAMS --> USERDIR
     CO --> CT
     CT --> AC
     CT --> DB_CUS
@@ -73,8 +83,13 @@ graph TD
 | `organization_units` | 조직 트리 관리 | id, tenant_id, parent_id, name | `OrganizationUnit` 모델 반영.【F:src/Services/Admin.Abstractions/Models/Organization/OrganizationModels.cs†L6-L28】 |
 | `organization_users` | 조직 사용자 승인 흐름 | id, user_id, unit_id, role, status, approved_at, approval_memo | 사용자 승인·거절 로직 지원.【F:src/Services/Admin.Abstractions/Interfaces/IOrganizationService.cs†L9-L24】 |
 | `user_roles` | 역할 매핑 | user_id, role_code, assigned_by | 역할 기반 권한 확인에 사용.【F:src/Services/Admin.Abstractions/Interfaces/IRolePermissionService.cs†L5-L30】 |
-| `teams` | 영업/지원 팀 정의 | code, name, manager_id, is_active, registered_at | `TeamInfo` 구조 반영.【F:src/Web/NexaCRM.WebClient/Models/TeamModels.cs†L5-L27】 |
-| `team_members` | 팀 구성원 | team_id, user_id, role, allow_excel_upload, is_active | `TeamMemberInfo` 속성 대응.【F:src/Web/NexaCRM.WebClient/Models/TeamModels.cs†L16-L27】【F:src/Web/NexaCRM.WebClient/Services/Interfaces/ITeamService.cs†L7-L15】 |
+| `org_companies` | 테넌트별 내부 회사 마스터 | tenant_unit_id, code, name, contact, is_active | 관리자용 회사 기본 정보 저장.【F:supabase/migrations/schema.sql†L155-L171】 |
+| `org_branches` | 회사 지점 관리 | company_id, tenant_unit_id, code, name, manager_id, is_active | 회사-지점 계층 구조 구성.【F:supabase/migrations/schema.sql†L173-L190】 |
+| `org_company_branch_lists` | 회사별 지점 리스트 캐싱 | tenant_unit_id, company_id, branch_id, branch_code, branch_name, team_count, member_count | 회사 단위 지점 현황/요약 제공.【F:supabase/migrations/schema.sql†L192-L207】 |
+| `teams` | 영업/지원 팀 정의 | tenant_unit_id, company_id, branch_id, code, name, manager_id, is_active | 팀이 소속된 회사/지점까지 추적.【F:supabase/migrations/schema.sql†L264-L277】 |
+| `team_members` | 팀 구성원 | team_id, user_id, company_id, branch_id, role, allow_excel_upload, is_active | 사용자-팀-지점 관계 저장.【F:supabase/migrations/schema.sql†L279-L295】 |
+| `org_company_team_lists` | 회사별 팀 리스트 | tenant_unit_id, company_id, branch_id, team_id, team_code, member_count, active_member_count | 회사/지점별 팀 현황 제공.【F:supabase/migrations/schema.sql†L297-L315】 |
+| `user_directory_entries` | 사용자 조직 정보 | user_id, company_id, branch_id, team_id, tenant_unit_id, job_title, status | 관리자 입력 사용자 소속 데이터.【F:supabase/migrations/schema.sql†L317-L335】 |
 | `agents` | 영업·지원 에이전트 프로필 | user_id, display_name, email, role | `Agent` 모델 연계, 자동 배정 기준.【F:src/Services/Admin.Abstractions/Models/Agent.cs†L3-L9】【F:src/Web/NexaCRM.WebClient/Services/Interfaces/IAgentService.cs†L7-L10】 |
 
 Row Level Security(RLS)은 `tenant_id`(조직 ID)와 역할 정보를 조합해 조직 단위 격리를 보장합니다. 조직 관리자는 동일 테넌트 하위의 사용자·팀을 열람/수정하고, 전사 관리자는 모든 테넌트 접근 권한을 갖도록 정책을 작성합니다.

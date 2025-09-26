@@ -151,6 +151,84 @@ CREATE TABLE user_roles (
 );
 
 
+-- 8.a ORGANIZATION DIRECTORY TABLES
+CREATE TABLE org_companies (
+  id BIGSERIAL PRIMARY KEY,
+  tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  registration_number TEXT,
+  phone TEXT,
+  email TEXT,
+  address TEXT,
+  memo TEXT,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (tenant_unit_id, code),
+  UNIQUE (tenant_unit_id, name)
+);
+
+CREATE TABLE org_branches (
+  id BIGSERIAL PRIMARY KEY,
+  company_id BIGINT NOT NULL REFERENCES org_companies(id) ON DELETE CASCADE,
+  tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  address TEXT,
+  manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  memo TEXT,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (company_id, code),
+  UNIQUE (company_id, name)
+);
+
+CREATE TABLE org_company_branch_lists (
+  id BIGSERIAL PRIMARY KEY,
+  tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
+  company_id BIGINT NOT NULL REFERENCES org_companies(id) ON DELETE CASCADE,
+  branch_id BIGINT NOT NULL REFERENCES org_branches(id) ON DELETE CASCADE,
+  branch_code TEXT NOT NULL,
+  branch_name TEXT NOT NULL,
+  manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  manager_name TEXT,
+  team_count INT NOT NULL DEFAULT 0,
+  member_count INT NOT NULL DEFAULT 0,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (company_id, branch_id)
+);
+
+CREATE TRIGGER set_timestamp_org_companies
+  BEFORE UPDATE ON org_companies
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE TRIGGER set_timestamp_org_branches
+  BEFORE UPDATE ON org_branches
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE TRIGGER set_timestamp_org_company_branch_lists
+  BEFORE UPDATE ON org_company_branch_lists
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE INDEX idx_org_companies_tenant_unit ON org_companies(tenant_unit_id);
+CREATE INDEX idx_org_branches_company ON org_branches(company_id);
+CREATE INDEX idx_org_branches_tenant_unit ON org_branches(tenant_unit_id);
+CREATE INDEX idx_org_company_branch_lists_tenant ON org_company_branch_lists(tenant_unit_id);
+CREATE INDEX idx_org_company_branch_lists_company ON org_company_branch_lists(company_id);
+CREATE INDEX idx_org_company_branch_lists_branch ON org_company_branch_lists(branch_id);
+
+
 -- 9. TASKS TABLE
 CREATE TABLE tasks (
   id BIGSERIAL PRIMARY KEY,
@@ -186,8 +264,12 @@ CREATE TABLE agents (
 
 CREATE TABLE teams (
   id BIGSERIAL PRIMARY KEY,
+  tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
+  company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
+  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
   code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
+  manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   manager_name TEXT,
   member_count INT NOT NULL DEFAULT 0,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -198,6 +280,9 @@ CREATE TABLE teams (
 CREATE TABLE team_members (
   id BIGSERIAL PRIMARY KEY,
   team_id BIGINT REFERENCES teams(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
+  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
   team_name TEXT,
   role TEXT NOT NULL,
   employee_code TEXT,
@@ -206,8 +291,79 @@ CREATE TABLE team_members (
   allow_excel_upload BOOLEAN NOT NULL DEFAULT FALSE,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   registered_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (team_id, user_id)
 );
+
+CREATE TABLE org_company_team_lists (
+  id BIGSERIAL PRIMARY KEY,
+  tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
+  company_id BIGINT NOT NULL REFERENCES org_companies(id) ON DELETE CASCADE,
+  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
+  team_id BIGINT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+  team_code TEXT NOT NULL,
+  team_name TEXT NOT NULL,
+  branch_name TEXT,
+  manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  manager_name TEXT,
+  member_count INT NOT NULL DEFAULT 0,
+  active_member_count INT NOT NULL DEFAULT 0,
+  is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (company_id, team_id)
+);
+
+CREATE TABLE user_directory_entries (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
+  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
+  team_id BIGINT REFERENCES teams(id) ON DELETE SET NULL,
+  tenant_unit_id BIGINT REFERENCES organization_units(id) ON DELETE SET NULL,
+  job_title TEXT,
+  employee_number TEXT,
+  employment_type TEXT,
+  status TEXT NOT NULL DEFAULT 'active',
+  hired_on DATE,
+  ended_on DATE,
+  notes TEXT,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CHECK (status IN ('active', 'inactive', 'on_leave', 'terminated'))
+);
+
+CREATE TRIGGER set_timestamp_teams
+  BEFORE UPDATE ON teams
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE TRIGGER set_timestamp_team_members
+  BEFORE UPDATE ON team_members
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE TRIGGER set_timestamp_org_company_team_lists
+  BEFORE UPDATE ON org_company_team_lists
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE TRIGGER set_timestamp_user_directory_entries
+  BEFORE UPDATE ON user_directory_entries
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE INDEX idx_teams_tenant_unit ON teams(tenant_unit_id);
+CREATE INDEX idx_teams_company ON teams(company_id);
+CREATE INDEX idx_team_members_user ON team_members(user_id);
+CREATE INDEX idx_team_members_company ON team_members(company_id);
+CREATE INDEX idx_org_company_team_lists_tenant ON org_company_team_lists(tenant_unit_id);
+CREATE INDEX idx_org_company_team_lists_company ON org_company_team_lists(company_id);
+CREATE INDEX idx_org_company_team_lists_branch ON org_company_team_lists(branch_id);
+CREATE INDEX idx_user_directory_company ON user_directory_entries(company_id);
+CREATE INDEX idx_user_directory_tenant_unit ON user_directory_entries(tenant_unit_id);
 
 CREATE INDEX idx_teams_active ON teams(is_active);
 CREATE INDEX idx_team_members_team_id ON team_members(team_id);
