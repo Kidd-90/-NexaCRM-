@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NexaCRM.Services.Admin;
+using NexaCRM.UI.Options;
+using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.WebClient.Services;
-using NexaCRM.WebClient.Services.Admin;
-using NexaCRM.WebClient.Services.Interfaces;
 using NexaCRM.WebClient.Services.Mock;
 using NexaCRM.WebClient.Services.SupabaseEnterprise;
-using NexaCRM.WebClient.Options;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

@@ -1,7 +1,7 @@
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace NexaCRM.WebClient.Models.Supabase;
+namespace NexaCRM.UI.Models.Supabase;
 
 [Table("deal_stages")]
 public sealed class DealStageRecord : BaseModel

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NexaCRM.Services.Admin.Models.Settings;
 using NexaCRM.Services.Admin.Models.Sms;
-using NexaCRM.WebClient.Models.Supabase;
+using NexaCRM.UI.Models.Supabase;
 using NexaCRM.Services.Admin.Interfaces;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;

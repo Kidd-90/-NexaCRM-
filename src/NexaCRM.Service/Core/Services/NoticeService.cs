@@ -1,14 +1,17 @@
-using NexaCRM.Services.Admin.Models.CustomerCenter;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.Services.Admin.Models.CustomerCenter;
 
 namespace NexaCRM.Services.Admin;
 
-public class NoticeService : INoticeService
+public sealed class NoticeService : INoticeService
 {
     private readonly List<Notice> _notices = new()
     {
         new Notice(1, "Welcome", "Welcome to NexaCRM!"),
-        new Notice(2, "Maintenance", "System maintenance on Friday."),
+        new Notice(2, "Maintenance", "System maintenance on Friday.")
     };
 
     private int _nextId = 3;
@@ -46,4 +49,3 @@ public class NoticeService : INoticeService
         return Task.CompletedTask;
     }
 }
-

@@ -1,8 +1,8 @@
-using NexaCRM.WebClient.Models;
+using NexaCRM.UI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NexaCRM.WebClient.Services.Interfaces
+namespace NexaCRM.UI.Services.Interfaces
 {
     public interface IAgentService
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using NexaCRM.WebClient.Models.Supabase;
+using NexaCRM.UI.Models.Supabase;
 
 namespace NexaCRM.WebClient.Services.Analytics;
 

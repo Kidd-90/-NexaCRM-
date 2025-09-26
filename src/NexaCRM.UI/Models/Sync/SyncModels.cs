@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Models.Sync;
+namespace NexaCRM.UI.Models.Sync;
 
 /// <summary>
 /// Represents an offline envelope grouping multiple entities for synchronization.

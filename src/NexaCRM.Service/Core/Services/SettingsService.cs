@@ -1,33 +1,40 @@
-using NexaCRM.Services.Admin.Models.Settings;
-using NexaCRM.Services.Admin.Interfaces;
 using System.Threading.Tasks;
+using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.Services.Admin.Models.Settings;
 
 namespace NexaCRM.Services.Admin;
 
-public class SettingsService : ISettingsService
+public sealed class SettingsService : ISettingsService
 {
-    public Task<CompanyInfo> GetCompanyInfoAsync() =>
-        Task.FromResult(new CompanyInfo());
+    private CompanyInfo _companyInfo = new();
+    private SmsSettings _smsSettings = new();
+    private UserProfile _userProfile = new();
 
-    public Task SaveCompanyInfoAsync(CompanyInfo info) =>
-        Task.CompletedTask;
+    public Task<CompanyInfo> GetCompanyInfoAsync() => Task.FromResult(_companyInfo);
 
-    public Task<SecuritySettings> GetSecuritySettingsAsync() =>
-        Task.FromResult(new SecuritySettings());
+    public Task SaveCompanyInfoAsync(CompanyInfo info)
+    {
+        _companyInfo = info;
+        return Task.CompletedTask;
+    }
 
-    public Task SaveSecuritySettingsAsync(SecuritySettings settings) =>
-        Task.CompletedTask;
+    public Task<SecuritySettings> GetSecuritySettingsAsync() => Task.FromResult(new SecuritySettings());
 
-    public Task<SmsSettings> GetSmsSettingsAsync() =>
-        Task.FromResult(new SmsSettings());
+    public Task SaveSecuritySettingsAsync(SecuritySettings settings) => Task.CompletedTask;
 
-    public Task SaveSmsSettingsAsync(SmsSettings settings) =>
-        Task.CompletedTask;
+    public Task<SmsSettings> GetSmsSettingsAsync() => Task.FromResult(_smsSettings);
 
-    public Task<UserProfile> GetUserProfileAsync() =>
-        Task.FromResult(new UserProfile());
+    public Task SaveSmsSettingsAsync(SmsSettings settings)
+    {
+        _smsSettings = settings;
+        return Task.CompletedTask;
+    }
 
-    public Task SaveUserProfileAsync(UserProfile profile) =>
-        Task.CompletedTask;
+    public Task<UserProfile> GetUserProfileAsync() => Task.FromResult(_userProfile);
+
+    public Task SaveUserProfileAsync(UserProfile profile)
+    {
+        _userProfile = profile;
+        return Task.CompletedTask;
+    }
 }
-

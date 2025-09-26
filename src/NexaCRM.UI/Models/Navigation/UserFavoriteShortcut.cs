@@ -1,4 +1,4 @@
-namespace NexaCRM.WebClient.Models.Navigation;
+namespace NexaCRM.UI.Models.Navigation;
 
 /// <summary>
 /// Represents a shortcut that a user has marked as a favourite for quick access on mobile devices.

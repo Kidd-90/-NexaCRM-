@@ -1,6 +1,6 @@
 using System;
 
-namespace NexaCRM.WebClient.Models.Teams;
+namespace NexaCRM.UI.Models.Teams;
 
 public class TeamInfo
 {

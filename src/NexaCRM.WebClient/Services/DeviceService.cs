@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services
 {

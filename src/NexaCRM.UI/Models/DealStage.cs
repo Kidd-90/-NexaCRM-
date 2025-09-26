@@ -1,4 +1,4 @@
-namespace NexaCRM.WebClient.Models
+namespace NexaCRM.UI.Models
 {
     public sealed class DealStage
     {

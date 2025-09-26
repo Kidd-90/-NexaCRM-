@@ -1,6 +1,6 @@
 using System;
 
-namespace NexaCRM.WebClient.Models
+namespace NexaCRM.UI.Models
 {
     public sealed class DealCreateRequest
     {

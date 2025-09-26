@@ -4,7 +4,7 @@ This guide provides instructions and code examples for connecting the `NexaCRM.W
 
 ## Step 1: Add the Supabase Client Library
 
-First, you need to add the `supabase-csharp` library to your Blazor project. Open a terminal in the `src/Web/NexaCRM.WebClient` directory and run the following command:
+First, you need to add the `supabase-csharp` library to your Blazor project. Open a terminal in the `src/NexaCRM.WebClient` directory and run the following command:
 
 ```bash
 dotnet add package supabase-csharp
@@ -28,7 +28,7 @@ You need to initialize the Supabase client with your project's URL and Anon Key.
 **Important:** The Anon Key is safe to expose in a browser client. It works with your Row-Level Security policies to allow access.
 
 **2. Register the client in `Program.cs`:**
-Modify your `src/Web/NexaCRM.WebClient/Program.cs` file to register the Supabase client as a singleton service.
+Modify your `src/NexaCRM.WebClient/Program.cs` file to register the Supabase client as a singleton service.
 
 ```csharp
 // using Supabase; // Add this using statement
@@ -64,7 +64,7 @@ Here is an example for `Deal.cs`. You would create similar models for `Contact`,
 using Postgrest.Attributes;
 using Postgrest.Models;
 
-namespace NexaCRM.WebClient.Models
+namespace NexaCRM.UI.Models
 {
     [Table("deals")]
     public class Deal : BaseModel
@@ -136,7 +136,7 @@ Create services to encapsulate your data logic. These services will use the inje
 
 **Example `Services/DealService.cs`:**
 ```csharp
-using NexaCRM.WebClient.Models;
+using NexaCRM.UI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

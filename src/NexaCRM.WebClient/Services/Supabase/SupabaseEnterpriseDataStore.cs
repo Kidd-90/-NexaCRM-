@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using NexaCRM.WebClient.Models.Customization;
-using NexaCRM.WebClient.Models.FileHub;
-using NexaCRM.WebClient.Models.Governance;
-using NexaCRM.WebClient.Models.Sync;
+using NexaCRM.UI.Models.Customization;
+using NexaCRM.UI.Models.FileHub;
+using NexaCRM.UI.Models.Governance;
+using NexaCRM.UI.Models.Sync;
 
 namespace NexaCRM.WebClient.Services.SupabaseEnterprise;
 

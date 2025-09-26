@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace NexaCRM.WebClient.Services.Interfaces;
+namespace NexaCRM.UI.Services.Interfaces;
 
 public interface IMobileInteractionService
 {

@@ -17,7 +17,7 @@ This reference guide provides comprehensive documentation for all service interf
 
 **Purpose**: Manages customer contact information and related operations
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -71,7 +71,7 @@ private async Task LoadContacts()
 
 **Purpose**: Handles sales opportunities, deal pipeline management, and revenue tracking
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -121,7 +121,7 @@ private async Task LoadDeals()
 
 **Purpose**: Comprehensive task lifecycle management with full create, read, update, delete operations
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -215,7 +215,7 @@ private async Task CompleteTask(Models.Task task)
 
 **Purpose**: Customer support ticket lifecycle management with live interaction capabilities
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -310,7 +310,7 @@ private async Task EscalateTicket(SupportTicket ticket)
 
 **Purpose**: Sales and support agent roster management and assignment
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -351,7 +351,7 @@ private async Task LoadAvailableAgents()
 
 **Purpose**: Marketing campaign lifecycle management with full CRUD operations
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -434,7 +434,7 @@ private async Task LaunchCampaign()
 
 **Purpose**: Business intelligence and analytics reporting with multiple report types
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -527,7 +527,7 @@ private async Task LoadDashboardReports()
 
 **Purpose**: System-wide activity tracking and audit trail management
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -856,7 +856,7 @@ public interface ITaskService
 
 **Purpose**: Manages Supabase 기반 사용자 수명주기, 역할, 보안 정책, 감사 로그를 처리합니다.
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -885,7 +885,7 @@ public interface IUserGovernanceService
 
 **Purpose**: 조직/사용자별 환경설정, 기능 플래그, 대시보드 위젯, KPI 스냅샷을 관리합니다.
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -913,7 +913,7 @@ public interface ISettingsCustomizationService
 
 **Purpose**: 파일 등록, 버전 관리, 문서별 커뮤니케이션 스레드를 제공합니다.
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -941,7 +941,7 @@ public interface IFileHubService
 
 **Purpose**: 영업/지원 등 다양한 시나리오에서 사용하는 독립 커뮤니케이션 스레드를 제공합니다.
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp
@@ -964,7 +964,7 @@ public interface ICommunicationHubService
 
 **Purpose**: 모바일/현장 사용자를 위한 오프라인 동기화 envelope과 충돌 관리를 담당합니다.
 
-**Namespace**: `NexaCRM.WebClient.Services.Interfaces`
+**Namespace**: `NexaCRM.UI.Services.Interfaces`
 
 #### Interface Definition
 ```csharp

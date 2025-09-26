@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Navigation;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models.Navigation;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services;
 

@@ -1,4 +1,4 @@
-namespace NexaCRM.WebClient.Models.Enums
+namespace NexaCRM.UI.Models.Enums
 {
     public enum CampaignStatus
     {

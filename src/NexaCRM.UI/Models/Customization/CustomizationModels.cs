@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Models.Customization;
+namespace NexaCRM.UI.Models.Customization;
 
 /// <summary>
 /// Settings applied to all users in a specific organization.

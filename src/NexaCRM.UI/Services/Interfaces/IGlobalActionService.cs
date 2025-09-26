@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NexaCRM.WebClient.Services.Interfaces;
+namespace NexaCRM.UI.Services.Interfaces;
 
 public enum GlobalActionType
 {

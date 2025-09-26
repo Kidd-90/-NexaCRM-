@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Models.CustomerCenter;
+namespace NexaCRM.UI.Models.CustomerCenter;
 
 /// <summary>
 /// Snapshot style metrics for the customer center dashboard.

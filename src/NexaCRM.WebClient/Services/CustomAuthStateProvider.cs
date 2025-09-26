@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
-using NexaCRM.WebClient.Models.Supabase;
+using NexaCRM.UI.Models.Supabase;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Exceptions;
 using Supabase.Gotrue.Interfaces;

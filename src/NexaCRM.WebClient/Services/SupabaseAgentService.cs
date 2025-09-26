@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NexaCRM.WebClient.Models;
-using NexaCRM.WebClient.Models.Supabase;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models;
+using NexaCRM.UI.Models.Supabase;
+using NexaCRM.UI.Services.Interfaces;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 
 namespace NexaCRM.WebClient.Services;

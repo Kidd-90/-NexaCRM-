@@ -1,83 +1,139 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.Services.Admin
+namespace NexaCRM.Services.Admin;
+
+public sealed class DuplicateMonitorService : IDuplicateMonitorService, IAsyncDisposable
 {
-    public class DuplicateMonitorService : IDuplicateMonitorService, IDisposable
+    private readonly IDuplicateService _duplicateService;
+    private readonly IDedupeConfigService _config;
+    private readonly INotificationFeedService _feed;
+    private readonly ILogger<DuplicateMonitorService> _logger;
+    private CancellationTokenSource? _cts;
+    private Task? _monitorTask;
+    private int _lastCount;
+
+    public DuplicateMonitorService(
+        IDuplicateService duplicateService,
+        IDedupeConfigService config,
+        INotificationFeedService feed,
+        ILogger<DuplicateMonitorService> logger)
     {
-        private readonly IDuplicateService _duplicateService;
-        private readonly IDedupeConfigService _config;
-        private readonly INotificationFeedService _feed;
-        private Timer? _timer;
-        private int _lastCount;
+        _duplicateService = duplicateService;
+        _config = config;
+        _feed = feed;
+        _logger = logger;
+        _config.Changed += OnConfigChanged;
+    }
 
-        public DuplicateMonitorService(IDuplicateService duplicateService, IDedupeConfigService config, INotificationFeedService feed)
+    public Task StartAsync()
+    {
+        RestartLoop();
+        return Task.CompletedTask;
+    }
+
+    public Task RunOnceAsync() => EvaluateOnceAsync(CancellationToken.None);
+
+    private void OnConfigChanged()
+    {
+        _lastCount = 0;
+        RestartLoop();
+    }
+
+    private void RestartLoop()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+
+        if (!_config.Enabled)
         {
-            _duplicateService = duplicateService;
-            _config = config;
-            _feed = feed;
-            _config.Changed += OnConfigChanged;
+            _monitorTask = null;
+            return;
         }
 
-        public Task StartAsync()
-        {
-            RestartTimer();
-            return Task.CompletedTask;
-        }
+        _cts = new CancellationTokenSource();
+        _monitorTask = MonitorAsync(_cts.Token);
+    }
 
-        private async void OnTick(object? state)
+    private async Task MonitorAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
         {
             try
             {
-                if (!_config.Enabled) return;
-                var groups = await _duplicateService.FindDuplicatesAsync(_config.Days, _config.IncludeFuzzy);
-                var count = groups.Count;
-                if (count > 0 && (_config.NotifyOnSameCount || count != _lastCount))
-                {
-                    await _feed.AddAsync(new NotificationFeedItem
-                    {
-                        Title = "중복 DB 감지 결과",
-                        Message = $"최근 {_config.Days}일 내 중복 {count}건 발견",
-                        Type = "warning",
-                        TimestampUtc = DateTime.UtcNow,
-                        IsRead = false
-                    });
-                    _lastCount = count;
-                }
+                var delay = TimeSpan.FromMinutes(Math.Max(1, _config.MonitorIntervalMinutes));
+                await Task.Delay(delay, token);
+                await EvaluateOnceAsync(token);
             }
-            catch
+            catch (OperationCanceledException)
             {
-                // swallow for mock environment
+                // expected when the token is canceled
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Duplicate monitor loop failed.");
             }
         }
+    }
 
-        private void OnConfigChanged()
+    private async Task EvaluateOnceAsync(CancellationToken token)
+    {
+        if (!_config.Enabled)
         {
-            _lastCount = 0; // force next tick to notify again with new settings
-            RestartTimer();
+            return;
         }
 
-        private void RestartTimer()
+        var groups = await _duplicateService.FindDuplicatesAsync(_config.Days, _config.IncludeFuzzy);
+        var count = groups.Count;
+        if (count <= 0)
         {
-            var due = TimeSpan.FromMinutes(2);
-            var period = TimeSpan.FromMinutes(Math.Max(1, _config.MonitorIntervalMinutes));
-            _timer?.Dispose();
-            _timer = new Timer(OnTick, null, due, period);
+            return;
         }
 
-        public Task RunOnceAsync()
+        if (!_config.NotifyOnSameCount && count == _lastCount)
         {
-            OnTick(null);
-            return Task.CompletedTask;
+            return;
         }
 
-        public void Dispose()
+        await _feed.AddAsync(new NotificationFeedItem
         {
-            _config.Changed -= OnConfigChanged;
-            _timer?.Dispose();
+            Title = "중복 DB 감지 결과",
+            Message = $"최근 {_config.Days}일 내 중복 {count}건 발견",
+            Type = "warning",
+            TimestampUtc = DateTime.UtcNow,
+            IsRead = false
+        });
+
+        _lastCount = count;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _config.Changed -= OnConfigChanged;
+        if (_cts is null)
+        {
+            return;
+        }
+
+        _cts.Cancel();
+        try
+        {
+            if (_monitorTask is not null)
+            {
+                await _monitorTask.ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // ignore cancellation during shutdown
+        }
+        finally
+        {
+            _cts.Dispose();
+            _cts = null;
         }
     }
 }

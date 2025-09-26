@@ -2,7 +2,7 @@ using System;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace NexaCRM.WebClient.Models.Supabase;
+namespace NexaCRM.UI.Models.Supabase;
 
 [Table("team_members")]
 public sealed class TeamMemberRecord : BaseModel

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using NexaCRM.Services.Admin.Models.Organization;
 using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.Services.Admin.Models.Organization;
 using AgentModel = NexaCRM.Services.Admin.Models.Agent;
 using NewUserModel = NexaCRM.Services.Admin.Models.NewUser;
 
 namespace NexaCRM.Services.Admin;
 
-public class OrganizationService : IOrganizationService
+public sealed class OrganizationService : IOrganizationService
 {
     private readonly List<OrganizationUnit> _organizationUnits =
     [
@@ -202,7 +202,42 @@ public class OrganizationService : IOrganizationService
         return Task.CompletedTask;
     }
 
-    public Task SetSystemAdminAsync(string userId) => AddAdminAsync(userId);
+    public Task SetSystemAdminAsync(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Task.CompletedTask;
+        }
+
+        if (!int.TryParse(userId, out var parsedId))
+        {
+            return Task.CompletedTask;
+        }
+
+        var user = _users.FirstOrDefault(u => u.Id == parsedId);
+        if (user is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        user.Role = "Admin";
+        user.Status = "Active";
+        user.ApprovedAt ??= DateTime.UtcNow;
+        user.ApprovalMemo = "Elevated to system administrator";
+
+        if (_admins.All(a => a.Id != parsedId))
+        {
+            _admins.Add(new AgentModel
+            {
+                Id = parsedId,
+                Name = user.Name,
+                Email = user.Email,
+                Role = "Admin"
+            });
+        }
+
+        return Task.CompletedTask;
+    }
 
     public Task RegisterUserAsync(NewUserModel user)
     {
@@ -225,7 +260,7 @@ public class OrganizationService : IOrganizationService
             throw new ValidationException(message);
         }
 
-        _users.Add(new OrganizationUser
+        var newUser = new OrganizationUser
         {
             Id = GenerateUserId(),
             UserId = user.UserId.Trim(),
@@ -233,52 +268,102 @@ public class OrganizationService : IOrganizationService
             Email = user.Email.Trim(),
             Role = "Member",
             Status = "Pending",
-            Department = "미지정",
-            RegisteredAt = DateTime.Now
+            Department = string.Empty,
+            PhoneNumber = string.Empty,
+            RegisteredAt = DateTime.UtcNow,
+            ApprovedAt = null,
+            ApprovalMemo = "Registration requested"
+        };
+
+        _users.Add(newUser);
+        return Task.CompletedTask;
+    }
+
+    public Task<IEnumerable<NewUserModel>> GetPendingUsersAsync()
+    {
+        var pending = _users
+            .Where(u => string.Equals(u.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+            .Select(u => new NewUserModel
+            {
+                UserId = u.UserId ?? string.Empty,
+                FullName = u.Name ?? string.Empty,
+                Email = u.Email,
+                Password = string.Empty,
+                ConfirmPassword = string.Empty,
+                TermsAccepted = true
+            })
+            .ToList();
+
+        return Task.FromResult<IEnumerable<NewUserModel>>(pending);
+    }
+
+    public Task InviteUserAsync(NewUserModel newUser)
+    {
+        if (string.IsNullOrWhiteSpace(newUser.Email))
+        {
+            return Task.CompletedTask;
+        }
+
+        var id = GenerateUserId();
+        var name = string.IsNullOrWhiteSpace(newUser.FullName)
+            ? $"Invited {id}"
+            : newUser.FullName.Trim();
+        var userId = string.IsNullOrWhiteSpace(newUser.UserId)
+            ? $"invited.{id}-user"
+            : newUser.UserId.Trim();
+        _users.Add(new OrganizationUser
+        {
+            Id = id,
+            UserId = userId,
+            Name = name,
+            Email = newUser.Email.Trim(),
+            Role = "Member",
+            Status = "Pending",
+            Department = string.Empty,
+            RegisteredAt = DateTime.UtcNow,
+            ApprovalMemo = "Invitation sent"
         });
 
         return Task.CompletedTask;
     }
 
-    private int GenerateUnitId() =>
-        _organizationUnits.Count == 0 ? 1 : _organizationUnits.Max(u => u.Id) + 1;
+    private static AgentModel CloneAdmin(AgentModel admin) => new()
+    {
+        Id = admin.Id,
+        Name = admin.Name,
+        Email = admin.Email,
+        Role = admin.Role
+    };
 
-    private int GenerateUserId() =>
-        _users.Count == 0 ? 1 : _users.Max(u => u.Id) + 1;
+    private static OrganizationUser CloneUser(OrganizationUser user) => new()
+    {
+        Id = user.Id,
+        UserId = user.UserId,
+        Name = user.Name,
+        Email = user.Email,
+        Role = user.Role,
+        Status = user.Status,
+        Department = user.Department,
+        PhoneNumber = user.PhoneNumber,
+        RegisteredAt = user.RegisteredAt,
+        ApprovedAt = user.ApprovedAt,
+        ApprovalMemo = user.ApprovalMemo
+    };
 
-    private int GenerateAdminId() =>
-        _admins.Count == 0 ? 1 : _admins.Max(a => a.Id) + 1;
+    private int GenerateUnitId() => _organizationUnits.Count == 0 ? 1 : _organizationUnits.Max(u => u.Id) + 1;
+
+    private int GenerateAdminId() => _admins.Count == 0 ? 1 : _admins.Max(a => a.Id) + 1;
+
+    private int GenerateUserId() => _users.Count == 0 ? 1 : _users.Max(u => u.Id) + 1;
 
     private void RemoveUnitRecursive(int id)
     {
-        var children = _organizationUnits.Where(u => u.ParentId == id).Select(u => u.Id).ToList();
-        _organizationUnits.RemoveAll(u => u.Id == id);
-        foreach (var child in children)
+        var toRemove = _organizationUnits.Where(u => u.ParentId == id).Select(u => u.Id).ToList();
+        foreach (var childId in toRemove)
         {
-            RemoveUnitRecursive(child);
+            RemoveUnitRecursive(childId);
         }
+
+        _organizationUnits.RemoveAll(u => u.Id == id);
     }
-
-    private static OrganizationUser CloneUser(OrganizationUser source) => new()
-    {
-        Id = source.Id,
-        UserId = source.UserId,
-        Name = source.Name,
-        Email = source.Email,
-        Role = source.Role,
-        Status = source.Status,
-        Department = source.Department,
-        PhoneNumber = source.PhoneNumber,
-        RegisteredAt = source.RegisteredAt,
-        ApprovedAt = source.ApprovedAt,
-        ApprovalMemo = source.ApprovalMemo
-    };
-
-    private static AgentModel CloneAdmin(AgentModel source) => new()
-    {
-        Id = source.Id,
-        Name = source.Name,
-        Email = source.Email,
-        Role = source.Role
-    };
 }
