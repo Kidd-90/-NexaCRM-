@@ -191,10 +191,11 @@
         {
             await JSRuntime.InvokeVoidAsync("console.log", "Attempting Supabase login");
 
-            var signedIn = await AuthProvider.SignInAsync(username, password);
-            if (!signedIn)
+            var result = await AuthProvider.SignInAsync(username, password);
+            if (!result.Succeeded)
             {
-                errorMessage = "사용자 이름 또는 비밀번호가 잘못되었습니다.";
+                errorMessage = result.ErrorMessage ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
+                await JSRuntime.InvokeVoidAsync("console.warn", $"Login failed for {username} with reason {result.FailureReason}.");
                 return;
             }
 
