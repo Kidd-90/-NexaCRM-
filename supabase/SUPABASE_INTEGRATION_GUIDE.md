@@ -83,7 +83,7 @@ builder.Services.AddSingleton(provider =>
 ### Phase 2 — 실시간 기능 및 통합 (예상: 2024년 8월)
 - [x] 지원 티켓, 작업(Task), 알림(Notification) 서비스에 Supabase Realtime 구독을 연결합니다.
 - [x] SMS/이메일 예약 발송을 Supabase Edge Functions + Cron으로 이전합니다. (참고: `supabase/functions/scheduled-dispatcher`)
-- [x] 감사 로그(`audit_logs`)와 외부 연동 이벤트(`integration_events`)를 통해 메시지 브로커와 데이터 동기화를 확인합니다. (참고: `src/Services/Admin.Core/Services/SupabaseAuditSyncVerifier.cs`)
+- [x] 감사 로그(`audit_logs`)와 외부 연동 이벤트(`integration_events`)를 통해 메시지 브로커와 데이터 동기화를 확인합니다. (참고: `src/NexaCRM.Service/Admin.Core/Services/SupabaseAuditSyncVerifier.cs`)
 
 ### Phase 2.5 — 확장 서비스 마이그레이션 (2024년 8월 완료)
 - [x] 에이전트 및 팀 서비스(IAgentService, ITeamService)를 Supabase 스키마(`agents`, `teams`, `team_members`)와 연동했습니다.

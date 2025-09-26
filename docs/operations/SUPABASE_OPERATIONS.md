@@ -22,7 +22,7 @@ This document centralizes the operational ownership for the NexaCRM Supabase env
 
 ## 3. Monitoring Dashboard Integration
 
-- Metrics Source: `SupabaseMonitoringService` (see `src/Services/Admin.Core/Services/SupabaseMonitoringService.cs`).
+- Metrics Source: `SupabaseMonitoringService` (see `src/NexaCRM.Service/Admin.Core/Services/SupabaseMonitoringService.cs`).
 - Export Path: OTLP traces forwarded to Grafana Cloud dataset `nexa.supabase`.
 - Key Widgets:
   - Database query latency (p50/p95) with SLO target &le; 200ms.

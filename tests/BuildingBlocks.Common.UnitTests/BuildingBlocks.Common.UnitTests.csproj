@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
+    <ProjectReference Include="..\..\src\NexaCRM.BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ApiGateway\NexaCrm.ApiGateway.csproj" />
+    <ProjectReference Include="..\..\src\NexaCRM.ApiGateway\NexaCrm.ApiGateway.csproj" />
   </ItemGroup>
 
 </Project>
