@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "NexaCRM.WebClient": {
+    "NexaCRM.UI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
