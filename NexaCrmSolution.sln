@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient", "src\We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebClient.UnitTests", "tests\NexaCRM.WebClient.UnitTests\NexaCRM.WebClient.UnitTests.csproj", "{C9C9C9C9-9999-9999-9999-999999999999}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebServer", "src\Web\NexaCRM.WebServer\NexaCRM.WebServer.csproj", "{A7A7A7A7-7777-7777-7777-777777777777}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCrm.ApiGateway.UnitTests", "tests\NexaCrm.ApiGateway.UnitTests\NexaCrm.ApiGateway.UnitTests.csproj", "{F2F2F2F2-2222-2222-2222-222222222222}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Common.UnitTests", "tests\BuildingBlocks.Common.UnitTests\BuildingBlocks.Common.UnitTests.csproj", "{A3A3A3A3-3333-3333-3333-333333333333}"
