@@ -1,5 +1,5 @@
 [build]
-  publish = "src/Web/NexaCRM.WebClient/bin/Release/net9.0/publish/wwwroot"
+  publish = "src/Web/NexaCRM.WebClient/bin/Release/net8.0/publish/wwwroot"
   command = "dotnet publish -c Release -o publish"
 
 [[redirects]]

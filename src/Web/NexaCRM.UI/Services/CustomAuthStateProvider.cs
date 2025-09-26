@@ -36,10 +36,10 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAsyn
 
     public bool IsAuthenticated => _currentState.User.Identity?.IsAuthenticated ?? false;
 
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        await EnsureInitializedAsync();
-        return _currentState;
+        _ = EnsureInitializedAsync();
+        return Task.FromResult(_currentState);
     }
 
     public async Task<LoginResult> SignInAsync(string email, string password)
@@ -110,7 +110,20 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAsyn
                 return;
             }
 
-            var client = await _clientProvider.GetClientAsync();
+            Supabase.Client? client;
+            try
+            {
+                client = await _clientProvider.GetClientAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to initialize the Supabase client while resolving the authentication state.");
+                _initialized = true;
+                _currentState = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                NotifyAuthenticationStateChanged(Task.FromResult(_currentState));
+                return;
+            }
+
             _authEventHandler = async (sender, state) => await HandleAuthStateChangedAsync(sender, state);
             client.Auth.AddStateChangedListener(_authEventHandler);
 
