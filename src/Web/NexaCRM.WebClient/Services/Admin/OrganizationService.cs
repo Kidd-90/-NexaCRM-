@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using NexaCRM.Services.Admin.Interfaces;
@@ -32,6 +33,7 @@ public sealed class OrganizationService : IOrganizationService
         new()
         {
             Id = 1,
+            UserId = "alice.kim-1",
             Name = "Alice Kim",
             Email = "alice.kim@example.com",
             Role = "Admin",
@@ -45,6 +47,7 @@ public sealed class OrganizationService : IOrganizationService
         new()
         {
             Id = 2,
+            UserId = "brian.lee-2",
             Name = "Brian Lee",
             Email = "brian.lee@example.com",
             Role = "Manager",
@@ -58,6 +61,7 @@ public sealed class OrganizationService : IOrganizationService
         new()
         {
             Id = 3,
+            UserId = "chloe.park-3",
             Name = "Chloe Park",
             Email = "chloe.park@example.com",
             Role = "Analyst",
@@ -239,19 +243,27 @@ public sealed class OrganizationService : IOrganizationService
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        if (string.IsNullOrWhiteSpace(user.FullName))
-        {
-            throw new ArgumentException("Full name is required.", nameof(user));
-        }
+        var results = new List<ValidationResult>();
+        var context = new ValidationContext(user);
 
-        if (string.IsNullOrWhiteSpace(user.Email))
+        if (!Validator.TryValidateObject(user, context, results, validateAllProperties: true))
         {
-            throw new ArgumentException("Email is required.", nameof(user));
+            var message = string.Join(" ", results
+                .Select(result => result.ErrorMessage)
+                .Where(error => !string.IsNullOrWhiteSpace(error)));
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                message = "Validation failed for user registration.";
+            }
+
+            throw new ValidationException(message);
         }
 
         var newUser = new OrganizationUser
         {
             Id = GenerateUserId(),
+            UserId = user.UserId.Trim(),
             Name = user.FullName.Trim(),
             Email = user.Email.Trim(),
             Role = "Member",
@@ -273,6 +285,7 @@ public sealed class OrganizationService : IOrganizationService
             .Where(u => string.Equals(u.Status, "Pending", StringComparison.OrdinalIgnoreCase))
             .Select(u => new NewUserModel
             {
+                UserId = u.UserId ?? string.Empty,
                 FullName = u.Name ?? string.Empty,
                 Email = u.Email,
                 Password = string.Empty,
@@ -295,9 +308,13 @@ public sealed class OrganizationService : IOrganizationService
         var name = string.IsNullOrWhiteSpace(newUser.FullName)
             ? $"Invited {id}"
             : newUser.FullName.Trim();
+        var userId = string.IsNullOrWhiteSpace(newUser.UserId)
+            ? $"invited.{id}-user"
+            : newUser.UserId.Trim();
         _users.Add(new OrganizationUser
         {
             Id = id,
+            UserId = userId,
             Name = name,
             Email = newUser.Email.Trim(),
             Role = "Member",
@@ -321,6 +338,7 @@ public sealed class OrganizationService : IOrganizationService
     private static OrganizationUser CloneUser(OrganizationUser user) => new()
     {
         Id = user.Id,
+        UserId = user.UserId,
         Name = user.Name,
         Email = user.Email,
         Role = user.Role,
