@@ -23,10 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Common.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.EventBus.UnitTests", "tests\BuildingBlocks.EventBus.UnitTests\BuildingBlocks.EventBus.UnitTests.csproj", "{B4B4B4B4-4444-4444-4444-444444444444}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{03997797-E7F5-0643-168D-B8EA7178C2FE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.UI", "src\Web\NexaCRM.UI\NexaCRM.UI.csproj", "{950694F0-1CFD-4C50-8D5C-6602E1156024}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexaCRM.WebServer", "src\Web\NexaCRM.WebServer\NexaCRM.WebServer.csproj", "{B87A9682-D690-4640-AE19-BA209DA635A8}"
