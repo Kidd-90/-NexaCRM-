@@ -174,6 +174,130 @@ CREATE POLICY "Users can delete tasks they created"
   USING (public.user_has_role('admin') OR auth.uid() = created_by);
 
 
+-- 8.a ORGANIZATION DIRECTORY RLS
+ALTER TABLE org_companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE org_branches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE org_company_branch_lists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE org_company_team_lists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_directory_entries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Approved users can view org companies"
+  ON org_companies FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR EXISTS (
+      SELECT 1 FROM organization_users
+      WHERE organization_users.user_id = auth.uid()
+        AND organization_users.unit_id = org_companies.tenant_unit_id
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage org companies"
+  ON org_companies FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+CREATE POLICY "Approved users can view org branches"
+  ON org_branches FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR EXISTS (
+      SELECT 1 FROM organization_users
+      WHERE organization_users.user_id = auth.uid()
+        AND organization_users.unit_id = org_branches.tenant_unit_id
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage org branches"
+  ON org_branches FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+CREATE POLICY "Approved users can view org company branch lists"
+  ON org_company_branch_lists FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR EXISTS (
+      SELECT 1 FROM organization_users
+      WHERE organization_users.user_id = auth.uid()
+        AND organization_users.unit_id = org_company_branch_lists.tenant_unit_id
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage org company branch lists"
+  ON org_company_branch_lists FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+CREATE POLICY "Approved users can view teams"
+  ON teams FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR EXISTS (
+      SELECT 1 FROM organization_users
+      WHERE organization_users.user_id = auth.uid()
+        AND organization_users.unit_id = teams.tenant_unit_id
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage teams"
+  ON teams FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+CREATE POLICY "Users can view their team membership"
+  ON team_members FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR (user_id IS NOT NULL AND user_id = auth.uid())
+    OR EXISTS (
+      SELECT 1
+      FROM teams
+      JOIN organization_users ON organization_users.unit_id = teams.tenant_unit_id
+      WHERE teams.id = team_members.team_id
+        AND organization_users.user_id = auth.uid()
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage team members"
+  ON team_members FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+CREATE POLICY "Approved users can view company team lists"
+  ON org_company_team_lists FOR SELECT
+  USING (
+    public.user_has_role('admin')
+    OR EXISTS (
+      SELECT 1 FROM organization_users
+      WHERE organization_users.user_id = auth.uid()
+        AND organization_users.unit_id = org_company_team_lists.tenant_unit_id
+        AND organization_users.status = 'approved'
+    )
+  );
+
+CREATE POLICY "Admins manage company team lists"
+  ON org_company_team_lists FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+CREATE POLICY "Users can view their directory entry"
+  ON user_directory_entries FOR SELECT
+  USING (auth.uid() = user_id OR public.user_has_role('admin'));
+
+CREATE POLICY "Admins manage user directory"
+  ON user_directory_entries FOR ALL
+  USING (public.user_has_role('admin'))
+  WITH CHECK (public.user_has_role('admin'));
+
+
 -- SUPPORT & SERVICE RLS
 ALTER TABLE support_tickets ENABLE ROW LEVEL SECURITY;
 
