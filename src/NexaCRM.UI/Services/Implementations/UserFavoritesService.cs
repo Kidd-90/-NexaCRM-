@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using NexaCRM.UI.Models.Navigation;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.UI.Services;
 
 /// <summary>
 /// Provides a simple in-memory implementation for user favourite shortcuts.

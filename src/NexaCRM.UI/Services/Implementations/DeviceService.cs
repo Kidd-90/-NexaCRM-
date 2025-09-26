@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services
+namespace NexaCRM.UI.Services
 {
     public class DeviceService : IDeviceService
     {

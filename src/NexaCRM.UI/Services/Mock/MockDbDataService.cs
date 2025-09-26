@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NexaCRM.Services.Admin.Models.Db;
 using NexaCRM.Services.Admin.Interfaces;
 
-namespace NexaCRM.WebClient.Services.Mock
+namespace NexaCRM.UI.Services.Mock
 {
 public class MockDbDataService : IDbDataService
 {

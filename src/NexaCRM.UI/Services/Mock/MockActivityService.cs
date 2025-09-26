@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
-namespace NexaCRM.WebClient.Services.Mock
+namespace NexaCRM.UI.Services.Mock
 {
     public class MockActivityService : IActivityService
     {

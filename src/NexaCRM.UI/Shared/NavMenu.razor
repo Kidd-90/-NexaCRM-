@@ -6,6 +6,7 @@
 @using NexaCRM.UI.Services.Interfaces
 @inject IStringLocalizer<NavMenu> Localizer
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 @inject IRolePermissionService RolePermissionService
 @inject INavigationStateService NavigationStateService
@@ -253,10 +254,7 @@
     private async Task Logout()
     {
         await CloseNavMenu();
-        if (AuthenticationStateProvider is CustomAuthStateProvider customAuth)
-        {
-            await customAuth.LogoutAsync();
-        }
+        await AuthenticationService.LogoutAsync();
     }
 
     private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationLinkViewModel> Links);

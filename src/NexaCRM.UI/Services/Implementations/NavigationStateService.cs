@@ -9,7 +9,7 @@ using Microsoft.JSInterop;
 using NexaCRM.UI.Models.Navigation;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.UI.Services;
 
 public sealed class NavigationStateService : INavigationStateService, IAsyncDisposable
 {

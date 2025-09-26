@@ -2,13 +2,13 @@
 @page "/"
 @layout LoginLayout
 @attribute [AllowAnonymous]
-@using NexaCRM.UI.Services
 @using System.Linq
 @using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
 @inject IStringLocalizer<LoginPage> Localizer
-@inject CustomAuthStateProvider AuthProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
@@ -153,7 +153,7 @@
         try
         {
             // 이미 인증된 사용자인지 확인
-            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
             if (user.Identity?.IsAuthenticated == true)
@@ -191,7 +191,7 @@
         {
             await JSRuntime.InvokeVoidAsync("console.log", "Attempting Supabase login");
 
-            var result = await AuthProvider.SignInAsync(username, password);
+            var result = await AuthenticationService.SignInAsync(username, password);
             if (!result.Succeeded)
             {
                 errorMessage = result.ErrorMessage ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
@@ -199,7 +199,7 @@
                 return;
             }
 
-            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
             if (user.IsInRole("Manager"))

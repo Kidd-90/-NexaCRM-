@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NexaCRM.UI.Services.Interfaces;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.UI.Services;
 
 public sealed class GlobalActionService : IGlobalActionService
 {
