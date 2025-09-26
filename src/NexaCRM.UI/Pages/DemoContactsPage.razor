@@ -1,6 +1,6 @@
 @page "/demo-contacts"
 @using Microsoft.Extensions.Localization
-@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.UI.Services.Interfaces
 @inject IStringLocalizer<ContactsPage> Localizer
 @inject NavigationManager NavigationManager
 @inject IGlobalActionService GlobalActionService
@@ -60,7 +60,7 @@
                                             </a>
                                         </td>
                                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <NexaCRM.WebClient.Components.UI.QuickActionsComponent 
+                                            <NexaCRM.UI.Components.UI.QuickActionsComponent 
                                                 PhoneNumber="@contact.Phone"
                                                 Email="@contact.Email"
                                                 CustomerName="@contact.Name"
@@ -114,7 +114,7 @@
                             
                             <!-- Quick Actions for Mobile -->
                             <div class="contact-actions">
-                                <NexaCRM.WebClient.Components.UI.QuickActionsComponent 
+                                <NexaCRM.UI.Components.UI.QuickActionsComponent 
                                     PhoneNumber="@contact.Phone"
                                     Email="@contact.Email"
                                     CustomerName="@contact.Name"
@@ -131,7 +131,7 @@
     </div>
     
     <!-- Mobile Quick Actions Floating Button -->
-    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
+    <NexaCRM.UI.Components.UI.FloatingActionButton 
         ShowCallAction="true" 
         ShowEmailAction="true" 
         ShowMeetingAction="true" 

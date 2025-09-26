@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Navigation;
+using NexaCRM.UI.Models.Navigation;
 
-namespace NexaCRM.WebClient.Services.Interfaces;
+namespace NexaCRM.UI.Services.Interfaces;
 
 public interface INavigationStateService
 {

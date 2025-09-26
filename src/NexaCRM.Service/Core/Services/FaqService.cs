@@ -1,51 +1,55 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NexaCRM.Services.Admin.Models.CustomerCenter;
 using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.Services.Admin.Models.CustomerCenter;
 
 namespace NexaCRM.Services.Admin;
 
-public class FaqService : IFaqService
+/// <summary>
+/// In-memory FAQ store that satisfies the shared administrative service contract.
+/// </summary>
+public sealed class FaqService : IFaqService
 {
-    private readonly List<FaqItem> faqs = new();
-    private readonly object faqLock = new();
+    private readonly List<FaqItem> _faqItems = new()
+    {
+        new() { Id = 1, Category = "계정", Question = "로그인은 어떻게 하나요?", Answer = "이메일과 비밀번호로 로그인할 수 있습니다.", Order = 0 },
+        new() { Id = 2, Category = "결제", Question = "결제 수단은 무엇이 있나요?", Answer = "신용카드와 계좌이체를 지원합니다.", Order = 1 },
+    };
+
+    private int _nextId = 3;
 
     public Task<List<FaqItem>> GetFaqsAsync()
     {
-        lock (faqLock)
-        {
-            return Task.FromResult(
-                faqs.OrderBy(f => f.Order)
-                    .Select(f => new FaqItem
-                    {
-                        Id = f.Id,
-                        Category = f.Category,
-                        Question = f.Question,
-                        Answer = f.Answer,
-                        Order = f.Order
-                    })
-                    .ToList());
-        }
+        var ordered = _faqItems
+            .OrderBy(f => f.Order)
+            .ThenBy(f => f.Id)
+            .Select(Clone)
+            .ToList();
+
+        return Task.FromResult(ordered);
     }
 
     public Task SaveFaqAsync(FaqItem item)
     {
-        lock (faqLock)
+        ArgumentNullException.ThrowIfNull(item);
+
+        if (item.Id == 0)
         {
-            var existing = faqs.FirstOrDefault(f => f.Id == item.Id);
+            var newItem = Clone(item);
+            newItem.Id = _nextId++;
+            newItem.Order = _faqItems.Count;
+            _faqItems.Add(newItem);
+        }
+        else
+        {
+            var existing = _faqItems.FirstOrDefault(f => f.Id == item.Id);
             if (existing is null)
             {
-                item.Id = faqs.Count == 0 ? 1 : faqs.Max(f => f.Id) + 1;
-                item.Order = faqs.Count;
-                faqs.Add(new FaqItem
-                {
-                    Id = item.Id,
-                    Category = item.Category,
-                    Question = item.Question,
-                    Answer = item.Answer,
-                    Order = item.Order
-                });
+                var newItem = Clone(item);
+                _faqItems.Add(newItem);
+                _nextId = Math.Max(_nextId, newItem.Id + 1);
             }
             else
             {
@@ -60,21 +64,30 @@ public class FaqService : IFaqService
 
     public Task ReorderFaqsAsync(IEnumerable<FaqItem> items)
     {
-        lock (faqLock)
+        ArgumentNullException.ThrowIfNull(items);
+
+        var newOrder = items
+            .Select((item, index) => (item.Id, index))
+            .ToDictionary(tuple => tuple.Id, tuple => tuple.index);
+
+        foreach (var faq in _faqItems)
         {
-            int index = 0;
-            foreach (var item in items)
+            if (newOrder.TryGetValue(faq.Id, out var order))
             {
-                var existing = faqs.FirstOrDefault(f => f.Id == item.Id);
-                if (existing != null)
-                {
-                    existing.Order = index++;
-                }
+                faq.Order = order;
             }
-            faqs.Sort((a, b) => a.Order.CompareTo(b.Order));
         }
 
+        _faqItems.Sort((left, right) => left.Order.CompareTo(right.Order));
         return Task.CompletedTask;
     }
-}
 
+    private static FaqItem Clone(FaqItem source) => new()
+    {
+        Id = source.Id,
+        Category = source.Category,
+        Question = source.Question,
+        Answer = source.Answer,
+        Order = source.Order
+    };
+}

@@ -1,6 +1,6 @@
-using NexaCRM.WebClient.Models;
+using NexaCRM.UI.Models;
 
-namespace NexaCRM.WebClient.Services.Interfaces
+namespace NexaCRM.UI.Services.Interfaces
 {
     public interface ISalesManagementService
     {

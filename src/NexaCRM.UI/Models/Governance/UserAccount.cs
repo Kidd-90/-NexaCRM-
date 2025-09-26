@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Models.Governance;
+namespace NexaCRM.UI.Models.Governance;
 
 /// <summary>
 /// Represents a managed user account inside NexaCRM.

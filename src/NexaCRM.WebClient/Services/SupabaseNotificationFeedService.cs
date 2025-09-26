@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NexaCRM.Services.Admin.Interfaces;
-using NexaCRM.WebClient.Models.Supabase;
+using NexaCRM.UI.Models.Supabase;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 using RealtimeEventType = Supabase.Realtime.Constants.EventType;

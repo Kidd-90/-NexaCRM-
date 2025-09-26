@@ -1,10 +1,10 @@
-using NexaCRM.Services.Admin.Models.Settings;
-using NexaCRM.Services.Admin.Interfaces;
 using System.Threading.Tasks;
+using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.Services.Admin.Models.Settings;
 
 namespace NexaCRM.Services.Admin;
 
-public class NotificationService : INotificationService
+public sealed class NotificationService : INotificationService
 {
     private NotificationSettings _settings = new();
 

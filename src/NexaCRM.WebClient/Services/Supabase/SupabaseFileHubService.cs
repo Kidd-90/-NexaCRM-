@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NexaCRM.WebClient.Models.FileHub;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models.FileHub;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services.SupabaseEnterprise;
 

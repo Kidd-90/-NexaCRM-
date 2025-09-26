@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NexaCRM.WebClient.Models;
-using NexaCRM.WebClient.Models.Enums;
-using NexaCRM.WebClient.Models.Supabase;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models;
+using NexaCRM.UI.Models.Enums;
+using NexaCRM.UI.Models.Supabase;
+using NexaCRM.UI.Services.Interfaces;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 

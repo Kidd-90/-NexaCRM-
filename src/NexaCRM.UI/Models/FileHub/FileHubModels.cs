@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Models.FileHub;
+namespace NexaCRM.UI.Models.FileHub;
 
 /// <summary>
 /// Represents a document registered inside the file hub.

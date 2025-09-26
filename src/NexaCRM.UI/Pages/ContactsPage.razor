@@ -1,8 +1,8 @@
 @page "/contacts"
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<ContactsPage> Localizer
-@using NexaCRM.WebClient.Services.Interfaces
-@using ContactModel = NexaCRM.WebClient.Models.Contact
+@using NexaCRM.UI.Services.Interfaces
+@using ContactModel = NexaCRM.UI.Models.Contact
 @using System.Linq
 @inject IContactService ContactService
 @inject NavigationManager NavigationManager
@@ -69,7 +69,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <NexaCRM.WebClient.Components.UI.QuickActionsComponent
+                                    <NexaCRM.UI.Components.UI.QuickActionsComponent
                                         PhoneNumber="@contact.PhoneNumber"
                                         Email="@contact.Email"
                                         CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
@@ -126,7 +126,7 @@
                     </div>
 
                     <div class="contact-actions">
-                        <NexaCRM.WebClient.Components.UI.QuickActionsComponent
+                        <NexaCRM.UI.Components.UI.QuickActionsComponent
                             PhoneNumber="@contact.PhoneNumber"
                             Email="@contact.Email"
                             CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"

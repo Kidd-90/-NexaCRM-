@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.FileHub;
+using NexaCRM.UI.Models.FileHub;
 
-namespace NexaCRM.WebClient.Services.Interfaces;
+namespace NexaCRM.UI.Services.Interfaces;
 
 /// <summary>
 /// Provides APIs for registering documents, managing versions, and collaborating around files.

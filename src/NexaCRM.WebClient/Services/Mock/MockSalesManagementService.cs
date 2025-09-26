@@ -1,6 +1,6 @@
-using NexaCRM.WebClient.Models;
-using NexaCRM.WebClient.Models.Enums;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models;
+using NexaCRM.UI.Models.Enums;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services.Mock
 {

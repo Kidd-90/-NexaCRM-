@@ -11,7 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\\NexaCRM.UI\\NexaCRM.UI.csproj" />
+    <ProjectReference Include="..\NexaCRM.Service\Abstractions\Services.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\NexaCRM.Service\Core\Services.Admin.Core.csproj" />
     <ProjectReference Include="..\NexaCRM.UI\NexaCRM.UI.csproj" />
   </ItemGroup>
 </Project>

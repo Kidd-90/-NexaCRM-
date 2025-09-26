@@ -2,7 +2,7 @@ using System;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace NexaCRM.WebClient.Models.Supabase;
+namespace NexaCRM.UI.Models.Supabase;
 
 [Table("profiles")]
 public sealed class ProfileLookupRecord : BaseModel

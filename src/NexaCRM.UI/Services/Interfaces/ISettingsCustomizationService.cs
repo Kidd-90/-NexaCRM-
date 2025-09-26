@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Customization;
+using NexaCRM.UI.Models.Customization;
 
-namespace NexaCRM.WebClient.Services.Interfaces;
+namespace NexaCRM.UI.Services.Interfaces;
 
 /// <summary>
 /// Handles personalization data such as organization defaults and user dashboard layouts.

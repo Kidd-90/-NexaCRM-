@@ -1,5 +1,5 @@
-using NexaCRM.WebClient.Models;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models;
+using NexaCRM.UI.Services.Interfaces;
 using System.Collections.Generic;
 
 namespace NexaCRM.WebClient.Services.Mock

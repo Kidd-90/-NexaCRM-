@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace NexaCRM.WebClient.Models.Navigation;
+namespace NexaCRM.UI.Models.Navigation;
 
 public sealed record NavigationHistoryEntry(
     [property: JsonPropertyName("href")] string Href,

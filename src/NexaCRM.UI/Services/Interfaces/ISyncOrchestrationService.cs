@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Models.Sync;
+using NexaCRM.UI.Models.Sync;
 
-namespace NexaCRM.WebClient.Services.Interfaces;
+namespace NexaCRM.UI.Services.Interfaces;
 
 /// <summary>
 /// Coordinates offline envelopes and conflict tracking.

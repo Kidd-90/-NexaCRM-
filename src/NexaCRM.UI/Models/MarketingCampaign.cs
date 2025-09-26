@@ -1,7 +1,7 @@
-using NexaCRM.WebClient.Models.Enums;
+using NexaCRM.UI.Models.Enums;
 using System;
 
-namespace NexaCRM.WebClient.Models
+namespace NexaCRM.UI.Models
 {
     public class MarketingCampaign
     {

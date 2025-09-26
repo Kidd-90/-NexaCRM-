@@ -1,9 +1,9 @@
-using NexaCRM.WebClient.Models;
+using NexaCRM.UI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
-namespace NexaCRM.WebClient.Services.Interfaces
+namespace NexaCRM.UI.Services.Interfaces
 {
     public interface IActivityService
     {

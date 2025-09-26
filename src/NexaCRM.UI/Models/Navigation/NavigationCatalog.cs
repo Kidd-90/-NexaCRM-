@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace NexaCRM.WebClient.Models.Navigation;
+namespace NexaCRM.UI.Models.Navigation;
 
 /// <summary>
 /// Central navigation schema used by the shell header, sidebar menu and search experiences.

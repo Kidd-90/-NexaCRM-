@@ -2,8 +2,8 @@
 @using Microsoft.Extensions.Localization
 @using System.Linq
 @inject IStringLocalizer<SalesPipelinePage> Localizer
-@using NexaCRM.WebClient.Models
-@using NexaCRM.WebClient.Services.Interfaces
+@using NexaCRM.UI.Models
+@using NexaCRM.UI.Services.Interfaces
 @inject IDealService DealService
 @inject NavigationManager NavigationManager
 @inject IGlobalActionService GlobalActionService
@@ -239,7 +239,7 @@
     </div>
     
     <!-- Mobile Quick Actions Floating Button -->
-    <NexaCRM.WebClient.Components.UI.FloatingActionButton 
+    <NexaCRM.UI.Components.UI.FloatingActionButton 
         ShowCallAction="true" 
         ShowEmailAction="true" 
         ShowMeetingAction="true" 

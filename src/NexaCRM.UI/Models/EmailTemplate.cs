@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NexaCRM.WebClient.Models
+namespace NexaCRM.UI.Models
 {
     public class EmailTemplate
     {

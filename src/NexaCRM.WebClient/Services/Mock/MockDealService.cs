@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using NexaCRM.WebClient.Models;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services.Mock
 {

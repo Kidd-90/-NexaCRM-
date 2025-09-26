@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services;
 

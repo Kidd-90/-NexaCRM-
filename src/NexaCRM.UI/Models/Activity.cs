@@ -1,7 +1,7 @@
 using System;
-using NexaCRM.WebClient.Models.Enums;
+using NexaCRM.UI.Models.Enums;
 
-namespace NexaCRM.WebClient.Models
+namespace NexaCRM.UI.Models
 {
     public class Activity
     {

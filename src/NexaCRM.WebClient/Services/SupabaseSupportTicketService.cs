@@ -4,16 +4,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NexaCRM.WebClient.Models.Enums;
-using NexaCRM.WebClient.Models.Supabase;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models.Enums;
+using NexaCRM.UI.Models.Supabase;
+using NexaCRM.UI.Services.Interfaces;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 using RealtimeEventType = Supabase.Realtime.Constants.EventType;
 using RealtimeListenType = Supabase.Realtime.PostgresChanges.PostgresChangesOptions.ListenType;
 using Supabase.Realtime.Interfaces;
 using Supabase.Realtime.PostgresChanges;
-using SupportTicket = NexaCRM.WebClient.Models.SupportTicket;
+using SupportTicket = NexaCRM.UI.Models.SupportTicket;
 
 namespace NexaCRM.WebClient.Services;
 

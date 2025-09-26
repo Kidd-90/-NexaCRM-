@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
-using NexaCRM.WebClient.Models.Navigation;
-using NexaCRM.WebClient.Services.Interfaces;
+using NexaCRM.UI.Models.Navigation;
+using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.WebClient.Services;
 

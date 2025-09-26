@@ -1,4 +1,4 @@
-namespace NexaCRM.WebClient.Models;
+namespace NexaCRM.UI.Models;
 
 /// <summary>
 /// Represents an agent displayed within the Blazor client experience.

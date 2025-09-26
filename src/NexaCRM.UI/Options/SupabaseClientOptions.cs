@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NexaCRM.WebClient.Options;
+namespace NexaCRM.UI.Options;
 
 /// <summary>
 /// Configuration required to initialize the Supabase client inside the Blazor WebAssembly application.
