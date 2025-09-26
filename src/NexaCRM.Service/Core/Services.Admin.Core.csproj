@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Admin.Abstractions\Services.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\Abstractions\Services.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\NexaCRM.BuildingBlocks\Common\BuildingBlocks.Common.csproj" />
   </ItemGroup>
 </Project>

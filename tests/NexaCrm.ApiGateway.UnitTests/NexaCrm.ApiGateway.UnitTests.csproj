@@ -19,8 +19,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\NexaCRM.ApiGateway\NexaCrm.ApiGateway.csproj" />
-  </ItemGroup>
-
 </Project>
