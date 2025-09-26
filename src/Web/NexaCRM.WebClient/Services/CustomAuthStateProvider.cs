@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,6 +58,13 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAsyn
         if (session is null)
         {
             return false;
+        }
+
+        var isApproved = await IsUserApprovedAsync(client, session);
+        if (!isApproved)
+        {
+            await client.Auth.SignOut();
+            throw new UnauthorizedAccessException("User account has not been approved by an administrator.");
         }
 
         await UpdateAuthenticationStateAsync(session);
@@ -181,6 +189,40 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAsyn
         }
 
         return roles;
+    }
+
+    private async Task<bool> IsUserApprovedAsync(Supabase.Client client, Session session)
+    {
+        if (session.User?.Id is null)
+        {
+            return false;
+        }
+
+        if (!Guid.TryParse(session.User.Id, out var userId))
+        {
+            _logger.LogWarning("Supabase session user id was not a valid GUID: {UserId}.", session.User.Id);
+            return false;
+        }
+
+        var response = await client.From<OrganizationUserRecord>()
+            .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
+            .Limit(1)
+            .Get();
+
+        var membership = response.Models?.FirstOrDefault();
+        if (membership is null)
+        {
+            _logger.LogInformation("User {UserId} attempted login without organization membership record.", userId);
+            return false;
+        }
+
+        var isApproved = string.Equals(membership.Status, "approved", StringComparison.OrdinalIgnoreCase);
+        if (!isApproved)
+        {
+            _logger.LogInformation("User {UserId} attempted login with status {Status}.", userId, membership.Status);
+        }
+
+        return isApproved;
     }
 
     public async ValueTask DisposeAsync()

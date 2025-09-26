@@ -214,6 +214,10 @@
                 NavigationManager.NavigateTo("/main-dashboard");
             }
         }
+        catch (UnauthorizedAccessException)
+        {
+            errorMessage = "관리자 승인 대기 중인 계정입니다. 승인이 완료된 후 다시 시도해주세요.";
+        }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("console.error", $"Error during login: {ex.Message}");
