@@ -13,6 +13,9 @@ public sealed class TeamMemberRecord : BaseModel
     [Column("team_id")]
     public int TeamId { get; set; }
 
+    [Column("user_cuid")]
+    public string UserCuid { get; set; } = string.Empty;
+
     [Column("team_name")]
     public string? TeamName { get; set; }
 

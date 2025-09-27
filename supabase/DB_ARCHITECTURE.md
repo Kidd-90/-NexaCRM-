@@ -79,18 +79,20 @@ graph TD
 | 테이블 | 목적 | 주요 컬럼 | 연관 관계/비고 |
 | --- | --- | --- | --- |
 | `auth.users` | Supabase 기본 사용자 | id, email, metadata | 모든 사용자 기준 |
-| `profiles` | 공개 프로필 | username, full_name, avatar_url | 기존 스키마 유지, `auth.users` FK.【F:supabase/migrations/schema.sql†L3-L26】 |
+| `app_users` | NexaCRM 전용 사용자 식별자 | cuid, auth_user_id, status | `auth.users`와 1:1 매핑되는 CUID 키, 모든 조직·권한 테이블이 참조.【F:supabase/migrations/schema.sql†L13-L37】 |
+| `user_infos` | 확장 사용자 프로필 | user_cuid, username, full_name, metadata | `app_users`를 FK로 사용하며 조직, 역할, 팀 데이터가 `user_cuid`로 조인.【F:supabase/migrations/schema.sql†L39-L59】 |
+| `profiles` | 공개 프로필 | user_cuid, username, full_name, avatar_url | `auth.users`와 `user_infos` 양쪽을 연결.【F:supabase/migrations/schema.sql†L61-L79】 |
 | `organization_units` | 조직 트리 관리 | id, tenant_id, parent_id, name | `OrganizationUnit` 모델 반영.【F:src/NexaCRM.Service/Admin.Abstractions/Models/Organization/OrganizationModels.cs†L6-L28】 |
-| `organization_users` | 조직 사용자 승인 흐름 | id, user_id, unit_id, role, status, approved_at, approval_memo | 사용자 승인·거절 로직 지원.【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/IOrganizationService.cs†L9-L24】 |
-| `user_roles` | 역할 매핑 | user_id, role_code, assigned_by | 역할 기반 권한 확인에 사용.【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/IRolePermissionService.cs†L5-L30】 |
+| `organization_users` | 조직 사용자 승인 흐름 | id, user_id, user_cuid, unit_id, role, status, approved_at, approval_memo | CUID 기반으로 조직·승인 상태를 관리.【F:supabase/migrations/schema.sql†L105-L126】 |
+| `user_roles` | 역할 매핑 | user_id, user_cuid, role_code, assigned_by, assigned_by_cuid | 역할 기반 권한 확인에 사용.【F:supabase/migrations/schema.sql†L128-L143】【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/IRolePermissionService.cs†L5-L30】 |
 | `org_companies` | 테넌트별 내부 회사 마스터 | tenant_unit_id, code, name, contact, is_active | 관리자용 회사 기본 정보 저장.【F:supabase/migrations/schema.sql†L155-L171】 |
-| `org_branches` | 회사 지점 관리 | company_id, tenant_unit_id, code, name, manager_id, is_active | 회사-지점 계층 구조 구성.【F:supabase/migrations/schema.sql†L173-L190】 |
-| `org_company_branch_lists` | 회사별 지점 리스트 캐싱 | tenant_unit_id, company_id, branch_id, branch_code, branch_name, team_count, member_count | 회사 단위 지점 현황/요약 제공.【F:supabase/migrations/schema.sql†L192-L207】 |
-| `teams` | 영업/지원 팀 정의 | tenant_unit_id, company_id, branch_id, code, name, manager_id, is_active | 팀이 소속된 회사/지점까지 추적.【F:supabase/migrations/schema.sql†L264-L277】 |
-| `team_members` | 팀 구성원 | team_id, user_id, company_id, branch_id, role, allow_excel_upload, is_active | 사용자-팀-지점 관계 저장.【F:supabase/migrations/schema.sql†L279-L295】 |
-| `org_company_team_lists` | 회사별 팀 리스트 | tenant_unit_id, company_id, branch_id, team_id, team_code, member_count, active_member_count | 회사/지점별 팀 현황 제공.【F:supabase/migrations/schema.sql†L297-L315】 |
-| `user_directory_entries` | 사용자 조직 정보 | user_id, company_id, branch_id, team_id, tenant_unit_id, job_title, status | 관리자 입력 사용자 소속 데이터.【F:supabase/migrations/schema.sql†L317-L335】 |
-| `agents` | 영업·지원 에이전트 프로필 | user_id, display_name, email, role | `Agent` 모델 연계, 자동 배정 기준.【F:src/NexaCRM.Service/Admin.Abstractions/Models/Agent.cs†L3-L9】【F:src/NexaCRM.UI/Services/Interfaces/IAgentService.cs†L7-L10】 |
+| `org_branches` | 회사 지점 관리 | company_id, tenant_unit_id, code, name, manager_id, manager_cuid, is_active | 회사-지점 계층 구조 구성.【F:supabase/migrations/schema.sql†L173-L194】 |
+| `org_company_branch_lists` | 회사별 지점 리스트 캐싱 | tenant_unit_id, company_id, branch_id, branch_code, branch_name, manager_id, manager_cuid, team_count, member_count | 회사 단위 지점 현황/요약 제공.【F:supabase/migrations/schema.sql†L196-L214】 |
+| `teams` | 영업/지원 팀 정의 | tenant_unit_id, company_id, branch_id, code, name, manager_id, manager_cuid, is_active | 팀이 소속된 회사/지점까지 추적.【F:supabase/migrations/schema.sql†L256-L273】 |
+| `team_members` | 팀 구성원 | team_id, user_id, user_cuid, company_id, branch_id, role, allow_excel_upload, is_active | 사용자-팀-지점 관계 저장.【F:supabase/migrations/schema.sql†L275-L296】 |
+| `org_company_team_lists` | 회사별 팀 리스트 | tenant_unit_id, company_id, branch_id, team_id, team_code, manager_id, manager_cuid, member_count, active_member_count | 회사/지점별 팀 현황 제공.【F:supabase/migrations/schema.sql†L298-L315】 |
+| `user_directory_entries` | 사용자 조직 정보 | user_id, user_cuid, company_id, branch_id, team_id, tenant_unit_id, job_title, status | 관리자 입력 사용자 소속 데이터.【F:supabase/migrations/schema.sql†L317-L333】 |
+| `agents` | 영업·지원 에이전트 프로필 | user_id, user_cuid, display_name, email, role | `Agent` 모델 연계, 자동 배정 기준.【F:supabase/migrations/schema.sql†L236-L247】【F:src/NexaCRM.Service/Admin.Abstractions/Models/Agent.cs†L3-L9】【F:src/NexaCRM.UI/Services/Interfaces/IAgentService.cs†L7-L10】 |
 
 Row Level Security(RLS)은 `tenant_id`(조직 ID)와 역할 정보를 조합해 조직 단위 격리를 보장합니다. 조직 관리자는 동일 테넌트 하위의 사용자·팀을 열람/수정하고, 전사 관리자는 모든 테넌트 접근 권한을 갖도록 정책을 작성합니다.
 

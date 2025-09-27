@@ -13,11 +13,17 @@ public sealed class UserRoleRecord : BaseModel
     [Column("user_id")]
     public Guid UserId { get; set; }
 
+    [Column("user_cuid")]
+    public string UserCuid { get; set; } = string.Empty;
+
     [Column("role_code")]
     public string RoleCode { get; set; } = string.Empty;
 
     [Column("assigned_by")]
     public Guid? AssignedBy { get; set; }
+
+    [Column("assigned_by_cuid")]
+    public string? AssignedByCuid { get; set; }
 
     [Column("assigned_at")]
     public DateTime AssignedAt { get; set; }

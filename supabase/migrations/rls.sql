@@ -26,6 +26,45 @@ RETURNS boolean AS $$
 $$ LANGUAGE sql STABLE;
 
 
+-- 0. APP USERS & USER INFOS
+ALTER TABLE app_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_infos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their app user mapping"
+  ON app_users FOR SELECT
+  USING (auth.uid() = auth_user_id);
+
+CREATE POLICY "Service role manages app users"
+  ON app_users FOR ALL
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
+
+CREATE POLICY "Users can view their user info"
+  ON user_infos FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM app_users
+    WHERE app_users.cuid = user_infos.user_cuid
+      AND app_users.auth_user_id = auth.uid()
+  ));
+
+CREATE POLICY "Users can update their user info"
+  ON user_infos FOR UPDATE
+  USING (EXISTS (
+    SELECT 1 FROM app_users
+    WHERE app_users.cuid = user_infos.user_cuid
+      AND app_users.auth_user_id = auth.uid()
+  ))
+  WITH CHECK (EXISTS (
+    SELECT 1 FROM app_users
+    WHERE app_users.cuid = user_infos.user_cuid
+      AND app_users.auth_user_id = auth.uid()
+  ));
+
+CREATE POLICY "Service role manages user infos"
+  ON user_infos FOR ALL
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
+
 
 -- 1. PROFILES
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
