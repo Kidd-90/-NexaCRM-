@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using NexaCRM.UI.Models;
@@ -13,8 +13,9 @@ using Supabase.Gotrue;
 using Supabase.Gotrue.Exceptions;
 using Supabase.Gotrue.Interfaces;
 using Supabase.Postgrest.Exceptions;
-using SupabaseAuthState = Supabase.Gotrue.Constants.AuthState;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
+using SupabaseAuthState = Supabase.Gotrue.Constants.AuthState;
+using Task = System.Threading.Tasks.Task;
 
 namespace NexaCRM.Service.Supabase;
 
@@ -29,6 +30,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
 
     private bool _initialized;
     private IGotrueClient<User, Session>.AuthEventHandler? _authEventHandler;
+    private bool _isDisposed;
 
     public SupabaseAuthenticationStateProvider(
         SupabaseClientProvider clientProvider,
@@ -129,12 +131,21 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
 
     private async Task HandleAuthStateChangedAsync(IGotrueClient<User, Session> sender, SupabaseAuthState state)
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+
         try
         {
             await UpdateAuthenticationStateAsync(sender.CurrentSession).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
+            if (_isDisposed)
+            {
+                return;
+            }
             _logger.LogError(ex, "Failed to handle Supabase auth state change: {AuthState}.", state);
         }
     }
@@ -180,7 +191,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
                 claims.Add(new Claim(ClaimTypes.Name, session.User.Id));
             }
 
-            foreach (var role in await LoadRolesAsync(client, session.User.Id).ConfigureAwait(false))
+            foreach (string role in await LoadRolesAsync(client, session.User.Id).ConfigureAwait(false))
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
@@ -207,7 +218,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         };
     }
 
-    private async Task<IEnumerable<string>> LoadRolesAsync(Supabase.Client client, string userId)
+    private async Task<IEnumerable<string>> LoadRolesAsync(global::Supabase.Client client, string userId)
     {
         var response = await client.From<UserRoleRecord>()
             .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
@@ -226,7 +237,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         return roles;
     }
 
-    private async Task<LoginFailureReason> MapGotrueExceptionAsync(Supabase.Client client, GotrueException exception, string email)
+    private async Task<LoginFailureReason> MapGotrueExceptionAsync(global::Supabase.Client client, GotrueException exception, string email)
     {
         if (IsUserNotFoundError(exception))
         {
@@ -299,7 +310,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         return false;
     }
 
-    private async Task<LoginFailureReason> DetermineCredentialFailureAsync(Supabase.Client client, string email)
+    private async Task<LoginFailureReason> DetermineCredentialFailureAsync(global::Supabase.Client client, string email)
     {
         try
         {
@@ -329,7 +340,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         }
     }
 
-    private async Task<bool> IsUserApprovedAsync(Supabase.Client client, Session session)
+    private async Task<bool> IsUserApprovedAsync(global::Supabase.Client client, Session session)
     {
         if (session.User?.Id is null)
         {
@@ -366,6 +377,12 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
 
     public async ValueTask DisposeAsync()
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+        _isDisposed = true;
+
         if (_authEventHandler is null)
         {
             return;
@@ -375,6 +392,10 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         {
             var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
             client.Auth.RemoveStateChangedListener(_authEventHandler);
+        }
+        catch (ObjectDisposedException)
+        {
+            _logger.LogDebug("Supabase client was already disposed during auth provider disposal. Assuming auth event handler is already removed.");
         }
         catch (Exception ex)
         {

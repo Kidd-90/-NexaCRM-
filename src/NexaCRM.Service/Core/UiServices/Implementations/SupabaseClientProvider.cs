@@ -9,18 +9,18 @@ namespace NexaCRM.Service.Supabase;
 
 public sealed class SupabaseClientProvider
 {
-    private readonly Supabase.Client _client;
+    private readonly global::Supabase.Client _client;
     private readonly ILogger<SupabaseClientProvider> _logger;
     private readonly SemaphoreSlim _initializationLock = new(1, 1);
     private bool _initialized;
 
-    public SupabaseClientProvider(Supabase.Client client, ILogger<SupabaseClientProvider> logger)
+    public SupabaseClientProvider(global::Supabase.Client client, ILogger<SupabaseClientProvider> logger)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Supabase.Client> GetClientAsync()
+    public async Task<global::Supabase.Client> GetClientAsync()
     {
         if (_initialized)
         {
