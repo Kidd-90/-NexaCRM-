@@ -7,6 +7,7 @@
 ## Included Assets
 - `wwwroot/css/app.css`: 데스크톱·다크 모드 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
 - `wwwroot/css/mobile.css`: 모바일 네비게이션, 반응형 브레이크포인트, 터치 상호작용에 특화된 보조 규칙 제공.
+- `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 
 ## Usage Guidance
 1. Razor 컴포넌트 또는 레이아웃에서 다음과 같이 정적 자산을 참조합니다.
@@ -17,7 +18,8 @@
    </HeadContent>
    ```
 2. WebAssembly 호스트(`wwwroot/index.html`)에서도 동일 경로를 사용하면 초기 로딩 스피너까지 일관된 스타일을 유지할 수 있습니다.
-3. 새로운 공통 스타일은 `NexaCRM.UI/wwwroot/css/` 아래에 추가하고, 두 애플리케이션에서 `_content/NexaCRM.UI/...` 경로로 참조하세요.
+3. 공통 스크립트가 필요하면 `<script src="_content/NexaCRM.UI/js/<file-name>.js"></script>` 형태로 포함해 두 애플리케이션에서 동일한 UX 동작을 제공합니다.
+4. 새로운 공통 스타일이나 스크립트는 `NexaCRM.UI/wwwroot/` 아래에 추가하고, 두 애플리케이션에서 `_content/NexaCRM.UI/...` 경로로 참조하세요.
 
 ## Change Management
 - 공통 CSS를 수정할 때는 `NexaCRM.UI` 프로젝트의 파일만 변경하고, `dotnet build --configuration Release`로 변경 사항이 정상적으로 적용되는지 확인합니다.
