@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,25 +21,48 @@ public static class SupabaseClientServiceCollectionExtensions
 
         var builder = services
             .AddOptions<SupabaseClientOptions>()
-            .Bind(configuration.GetSection(SupabaseClientOptions.SectionName))
-            .ValidateDataAnnotations();
+            .Bind(configuration.GetSection(SupabaseClientOptions.SectionName));
 
         if (validateOnStart)
         {
-            builder.ValidateOnStart();
+            builder
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
         }
         else
         {
-            services.PostConfigure<SupabaseClientOptions>(options =>
+            builder.PostConfigure(options =>
             {
-                if (!string.IsNullOrWhiteSpace(options.Url) && !string.IsNullOrWhiteSpace(options.AnonKey))
+                var isUrlMissing = string.IsNullOrWhiteSpace(options.Url);
+                var isAnonKeyMissing = string.IsNullOrWhiteSpace(options.AnonKey);
+
+                if (!isUrlMissing && !isAnonKeyMissing)
                 {
                     return;
                 }
 
-                options.Url ??= SupabaseClientDefaults.OfflineUrl;
-                options.AnonKey ??= SupabaseClientDefaults.OfflineAnonKey;
+                if (isUrlMissing)
+                {
+                    options.Url = SupabaseClientDefaults.OfflineUrl;
+                }
+
+                if (isAnonKeyMissing)
+                {
+                    options.AnonKey = SupabaseClientDefaults.OfflineAnonKey;
+                }
             });
+
+            builder.Validate(options =>
+            {
+                if (string.IsNullOrWhiteSpace(options.Url) || string.IsNullOrWhiteSpace(options.AnonKey))
+                {
+                    return true;
+                }
+
+                var validationContext = new ValidationContext(options);
+                return Validator.TryValidateObject(options, validationContext, new List<ValidationResult>(), true);
+            },
+            "Supabase configuration is invalid. Provide valid Supabase Url and anon key or leave them blank to use offline defaults.");
         }
 
         return services;
