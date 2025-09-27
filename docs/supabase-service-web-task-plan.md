@@ -17,8 +17,8 @@ This plan is derived from `supabase/SUPABASE_INTEGRATION_GUIDE.md` and organizes
   - [ ] Replace existing auth middleware/providers with Supabase Auth verification using the `service_role` key when necessary.
   - [ ] Provide API endpoints to issue, refresh, and revoke Supabase-backed sessions for internal services.
 - **Web**
-  - [ ] Swap `CustomAuthStateProvider` implementation to use Supabase Auth client APIs.
-  - [ ] Handle session persistence and automatic token refresh via Supabase client options (`AutoRefreshToken`).
+  - [x] Adopt the shared `SupabaseAuthenticationStateProvider` that uses Supabase Auth client APIs.
+  - [x] Handle session persistence and automatic token refresh via Supabase client options (`AutoRefreshToken`).
 
 ## Data Access (Contacts, Deals, Tasks)
 - **Service**

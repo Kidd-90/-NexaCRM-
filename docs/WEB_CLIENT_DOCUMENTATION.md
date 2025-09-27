@@ -10,7 +10,7 @@ NexaCRM Web Client is a modern customer relationship management (CRM) web applic
 - **Client-Side Architecture**: Blazor WebAssembly for rich, interactive client-side web applications
 - **Service Layer Pattern**: Well-defined service interfaces with dependency injection
 - **Mock-First Development**: All services currently use mock implementations for rapid prototyping
-- **Authentication State Management**: Custom authentication state provider for user session management
+- **Authentication State Management**: Shared Supabase authentication state provider for user session management
 - **Localization Support**: Built-in Korean language support with extensible localization framework
 
 ### Project Structure
@@ -22,7 +22,8 @@ src/NexaCRM.WebClient/
 ├── Services/                 # Service layer implementation
 │   ├── Interfaces/          # Service interface definitions
 │   ├── Mock/                # Mock service implementations
-│   └── CustomAuthStateProvider.cs
+│   ├── Supabase/            # Supabase HTTP/PostgREST integrations
+│   └── SupabaseSessionPersistence.cs
 ├── Models/                   # Data models and DTOs
 ├── Resources/                # Localization resources
 ├── Styles/                   # CSS and styling files
@@ -38,8 +39,8 @@ src/NexaCRM.WebClient/
 |-----------|------------|---------|
 | **Frontend Framework** | Blazor WebAssembly | .NET 8 |
 | **Runtime** | .NET | 8.0 |
-| **Backend Integration** | Supabase | (Planned) |
-| **Authentication** | Custom Auth State Provider | Current |
+| **Backend Integration** | Supabase | Active |
+| **Authentication** | SupabaseAuthenticationStateProvider (shared) | Current |
 | **Styling** | CSS3, Bootstrap | Latest |
 | **Localization** | .NET Resource System | Built-in |
 | **Build Tool** | MSBuild | .NET 8 SDK |
@@ -150,14 +151,14 @@ Task<IEnumerable<Activity>> GetRecentActivitiesAsync();
 ```
 **Capabilities**: Activity feed and audit trail management
 
-#### 9. CustomAuthStateProvider - Authentication Management
-**Purpose**: User session and authentication state management
+#### 9. SupabaseAuthenticationStateProvider - Authentication Management
+**Purpose**: User session and authentication state management backed by Supabase Auth
 ```csharp
 Task<AuthenticationState> GetAuthenticationStateAsync();
-void UpdateAuthenticationState(string username, string[] roles);
-void Logout();
+Task<LoginResult> SignInAsync(string email, string password);
+Task LogoutAsync();
 ```
-**Capabilities**: Custom authentication with role-based access control
+**Capabilities**: Supabase-backed authentication with role-based access control and approval checks shared across WebAssembly and Server hosts
 
 ### Mock Services Implementation
 

@@ -11,6 +11,7 @@ using NexaCRM.Services.Admin.Interfaces;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 using Supabase.Postgrest.Exceptions;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services;
 

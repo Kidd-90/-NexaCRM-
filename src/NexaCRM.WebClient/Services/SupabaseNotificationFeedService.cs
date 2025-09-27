@@ -12,6 +12,7 @@ using RealtimeEventType = Supabase.Realtime.Constants.EventType;
 using RealtimeListenType = Supabase.Realtime.PostgresChanges.PostgresChangesOptions.ListenType;
 using Supabase.Realtime.Interfaces;
 using Supabase.Realtime.PostgresChanges;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services;
 

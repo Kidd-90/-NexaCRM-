@@ -569,69 +569,67 @@ private async Task LoadActivityFeed()
 
 ---
 
-### CustomAuthStateProvider - Authentication Management
+### SupabaseAuthenticationStateProvider - Authentication Management
 
-**Purpose**: User session and authentication state management with role-based access control
+**Purpose**: Supabase-backed user session and authentication state management with role-based access control
 
-**Namespace**: `NexaCRM.WebClient.Services`
+**Namespace**: `NexaCRM.Service.Supabase`
 
 #### Class Definition
 ```csharp
-public class CustomAuthStateProvider : AuthenticationStateProvider
+public sealed class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, IAuthenticationService
 {
     public override Task<AuthenticationState> GetAuthenticationStateAsync();
-    public void UpdateAuthenticationState(string username, string[] roles);
-    public void Logout();
+    public Task<LoginResult> SignInAsync(string email, string password);
+    public Task LogoutAsync();
 }
 ```
 
 #### Method Details
 
 **GetAuthenticationStateAsync()**
-- **Purpose**: Retrieves the current user's authentication state
+- **Purpose**: Retrieves the current user's authentication state, refreshing Supabase sessions as needed
 - **Return Type**: `Task<AuthenticationState>`
 - **Parameters**: None
-- **Returns**: Authentication state with user identity and claims
+- **Returns**: Authentication state with Supabase-issued identity and claims
 
-**UpdateAuthenticationState(string username, string[] roles)**
-- **Purpose**: Updates the authentication state with new user information
-- **Return Type**: void
-- **Parameters**: 
-  - `username` (string): User's login name
-  - `roles` (string[]): Array of user roles for authorization
-- **Notifications**: Triggers authentication state change events
+**SignInAsync(string email, string password)**
+- **Purpose**: Authenticates a user through Supabase, enforcing approval policies and detailed error handling
+- **Return Type**: `Task<LoginResult>`
+- **Parameters**:
+  - `email` (string): User's login email
+  - `password` (string): User password
+- **Notifications**: Updates authentication state and raises change events when successful
 
-**Logout()**
-- **Purpose**: Clears the current user session and resets authentication state
-- **Return Type**: void
+**LogoutAsync()**
+- **Purpose**: Signs the user out through Supabase and clears the current authentication state
+- **Return Type**: `Task`
 - **Parameters**: None
-- **Side Effects**: Redirects to login page and clears cached user data
+- **Side Effects**: Removes Supabase session tokens from the configured persistence store
 
 #### Usage Example
 ```csharp
-@inject CustomAuthStateProvider AuthStateProvider
+@inject SupabaseAuthenticationStateProvider AuthStateProvider
 
-private async Task HandleLogin(string username, string password)
+private async Task HandleLogin(string email, string password)
 {
-    // Validate credentials (mock implementation)
-    if (ValidateCredentials(username, password))
+    var result = await AuthStateProvider.SignInAsync(email, password);
+    if (!result.Succeeded)
     {
-        var roles = GetUserRoles(username);
-        AuthStateProvider.UpdateAuthenticationState(username, roles);
+        // Display result.ErrorMessage to the user
     }
 }
 
-private void HandleLogout()
+private async Task HandleLogoutAsync()
 {
-    AuthStateProvider.Logout();
+    await AuthStateProvider.LogoutAsync();
 }
 ```
 
 #### Implementation Notes
-- **Current Implementation**: Mock authentication with configurable roles
-- **Future Migration**: Will integrate with Supabase authentication
-- **Session Management**: Handles session persistence and refresh
-- **Security**: Implements proper token handling and validation
+- **Current Implementation**: Shared Supabase integration reused by WebAssembly and Server hosts
+- **Session Management**: Leverages host-specific persistence (browser local storage vs. Blazor Server circuit scope)
+- **Security**: Propagates Supabase roles and enforces organization approval status before finalizing authentication
 
 ## Implementation Guidelines
 

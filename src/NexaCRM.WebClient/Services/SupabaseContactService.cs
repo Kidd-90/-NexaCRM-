@@ -8,6 +8,7 @@ using NexaCRM.UI.Models;
 using NexaCRM.UI.Models.Supabase;
 using NexaCRM.UI.Services.Interfaces;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services;
 

@@ -16,8 +16,8 @@
 - Supabase와 직접 통신하는 인프라 계층은 여전히 호스트 특화 서비스(`NexaCRM.WebClient.Services`)에 남겨 두어 브라우저 API 제약을 분리합니다.
 
 ### 호스트 조합 루트
-- `NexaCRM.WebClient`는 Blazor WebAssembly 전용 부트스트랩을 담당하며, Supabase 전용 서비스·`CustomAuthStateProvider`·모바일 상호작용 도우미와 같은 **클라이언트 런타임 전용 클래스**만 유지합니다.
-- `NexaCRM.WebServer`는 서버 호스트로서 Razor 컴포넌트와 서비스 프로젝트를 참조하여 **동일한 UI/도메인 조합**을 ASP.NET Core 호스팅 모델에서 구성합니다.
+- `NexaCRM.WebClient`는 Blazor WebAssembly 전용 부트스트랩을 담당하며, 브라우저 세션 저장을 담당하는 `SupabaseSessionPersistence`와 모바일 상호작용 도우미 같은 **클라이언트 런타임 전용 클래스**만 유지합니다. 인증 상태는 `NexaCRM.Service`의 `SupabaseAuthenticationStateProvider`를 재사용하여 서버 호스트와 동일한 로직을 사용합니다.
+- `NexaCRM.WebServer`는 서버 호스트로서 Razor 컴포넌트와 서비스 프로젝트를 참조하여 **동일한 UI/도메인 조합**을 ASP.NET Core 호스팅 모델에서 구성합니다. 서버 호스트 역시 공유 `SupabaseAuthenticationStateProvider`와 `SupabaseClientProvider`를 사용하되, 회로 범위에서 세션을 저장하는 `SupabaseServerSessionPersistence`를 주입합니다.
 
 ## 도메인 계약 공유
 - `NexaCRM.Service/Abstractions`는 호스트에 중립적인 모델과 인터페이스를 제공하여 클라이언트와 서버에서 동일한 타입을 사용하게 합니다.

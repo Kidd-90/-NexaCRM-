@@ -9,6 +9,7 @@ using NexaCRM.UI.Services.Interfaces;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 using Task = System.Threading.Tasks.Task;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services;
 

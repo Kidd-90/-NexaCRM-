@@ -6,23 +6,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
+using NexaCRM.UI.Models;
 using NexaCRM.UI.Models.Supabase;
 using NexaCRM.UI.Services.Interfaces;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Exceptions;
 using Supabase.Gotrue.Interfaces;
 using Supabase.Postgrest.Exceptions;
-using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using SupabaseAuthState = Supabase.Gotrue.Constants.AuthState;
-using LoginFailureReason = NexaCRM.UI.Models.LoginFailureReason;
-using LoginResult = NexaCRM.UI.Models.LoginResult;
+using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Service.Supabase;
 
-public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuthenticationService, IAsyncDisposable
+public sealed class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, IAuthenticationService, IAsyncDisposable
 {
     private readonly SupabaseClientProvider _clientProvider;
-    private readonly ILogger<CustomAuthStateProvider> _logger;
+    private readonly ILogger<SupabaseAuthenticationStateProvider> _logger;
     private readonly SemaphoreSlim _stateLock = new(1, 1);
 
     private AuthenticationState _currentState =
@@ -31,17 +30,19 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
     private bool _initialized;
     private IGotrueClient<User, Session>.AuthEventHandler? _authEventHandler;
 
-    public CustomAuthStateProvider(SupabaseClientProvider clientProvider, ILogger<CustomAuthStateProvider> logger)
+    public SupabaseAuthenticationStateProvider(
+        SupabaseClientProvider clientProvider,
+        ILogger<SupabaseAuthenticationStateProvider> logger)
     {
-        _clientProvider = clientProvider;
-        _logger = logger;
+        _clientProvider = clientProvider ?? throw new ArgumentNullException(nameof(clientProvider));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public bool IsAuthenticated => _currentState.User.Identity?.IsAuthenticated ?? false;
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        await EnsureInitializedAsync();
+        await EnsureInitializedAsync().ConfigureAwait(false);
         return _currentState;
     }
 
@@ -57,31 +58,31 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
             return LoginResult.Failed(LoginFailureReason.MissingPassword, GetFailureMessage(LoginFailureReason.MissingPassword));
         }
 
-        var client = await _clientProvider.GetClientAsync();
+        var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
 
         try
         {
-            var session = await client.Auth.SignInWithPassword(email, password);
+            var session = await client.Auth.SignInWithPassword(email, password).ConfigureAwait(false);
             if (session is null)
             {
-                var fallbackReason = await DetermineCredentialFailureAsync(client, email);
+                var fallbackReason = await DetermineCredentialFailureAsync(client, email).ConfigureAwait(false);
                 return LoginResult.Failed(fallbackReason, GetFailureMessage(fallbackReason));
             }
 
-            var isApproved = await IsUserApprovedAsync(client, session);
+            var isApproved = await IsUserApprovedAsync(client, session).ConfigureAwait(false);
             if (!isApproved)
             {
-                await client.Auth.SignOut();
+                await client.Auth.SignOut().ConfigureAwait(false);
                 return LoginResult.Failed(LoginFailureReason.RequiresApproval, GetFailureMessage(LoginFailureReason.RequiresApproval));
             }
 
-            await UpdateAuthenticationStateAsync(session);
+            await UpdateAuthenticationStateAsync(session).ConfigureAwait(false);
             return LoginResult.Success();
         }
         catch (GotrueException ex)
         {
             _logger.LogWarning(ex, "Supabase rejected login for {Email}.", email);
-            var reason = await MapGotrueExceptionAsync(client, ex, email);
+            var reason = await MapGotrueExceptionAsync(client, ex, email).ConfigureAwait(false);
             return LoginResult.Failed(reason, GetFailureMessage(reason));
         }
         catch (Exception ex)
@@ -93,9 +94,9 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
 
     public async Task LogoutAsync()
     {
-        var client = await _clientProvider.GetClientAsync();
-        await client.Auth.SignOut();
-        await UpdateAuthenticationStateAsync(null);
+        var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
+        await client.Auth.SignOut().ConfigureAwait(false);
+        await UpdateAuthenticationStateAsync(null).ConfigureAwait(false);
     }
 
     private async Task EnsureInitializedAsync()
@@ -105,7 +106,7 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
             return;
         }
 
-        await _stateLock.WaitAsync();
+        await _stateLock.WaitAsync().ConfigureAwait(false);
         try
         {
             if (_initialized)
@@ -113,11 +114,11 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
                 return;
             }
 
-            var client = await _clientProvider.GetClientAsync();
-            _authEventHandler = async (sender, state) => await HandleAuthStateChangedAsync(sender, state);
+            var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
+            _authEventHandler = async (sender, state) => await HandleAuthStateChangedAsync(sender, state).ConfigureAwait(false);
             client.Auth.AddStateChangedListener(_authEventHandler);
 
-            await UpdateAuthenticationStateAsync(client.Auth.CurrentSession);
+            await UpdateAuthenticationStateAsync(client.Auth.CurrentSession).ConfigureAwait(false);
             _initialized = true;
         }
         finally
@@ -130,7 +131,7 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
     {
         try
         {
-            await UpdateAuthenticationStateAsync(sender.CurrentSession);
+            await UpdateAuthenticationStateAsync(sender.CurrentSession).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -140,10 +141,10 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
 
     private async Task UpdateAuthenticationStateAsync(Session? session)
     {
-        await _stateLock.WaitAsync();
+        await _stateLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var principal = await BuildPrincipalAsync(session);
+            var principal = await BuildPrincipalAsync(session).ConfigureAwait(false);
             _currentState = new AuthenticationState(principal);
         }
         finally
@@ -163,7 +164,7 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
 
         try
         {
-            var client = await _clientProvider.GetClientAsync();
+            var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, session.User.Id)
@@ -179,7 +180,7 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
                 claims.Add(new Claim(ClaimTypes.Name, session.User.Id));
             }
 
-            foreach (var role in await LoadRolesAsync(client, session.User.Id))
+            foreach (var role in await LoadRolesAsync(client, session.User.Id).ConfigureAwait(false))
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
@@ -191,24 +192,6 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
             _logger.LogError(ex, "Failed to construct authentication principal from Supabase session.");
             return new ClaimsPrincipal(new ClaimsIdentity());
         }
-    }
-
-    private async Task<IEnumerable<string>> LoadRolesAsync(Supabase.Client client, string userId)
-    {
-        var response = await client.From<UserRoleRecord>()
-            .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
-            .Get();
-
-        var roles = new List<string>();
-        foreach (var record in response.Models)
-        {
-            if (!string.IsNullOrWhiteSpace(record.RoleCode))
-            {
-                roles.Add(record.RoleCode);
-            }
-        }
-
-        return roles;
     }
 
     private static string GetFailureMessage(LoginFailureReason reason)
@@ -224,6 +207,25 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
         };
     }
 
+    private async Task<IEnumerable<string>> LoadRolesAsync(Supabase.Client client, string userId)
+    {
+        var response = await client.From<UserRoleRecord>()
+            .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
+            .Get()
+            .ConfigureAwait(false);
+
+        var roles = new List<string>();
+        foreach (var record in response.Models)
+        {
+            if (!string.IsNullOrWhiteSpace(record.RoleCode))
+            {
+                roles.Add(record.RoleCode);
+            }
+        }
+
+        return roles;
+    }
+
     private async Task<LoginFailureReason> MapGotrueExceptionAsync(Supabase.Client client, GotrueException exception, string email)
     {
         if (IsUserNotFoundError(exception))
@@ -236,7 +238,7 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
             return LoginFailureReason.InvalidPassword;
         }
 
-        var fallback = await DetermineCredentialFailureAsync(client, email);
+        var fallback = await DetermineCredentialFailureAsync(client, email).ConfigureAwait(false);
         return fallback == LoginFailureReason.Unknown
             ? LoginFailureReason.Unknown
             : fallback;
@@ -305,7 +307,8 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
                 .Select("id, username")
                 .Filter(x => x.Username, PostgrestOperator.Equals, email)
                 .Limit(1)
-                .Get();
+                .Get()
+                .ConfigureAwait(false);
 
             if (response.Models?.Any() == true)
             {
@@ -342,7 +345,8 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
         var response = await client.From<OrganizationUserRecord>()
             .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
             .Limit(1)
-            .Get();
+            .Get()
+            .ConfigureAwait(false);
 
         var membership = response.Models?.FirstOrDefault();
         if (membership is null)
@@ -369,7 +373,7 @@ public sealed class CustomAuthStateProvider : AuthenticationStateProvider, IAuth
 
         try
         {
-            var client = await _clientProvider.GetClientAsync();
+            var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
             client.Auth.RemoveStateChangedListener(_authEventHandler);
         }
         catch (Exception ex)
