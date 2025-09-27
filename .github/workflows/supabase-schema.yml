@@ -50,7 +50,7 @@ jobs:
         run: dotnet restore
 
       - name: Supabase schema lint
-        run: supabase db lint
+        run: supabase db lint --db-url "$SUPABASE_DB_URL"
 
       - name: Reset dev database snapshot
         run: supabase db reset --db-url "$SUPABASE_DB_URL" --force --non-interactive
