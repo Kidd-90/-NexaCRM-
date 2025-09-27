@@ -5,20 +5,28 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableDefaultItems>false</EnableDefaultItems>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="Abstractions/Services.Admin.Abstractions.csproj" />
-    <ProjectReference Include="Core/Services.Admin.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="DependencyInjection/ServiceCollectionExtensions.cs" />
+    <ProjectReference Include="..\NexaCRM.BuildingBlocks\NexaCRM.BuildingBlocks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Abstractions/**/*.cs" />
+    <Compile Include="Core/**/*.cs" />
+    <Compile Include="DependencyInjection/*.cs" />
     <Compile Include="InMemory/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstractions/" />
+    <Folder Include="Core/" />
   </ItemGroup>
 
 </Project>
