@@ -6,9 +6,9 @@
 ## 프로젝트 역할과 책임
 
 ### 공유 UI 계층
-- `NexaCRM.UI` 프로젝트는 Razor 컴포넌트, 레이아웃, 리소스뿐 아니라 `Services/Interfaces` 아래의 **UI 서비스 계약**과 `Options` 모듈을 함께 제공합니다.
-- `NexaCRM.WebClient` 및 `NexaCRM.WebServer` 두 호스팅 프로젝트 모두 동일한 `NexaCRM.UI` 라이브러리를 프로젝트 참조로 연결하여 UI 일관성과 서비스 계약을 동시에 재사용합니다.
-- 공통 디자인이나 컴포넌트 로직은 `NexaCRM.UI`에 추가하면 두 호스트가 즉시 반영되며, 추가적인 네임스페이스 정렬 없이 `NexaCRM.UI.*` 네임스페이스만 참조하면 됩니다.
+- `NexaCRM.UI` 프로젝트는 Razor 컴포넌트, 레이아웃, 리소스를 제공하며 호스트에 중립적인 서비스 계약과 모델은 `NexaCRM.Service`의 `Abstractions/Ui*` 경로로 이동했습니다. 이제 UI 계층은 시각화와 구성 요소 작성에만 집중합니다.
+- `NexaCRM.WebClient` 및 `NexaCRM.WebServer` 두 호스팅 프로젝트 모두 `NexaCRM.UI`와 `NexaCRM.Service` 라이브러리를 프로젝트 참조로 연결하여 UI 일관성과 서비스 계약을 동시에 재사용합니다.
+- 공통 디자인이나 컴포넌트 로직은 `NexaCRM.UI`에 추가하고, 서비스나 데이터 계약은 `NexaCRM.Service`에 배치하여 호스트 간 일관성을 유지합니다.
 
 ### 도메인 서비스 계층
 - `NexaCRM.Service/Abstractions`는 관리 콘솔, 중복 검사, 통계 등에서 사용하는 **도메인 계약(인터페이스·모델·검증 속성)** 을 정의합니다.
@@ -37,7 +37,7 @@
 - 단, 플랫폼 특화(예: 서버 전용 API 호출, 브라우저 전용 스토리지)가 필요한 경우, `partial` 클래스나 `IPlatformService` 추상화를 `NexaCRM.UI`에 정의하고 호스트별 구현을 각 호스트 프로젝트에 배치하면 됩니다.
 
 ## 권장 운영 가이드
-1. **컴포넌트 추가 시**: `NexaCRM.UI/Components` 경로 아래에 컴포넌트를 작성하고, 필요한 서비스 인터페이스는 `NexaCRM.UI/Services/Interfaces` 또는 `NexaCRM.Service/Abstractions`에 추가합니다.
+1. **컴포넌트 추가 시**: `NexaCRM.UI/Components` 경로 아래에 컴포넌트를 작성하고, 필요한 서비스 인터페이스는 `NexaCRM.Service/Abstractions/UiServices`에 추가합니다.
 2. **플랫폼 조건부 로직**: `#if BlazorWebAssembly` 같은 컴파일 상수를 사용하기보다 DI를 통한 추상화 구현 교체로 호스트별 차이를 관리합니다.
 3. **리소스 관리**: 다국어 리소스나 스타일 시트는 `NexaCRM.UI/Resources` 및 `wwwroot` 폴더에 유지하여 두 호스트가 공유하도록 합니다.
 4. **테스트**: UI 컴포넌트는 [bUnit](https://bunit.dev/)과 같은 테스트 프레임워크로 단위 테스트를 작성하고, 도메인 계약은 xUnit 기반 테스트 프로젝트에서 검증합니다.
