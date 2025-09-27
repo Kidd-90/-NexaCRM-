@@ -21,6 +21,11 @@
 3. 공통 스크립트가 필요하면 `<script src="_content/NexaCRM.UI/js/<file-name>.js"></script>` 형태로 포함해 두 애플리케이션에서 동일한 UX 동작을 제공합니다.
 4. 새로운 공통 스타일이나 스크립트는 `NexaCRM.UI/wwwroot/` 아래에 추가하고, 두 애플리케이션에서 `_content/NexaCRM.UI/...` 경로로 참조하세요.
 
+## Server Host Integration Checklist
+- `src/NexaCRM.WebServer/Pages/_Host.cshtml` 파일에서 WebClient와 동일한 `_content/NexaCRM.UI` CSS, JS 번들을 참조해 서버 렌더링과 WebAssembly 클라이언트 간 스타일 일관성을 확보합니다.
+- 초기 오류 배너(`#blazor-error-ui`)와 `window.isDarkMode` 헬퍼를 포함해 공통 테마 전환 로직이 양쪽 호스트 페이지에서 동일하게 동작하도록 유지합니다.
+- 변경 후에는 `dotnet build NexaCrmSolution.sln --configuration Release` 명령으로 Razor Class Library 참조가 유효한지 확인합니다.
+
 ## Change Management
 - 공통 CSS를 수정할 때는 `NexaCRM.UI` 프로젝트의 파일만 변경하고, `dotnet build --configuration Release`로 변경 사항이 정상적으로 적용되는지 확인합니다.
 - 스타일 변경 이후에는 WebClient와 WebServer 모두에서 UI 회귀 테스트(수동 또는 자동)를 수행하여 디자인 일관성을 검증하세요.
