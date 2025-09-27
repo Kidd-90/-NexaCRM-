@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Logging;
 using NexaCRM.Service.DependencyInjection;
 using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.UI;
 using NexaCRM.UI.Options;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.UI.Services.Mock;
 using NexaCRM.WebServer.Services;
-using NexaCRM.WebServer;
 
-namespace NexaCRM.WebServer;
+var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseStaticWebAssets();
 
@@ -80,11 +80,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(NexaCRM.UI.Shared.MainLayout).Assembly);
-
-await StartDuplicateMonitorAsync(app.Services);
-
-app.Run();
+    .AddAdditionalAssemblies(typeof(Component1).Assembly);
 
 static async Task StartDuplicateMonitorAsync(IServiceProvider services)
 {
@@ -103,3 +99,7 @@ static async Task StartDuplicateMonitorAsync(IServiceProvider services)
         logger?.LogError(ex, "Failed to start the duplicate monitor service.");
     }
 }
+
+await StartDuplicateMonitorAsync(app.Services);
+
+app.Run();
