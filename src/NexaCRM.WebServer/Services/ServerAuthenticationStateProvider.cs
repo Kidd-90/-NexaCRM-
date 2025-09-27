@@ -22,8 +22,8 @@ public sealed class ServerAuthenticationStateProvider : AuthenticationStateProvi
         _logger = logger;
         _accounts = new ConcurrentDictionary<string, UserAccount>(StringComparer.OrdinalIgnoreCase)
         {
-            ["manager"] = new UserAccount("manager", "manager!", new[] { "Manager", "Admin" }),
-            ["sales"] = new UserAccount("sales", "sales!", new[] { "Sales" }),
+            ["manager"] = new UserAccount("manager", "manager", new[] { "Manager", "Admin" }),
+            ["sales"] = new UserAccount("sales", "sales", new[] { "Sales" }),
             ["developer"] = new UserAccount("developer", "developer", new[] { "Developer", "Admin" })
         };
     }
