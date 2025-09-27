@@ -172,7 +172,7 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
     protected virtual async Task<global::Supabase.Client> GetServiceClientAsync()
     {
         var url = _supabaseOptions.Value.Url;
-        var serviceKey = _supabaseOptions.Value.ServiceKey;
+        var serviceKey = _supabaseOptions.Value.AnonKey;
 
         if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(serviceKey))
         {

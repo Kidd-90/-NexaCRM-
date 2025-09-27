@@ -39,5 +39,13 @@
     window.addEventListener('blazor:connected', hideLoader);
     window.addEventListener('blazor:disconnected', showLoader);
 
+    // Fallback: hide loader after 5 seconds if Blazor hasn't connected
+    setTimeout(() => {
+        if (isVisible) {
+            console.warn('Blazor did not connect within 5 seconds, hiding loader.');
+            hideLoader();
+        }
+    }, 5000);
+
     showLoader();
 })();

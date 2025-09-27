@@ -15,6 +15,4 @@ public sealed class SupabaseClientOptions
 
     [Required]
     public string? AnonKey { get; set; }
-
-    public string? ServiceKey { get; set; }
 }
