@@ -34,8 +34,8 @@
 ### 3.1 NuGet 패키지 설치
 프로젝트 루트에서 다음 명령으로 Supabase .NET SDK를 추가합니다.
 ```bash
-dotnet add src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj package Supabase
-dotnet add src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj package Postgrest
+dotnet add src/NexaCRM.WebClient/NexaCRM.WebClient.csproj package Supabase
+dotnet add src/NexaCRM.WebClient/NexaCRM.WebClient.csproj package Postgrest
 ```
 
 ### 3.2 DI 구성

@@ -1,5 +1,5 @@
 [build]
-  command = "dotnet publish src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj -c Release -o temp"
+  command = "dotnet publish src/NexaCRM.WebClient/NexaCRM.WebClient.csproj -c Release -o temp"
   publish = "temp/wwwroot"
 
 [build.environment]

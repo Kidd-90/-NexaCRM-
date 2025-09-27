@@ -16,7 +16,7 @@ NexaCRM Web Client is a modern customer relationship management (CRM) web applic
 ### Project Structure
 
 ```
-src/Web/NexaCRM.WebClient/
+src/NexaCRM.WebClient/
 ├── Pages/                    # Blazor page components
 ├── Shared/                   # Shared components and layouts
 ├── Services/                 # Service layer implementation

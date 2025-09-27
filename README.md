@@ -103,7 +103,7 @@ dotnet run --project src/NexaCRM.ApiGateway/NexaCrm.ApiGateway.csproj
 
 #### 프론트엔드 실행
 ```bash
-dotnet run --project src/Web/NexaCRM.WebClient/NexaCRM.WebClient.csproj
+dotnet run --project src/NexaCRM.WebClient/NexaCRM.WebClient.csproj
 ```
 
 ### 빌드/테스트 검증 스크립트
