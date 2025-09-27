@@ -30,6 +30,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
 
     private bool _initialized;
     private IGotrueClient<User, Session>.AuthEventHandler? _authEventHandler;
+    private global::Supabase.Client? _subscribedClient;
     private bool _isDisposed;
 
     public SupabaseAuthenticationStateProvider(
@@ -117,6 +118,7 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
             }
 
             var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
+            _subscribedClient = client;
             _authEventHandler = async (sender, state) => await HandleAuthStateChangedAsync(sender, state).ConfigureAwait(false);
             client.Auth.AddStateChangedListener(_authEventHandler);
 
@@ -383,15 +385,18 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         }
         _isDisposed = true;
 
-        if (_authEventHandler is null)
+        var handler = _authEventHandler;
+        var client = Interlocked.Exchange(ref _subscribedClient, null);
+        _authEventHandler = null;
+
+        if (handler is null || client is null)
         {
             return;
         }
 
         try
         {
-            var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
-            client.Auth.RemoveStateChangedListener(_authEventHandler);
+            client.Auth.RemoveStateChangedListener(handler);
         }
         catch (ObjectDisposedException)
         {
@@ -400,10 +405,6 @@ public sealed class SupabaseAuthenticationStateProvider : AuthenticationStatePro
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to remove Supabase auth event handler during disposal.");
-        }
-        finally
-        {
-            _authEventHandler = null;
         }
     }
 }
