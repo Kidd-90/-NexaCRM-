@@ -7,7 +7,7 @@
 | 기술 | 목적 | 참고 구성 |
 | --- | --- | --- |
 | GitHub Actions | CI/CD 파이프라인 오케스트레이션 | `jobs.validate`, `jobs.deploy-staging`, `jobs.deploy-production` |
-| Supabase CLI (`supabase/setup-cli@v1`) | Supabase 데이터베이스 스키마 정적 분석, 리셋, 배포 | `supabase db lint --db-url "$SUPABASE_DB_URL"`, `supabase db reset`, `supabase db push` |
+| Supabase CLI (`supabase/setup-cli@v1`) | Supabase 데이터베이스 스키마 정적 분석, 리셋, 배포 | `supabase db lint --db-url "$SUPABASE_DB_URL"`, `supabase db reset`, `supabase db push` (시크릿 검증 후 실행) |
 | .NET 8 SDK (`actions/setup-dotnet@v4`) | 스키마 변경 이후 C# 계약 테스트 실행 | `dotnet test ./tests/BlazorWebApp.Tests` |
 
 ## 2. 워크플로우 트리거
@@ -22,10 +22,11 @@
 2. **Supabase CLI 설치**: `supabase/setup-cli@v1`로 최신 CLI를 설치합니다.
 3. **.NET SDK 설치**: `actions/setup-dotnet@v4`로 .NET 8 환경을 준비합니다.
 4. **의존성 복원**: `dotnet restore`로 NuGet 패키지를 다운로드합니다.
-5. **스키마 Lint**: `supabase db lint --db-url "$SUPABASE_DB_URL"`로 원격 Dev 데이터베이스에 연결해 SQL 자산의 정적 분석을 수행합니다.
-6. **Dev DB Reset**: `supabase db reset --force --non-interactive`로 개발용 데이터베이스를 초기화합니다.
-7. **Dev DB Push**: `supabase db push`로 스키마와 RLS를 적용합니다.
-8. **계약 테스트**: `dotnet test ./tests/BlazorWebApp.Tests --configuration Release --no-build`로 코드-스키마 일치성을 검증합니다.【F:.github/workflows/supabase-schema.yml†L38-L73】
+5. **Supabase 시크릿 검증**: `Check Supabase secret availability` 단계에서 `SUPABASE_DB_URL`이 비어 있거나 호스트 세그먼트(`@`)가 없는 경우 Supabase CLI 호출을 건너뜁니다. 이는 GitHub Fork PR처럼 시크릿이 제공되지 않는 환경에서 CLI가 `/var/run/postgresql/.s.PGSQL.5432` 소켓으로 되돌아가 실패하는 문제를 방지합니다.【F:.github/workflows/supabase-schema.yml†L49-L70】
+6. **스키마 Lint**: `supabase db lint --db-url "$SUPABASE_DB_URL"`로 원격 Dev 데이터베이스에 연결해 SQL 자산의 정적 분석을 수행합니다. 시크릿이 없으면 경고 메시지와 함께 건너뜁니다.【F:.github/workflows/supabase-schema.yml†L72-L79】
+7. **Dev DB Reset**: `supabase db reset --force --non-interactive`로 개발용 데이터베이스를 초기화합니다. 시크릿이 유효할 때만 실행됩니다.【F:.github/workflows/supabase-schema.yml†L81-L83】
+8. **Dev DB Push**: `supabase db push`로 스키마와 RLS를 적용합니다. 시크릿 검증 결과에 따라 실행 여부가 결정됩니다.【F:.github/workflows/supabase-schema.yml†L85-L87】
+9. **계약 테스트**: `dotnet test ./tests/BlazorWebApp.Tests --configuration Release --no-build`로 코드-스키마 일치성을 검증합니다.【F:.github/workflows/supabase-schema.yml†L89-L90】
 
 ### 3.2 `deploy-staging` Job (release 브랜치 Push)
 - Staging 환경 보호를 위해 GitHub Environment `supabase-staging`을 사용합니다.

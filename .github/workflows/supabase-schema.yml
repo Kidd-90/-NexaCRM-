@@ -49,13 +49,42 @@ jobs:
       - name: Restore .NET dependencies
         run: dotnet restore
 
+      - name: Check Supabase secret availability
+        id: supabase-secrets
+        shell: bash
+        run: |
+          db_url="${SUPABASE_DB_URL:-}"
+          if [ -z "$db_url" ]; then
+            echo "::warning::SUPABASE_DB_URL secret is not available. Supabase CLI commands will be skipped to avoid falling back to the local Postgres socket."
+            echo "run-supabase=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$db_url" != *@* ]]; then
+            echo "::warning::SUPABASE_DB_URL secret is present but does not include a host segment. Supabase CLI commands will be skipped to prevent the Supabase CLI from dialing the default unix socket."
+            echo "run-supabase=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run-supabase=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+            echo "::warning::SUPABASE_ACCESS_TOKEN secret is not available. Authenticated Supabase CLI features will require a manual login if executed locally."
+            echo "has-access-token=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-access-token=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Supabase schema lint
+        if: steps.supabase-secrets.outputs.run-supabase == 'true'
         run: supabase db lint --db-url "$SUPABASE_DB_URL"
 
+      - name: Skip Supabase schema lint (secrets unavailable)
+        if: steps.supabase-secrets.outputs.run-supabase != 'true'
+        run: echo "Supabase schema lint skipped because SUPABASE_DB_URL was not provided."
+
       - name: Reset dev database snapshot
+        if: steps.supabase-secrets.outputs.run-supabase == 'true'
         run: supabase db reset --db-url "$SUPABASE_DB_URL" --force --non-interactive
 
       - name: Push schema to dev database
+        if: steps.supabase-secrets.outputs.run-supabase == 'true'
         run: supabase db push --db-url "$SUPABASE_DB_URL" --non-interactive
 
       - name: Run contract tests
