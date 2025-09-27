@@ -1,0 +1,24 @@
+# NexaCRM Frontend Style Sharing
+
+## Overview
+- 공통 디자인 토큰과 스타일 자산은 **Razor Class Library**인 `NexaCRM.UI` 프로젝트에서 관리합니다.
+- `NexaCRM.WebClient`와 `NexaCRM.WebServer` 모두 `NexaCRM.UI`를 참조하고, `_content/NexaCRM.UI/...` 정적 자산 경로를 통해 동일한 CSS를 로드합니다.
+
+## Included Assets
+- `wwwroot/css/app.css`: 데스크톱·다크 모드 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
+- `wwwroot/css/mobile.css`: 모바일 네비게이션, 반응형 브레이크포인트, 터치 상호작용에 특화된 보조 규칙 제공.
+
+## Usage Guidance
+1. Razor 컴포넌트 또는 레이아웃에서 다음과 같이 정적 자산을 참조합니다.
+   ```html
+   <HeadContent>
+       <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
+       <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
+   </HeadContent>
+   ```
+2. WebAssembly 호스트(`wwwroot/index.html`)에서도 동일 경로를 사용하면 초기 로딩 스피너까지 일관된 스타일을 유지할 수 있습니다.
+3. 새로운 공통 스타일은 `NexaCRM.UI/wwwroot/css/` 아래에 추가하고, 두 애플리케이션에서 `_content/NexaCRM.UI/...` 경로로 참조하세요.
+
+## Change Management
+- 공통 CSS를 수정할 때는 `NexaCRM.UI` 프로젝트의 파일만 변경하고, `dotnet build --configuration Release`로 변경 사항이 정상적으로 적용되는지 확인합니다.
+- 스타일 변경 이후에는 WebClient와 WebServer 모두에서 UI 회귀 테스트(수동 또는 자동)를 수행하여 디자인 일관성을 검증하세요.
