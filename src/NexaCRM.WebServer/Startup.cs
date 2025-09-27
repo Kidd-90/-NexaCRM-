@@ -168,6 +168,7 @@ public sealed class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapRazorPages();
             endpoints.MapBlazorHub();
             endpoints.MapFallbackToPage("/_Host");
         });

@@ -21,3 +21,4 @@
 ## Operational checklist
 - Confirm Supabase secrets are supplied through `appsettings.json`, environment variables, or user secrets before enabling real sign-in flows.
 - Monitor logs on startup to verify whether the duplicate monitor and authentication middleware were activated.
+- Ensure the host calls `UseStaticWebAssets()` and maps Razor Pages before the Blazor hub so the `_content/NexaCRM.UI` assets and the `_Host` page are served correctly during deployment.
