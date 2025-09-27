@@ -35,14 +35,27 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddAuthorizationCore();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddSupabaseClientOptions(builder.Configuration);
+builder.Services.AddSupabaseClientOptions(builder.Configuration, validateOnStart: false);
 builder.Services.AddScoped<SupabaseSessionPersistence>();
 builder.Services.AddScoped<Supabase.Client>(provider =>
 {
+    var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+    var logger = loggerFactory.CreateLogger("SupabaseClientSetup");
     var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
-    if (string.IsNullOrWhiteSpace(options.Url) || string.IsNullOrWhiteSpace(options.AnonKey))
+
+    var supabaseUrl = options.Url;
+    var supabaseAnonKey = options.AnonKey;
+    if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseAnonKey))
     {
-        throw new InvalidOperationException("Supabase configuration must include Url and AnonKey.");
+        logger.LogWarning("Supabase configuration is missing or incomplete. NexaCRM.WebClient will run in offline mode.");
+        supabaseUrl = SupabaseClientDefaults.OfflineUrl;
+        supabaseAnonKey = SupabaseClientDefaults.OfflineAnonKey;
+    }
+    else if (
+        string.Equals(supabaseUrl, SupabaseClientDefaults.OfflineUrl, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(supabaseAnonKey, SupabaseClientDefaults.OfflineAnonKey, StringComparison.Ordinal))
+    {
+        logger.LogInformation("Supabase configuration matches the offline defaults. NexaCRM.WebClient will run in offline mode.");
     }
 
     var persistence = provider.GetRequiredService<SupabaseSessionPersistence>();
@@ -56,7 +69,7 @@ builder.Services.AddScoped<Supabase.Client>(provider =>
         SessionHandler = persistence
     };
 
-    return new Supabase.Client(options.Url, options.AnonKey, supabaseOptions);
+    return new Supabase.Client(supabaseUrl, supabaseAnonKey, supabaseOptions);
 });
 builder.Services.AddScoped<SupabaseClientProvider>();
 builder.Services.AddScoped<SupabaseAuthenticationStateProvider>();

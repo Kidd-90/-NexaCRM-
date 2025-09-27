@@ -5,8 +5,9 @@
 - Document guard rails that keep the host online even when external dependencies (such as Supabase) are unavailable.
 
 ## Supabase configuration fallback
-- `Startup.ConfigureServices` now calls `AddSupabaseClientOptions` with `validateOnStart: false`, allowing the site to boot even when Supabase secrets are absent in the configuration source.
-- The scoped `Supabase.Client` factory checks whether both the Supabase URL and anon key are present. When either is missing, the factory logs a warning and swaps in a loopback endpoint (`https://localhost`) with a deterministic key so the DI graph is satisfied.
+- `SupabaseClientOptions` now exposes settable properties so post-configuration hooks can supply deterministic offline defaults when no secrets are supplied.
+- `AddSupabaseClientOptions` posts config values that fall back to `https://localhost` and a deterministic anon key when `validateOnStart` is disabled. This prevents `OptionsValidationException` from failing the build or runtime startup while still validating real values when supplied.
+- Both the server (`Startup.ConfigureServices`) and WebAssembly host (`Program`) opt into the relaxed validation path and log a warning when offline defaults are in effect. This keeps duplicate monitor services and other hosted background tasks from faulting during dependency injection.
 - Blazor UI services that rely on Supabase continue to receive a client instance. Runtime operations that require the real backend will fail gracefully while the application shell keeps rendering.
 
 ## Duplicate monitor resilience
