@@ -87,8 +87,11 @@ jobs:
         if: steps.supabase-secrets.outputs.run-supabase == 'true'
         run: supabase db push --db-url "$SUPABASE_DB_URL" --non-interactive
 
-      - name: Run contract tests
-        run: dotnet test ./tests/BlazorWebApp.Tests --configuration Release --no-build
+      - name: Build WebClient
+        run: dotnet build ./src/NexaCRM.WebClient/NexaCRM.WebClient.csproj --configuration Release
+
+      - name: Run WebClient contract tests
+        run: dotnet test ./src/NexaCRM.WebClient/NexaCRM.WebClient.csproj --configuration Release --no-build
 
   deploy-staging:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
