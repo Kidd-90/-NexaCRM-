@@ -6,7 +6,7 @@
 
 ## Supabase configuration fallback
 - `SupabaseClientOptions` now exposes settable properties so post-configuration hooks can supply deterministic offline defaults when no secrets are supplied.
-- `AddSupabaseClientOptions` posts config values that fall back to `https://localhost` and a deterministic anon key when `validateOnStart` is disabled. This prevents `OptionsValidationException` from failing the build or runtime startup while still validating real values when supplied.
+- `AddSupabaseClientOptions` posts config values that fall back to `https://localhost` and a deterministic, synthetically signed anon key when `validateOnStart` is disabled. This prevents `OptionsValidationException` from failing the build or runtime startup while still validating real values when supplied and keeps the Supabase client library happy with a structurally valid JWT.
 - Both the server (`Startup.ConfigureServices`) and WebAssembly host (`Program`) opt into the relaxed validation path and log a warning when offline defaults are in effect. This keeps duplicate monitor services and other hosted background tasks from faulting during dependency injection.
 - Blazor UI services that rely on Supabase continue to receive a client instance. Runtime operations that require the real backend will fail gracefully while the application shell keeps rendering.
 
