@@ -1,0 +1,107 @@
+name: Supabase Schema Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+    paths:
+      - 'supabase/**'
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/supabase-schema.yml'
+  push:
+    branches:
+      - develop
+      - 'release/**'
+      - main
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/supabase-schema.yml'
+
+concurrency:
+  group: supabase-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    name: Validate Supabase schema and .NET contracts
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DEV_DB_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore .NET dependencies
+        run: dotnet restore
+
+      - name: Supabase schema lint
+        run: supabase db lint
+
+      - name: Reset dev database snapshot
+        run: supabase db reset --db-url "$SUPABASE_DB_URL" --force --non-interactive
+
+      - name: Push schema to dev database
+        run: supabase db push --db-url "$SUPABASE_DB_URL" --non-interactive
+
+      - name: Run contract tests
+        run: dotnet test ./tests/BlazorWebApp.Tests --configuration Release --no-build
+
+  deploy-staging:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
+    name: Deploy schema to Staging
+    runs-on: ubuntu-latest
+    environment: supabase-staging
+    needs: []
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_STAGING_DB_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Push schema to Staging
+        run: supabase db push --db-url "$SUPABASE_DB_URL" --include "functions,policies" --non-interactive
+
+  deploy-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Deploy schema to Production
+    runs-on: ubuntu-latest
+    environment: supabase-production
+    needs: []
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_PROD_DB_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dry-run schema deployment
+        run: supabase db push --db-url "$SUPABASE_DB_URL" --dry-run --non-interactive
+
+      - name: Deploy schema to Production
+        run: supabase db push --db-url "$SUPABASE_DB_URL" --include "functions,policies" --non-interactive
