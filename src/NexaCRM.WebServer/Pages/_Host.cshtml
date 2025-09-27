@@ -9,10 +9,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NexaCRM</title>
     <base href="~/" />
+    <link href="_content/NexaCRM.UI/css/app.css" rel="stylesheet" />
+    <link href="_content/NexaCRM.UI/css/mobile.css" rel="stylesheet" />
+    <link href="NexaCRM.WebServer.styles.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <script>
+        window.isDarkMode = function () {
+            const theme = document.documentElement.getAttribute('data-theme')
+                || localStorage.getItem('nexacrm-theme-preference')
+                || 'light';
+
+            if (theme === 'dark') {
+                return true;
+            }
+
+            if (theme === 'auto') {
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            return false;
+        };
+    </script>
     <script src="_framework/blazor.server.js"></script>
+    <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>
+    <script src="_content/NexaCRM.UI/js/navigation.js"></script>
+    <script src="_content/NexaCRM.UI/js/culture.js"></script>
+    <script src="_content/NexaCRM.UI/js/theme-manager.js"></script>
+    <script src="_content/NexaCRM.UI/js/device.js"></script>
+    <script src="_content/NexaCRM.UI/js/interactions.js"></script>
+    <script src="_content/NexaCRM.UI/js/csv-export.js"></script>
 </body>
 </html>
