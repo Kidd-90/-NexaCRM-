@@ -14,6 +14,7 @@ using RealtimeListenType = Supabase.Realtime.PostgresChanges.PostgresChangesOpti
 using Supabase.Realtime.Interfaces;
 using Supabase.Realtime.PostgresChanges;
 using SupportTicket = NexaCRM.UI.Models.SupportTicket;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services;
 

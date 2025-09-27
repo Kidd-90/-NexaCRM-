@@ -5,11 +5,8 @@ using Microsoft.Extensions.Logging;
 using Supabase.Realtime.Exceptions;
 using Websocket.Client.Exceptions;
 
-namespace NexaCRM.WebClient.Services;
+namespace NexaCRM.Service.Supabase;
 
-/// <summary>
-/// Coordinates initialization of the Supabase client so that it is executed only once.
-/// </summary>
 public sealed class SupabaseClientProvider
 {
     private readonly Supabase.Client _client;
@@ -19,8 +16,8 @@ public sealed class SupabaseClientProvider
 
     public SupabaseClientProvider(Supabase.Client client, ILogger<SupabaseClientProvider> logger)
     {
-        _client = client;
-        _logger = logger;
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Supabase.Client> GetClientAsync()
@@ -30,20 +27,21 @@ public sealed class SupabaseClientProvider
             return _client;
         }
 
-        await _initializationLock.WaitAsync();
+        await _initializationLock.WaitAsync().ConfigureAwait(false);
         try
         {
             if (!_initialized)
             {
                 try
                 {
-                    await _client.InitializeAsync();
+                    await _client.InitializeAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex) when (IsRealtimePlatformNotSupported(ex))
                 {
                     _logger.LogWarning(ex, "Supabase realtime sockets are not supported in this environment. Continuing without realtime subscriptions.");
-                    await _client.Auth.RetrieveSessionAsync();
+                    await _client.Auth.RetrieveSessionAsync().ConfigureAwait(false);
                 }
+
                 _initialized = true;
             }
         }

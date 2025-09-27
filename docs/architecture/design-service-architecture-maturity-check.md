@@ -22,7 +22,7 @@
 | --- | --- | --- | --- |
 | Supabase 클라이언트 구성 | ✅ 기반 확보 | Program에서 Supabase 옵션 검증, 세션 지속성, AutoRefreshToken 설정을 마친 상태입니다.【F:src/NexaCRM.WebClient/Program.cs†L34-L103】 | 실서비스 환경 변수 주입, Realtime 채널 구성 재검토 |
 | 핵심 도메인 CRUD | ⚠️ 진행 중 | 연락처 서비스는 Supabase SDK로 CRUD를 구현했지만 예외 전파 이후 사용자 피드백 계층이 미정입니다.【F:src/NexaCRM.WebClient/Services/SupabaseContactService.cs†L25-L80】 | UI 예외 처리, 캐싱/페이지네이션, 테스트 커버리지 확대 |
-| 인증·세션 | ⚠️ 착수 전 | `CustomAuthStateProvider`는 등록돼 있으나 Supabase Auth 기반으로 교체하는 작업은 체크리스트에서 미완료로 남아 있습니다.【F:docs/supabase-service-web-task-plan.md†L15-L22】 | Supabase Auth API 연동, 토큰 자동 갱신·로그아웃 플로우 구현 |
+| 인증·세션 | ⚠️ 진행 중 | 공유 `SupabaseAuthenticationStateProvider`가 두 호스트 모두에서 Supabase Auth 세션을 관리하도록 배치되었으나, 2단계 인증·사용자 온보딩 자동화 등 고급 시나리오는 아직 남아 있습니다.【F:src/NexaCRM.Service/Core/UiServices/Implementations/SupabaseAuthenticationStateProvider.cs†L1-L240】【F:src/NexaCRM.WebServer/Startup.cs†L52-L72】 | MFA, 사용자 자기 등록, 보안 이벤트 감사 |
 | 조직/역할 관리 | ❌ 미착수 | 조직·역할 동기화, 권한 기반 UI 노출 개선이 체크리스트에서 모두 미완료입니다.【F:docs/supabase-service-web-task-plan.md†L31-L38】 | Supabase `organization_users` 연동, 역할 기반 표시·필터링 |
 | 실시간/알림 연동 | ❌ 미착수 | Realtime 채널 연결과 장애 대응 로직이 문서에서 미완료로 남아 있습니다.【F:docs/supabase-service-web-task-plan.md†L39-L46】 | Realtime 구독, 재연결 전략, UI 실시간 알림 반영 |
 | 스토리지·엣지 기능 | ❌ 미착수 | 스토리지 업로드/다운로드, Edge Function 피드백이 모두 계획 단계입니다.【F:docs/supabase-service-web-task-plan.md†L47-L61】 | 버킷 설계, 업로드 UX, Edge Function 상태 표시 |

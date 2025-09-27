@@ -10,6 +10,7 @@ using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 using ReportData = NexaCRM.UI.Models.ReportData;
 using ReportDefinition = NexaCRM.UI.Models.ReportDefinition;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services;
 

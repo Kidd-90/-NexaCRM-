@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using NexaCRM.Service.DependencyInjection;
+using NexaCRM.Service.Supabase;
 using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.UI.Options;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.UI.Services.Mock;
@@ -34,6 +37,32 @@ public sealed class Startup
 
         services.AddNexaCrmAdminServices();
 
+        services.AddSupabaseClientOptions(Configuration);
+        services.AddScoped<SupabaseServerSessionPersistence>();
+        services.AddScoped<Supabase.Client>(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
+            if (string.IsNullOrWhiteSpace(options.Url) || string.IsNullOrWhiteSpace(options.AnonKey))
+            {
+                throw new InvalidOperationException("Supabase configuration must include Url and AnonKey.");
+            }
+
+            var persistence = provider.GetRequiredService<SupabaseServerSessionPersistence>();
+
+            var supabaseOptions = new Supabase.SupabaseOptions
+            {
+                AutoRefreshToken = true,
+                AutoConnectRealtime = false,
+                SessionHandler = persistence
+            };
+
+            return new Supabase.Client(options.Url, options.AnonKey, supabaseOptions);
+        });
+        services.AddScoped<SupabaseClientProvider>();
+        services.AddScoped<SupabaseAuthenticationStateProvider>();
+        services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
+        services.AddScoped<IAuthenticationService>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
+
         services.AddScoped<ActionInterop>();
         services.AddScoped<IMobileInteractionService, MobileInteractionService>();
         services.AddScoped<IGlobalActionService, GlobalActionService>();
@@ -58,9 +87,6 @@ public sealed class Startup
         services.AddScoped<IEmailTemplateService, MockEmailTemplateService>();
         services.AddScoped<ITeamService, MockTeamService>();
 
-        services.AddScoped<ServerAuthenticationStateProvider>();
-        services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<ServerAuthenticationStateProvider>());
-        services.AddScoped<IAuthenticationService>(sp => sp.GetRequiredService<ServerAuthenticationStateProvider>());
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services, IHostApplicationLifetime lifetime)

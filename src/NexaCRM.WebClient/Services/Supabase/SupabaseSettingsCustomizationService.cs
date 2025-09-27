@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NexaCRM.UI.Models.Customization;
 using NexaCRM.UI.Services.Interfaces;
+using NexaCRM.Service.Supabase;
 
 namespace NexaCRM.WebClient.Services.SupabaseEnterprise;
 

@@ -109,41 +109,27 @@ The migration from mock services to live API integration will follow a systemati
 
 ### Week 1-2: Authentication Service Migration
 
-**Objective**: Replace CustomAuthStateProvider with Supabase Auth
+**Objective**: Adopt the shared `SupabaseAuthenticationStateProvider` for both hosts
 
 **Implementation Steps:**
-1. **Setup Supabase Authentication**
-   ```csharp
-   // Update Program.cs
-   builder.Services.AddSingleton(new Supabase.Client(supabaseUrl, supabaseAnonKey));
-   builder.Services.AddScoped<IAuthService, SupabaseAuthService>();
-   ```
+1. **Configure Supabase Clients Per Host**
+   - Register `Supabase.Client` with host-specific session persistence (`SupabaseSessionPersistence` for WebAssembly, `SupabaseServerSessionPersistence` for Blazor Server).
+   - Inject `SupabaseClientProvider` so initialization logic remains consistent.
 
-2. **Implement Real Authentication Service**
-   ```csharp
-   public class SupabaseAuthService : IAuthService
-   {
-       private readonly Supabase.Client _supabase;
-       
-       public async Task<AuthResult> SignInAsync(string email, string password)
-       {
-           var session = await _supabase.Auth.SignIn(email, password);
-           return new AuthResult { Success = session != null, User = session?.User };
-       }
-   }
-   ```
+2. **Wire Shared Authentication Provider**
+   - Register `SupabaseAuthenticationStateProvider` as both `AuthenticationStateProvider` and `IAuthenticationService` in each host.
+   - Ensure role loading and organization approval checks run after every Supabase state change.
 
-3. **Update Authentication State Provider**
-   - Integrate with Supabase session management
-   - Implement role mapping from Supabase user metadata
-   - Add refresh token handling
+3. **Update UI Integration**
+   - Replace previous server-only stubs with the shared provider.
+   - Verify login components consume `LoginResult` for error messaging.
 
 **Testing Requirements:**
 - Unit tests for authentication flows
 - Integration tests with Supabase Auth
 - End-to-end authentication scenarios
 
-**Rollback Plan**: Keep CustomAuthStateProvider as fallback option
+**Rollback Plan**: Re-enable scoped mock providers if Supabase connectivity is unavailable
 
 ### Week 3: Configuration Service Implementation
 

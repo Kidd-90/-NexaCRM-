@@ -12,6 +12,6 @@ The NexaCRM Web client categorises Supabase sign-in failures so that users recei
 
 ## Implementation Notes
 
-- `CustomAuthStateProvider.SignInAsync` now returns a `LoginResult` that includes a failure reason enum and localised message.
+- `SupabaseAuthenticationStateProvider.SignInAsync` now returns a `LoginResult` that includes a failure reason enum and localised message.
 - When Supabase returns ambiguous credential errors, the provider performs a lightweight profile lookup to determine whether the username exists before classifying the failure.
 - All failure paths ensure the Supabase session is cleared and log context-rich warnings for operational visibility.
