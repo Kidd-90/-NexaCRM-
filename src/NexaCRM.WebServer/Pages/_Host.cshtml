@@ -11,10 +11,15 @@
     <base href="~/" />
     <link href="_content/NexaCRM.UI/css/app.css" rel="stylesheet" />
     <link href="_content/NexaCRM.UI/css/mobile.css" rel="stylesheet" />
+    <link href="css/loading.css" rel="stylesheet" />
     <link href="NexaCRM.WebServer.styles.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
+    <div id="nexacrm-initial-loader" role="status" aria-live="polite">
+        <div class="loader-ring" aria-hidden="true"></div>
+        <p class="loader-message">Preparing your NexaCRM workspace...</p>
+    </div>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -38,6 +43,7 @@
             return false;
         };
     </script>
+    <script src="js/loader.js"></script>
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>
     <script src="_content/NexaCRM.UI/js/navigation.js"></script>

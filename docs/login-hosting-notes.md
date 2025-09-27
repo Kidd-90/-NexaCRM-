@@ -9,6 +9,7 @@
 - `App.razor` now inspects the route metadata: pages marked with `[AllowAnonymous]` render directly through `RouteView`, while all other routes continue through the `AuthorizeRouteView` pipeline with the localized `LoadingScreen` and `RedirectToLogin` components. This ensures the login layout appears immediately on first load without waiting for the authentication state provider to resolve.
 - `RedirectToLogin.razor` renders the full `LoginPage` component while it normalizes navigation to `/login`, so users immediately see the dedicated login layout even before the router finishes redirecting protected deep links.
 - `Pages/_Imports.razor` continues to apply `[Authorize]` to every page by default while the authentication flows (`LoginPage`, `FindIdPage`, `PasswordResetPage`, and `UserRegistrationPage`) opt-in to `[AllowAnonymous]`, preventing unauthenticated users from landing on internal dashboards when the app first renders.
+- `Pages/_Host.cshtml` now serves a lightweight HTML/CSS loader that listens for the `blazor:connected` lifecycle event. This guarantees the NexaCRM workspace shows a branded loading state while the SignalR circuit starts without introducing dependencies into other hosted applications.
 
 ## Testing Guidance
 - Build the solution with `dotnet build --configuration Release`.
