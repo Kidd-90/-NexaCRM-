@@ -78,8 +78,7 @@ public sealed class Startup
         });
         services.AddScoped<SupabaseClientProvider>();
         services.AddScoped<SupabaseAuthenticationStateProvider>();
-        services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
-        services.AddScoped<IAuthenticationService>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
+        services.AddScoped<NexaCRM.UI.Services.Interfaces.IAuthenticationService>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
 
         services.AddScoped<ActionInterop>();
         services.AddScoped<IMobileInteractionService, MobileInteractionService>();
