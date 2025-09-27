@@ -1,5 +1,5 @@
 [build]
-  command = "dotnet publish src/NexaCRM.WebClient/NexaCRM.WebClient.csproj -c Release -o temp"
+  command = "echo '{\n  \"Supabase\": {\n    \"Url\": \"'$SUPABASE_URL'\",\n    \"AnonKey\": \"'$SUPABASE_ANON_KEY'\"\n  },\n  \"SystemInfo\": {\n    \"Terms\": \"All services are provided as-is.\",\n    \"CompanyAddress\": \"123 Nexa Street, Seoul\",\n    \"SupportContacts\": [\n      \"support@nexa.example\",\n      \"+82-2-1234-5678\"\n    ]\n  }\n}' > src/NexaCRM.WebClient/wwwroot/appsettings.json && dotnet publish src/NexaCRM.WebClient/NexaCRM.WebClient.csproj -c Release -o temp"
   publish = "temp/wwwroot"
 
 [build.environment]

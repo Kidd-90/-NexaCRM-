@@ -22,9 +22,9 @@ public sealed class ServerAuthenticationStateProvider : AuthenticationStateProvi
         _logger = logger;
         _accounts = new ConcurrentDictionary<string, UserAccount>(StringComparer.OrdinalIgnoreCase)
         {
-            ["manager@nexacrm.com"] = new UserAccount("manager@nexacrm.com", "Password123!", new[] { "Manager", "Admin" }),
-            ["sales@nexacrm.com"] = new UserAccount("sales@nexacrm.com", "Password123!", new[] { "Sales" }),
-            ["developer@nexacrm.com"] = new UserAccount("developer@nexacrm.com", "Password123!", new[] { "Developer", "Admin" })
+            ["manager"] = new UserAccount("manager", "manager!", new[] { "Manager", "Admin" }),
+            ["sales"] = new UserAccount("sales", "sales!", new[] { "Sales" }),
+            ["developer"] = new UserAccount("developer", "developer", new[] { "Developer", "Admin" })
         };
     }
 
