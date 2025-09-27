@@ -4,6 +4,7 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
 @using NexaCRM.UI.Models.Navigation
 @using NexaCRM.UI.Services.Interfaces
 @inject IDeviceService DeviceService
@@ -13,6 +14,16 @@
 @inject IUserFavoritesService UserFavoritesService
 @inject INotificationFeedService NotificationFeed
 @inject INavigationStateService NavigationStateService
+
+<HeadContent>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/open-iconic@1.1.1/font/css/open-iconic-bootstrap.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/variable/pretendardvariable.css" />
+    <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
+    <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</HeadContent>
 
 <div class="page app-shell @(isMobile ? "app-shell--mobile" : "app-shell--desktop")">
     <div class="sidebar @(isMobile ? "collapse" : string.Empty)">

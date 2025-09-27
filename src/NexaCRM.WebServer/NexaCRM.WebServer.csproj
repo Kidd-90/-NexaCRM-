@@ -14,4 +14,8 @@
     <ProjectReference Include="..\NexaCRM.Service\NexaCRM.Service.csproj" />
     <ProjectReference Include="..\NexaCRM.UI\NexaCRM.UI.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot/css/" />
+  </ItemGroup>
 </Project>
