@@ -1,11 +1,14 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.Service.DependencyInjection;
 using NexaCRM.Service.Supabase;
@@ -37,14 +40,20 @@ public sealed class Startup
 
         services.AddNexaCrmAdminServices();
 
-        services.AddSupabaseClientOptions(Configuration);
+        services.AddSupabaseClientOptions(Configuration, validateOnStart: false);
         services.AddScoped<SupabaseServerSessionPersistence>();
         services.AddScoped<Supabase.Client>(provider =>
         {
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("SupabaseClientSetup");
             var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
-            if (string.IsNullOrWhiteSpace(options.Url) || string.IsNullOrWhiteSpace(options.AnonKey))
+            var supabaseUrl = options.Url;
+            var supabaseAnonKey = options.AnonKey;
+            if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseAnonKey))
             {
-                throw new InvalidOperationException("Supabase configuration must include Url and AnonKey.");
+                logger.LogWarning("Supabase configuration is missing or incomplete. NexaCRM.WebServer will run in offline mode.");
+                supabaseUrl = "https://localhost";
+                supabaseAnonKey = Guid.Empty.ToString("N");
             }
 
             var persistence = provider.GetRequiredService<SupabaseServerSessionPersistence>();
@@ -56,7 +65,7 @@ public sealed class Startup
                 SessionHandler = persistence
             };
 
-            return new Supabase.Client(options.Url, options.AnonKey, supabaseOptions);
+            return new Supabase.Client(supabaseUrl, supabaseAnonKey, supabaseOptions);
         });
         services.AddScoped<SupabaseClientProvider>();
         services.AddScoped<SupabaseAuthenticationStateProvider>();
@@ -89,7 +98,12 @@ public sealed class Startup
 
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services, IHostApplicationLifetime lifetime)
+    public void Configure(
+        IApplicationBuilder app,
+        IWebHostEnvironment env,
+        IServiceProvider services,
+        IHostApplicationLifetime lifetime,
+        ILogger<Startup> logger)
     {
         if (!env.IsDevelopment())
         {
@@ -108,8 +122,20 @@ public sealed class Startup
 
         app.UseAntiforgery();
 
-        app.UseAuthentication();
-        app.UseAuthorization();
+        var schemeProvider = services.GetService<IAuthenticationSchemeProvider>();
+        if (schemeProvider is not null)
+        {
+            var schemes = schemeProvider.GetAllSchemesAsync().GetAwaiter().GetResult();
+            if (schemes.Any())
+            {
+                app.UseAuthentication();
+                app.UseAuthorization();
+            }
+            else
+            {
+                logger.LogInformation("No authentication schemes registered. Skipping UseAuthentication and UseAuthorization middleware.");
+            }
+        }
 
         app.UseEndpoints(endpoints =>
         {
@@ -119,14 +145,21 @@ public sealed class Startup
 
         lifetime.ApplicationStarted.Register(() =>
         {
-            _ = StartDuplicateMonitorAsync(services);
+            _ = StartDuplicateMonitorAsync(services, logger);
         });
     }
 
-    private static async Task StartDuplicateMonitorAsync(IServiceProvider services)
+    private static async Task StartDuplicateMonitorAsync(IServiceProvider services, ILogger logger)
     {
-        await using var scope = services.CreateAsyncScope();
-        var monitor = scope.ServiceProvider.GetRequiredService<IDuplicateMonitorService>();
-        await monitor.StartAsync();
+        try
+        {
+            await using var scope = services.CreateAsyncScope();
+            var monitor = scope.ServiceProvider.GetRequiredService<IDuplicateMonitorService>();
+            await monitor.StartAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to start the duplicate monitor service.");
+        }
     }
 }

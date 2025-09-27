@@ -8,16 +8,21 @@ public static class SupabaseClientServiceCollectionExtensions
 {
     public static IServiceCollection AddSupabaseClientOptions(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool validateOnStart = true)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        services
+        var builder = services
             .AddOptions<SupabaseClientOptions>()
             .Bind(configuration.GetSection(SupabaseClientOptions.SectionName))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+            .ValidateDataAnnotations();
+
+        if (validateOnStart)
+        {
+            builder.ValidateOnStart();
+        }
 
         return services;
     }
