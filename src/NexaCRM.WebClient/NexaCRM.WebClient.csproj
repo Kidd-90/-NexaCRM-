@@ -21,17 +21,17 @@
     <!-- net8.0 타겟에만 Blazor WebAssembly 8.0 패키지 참조 -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
         <!-- Blazor WebAssembly 핵심 런타임 참조 -->
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
         <!-- 개발 서버 도구 (PrivateAssets로 빌드 출력 미포함) -->
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
         <!-- Microsoft.AspNetCore.* 네임스페이스 정의 어셈블리 -->
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.2" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Supabase" Version="1.1.1" />
     </ItemGroup>
