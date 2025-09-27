@@ -10,5 +10,6 @@ public static class SupabaseClientDefaults
     public const string OfflineUrl = "https://localhost";
 
     [StringSyntax(StringSyntaxAttribute.GuidFormat, "N")]
-    public const string OfflineAnonKey = "00000000000000000000000000000000";
+    public const string OfflineAnonKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJvZmZsaW5lIiwicm9sZSI6ImFub24iLCJpYXQiOjAsImV4cCI6MjUzNDAyMzAwNzk5fQ.b2ZmbGluZS1zaWduYXR1cmU";
 }
