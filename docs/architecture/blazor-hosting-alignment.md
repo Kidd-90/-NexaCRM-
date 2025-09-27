@@ -42,6 +42,16 @@
 3. **리소스 관리**: 다국어 리소스나 스타일 시트는 `NexaCRM.UI/Resources` 및 `wwwroot` 폴더에 유지하여 두 호스트가 공유하도록 합니다.
 4. **테스트**: UI 컴포넌트는 [bUnit](https://bunit.dev/)과 같은 테스트 프레임워크로 단위 테스트를 작성하고, 도메인 계약은 xUnit 기반 테스트 프로젝트에서 검증합니다.
 
+## 서버 호스트 정적 자산 브리징
+- `NexaCRM.UI/wwwroot/js` 아래에 존재하는 모듈(`actions.js`, `layout.js`)은 Razor Class Library의 정적 자산으로 게시됩니다. 서버 호스트에서 `JSRuntime.InvokeAsync("import", "./js/layout.js")` 같은 상대 경로 호출을 유지하려면 **호스트의 `wwwroot/js` 경로에서 동일한 파일 이름을 제공**해야 합니다.
+- `NexaCRM.WebServer`는 `wwwroot/js/actions.js`와 `wwwroot/js/layout.js`에 프록시 모듈을 두어 `_content/NexaCRM.UI/js/*.js` 파일을 다시 내보냅니다. 이 방식은 WebAssembly 호스트가 사용하는 상대 경로 패턴과 호환되며, Razor Class Library의 원본 스크립트가 변경되어도 서버 호스트에서 최신 구현을 즉시 반영합니다.
+- 프록시 모듈은 다음과 같이 단순 재내보내기만 수행합니다.
+  ```javascript
+  export * from "/_content/NexaCRM.UI/js/layout.js";
+  export { default } from "/_content/NexaCRM.UI/js/layout.js";
+  ```
+- 추가적인 JS 모듈이 공유 라이브러리에 도입될 경우에도 동일한 패턴으로 서버 호스트에 프록시 파일을 추가하면 상대 경로 import 구조를 계속 재사용할 수 있습니다.
+
 ## 결론
 - 현재 솔루션 구조만으로도 Blazor Server와 Blazor WebAssembly 간 기능 및 UI 동기화를 유지할 수 있습니다.
 - 별도의 추가 프로젝트는 필요하지 않으며, 공통 UI/도메인 라이브러리를 지속적으로 관리하는 것이 핵심입니다.
