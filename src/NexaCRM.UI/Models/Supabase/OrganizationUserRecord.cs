@@ -13,6 +13,9 @@ public sealed class OrganizationUserRecord : BaseModel
     [Column("user_id")]
     public Guid UserId { get; set; }
 
+    [Column("user_cuid")]
+    public string UserCuid { get; set; } = string.Empty;
+
     [Column("unit_id")]
     public long? UnitId { get; set; }
 

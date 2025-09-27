@@ -14,10 +14,56 @@ $$ LANGUAGE plpgsql;
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 
+-- 1.a APP USERS TABLE
+-- Stores the canonical NexaCRM user identifier (cuid) mapped to Supabase auth users.
+CREATE TABLE app_users (
+  cuid TEXT PRIMARY KEY,
+  auth_user_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT UNIQUE,
+  status TEXT NOT NULL DEFAULT 'active',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE app_users IS 'Application-scoped user identities keyed by cuid.';
+COMMENT ON COLUMN app_users.cuid IS 'Stable cuid used to join NexaCRM user data.';
+COMMENT ON COLUMN app_users.auth_user_id IS 'Reference to Supabase auth.users.id.';
+
+CREATE TRIGGER set_timestamp_app_users
+  BEFORE UPDATE ON app_users
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+
+-- 1.b USER INFOS TABLE
+-- Stores detailed user profile metadata keyed by cuid.
+CREATE TABLE user_infos (
+  user_cuid TEXT PRIMARY KEY REFERENCES app_users(cuid) ON DELETE CASCADE,
+  username TEXT UNIQUE,
+  full_name TEXT,
+  avatar_url TEXT,
+  department TEXT,
+  phone_number TEXT,
+  job_title TEXT,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE user_infos IS 'Extended NexaCRM user metadata linked by cuid.';
+COMMENT ON COLUMN user_infos.user_cuid IS 'Foreign key to app_users.cuid.';
+
+CREATE TRIGGER set_timestamp_user_infos
+  BEFORE UPDATE ON user_infos
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+
 -- 2. PROFILES TABLE
--- This table stores public user information and is linked to the `auth.users` table.
+-- This table stores public user information and is linked to both auth.users and user_infos.
 CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_cuid TEXT NOT NULL UNIQUE REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
   username TEXT UNIQUE,
   full_name TEXT,
   avatar_url TEXT,
@@ -27,6 +73,7 @@ CREATE TABLE profiles (
 
 COMMENT ON TABLE profiles IS 'Public-facing user profile information.';
 COMMENT ON COLUMN profiles.id IS 'Foreign key to auth.users.id.';
+COMMENT ON COLUMN profiles.user_cuid IS 'Foreign key to user_infos.user_cuid.';
 
 
 -- 3. COMPANIES TABLE
@@ -128,6 +175,7 @@ CREATE TABLE organization_units (
 CREATE TABLE organization_users (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_cuid TEXT NOT NULL REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
   unit_id BIGINT REFERENCES organization_units(id) ON DELETE SET NULL,
   role TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending',
@@ -137,18 +185,26 @@ CREATE TABLE organization_users (
   approved_at TIMESTAMPTZ,
   approval_memo TEXT,
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (user_id, unit_id)
+  UNIQUE (user_id, unit_id),
+  UNIQUE (user_cuid, unit_id)
 );
 
 CREATE TABLE user_roles (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_cuid TEXT NOT NULL REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
   role_code TEXT NOT NULL,
   assigned_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  assigned_by_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   assigned_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (user_id, role_code)
+  UNIQUE (user_id, role_code),
+  UNIQUE (user_cuid, role_code)
 );
+
+CREATE INDEX idx_organization_users_user_cuid ON organization_users(user_cuid);
+CREATE INDEX idx_user_roles_user_cuid ON user_roles(user_cuid);
+CREATE INDEX idx_user_roles_assigned_by_cuid ON user_roles(assigned_by_cuid);
 
 
 -- 8.a ORGANIZATION DIRECTORY TABLES
@@ -180,6 +236,7 @@ CREATE TABLE org_branches (
   email TEXT,
   address TEXT,
   manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  manager_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   memo TEXT,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -197,6 +254,7 @@ CREATE TABLE org_company_branch_lists (
   branch_code TEXT NOT NULL,
   branch_name TEXT NOT NULL,
   manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  manager_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   manager_name TEXT,
   team_count INT NOT NULL DEFAULT 0,
   member_count INT NOT NULL DEFAULT 0,
@@ -224,9 +282,11 @@ CREATE TRIGGER set_timestamp_org_company_branch_lists
 CREATE INDEX idx_org_companies_tenant_unit ON org_companies(tenant_unit_id);
 CREATE INDEX idx_org_branches_company ON org_branches(company_id);
 CREATE INDEX idx_org_branches_tenant_unit ON org_branches(tenant_unit_id);
+CREATE INDEX idx_org_branches_manager_cuid ON org_branches(manager_cuid);
 CREATE INDEX idx_org_company_branch_lists_tenant ON org_company_branch_lists(tenant_unit_id);
 CREATE INDEX idx_org_company_branch_lists_company ON org_company_branch_lists(company_id);
 CREATE INDEX idx_org_company_branch_lists_branch ON org_company_branch_lists(branch_id);
+CREATE INDEX idx_org_company_branch_lists_manager_cuid ON org_company_branch_lists(manager_cuid);
 
 
 -- 9. TASKS TABLE
@@ -254,6 +314,7 @@ COMMENT ON TABLE tasks IS 'User tasks tracked for follow-up and workflow managem
 CREATE TABLE agents (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  user_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   display_name TEXT NOT NULL,
   email TEXT,
   role TEXT NOT NULL DEFAULT 'agent',
@@ -261,6 +322,8 @@ CREATE TABLE agents (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX idx_agents_user_cuid ON agents(user_cuid);
 
 CREATE TABLE teams (
   id BIGSERIAL PRIMARY KEY,
@@ -270,6 +333,7 @@ CREATE TABLE teams (
   code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  manager_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   manager_name TEXT,
   member_count INT NOT NULL DEFAULT 0,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -281,6 +345,7 @@ CREATE TABLE team_members (
   id BIGSERIAL PRIMARY KEY,
   team_id BIGINT REFERENCES teams(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_cuid TEXT NOT NULL REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
   company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
   branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
   team_name TEXT,
@@ -292,7 +357,8 @@ CREATE TABLE team_members (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   registered_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (team_id, user_id)
+  UNIQUE (team_id, user_id),
+  UNIQUE (team_id, user_cuid)
 );
 
 CREATE TABLE org_company_team_lists (
@@ -305,6 +371,7 @@ CREATE TABLE org_company_team_lists (
   team_name TEXT NOT NULL,
   branch_name TEXT,
   manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  manager_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   manager_name TEXT,
   member_count INT NOT NULL DEFAULT 0,
   active_member_count INT NOT NULL DEFAULT 0,
@@ -318,6 +385,7 @@ CREATE TABLE org_company_team_lists (
 CREATE TABLE user_directory_entries (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_cuid TEXT NOT NULL UNIQUE REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
   company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
   branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
   team_id BIGINT REFERENCES teams(id) ON DELETE SET NULL,
@@ -357,13 +425,17 @@ CREATE TRIGGER set_timestamp_user_directory_entries
 
 CREATE INDEX idx_teams_tenant_unit ON teams(tenant_unit_id);
 CREATE INDEX idx_teams_company ON teams(company_id);
+CREATE INDEX idx_teams_manager_cuid ON teams(manager_cuid);
 CREATE INDEX idx_team_members_user ON team_members(user_id);
+CREATE INDEX idx_team_members_user_cuid ON team_members(user_cuid);
 CREATE INDEX idx_team_members_company ON team_members(company_id);
 CREATE INDEX idx_org_company_team_lists_tenant ON org_company_team_lists(tenant_unit_id);
 CREATE INDEX idx_org_company_team_lists_company ON org_company_team_lists(company_id);
 CREATE INDEX idx_org_company_team_lists_branch ON org_company_team_lists(branch_id);
+CREATE INDEX idx_org_company_team_lists_manager_cuid ON org_company_team_lists(manager_cuid);
 CREATE INDEX idx_user_directory_company ON user_directory_entries(company_id);
 CREATE INDEX idx_user_directory_tenant_unit ON user_directory_entries(tenant_unit_id);
+CREATE INDEX idx_user_directory_user_cuid ON user_directory_entries(user_cuid);
 
 CREATE INDEX idx_teams_active ON teams(is_active);
 CREATE INDEX idx_team_members_team_id ON team_members(team_id);
