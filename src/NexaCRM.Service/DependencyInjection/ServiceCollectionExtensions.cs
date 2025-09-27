@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
 using NexaCRM.Service.InMemory;
 using NexaCRM.Services.Admin;
 using NexaCRM.Services.Admin.Interfaces;
@@ -29,7 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISmsService, SmsService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<ISystemInfoService, SystemInfoService>();
-        services.AddSingleton<ISupabaseMonitoringService, SupabaseMonitoringService>();
+        services.AddHttpClient<ISupabaseMonitoringService, SupabaseMonitoringService>();
         services.AddSingleton<ISupabaseAuditSyncVerifier, SupabaseAuditSyncVerifier>();
 
         return services;
