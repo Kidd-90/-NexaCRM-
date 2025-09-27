@@ -1,10 +1,15 @@
-namespace NexaCRM.Services.Admin.Models
+namespace NexaCRM.Services.Admin.Models;
+
+/// <summary>
+/// Represents an agent displayed within the Blazor client experience.
+/// </summary>
+public sealed class Agent
 {
-    public class Agent
-    {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Email { get; set; }
-        public string? Role { get; set; }
-    }
+    public int Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+
+    public string? Email { get; set; }
+
+    public string Role { get; set; } = string.Empty;
 }

@@ -20,7 +20,9 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.JSInterop" Version="8.0.6" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Supabase" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,11 +34,6 @@
     <Compile Include="Core/**/*.cs" />
     <Compile Include="DependencyInjection/*.cs" />
     <Compile Include="InMemory/*.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Abstractions/" />
-    <Folder Include="Core/" />
   </ItemGroup>
 
 </Project>

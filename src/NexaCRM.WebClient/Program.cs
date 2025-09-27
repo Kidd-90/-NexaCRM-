@@ -11,15 +11,15 @@ using NexaCRM.WebClient;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NexaCRM.Services.Admin;
-using NexaCRM.UI.Options;
+using NexaCRM.Service.DependencyInjection;
 using NexaCRM.Service.Supabase;
+using NexaCRM.Service.Supabase.Configuration;
+using NexaCRM.Service.Supabase.Enterprise;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
-using NexaCRM.WebClient.Services;
 using NexaCRM.UI.Services.Mock;
-using NexaCRM.WebClient.Services.SupabaseEnterprise;
+using NexaCRM.WebClient.Supabase.Environment;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -37,44 +37,11 @@ builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSupabaseClientOptions(builder.Configuration, validateOnStart: false);
 builder.Services.AddScoped<SupabaseSessionPersistence>();
-builder.Services.AddScoped<Supabase.Client>(provider =>
-{
-    var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-    var logger = loggerFactory.CreateLogger("SupabaseClientSetup");
-    var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
-
-    var supabaseUrl = options.Url;
-    var supabaseAnonKey = options.AnonKey;
-    if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseAnonKey))
-    {
-        logger.LogWarning("Supabase configuration is missing or incomplete. NexaCRM.WebClient will run in offline mode.");
-        supabaseUrl = SupabaseClientDefaults.OfflineUrl;
-        supabaseAnonKey = SupabaseClientDefaults.OfflineAnonKey;
-    }
-    else if (
-        string.Equals(supabaseUrl, SupabaseClientDefaults.OfflineUrl, StringComparison.OrdinalIgnoreCase) &&
-        string.Equals(supabaseAnonKey, SupabaseClientDefaults.OfflineAnonKey, StringComparison.Ordinal))
-    {
-        logger.LogInformation("Supabase configuration matches the offline defaults. NexaCRM.WebClient will run in offline mode.");
-    }
-
-    var persistence = provider.GetRequiredService<SupabaseSessionPersistence>();
-
-    var supabaseOptions = new Supabase.SupabaseOptions
-    {
-        AutoRefreshToken = true,
-        // WebAssembly 환경에서는 Supabase Realtime이 사용하는 Websocket.Client가 지원되지 않으므로
-        // 자동 연결을 비활성화해 초기 렌더링 중 PlatformNotSupported 예외가 발생하지 않도록 한다.
-        AutoConnectRealtime = false,
-        SessionHandler = persistence
-    };
-
-    return new Supabase.Client(supabaseUrl, supabaseAnonKey, supabaseOptions);
-});
-builder.Services.AddScoped<SupabaseClientProvider>();
-builder.Services.AddScoped<SupabaseAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<SupabaseAuthenticationStateProvider>());
-builder.Services.AddScoped<IAuthenticationService>(provider => provider.GetRequiredService<SupabaseAuthenticationStateProvider>());
+builder.Services.AddScoped<ISupabaseClientConfigurator, WebAssemblySupabaseClientConfigurator>();
+builder.Services.AddSupabaseClient();
+builder.Services.AddScoped<ClientSupabaseAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<ClientSupabaseAuthenticationStateProvider>());
+builder.Services.AddScoped<IAuthenticationService>(provider => provider.GetRequiredService<ClientSupabaseAuthenticationStateProvider>());
 builder.Services.AddScoped<ActionInterop>();
 builder.Services.AddScoped<IMobileInteractionService, MobileInteractionService>();
 builder.Services.AddScoped<IGlobalActionService, GlobalActionService>();

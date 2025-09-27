@@ -1,10 +1,14 @@
 using System;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,8 +16,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.Service.DependencyInjection;
 using NexaCRM.Service.Supabase;
+using NexaCRM.Service.Supabase.Configuration;
 using NexaCRM.Services.Admin.Interfaces;
-using NexaCRM.UI.Options;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.UI.Services.Mock;
@@ -42,42 +46,16 @@ public sealed class Startup
 
         services.AddSupabaseClientOptions(Configuration, validateOnStart: false);
         services.AddScoped<SupabaseServerSessionPersistence>();
-        services.AddScoped<Supabase.Client>(provider =>
+        services.AddScoped<ISupabaseClientConfigurator, SupabaseServerClientConfigurator>();
+        services.AddSupabaseClient();
+        services.AddScoped<SupabaseAuthenticationStateProvider>(provider =>
         {
-            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger("SupabaseClientSetup");
-            var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
-            var supabaseUrl = options.Url;
-            var supabaseAnonKey = options.AnonKey;
-            var isOfflineMode = string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseAnonKey);
-
-            if (!isOfflineMode)
-            {
-                isOfflineMode =
-                    string.Equals(supabaseUrl, SupabaseClientDefaults.OfflineUrl, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(supabaseAnonKey, SupabaseClientDefaults.OfflineAnonKey, StringComparison.Ordinal);
-            }
-
-            if (isOfflineMode)
-            {
-                logger.LogWarning("Supabase configuration is missing or incomplete. NexaCRM.WebServer will run in offline mode.");
-                supabaseUrl = SupabaseClientDefaults.OfflineUrl;
-                supabaseAnonKey = SupabaseClientDefaults.OfflineAnonKey;
-            }
-
-            var persistence = provider.GetRequiredService<SupabaseServerSessionPersistence>();
-
-            var supabaseOptions = new Supabase.SupabaseOptions
-            {
-                AutoRefreshToken = true,
-                AutoConnectRealtime = false,
-                SessionHandler = persistence
-            };
-
-            return new Supabase.Client(supabaseUrl, supabaseAnonKey, supabaseOptions);
+            var clientProvider = provider.GetRequiredService<SupabaseClientProvider>();
+            var logger = provider.GetRequiredService<ILogger<SupabaseAuthenticationStateProvider>>();
+            var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>();
+            return new SupabaseAuthenticationStateProvider(clientProvider, logger, options);
         });
-        services.AddScoped<SupabaseClientProvider>();
-        services.AddScoped<SupabaseAuthenticationStateProvider>();
+        services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
         services.AddScoped<NexaCRM.UI.Services.Interfaces.IAuthenticationService>(sp => sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
 
         services.AddScoped<ActionInterop>();
@@ -113,9 +91,48 @@ public sealed class Startup
         IHostApplicationLifetime lifetime,
         ILogger<Startup> logger)
     {
+        var showDetailedErrors = Configuration.GetValue<bool>("Hosting:ShowDetailedErrors");
+
         if (!env.IsDevelopment())
         {
-            app.UseExceptionHandler("/Error");
+            if (showDetailedErrors)
+            {
+                app.UseExceptionHandler(errorApp =>
+                {
+                    errorApp.Run(async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        context.Response.ContentType = "text/html; charset=utf-8";
+
+                        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+                        var pathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+
+                        if (exceptionFeature?.Error is not null)
+                        {
+                            logger.LogError(exceptionFeature.Error, "Unhandled exception while processing request for {Path}", pathFeature?.Path);
+
+                            var builder = new StringBuilder()
+                                .Append("<html><body style=\"font-family:monospace;padding:24px;\">")
+                                .Append("<h1>Unhandled exception</h1>")
+                                .Append("<p><strong>Path:</strong> ")
+                                .Append(WebUtility.HtmlEncode(pathFeature?.Path ?? "(unknown)"))
+                                .Append("</p><pre>")
+                                .Append(WebUtility.HtmlEncode(exceptionFeature.Error.ToString()))
+                                .Append("</pre></body></html>");
+
+                            await context.Response.WriteAsync(builder.ToString()).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await context.Response.WriteAsync("<html><body><h1>An unknown error occurred.</h1></body></html>").ConfigureAwait(false);
+                        }
+                    });
+                });
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
             app.UseHsts();
         }
         else
@@ -123,7 +140,11 @@ public sealed class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseHttpsRedirection();
+        var forceHttps = Configuration.GetValue<bool>("Hosting:ForceHttps");
+        if (!env.IsDevelopment() || forceHttps)
+        {
+            app.UseHttpsRedirection();
+        }
         app.UseStaticFiles();
 
         app.UseRouting();
@@ -151,17 +172,18 @@ public sealed class Startup
             endpoints.MapFallbackToPage("/_Host");
         });
 
+        var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
         lifetime.ApplicationStarted.Register(() =>
         {
-            _ = StartDuplicateMonitorAsync(services, logger);
+            _ = StartDuplicateMonitorAsync(scopeFactory, logger);
         });
     }
 
-    private static async Task StartDuplicateMonitorAsync(IServiceProvider services, ILogger logger)
+    private static async Task StartDuplicateMonitorAsync(IServiceScopeFactory scopeFactory, ILogger logger)
     {
         try
         {
-            await using var scope = services.CreateAsyncScope();
+            await using var scope = scopeFactory.CreateAsyncScope();
             var monitor = scope.ServiceProvider.GetRequiredService<IDuplicateMonitorService>();
             await monitor.StartAsync().ConfigureAwait(false);
         }

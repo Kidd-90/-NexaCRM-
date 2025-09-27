@@ -4,6 +4,7 @@
 @using NexaCRM.UI.Models
 @using NexaCRM.Services.Admin.Interfaces
 @using System.Linq
+@using AgentModel = NexaCRM.Services.Admin.Models.Agent;
 
 @inject IDbDataService DbDataService
 @inject IAgentService AgentService
@@ -39,7 +40,7 @@
 
 @code {
     [Parameter] public int ContactId { get; set; }
-    private IEnumerable<Agent>? agents;
+    private IEnumerable<AgentModel>? agents;
     private string? selectedAgentName;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
