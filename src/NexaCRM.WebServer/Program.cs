@@ -1,6 +1,10 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Logging;
 using NexaCRM.Service.DependencyInjection;
 using NexaCRM.Services.Admin.Interfaces;
+using NexaCRM.UI.Options;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.UI.Services.Mock;
@@ -19,6 +23,18 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddNexaCrmAdminServices();
+builder.Services.AddSupabaseClientOptions(builder.Configuration);
+
+var supportedCulture = new CultureInfo("ko-KR");
+CultureInfo.DefaultThreadCurrentCulture = supportedCulture;
+CultureInfo.DefaultThreadCurrentUICulture = supportedCulture;
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture(supportedCulture.Name);
+    options.SupportedCultures = new[] { supportedCulture };
+    options.SupportedUICultures = new[] { supportedCulture };
+});
 
 builder.Services.AddScoped<ActionInterop>();
 builder.Services.AddScoped<IMobileInteractionService, MobileInteractionService>();
@@ -58,6 +74,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRequestLocalization();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -72,6 +89,17 @@ app.Run();
 static async Task StartDuplicateMonitorAsync(IServiceProvider services)
 {
     await using var scope = services.CreateAsyncScope();
-    var monitor = scope.ServiceProvider.GetRequiredService<IDuplicateMonitorService>();
-    await monitor.StartAsync();
+    var provider = scope.ServiceProvider;
+    var loggerFactory = provider.GetService<ILoggerFactory>();
+    var logger = loggerFactory?.CreateLogger("Startup");
+
+    try
+    {
+        var monitor = provider.GetRequiredService<IDuplicateMonitorService>();
+        await monitor.StartAsync();
+    }
+    catch (Exception ex)
+    {
+        logger?.LogError(ex, "Failed to start the duplicate monitor service.");
+    }
 }
