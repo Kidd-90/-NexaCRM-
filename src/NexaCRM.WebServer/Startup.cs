@@ -49,11 +49,20 @@ public sealed class Startup
             var options = provider.GetRequiredService<IOptions<SupabaseClientOptions>>().Value;
             var supabaseUrl = options.Url;
             var supabaseAnonKey = options.AnonKey;
-            if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseAnonKey))
+            var isOfflineMode = string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseAnonKey);
+
+            if (!isOfflineMode)
+            {
+                isOfflineMode =
+                    string.Equals(supabaseUrl, SupabaseClientDefaults.OfflineUrl, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(supabaseAnonKey, SupabaseClientDefaults.OfflineAnonKey, StringComparison.Ordinal);
+            }
+
+            if (isOfflineMode)
             {
                 logger.LogWarning("Supabase configuration is missing or incomplete. NexaCRM.WebServer will run in offline mode.");
-                supabaseUrl = "https://localhost";
-                supabaseAnonKey = Guid.Empty.ToString("N");
+                supabaseUrl = SupabaseClientDefaults.OfflineUrl;
+                supabaseAnonKey = SupabaseClientDefaults.OfflineAnonKey;
             }
 
             var persistence = provider.GetRequiredService<SupabaseServerSessionPersistence>();

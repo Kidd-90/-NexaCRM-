@@ -11,8 +11,8 @@ public sealed class SupabaseClientOptions
 
     [Required]
     [Url]
-    public string? Url { get; init; }
+    public string? Url { get; set; }
 
     [Required]
-    public string? AnonKey { get; init; }
+    public string? AnonKey { get; set; }
 }

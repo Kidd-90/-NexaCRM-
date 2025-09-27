@@ -23,6 +23,19 @@ public static class SupabaseClientServiceCollectionExtensions
         {
             builder.ValidateOnStart();
         }
+        else
+        {
+            services.PostConfigure<SupabaseClientOptions>(options =>
+            {
+                if (!string.IsNullOrWhiteSpace(options.Url) && !string.IsNullOrWhiteSpace(options.AnonKey))
+                {
+                    return;
+                }
+
+                options.Url ??= SupabaseClientDefaults.OfflineUrl;
+                options.AnonKey ??= SupabaseClientDefaults.OfflineAnonKey;
+            });
+        }
 
         return services;
     }
