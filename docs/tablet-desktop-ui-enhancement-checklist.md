@@ -3,7 +3,7 @@
 ## 0. 맥락 파악 (사전 진단)
 ### 진단
 * `MainDashboard`는 모바일 헤더·퀵 액션·알림 패널을 항상 렌더링하고 그 아래에 데스크탑 사이드바와 콘텐츠 래퍼를 두어 뷰포트에 따라 서로 겹치는 구조입니다. 태블릿·데스크탑 전환 시 어떤 계층을 숨기거나 재배치할지 명확한 규칙이 없어 시각적 충돌과 중복 내비게이션이 발생할 수 있습니다.【F:src/NexaCRM.WebClient/Pages/MainDashboard.razor†L12-L195】
-* 전역 `ResponsivePage` 래퍼는 부트스트랩 그리드 한 컬럼만 감싸고, `mobile.css`는 768px 이상에서 최대 폭 800px만 지정해 태블릿 폭 확장이나 멀티컬럼 구성이 제한됩니다.【F:src/NexaCRM.WebClient/Shared/ResponsivePage.razor†L1-L8】【F:src/NexaCRM.WebClient/wwwroot/css/mobile.css†L339-L349】
+* 전역 `ResponsivePage` 래퍼는 부트스트랩 그리드 한 컬럼만 감싸고, `mobile.css`는 768px 이상에서 최대 폭 800px만 지정해 태블릿 폭 확장이나 멀티컬럼 구성이 제한됩니다.【F:src/NexaCRM.WebClient/Shared/ResponsivePage.razor†L1-L8】【F:src/NexaCRM.UI/wwwroot/css/mobile.css†L339-L349】
 * `StatisticsDashboardPage`는 접근성 있는 퀵 범위 버튼, 요약 타일, SVG 차트 뼈대를 제공하지만 데스크탑 환경에서의 데이터 밀도·상호작용·애니메이션 정의는 비어 있습니다.【F:src/NexaCRM.WebClient/Pages/StatisticsDashboardPage.razor†L10-L220】
 ### 제안
 * 화면 크기별로 모바일 헤더/패널과 데스크탑 사이드바의 우선순위를 문서화하고, 공통 툴바 또는 스위처 패턴을 지정합니다.

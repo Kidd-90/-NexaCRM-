@@ -373,6 +373,7 @@ a:hover, .btn-link:hover {
     box-shadow: 0 18px 32px var(--shadow-light) !important; /* Light shadow */
     /* Improve accessibility */
     -webkit-tap-highlight-color: transparent !important;
+    -webkit-user-select: none !important;
     user-select: none !important;
     pointer-events: auto !important; /* Ensure it's clickable */
 }
@@ -920,6 +921,7 @@ a:hover, .btn-link:hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
     user-select: none;
     min-height: 44px; /* Ensure minimum touch target */
 }
@@ -1500,7 +1502,8 @@ html {
     transition: all var(--transition-fast);
     box-shadow: 0 2px 8px var(--shadow-light);
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
+    -webkit-user-select: none;
+    user-select: none !important;
 }
 
 .theme-toggle-button:hover {
