@@ -11,7 +11,7 @@ using NexaCRM.UI.Services.Mock;
 using NexaCRM.WebServer.Services;
 using NexaCRM.WebServer;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace NexaCRM.WebServer;
 
 builder.WebHost.UseStaticWebAssets();
 
