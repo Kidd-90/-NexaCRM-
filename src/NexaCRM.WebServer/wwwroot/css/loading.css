@@ -1,0 +1,67 @@
+#nexacrm-initial-loader {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.96);
+    color: #1f2937;
+    z-index: 2147483000;
+    transition: opacity 200ms ease-out, visibility 200ms ease-out;
+    opacity: 1;
+    visibility: visible;
+}
+
+html[data-theme='dark'] #nexacrm-initial-loader {
+    background-color: rgba(17, 24, 39, 0.96);
+    color: #f9fafb;
+}
+
+#nexacrm-initial-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#nexacrm-initial-loader .loader-ring {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    border: 0.35rem solid rgba(59, 130, 246, 0.35);
+    border-top-color: #3b82f6;
+    animation: nexacrm-loader-spin 0.85s linear infinite;
+    margin-bottom: 1.25rem;
+}
+
+html[data-theme='dark'] #nexacrm-initial-loader .loader-ring {
+    border: 0.35rem solid rgba(96, 165, 250, 0.35);
+    border-top-color: #60a5fa;
+}
+
+#nexacrm-initial-loader .loader-message {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+@media (max-width: 576px) {
+    #nexacrm-initial-loader {
+        padding: 1.5rem;
+    }
+
+    #nexacrm-initial-loader .loader-message {
+        font-size: 0.95rem;
+        text-align: center;
+    }
+}
+
+@keyframes nexacrm-loader-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
