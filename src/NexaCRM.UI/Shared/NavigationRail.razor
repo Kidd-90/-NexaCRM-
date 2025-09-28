@@ -71,11 +71,11 @@
             <nav class="panel-list">
                 @foreach (var link in group.Links)
                 {
-                    <NavLink class="nav-link panel-item rail-panel-item" href="@link.Href" style="display:flex;flex-direction:row;align-items:center;gap:0.5rem;white-space:nowrap;">
-                        <span class="panel-item__icon" style="display:inline-grid;place-items:center;width:36px;height:36px;flex:0 0 36px;margin-right:0.5rem;">
+                    <NavLink class="nav-link rail-panel-item" href="@link.Href">
+                        <span class="rail-panel-item__icon">
                             <i class="@link.IconCss" aria-hidden="true"></i>
                         </span>
-                        <span class="panel-item__label" style="display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@link.DisplayName</span>
+                        <span class="rail-panel-item__label">@link.DisplayName</span>
                     </NavLink>
                 }
             </nav>
