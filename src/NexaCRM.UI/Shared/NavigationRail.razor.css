@@ -1,5 +1,8 @@
 /* Navigation Rail - responsive icon rail + detail panel */
 .nav-rail {
+    --rail-activation-duration: 320ms;
+    --rail-activation-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --rail-icon-pulse-duration: 820ms;
     display: grid;
     grid-template-columns: 56px minmax(220px, 1fr);
     gap: 0;
@@ -32,6 +35,7 @@
     transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
     cursor: pointer;
     overflow: visible; /* avoid clipping subtle effects */
+    position: relative;
 }
 
 .rail-icon:hover {
@@ -51,6 +55,7 @@
     border-color: #D1D5DB;
     color: #111827; /* active = near-black */
     background: #E5E7EB; /* subtle neutral highlight */
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
 }
 
 /* Slight hover feedback on the icon glyph */
@@ -61,6 +66,40 @@
 .rail-icon:hover i {
     transform: scale(1.06);
     color: #0f172a;
+}
+
+.rail-icon::after {
+    content: "";
+    position: absolute;
+    inset: 4px 0 4px auto;
+    width: 6px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(14, 116, 144, 0) 0%, rgba(14, 116, 144, 0.38) 48%, rgba(14, 116, 144, 0) 100%);
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    pointer-events: none;
+}
+
+.rail-icon.active::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.rail-icon--pulse-a::before,
+.rail-icon--pulse-b::before {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 16px;
+    background: radial-gradient(circle at center, rgba(14, 116, 144, 0.14) 0%, rgba(14, 116, 144, 0.05) 45%, rgba(14, 116, 144, 0) 70%);
+    pointer-events: none;
+    opacity: 0;
+    animation: railIconPulse var(--rail-icon-pulse-duration) var(--rail-activation-ease);
+}
+
+.rail-icon--pulse-b::before {
+    animation-name: railIconPulseReverse;
 }
 
 /* Make only the profile button fully round */
@@ -119,6 +158,28 @@
     flex-direction: column;
     gap: 0.5rem;
     background: #FFFFFF; /* clean white panel like the reference */
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-rail__panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, rgba(148, 163, 184, 0.08) 0%, rgba(59, 130, 246, 0.08) 35%, rgba(99, 102, 241, 0.05) 100%);
+    opacity: 0;
+    transition: opacity var(--rail-activation-duration) ease;
+    pointer-events: none;
+}
+
+.nav-rail__panel.panel-enter-a::before,
+.nav-rail__panel.panel-enter-b::before {
+    opacity: 1;
+}
+
+.nav-rail__panel.panel-enter-a,
+.nav-rail__panel.panel-enter-b {
+    animation: panelFadeSlide var(--rail-activation-duration) var(--rail-activation-ease);
 }
 
 .panel-header {
@@ -213,6 +274,9 @@
     border: 1px solid transparent !important;
     color: #374151 !important;
     background: transparent !important;
+    opacity: 0;
+    transform: translateX(-12px);
+    animation: panelItemCascade 360ms var(--rail-activation-ease) forwards;
 }
 
 .panel-item:hover {
@@ -223,6 +287,90 @@
 .panel-item.active {
     background: #E5E7EB !important;
     color: #111827 !important;
+}
+
+.panel-enter-a .panel-item:nth-child(1) { animation-delay: 40ms; }
+.panel-enter-a .panel-item:nth-child(2) { animation-delay: 80ms; }
+.panel-enter-a .panel-item:nth-child(3) { animation-delay: 120ms; }
+.panel-enter-a .panel-item:nth-child(4) { animation-delay: 160ms; }
+.panel-enter-a .panel-item:nth-child(5) { animation-delay: 200ms; }
+.panel-enter-a .panel-item:nth-child(n+6) { animation-delay: 240ms; }
+
+.panel-enter-b .panel-item:nth-child(1) { animation-delay: 40ms; }
+.panel-enter-b .panel-item:nth-child(2) { animation-delay: 80ms; }
+.panel-enter-b .panel-item:nth-child(3) { animation-delay: 120ms; }
+.panel-enter-b .panel-item:nth-child(4) { animation-delay: 160ms; }
+.panel-enter-b .panel-item:nth-child(5) { animation-delay: 200ms; }
+.panel-enter-b .panel-item:nth-child(n+6) { animation-delay: 240ms; }
+
+@keyframes railIconPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    40% {
+        opacity: 0.55;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.55);
+    }
+}
+
+@keyframes railIconPulseReverse {
+    0% {
+        opacity: 0;
+        transform: scale(0.75);
+    }
+    30% {
+        opacity: 0.5;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.45);
+    }
+}
+
+@keyframes panelFadeSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes panelItemCascade {
+    0% {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rail-icon,
+    .panel-item,
+    .nav-rail__panel::before {
+        animation: none !important;
+        transition-duration: 0ms !important;
+    }
+
+    .rail-icon::after {
+        display: none;
+    }
+
+    .panel-item {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Breakpoints: keep rail+panel for mobile and tablet */

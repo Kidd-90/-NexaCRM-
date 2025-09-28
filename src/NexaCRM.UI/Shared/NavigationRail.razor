@@ -13,7 +13,7 @@
         {
             var group = groups[index];
             <button type="button"
-                    class="rail-icon @(index == activeGroupIndex ? "active" : null)"
+                    class="@GetRailIconClass(index)"
                     role="tab"
                     title="@group.DisplayName"
                     aria-selected="@(index == activeGroupIndex)"
@@ -23,7 +23,8 @@
         }
     </div>
 
-    <div class="nav-rail__panel" role="tabpanel">
+    <div class="@GetPanelClass()" role="tabpanel">
+        @key activeGroupIndex
         @if (groups.Count == 0)
         {
             <div class="panel-header">
@@ -52,6 +53,8 @@
 @code {
     private readonly List<NavigationGroupViewModel> groups = new();
     private int activeGroupIndex;
+    private bool alternatePanelAnimationKey;
+    private bool alternateIconPulseKey;
     private string[] userRoles = Array.Empty<string>();
 
     protected override async Task OnInitializedAsync()
@@ -106,6 +109,7 @@
         }
 
         activeGroupIndex = 0;
+        TriggerAnimationCycle();
     }
 
     private static bool IsAccessible(NavigationLinkDefinition link, HashSet<string> roles)
@@ -143,12 +147,13 @@
 
     private void SetActive(int index)
     {
-        if (index < 0 || index >= groups.Count)
+        if (index < 0 || index >= groups.Count || index == activeGroupIndex)
         {
             return;
         }
 
         activeGroupIndex = index;
+        TriggerAnimationCycle();
     }
 
     private async Task CloseMenuOnNavigate()
@@ -161,6 +166,34 @@
         {
             // ignore
         }
+    }
+
+    private void TriggerAnimationCycle()
+    {
+        alternatePanelAnimationKey = !alternatePanelAnimationKey;
+        alternateIconPulseKey = !alternateIconPulseKey;
+    }
+
+    private string GetPanelClass()
+    {
+        if (groups.Count == 0)
+        {
+            return "nav-rail__panel";
+        }
+
+        var animationClass = alternatePanelAnimationKey ? "panel-enter-b" : "panel-enter-a";
+        return $"nav-rail__panel {animationClass}";
+    }
+
+    private string GetRailIconClass(int index)
+    {
+        if (index != activeGroupIndex)
+        {
+            return "rail-icon";
+        }
+
+        var animationClass = alternateIconPulseKey ? "rail-icon--pulse-b" : "rail-icon--pulse-a";
+        return $"rail-icon active {animationClass}";
     }
 
     private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationLinkViewModel> Links);

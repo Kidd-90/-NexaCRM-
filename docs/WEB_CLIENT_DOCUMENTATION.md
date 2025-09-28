@@ -275,6 +275,7 @@ builder.Services.AddScoped<IActivityService, MockActivityService>();
 - **Role-Based Menus**: Dynamic menu items based on user permissions
 - **Breadcrumb Navigation**: Hierarchical navigation with context awareness
 - **Quick Access**: Shortcuts to frequently used functions
+- **Animated Navigation Rail**: Contextual icon pulses, gradient highlights, and staggered list transitions communicating tab focus changes
 
 **Design Principles:**
 - **Mobile-First**: Responsive design prioritizing mobile user experience
