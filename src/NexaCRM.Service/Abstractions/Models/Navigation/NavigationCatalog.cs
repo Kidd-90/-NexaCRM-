@@ -88,7 +88,8 @@ public static class NavigationCatalog
         new("NavigationOverview", "bi bi-compass", Array.Empty<string>(), OverviewLinks),
         new("SalesWorkspace", "bi bi-briefcase", Roles("Sales", "Manager"), SalesWorkspaceLinks),
         new("DbManagement", "bi bi-database", Roles("Sales", "Manager", "Developer"), DatabaseLinks),
-        new("Engagement", "bi bi-people", Roles("Sales", "Manager", "Admin"), EngagementLinks),
+    // Use a distinct chat icon for Engagement so it doesn't conflict with Organization/people icons
+    new("Engagement", "bi bi-chat-left-text", Roles("Sales", "Manager", "Admin"), EngagementLinks),
         new("Insights", "bi bi-graph-up", Roles("Manager", "Admin", "Developer"), InsightsLinks),
         new("BasicSettings", "bi bi-sliders", Roles("Sales", "Manager", "Admin", "Developer"), SettingsLinks),
         new("OrganizationManagement", "bi bi-people", Roles("Manager", "Admin", "Developer"), OrganizationLinks),

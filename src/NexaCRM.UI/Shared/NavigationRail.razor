@@ -7,23 +7,54 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
 @using NexaCRM.UI.Models.Navigation
 
-<div class="nav-rail" role="navigation" aria-label="@Localizer["MainNavigation"]">
+@implements IDisposable
+
+<div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation" aria-label="@Localizer["MainNavigation"]">
     <div class="nav-rail__icons" role="tablist" aria-orientation="vertical">
+        <!-- Top home button: navigates home (icon-only) -->
+        <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home" aria-label="Home">
+            <i class="bi bi-house-door-fill" aria-hidden="true"></i>
+            <span class="visually-hidden">Home</span>
+        </NavLink>
+
         @for (var index = 0; index < groups.Count; index++)
         {
             var group = groups[index];
-            <button type="button"
-                    class="rail-icon @(index == activeGroupIndex ? "active" : null)"
-                    role="tab"
-                    title="@group.DisplayName"
-                    aria-selected="@(index == activeGroupIndex)"
-                    @onclick="() => SetActive(index)">
+            var i = index; // capture loop variable to avoid closure capturing the mutated 'index'
+        <button type="button"
+            class="rail-icon @(i == activeGroupIndex ? "active" : null)"
+            role="tab"
+            title="@group.DisplayName"
+            aria-selected="@(i == activeGroupIndex)"
+            @onclick="async () => await SetActive(i)">
                 <i class="@group.IconCss" aria-hidden="true"></i>
             </button>
         }
+
+        <div class="rail-spacer" aria-hidden="true"></div>
+
+        <!-- Bottom area: notifications, help, settings + profile/login -->
+        <div class="nav-rail__bottom">
+            <NavLink class="rail-icon" href="/settings" title="설정">
+                <i class="bi bi-gear" aria-hidden="true"></i>
+            </NavLink>
+
+            <NavLink class="rail-icon rail-icon--profile" href="/account" title="내 계정">
+                <i class="bi bi-person-circle" aria-hidden="true"></i>
+            </NavLink>
+
+            <NavLink class="rail-icon" href="/help" title="도움말">
+                <i class="bi bi-question-circle" aria-hidden="true"></i>
+            </NavLink>
+
+            <NavLink class="rail-logo--company" href="/" title="회사 로고">
+                <!-- Use framework static web asset path as a fallback -->
+                <img src="_content/NexaCRM.UI/images/logo-36.svg" alt="회사 로고" onerror="this.style.display='none'" />
+            </NavLink>
+        </div>
     </div>
 
-    <div class="nav-rail__panel" role="tabpanel">
+    <div class="@($"nav-rail__panel{(panelVisible ? "" : " collapsed")}")" role="tabpanel" aria-hidden="@(panelVisible ? "false" : "true")">
         @if (groups.Count == 0)
         {
             <div class="panel-header">
@@ -40,8 +71,11 @@
             <nav class="panel-list">
                 @foreach (var link in group.Links)
                 {
-                    <NavLink class="nav-link panel-item" href="@link.Href" @onclick="CloseMenuOnNavigate">
-                        <span>@link.DisplayName</span>
+                    <NavLink class="nav-link panel-item rail-panel-item" href="@link.Href" style="display:flex;flex-direction:row;align-items:center;gap:0.5rem;white-space:nowrap;">
+                        <span class="panel-item__icon" style="display:inline-grid;place-items:center;width:36px;height:36px;flex:0 0 36px;margin-right:0.5rem;">
+                            <i class="@link.IconCss" aria-hidden="true"></i>
+                        </span>
+                        <span class="panel-item__label" style="display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@link.DisplayName</span>
                     </NavLink>
                 }
             </nav>
@@ -52,6 +86,7 @@
 @code {
     private readonly List<NavigationGroupViewModel> groups = new();
     private int activeGroupIndex;
+    private bool panelVisible = true;
     private string[] userRoles = Array.Empty<string>();
 
     protected override async Task OnInitializedAsync()
@@ -89,7 +124,7 @@
                     continue;
                 }
 
-                accessibleLinks.Add(new NavigationLinkViewModel(GetHref(link.Href), Localizer[link.ResourceKey]?.Value ?? link.ResourceKey));
+                accessibleLinks.Add(new NavigationLinkViewModel(GetHref(link.Href), Localizer[link.ResourceKey]?.Value ?? link.ResourceKey, link.IconCssClass));
             }
 
             if (accessibleLinks.Count == 0)
@@ -102,10 +137,19 @@
 
         if (groups.Count == 0)
         {
+            panelVisible = false;
             return;
         }
 
         activeGroupIndex = 0;
+        panelVisible = true;
+
+        // Emit a lightweight console log from C# so we can see at runtime whether
+        // the groups were built and what their display names are. This helps
+        // distinguish between the UI not receiving clicks vs the data not being
+        // populated. Fire-and-forget the JS interop call to avoid changing the
+        // synchronous nature of this method.
+        // BuildGroups: no runtime JS logging in production code.
     }
 
     private static bool IsAccessible(NavigationLinkDefinition link, HashSet<string> roles)
@@ -141,29 +185,58 @@
         return href.StartsWith('/') ? href : $"/{href}";
     }
 
-    private void SetActive(int index)
+    private async Task SetActive(int index)
     {
         if (index < 0 || index >= groups.Count)
         {
             return;
         }
 
-        activeGroupIndex = index;
-    }
-
-    private async Task CloseMenuOnNavigate()
-    {
         try
         {
-            await JSRuntime.InvokeVoidAsync("layoutInterop.toggleMenu", true);
+            // When a user clicks an already-active group, keep the panel shown
+            // instead of toggling it closed. This avoids accidental closing when
+            // users click the same icon twice. To hide the panel deliberately,
+            // the UI should provide a dedicated control (not the group icon).
+            if (activeGroupIndex == index)
+            {
+                panelVisible = true; // keep the panel open
+            }
+            else
+            {
+                activeGroupIndex = index;
+                panelVisible = true;
+            }
+
+            // Ensure Blazor re-renders on the correct synchronization context.
+            await InvokeAsync(StateHasChanged);
         }
-        catch
+        catch (Exception ex)
         {
-            // ignore
+            try { _ = JSRuntime.InvokeVoidAsync("console.error", "NavigationRail.SetActive.exception -> " + ex?.ToString()); } catch { }
         }
+    }
+
+    // ...existing code...
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        // Fire-and-forget the JS call to close the menu; don't block the UI thread.
+        _ = JSRuntime.InvokeVoidAsync("layoutInterop.toggleMenu", true);
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 
     private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationLinkViewModel> Links);
 
-    private sealed record NavigationLinkViewModel(string Href, string DisplayName);
+    private sealed record NavigationLinkViewModel(string Href, string DisplayName, string IconCss);
 }

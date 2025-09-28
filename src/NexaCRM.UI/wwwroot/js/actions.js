@@ -69,7 +69,9 @@ export async function copyText(value) {
         document.body.appendChild(textarea);
         textarea.select();
         const succeeded = document.execCommand('copy');
-        document.body.removeChild(textarea);
+        if (textarea && textarea.parentNode) {
+            textarea.parentNode.removeChild(textarea);
+        }
         return succeeded;
     } catch (err) {
         console.warn('Fallback clipboard copy failed', err);
@@ -90,7 +92,9 @@ export function triggerDownload(base64Data, fileName, contentType) {
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    if (link && link.parentNode) {
+        link.parentNode.removeChild(link);
+    }
 }
 
 export function smoothScrollToId(elementId) {

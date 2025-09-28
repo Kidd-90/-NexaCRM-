@@ -20,7 +20,8 @@ CREATE TABLE app_users (
   cuid TEXT PRIMARY KEY,
   auth_user_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE,
-  status TEXT NOT NULL DEFAULT 'active',
+  status TEXT NOT NULL DEFAULT 'deactive',
+  password_hash TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -45,6 +46,7 @@ CREATE TABLE user_infos (
   department TEXT,
   phone_number TEXT,
   job_title TEXT,
+  password_hash TEXT,
   metadata JSONB,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -79,9 +81,9 @@ CREATE TRIGGER set_timestamp_role_definitions
 -- Seed the baseline roles leveraged throughout the CRM.
 INSERT INTO role_definitions (code, name, description)
 VALUES
-  ('manager', 'Manager', 'Manages teams, deals, and organizational settings.'),
-  ('sales', 'Sales', 'Handles sales pipeline activities and customer outreach.'),
-  ('develop', 'Developer', 'Maintains integrations, automations, and technical tooling.')
+  ('Manager', 'Manager', 'Manages teams, deals, and organizational settings.'),
+  ('Sales', 'Sales', 'Handles sales pipeline activities and customer outreach.'),
+  ('Develop', 'Developer', 'Maintains integrations, automations, and technical tooling.')
 ON CONFLICT (code) DO UPDATE
 SET
   name = EXCLUDED.name,
@@ -249,6 +251,7 @@ SELECT
   au.updated_at AS account_updated_at,
   ui.username,
   ui.full_name,
+  ui.password_hash,
   ui.department,
   ui.job_title,
   ui.phone_number,
@@ -271,6 +274,7 @@ GROUP BY
   au.updated_at,
   ui.username,
   ui.full_name,
+  ui.password_hash,
   ui.department,
   ui.job_title,
   ui.phone_number,
@@ -363,7 +367,7 @@ BEGIN
   INSERT INTO app_users (cuid, auth_user_id, email, status)
   VALUES
     ('cuid_manager_001', v_manager_id, 'manager@nexa.test', 'active'),
-    ('cuid_sales_001', v_sales_id, 'sales@nexa.test', 'active'),
+    ('cuid_sales_001', v_sales_id, 'sales@nexa.test', 'deactive'),
     ('cuid_develop_001', v_develop_id, 'develop@nexa.test', 'active')
   ON CONFLICT (cuid) DO UPDATE
   SET
@@ -372,15 +376,15 @@ BEGIN
     status = EXCLUDED.status,
     updated_at = NOW();
 
-  -- Enrich profile metadata.
+    -- Enrich profile metadata.
   INSERT INTO user_infos (
     user_cuid, username, full_name, department,
-    phone_number, job_title, metadata
+    phone_number, job_title, password_hash, metadata
   )
   VALUES
-    ('cuid_manager_001', 'manager', 'Manager One', 'Operations', '010-1000-2000', 'General Manager', jsonb_build_object('role', 'manager')),
-    ('cuid_sales_001', 'sales', 'Sales One', 'Sales', '010-2000-3000', 'Account Executive', jsonb_build_object('role', 'sales')),
-    ('cuid_develop_001', 'develop', 'Develop One', 'Engineering', '010-3000-4000', 'Software Developer', jsonb_build_object('role', 'develop'))
+    ('cuid_manager_001', 'manager', 'Manager One', 'Operations', '010-1000-2000', 'General Manager', '$2a$11$ziaUgFjuZiWWcC.CR4PVmOX0VfdvhQxZtWBU0nFDbH1.dw0Zc94qi', jsonb_build_object('role', 'Manager')),
+    ('cuid_sales_001', 'sales', 'Sales One', 'Sales', '010-2000-3000', 'Account Executive', '$2a$11$MUiAIJeVaHBorMtbDz3qbOz83Dl.BqsnEGqeytDzwwqKuRHOidjdm', jsonb_build_object('role', 'Sales')),
+    ('cuid_develop_001', 'develop', 'Develop One', 'Engineering', '010-3000-4000', 'Software Developer', '$2a$11$emotXHMhO4ZjekujhtXIquEOmvVTj5OMGlmayPVJdV9AIfGHtPrAq', jsonb_build_object('role', 'Develop'))
   ON CONFLICT (user_cuid) DO UPDATE
   SET
     username = EXCLUDED.username,
@@ -388,15 +392,16 @@ BEGIN
     department = EXCLUDED.department,
     phone_number = EXCLUDED.phone_number,
     job_title = EXCLUDED.job_title,
+    password_hash = EXCLUDED.password_hash,
     metadata = EXCLUDED.metadata,
     updated_at = NOW();
 
   -- Attach role assignments.
   INSERT INTO user_roles (user_id, user_cuid, role_code)
   VALUES
-    (v_manager_id, 'cuid_manager_001', 'manager'),
-    (v_sales_id, 'cuid_sales_001', 'sales'),
-    (v_develop_id, 'cuid_develop_001', 'develop')
+    (v_manager_id, 'cuid_manager_001', 'Manager'),
+    (v_sales_id, 'cuid_sales_001', 'Sales'),
+    (v_develop_id, 'cuid_develop_001', 'Develop')
   ON CONFLICT (user_id, role_code) DO UPDATE
   SET
     user_cuid = EXCLUDED.user_cuid,

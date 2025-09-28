@@ -2,7 +2,7 @@ using System;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace NexaCRM.UI.Models.Supabase;
+namespace NexaCRM.Service.Abstractions.Models.Supabase;
 
 [Table("user_account_overview")]
 public sealed class UserAccountOverviewRecord : BaseModel
@@ -25,12 +25,15 @@ public sealed class UserAccountOverviewRecord : BaseModel
     [Column("full_name")]
     public string? FullName { get; set; }
 
-    [Column("department")]
-    public string? Department { get; set; }
-
-    [Column("job_title")]
+        [Column("job_title")]
     public string? JobTitle { get; set; }
 
     [Column("role_codes")]
     public string[] RoleCodes { get; set; } = Array.Empty<string>();
+
+    [Column("password_hash")]
+    public string? PasswordHash { get; set; }
+
+    [Column("department")]
+    public string? Department { get; set; }
 }

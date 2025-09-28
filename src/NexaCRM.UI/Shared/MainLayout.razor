@@ -23,13 +23,49 @@
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        (function () {
+            // idempotent loader: only load the UI helper scripts once across hosts
+            if (window.__nexacrm_ui_scripts_loaded) return;
+            window.__nexacrm_ui_scripts_loaded = true;
+
+            var base = '_content/NexaCRM.UI/js/';
+            var files = [
+                'auth-manager.js',
+                'navigation.js',
+                'culture.js',
+                'theme-manager.js',
+                'device.js',
+                'interactions.js',
+                'client-console-forwarder.js',
+                'csv-export.js'
+            ];
+
+            files.forEach(function (file) {
+                var rel = base + file;
+                var selector = 'script[src="' + rel + '"], script[src="/' + rel + '"]';
+                if (document.querySelector(selector)) return;
+                var s = document.createElement('script');
+                s.src = rel;
+                s.defer = true;
+                document.head.appendChild(s);
+            });
+        })();
+    </script>
 </HeadContent>
 
 <div class="page app-shell @(isMobile ? "app-shell--mobile" : "app-shell--desktop")">
-    <div class="sidebar @(isMobile ? "collapse" : string.Empty)">
-        <NavMenu Favorites="favoriteShortcuts" RecentLinks="recentLinks" OnNavigate="HandleNavigationAsync" />
-    </div>
-    <div class="mobile-overlay"></div>
+    @if (isMobile)
+    {
+        <div class="sidebar collapse">
+            <NavMenu Favorites="favoriteShortcuts" RecentLinks="recentLinks" OnNavigate="HandleNavigationAsync" />
+        </div>
+        <div class="mobile-overlay"></div>
+    }
+    else
+    {
+        <NavigationRail />
+    }
 
     <div class="app-shell__surface">
         <header class="app-shell__header">
@@ -88,17 +124,36 @@
                     <h1>@currentPageTitle</h1>
                 </div>
             </div>
+            <!-- Add quick search within the page header for faster navigation -->
+            <div class="app-shell__page-search">
+                <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
+            </div>
+
             <div class="app-shell__page-actions">
-                <button class="app-shell__action" title="@headerActionLabel">
-                    <i class="@headerActionIcon" aria-hidden="true"></i>
-                </button>
+                @if (!isMobile)
+                {
+                    <button class="app-shell__action" title="Notifications" @onclick="OnNotificationsClick">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (unreadNotificationsCount > 0)
+                        {
+                            <span class="app-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
+                        }
+                    </button>
+                }
+                else
+                {
+                    <button class="app-shell__action" title="@headerActionLabel">
+                        <i class="@headerActionIcon" aria-hidden="true"></i>
+                    </button>
+                }
             </div>
         </section>
 
-        <article class="content app-shell__content">
-            @Body
-        </article>
     </div>
+
+    <article class="content app-shell__content">
+        @Body
+    </article>
 
     @if (isMobile && favoriteShortcuts.Count > 0)
     {
@@ -259,10 +314,21 @@
     {
         if (firstRender)
         {
-            layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/layout.js");
+            layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/layout.js");
             isMobile = await DeviceService.IsMobileAsync();
             UpdateLayoutState();
             await layoutModule.InvokeVoidAsync("initializeShell", new { isMobile });
+            // measure header height at runtime and keep --app-shell-page-header-offset updated
+            try
+            {
+                await layoutModule.InvokeVoidAsync("measureHeaderOffset");
+                // Ensure inline content offsets are applied (compatibility for older layout.js)
+                try { await layoutModule.InvokeVoidAsync("applyContentOffsets"); } catch { }
+            }
+            catch (JSException)
+            {
+                // older layout.js may not expose measureHeaderOffset; ignore
+            }
             await NavigationStateService.InitializeAsync();
             recentLinks = NavigationStateService.RecentLinks;
             await UpdateUnreadNotificationsAsync();

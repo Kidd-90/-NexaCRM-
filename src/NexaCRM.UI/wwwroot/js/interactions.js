@@ -1,32 +1,39 @@
 // Enhanced Interactions and Micro-animations for NexaCRM
-window.interactionManager = {
-    // Initialize all interaction enhancements
-    init: () => {
-        console.log('Initializing interaction enhancements...');
-        
-        // Setup enhanced touch interactions
-        window.interactionManager.setupEnhancedTouchInteractions();
-        
-        // Setup ripple effects
-        window.interactionManager.setupRippleEffects();
-        
-        // Setup swipe gestures
-        window.interactionManager.setupSwipeGestures();
-        
-        // Setup pull-to-refresh
-        window.interactionManager.setupPullToRefresh();
-        
-        // Setup intersection observer for animations
-        window.interactionManager.setupScrollAnimations();
-        
-        // Setup enhanced keyboard navigation
-        window.interactionManager.setupEnhancedKeyboardNavigation();
-        
-        // Setup form enhancements
-        window.interactionManager.setupFormEnhancements();
-        
-        console.log('Interaction enhancements initialized');
-    },
+(function(){
+    // Prevent double-initialization when the script is loaded more than once
+    if (window.interactionManager && window.interactionManager._nexacrm_init) {
+        console.debug('interactionManager already initialized; skipping re-init');
+        return;
+    }
+
+    const _manager = {
+        // Initialize all interaction enhancements
+        init: () => {
+            console.log('Initializing interaction enhancements...');
+
+            // Setup enhanced touch interactions
+            _manager.setupEnhancedTouchInteractions();
+
+            // Setup ripple effects
+            _manager.setupRippleEffects();
+
+            // Setup swipe gestures
+            _manager.setupSwipeGestures();
+
+            // Setup pull-to-refresh
+            _manager.setupPullToRefresh();
+
+            // Setup intersection observer for animations
+            _manager.setupScrollAnimations();
+
+            // Setup enhanced keyboard navigation
+            _manager.setupEnhancedKeyboardNavigation();
+
+            // Setup form enhancements
+            _manager.setupFormEnhancements();
+
+            console.log('Interaction enhancements initialized');
+        },
     
     // Enhanced touch interactions with better feedback
     setupEnhancedTouchInteractions: () => {
@@ -134,9 +141,12 @@ window.interactionManager = {
             }
         `;
         
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = rippleCSS;
-        document.head.appendChild(styleSheet);
+        if (!document.getElementById('nexacrm-ripple-styles')) {
+            const rippleStyle = document.createElement('style');
+            rippleStyle.id = 'nexacrm-ripple-styles';
+            rippleStyle.textContent = rippleCSS;
+            document.head.appendChild(rippleStyle);
+        }
     },
     
     // Setup swipe gestures for cards and navigation
@@ -334,9 +344,12 @@ window.interactionManager = {
             }
         `;
         
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = animationCSS;
-        document.head.appendChild(styleSheet);
+        if (!document.getElementById('nexacrm-animation-styles')) {
+            const animationStyle = document.createElement('style');
+            animationStyle.id = 'nexacrm-animation-styles';
+            animationStyle.textContent = animationCSS;
+            document.head.appendChild(animationStyle);
+        }
     },
     
     // Enhanced keyboard navigation
@@ -468,10 +481,10 @@ window.interactionManager = {
         `;
         
         if (!document.querySelector('#floating-label-styles')) {
-            const styleSheet = document.createElement('style');
-            styleSheet.id = 'floating-label-styles';
-            styleSheet.textContent = floatingLabelCSS;
-            document.head.appendChild(styleSheet);
+            const floatingLabelStyle = document.createElement('style');
+            floatingLabelStyle.id = 'floating-label-styles';
+            floatingLabelStyle.textContent = floatingLabelCSS;
+            document.head.appendChild(floatingLabelStyle);
         }
     },
     
@@ -526,10 +539,10 @@ window.interactionManager = {
         `;
         
         if (!document.querySelector('#validation-styles')) {
-            const styleSheet = document.createElement('style');
-            styleSheet.id = 'validation-styles';
-            styleSheet.textContent = validationCSS;
-            document.head.appendChild(styleSheet);
+            const validationStyle = document.createElement('style');
+            validationStyle.id = 'validation-styles';
+            validationStyle.textContent = validationCSS;
+            document.head.appendChild(validationStyle);
         }
     },
     
@@ -546,7 +559,12 @@ window.interactionManager = {
         feedback.className = `validation-feedback ${isValid ? 'success' : 'error'}`;
         feedback.textContent = isValid ? '✓ Looks good' : input.validationMessage;
     }
-};
+    };
+
+    // mark and expose
+    _manager._nexacrm_init = true;
+    window.interactionManager = Object.assign(window.interactionManager || {}, _manager);
+})();
 
 // Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {
@@ -555,25 +573,44 @@ if (document.readyState === 'loading') {
     window.interactionManager.init();
 }
 
-window.downloadFile = (fileName, content) => {
-    const blob = new Blob([content], { type: 'text/csv' });
+// Provide a guarded global downloadFile helper to avoid duplicate redefinition
+if (!(window.downloadFile && window.downloadFile._nexacrm_init)) {
+    window.downloadFile = (fileName, content) => {
+        const blob = new Blob([content], { type: 'text/csv' });
 
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'text/csv' })] })) {
-        const file = new File([blob], fileName, { type: 'text/csv' });
-        navigator.share({ files: [file] }).catch(() => fallbackDownload(blob));
-        return;
-    }
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'text/csv' })] })) {
+            const file = new File([blob], fileName, { type: 'text/csv' });
+            navigator.share({ files: [file] }).catch(() => fallbackDownload(blob));
+            return;
+        }
 
-    fallbackDownload(blob);
+        fallbackDownload(blob);
 
-    function fallbackDownload(b) {
-        const url = URL.createObjectURL(b);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-};
+        function fallbackDownload(b) {
+            const url = URL.createObjectURL(b);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            // Defensive removal: the link may have been removed elsewhere or
+            // not appended in some environments. Check parentNode first.
+            if (link && link.parentNode) {
+                link.parentNode.removeChild(link);
+            }
+            // Revoke the object URL if available. Guard in a try/catch to
+            // avoid unhandled exceptions in older or restricted environments.
+            try {
+                if (typeof URL !== 'undefined' && url) {
+                    URL.revokeObjectURL(url);
+                }
+            } catch (e) {
+                console.warn('Failed to revoke object URL', e);
+            }
+        }
+    };
+    // mark initialized to avoid later overwrites when scripts are re-evaluated
+    try { window.downloadFile._nexacrm_init = true; } catch (e) { /* ignore */ }
+
+    try { window.downloadFile._nexacrm_init = true; } catch (e) { /* ignore */ }
+}

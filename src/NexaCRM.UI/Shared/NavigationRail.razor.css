@@ -1,27 +1,94 @@
 /* Navigation Rail - responsive icon rail + detail panel */
 .nav-rail {
     display: grid;
-    grid-template-columns: 56px minmax(220px, 1fr);
+    /* icons column + panel (panel made slightly narrower for visual balance) */
+    grid-template-columns: 56px minmax(180px, 1fr);
     gap: 0;
-    height: 100%;
+    /* Fix the rail to the left side of the viewport so it doesn't move on page scroll */
+     position: fixed;
+     /* offset the rail slightly to match the main surface top padding so
+         the panel and surface align visually */
+    top: calc(var(--spacing-md) / 2);
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+     /* Use the app's shared sidebar width variable so the fixed rail and the
+         main content offset remain in sync. This prevents the fixed rail from
+         contributing to horizontal overflow. */
+    width: var(--sidebar-width, 320px);
+    --nav-rail-icons-width: 56px; /* logical width of the icons column - used for centering fixed logo */
+     /* enforce box-sizing and prevent the rail from causing document overflow */
+     box-sizing: border-box;
+     overflow: hidden; /* Prevent internal content from expanding beyond the rail */
+     min-width: 56px; /* ensure collapsed baseline */
+     max-width: var(--sidebar-width, 320px);
+}
+
+/* Ensure the nav rail sits above common overlays (mobile overlay, global actions)
+   and accepts pointer events so icon clicks are not blocked. Keep this modest
+   to avoid covering toasts and modal backdrops which intentionally sit above. */
+.nav-rail {
+    /* Keep a high stacking context so the rail stays interactive above
+       most app overlays. When fixed it should still accept pointer events. */
+    z-index: 20000;
+    pointer-events: auto;
+}
+
+/* When collapsed, constrain the rail to a narrow column so the app content
+   is not obscured. The panel (second column) will be effectively hidden. */
+.nav-rail.collapsed {
+    grid-template-columns: 56px 0px !important;
+    width: 56px !important;
 }
 
 .nav-rail__icons {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.75rem 0.5rem;
+    padding: 0.5rem 0.5rem;
     border-right: 1px solid #E5E7EB; /* neutral divider */
-    background: #F3F4F6; /* neutral gray similar to the image */
-    gap: 0.25rem;
-    height: 100vh; /* make column full height so bottom area stays pinned */
+    background: transparent; /* removed background color per request */
+    gap: 0.5rem; /* increased vertical gap between icons */
+    height: 100%; /* stretch to the fixed container */
+    overflow-y: auto; /* allow icon column to scroll independently if needed */
+    padding-bottom: 36px; /* reduced reserved bottom so bottom controls sit lower */
+}
+
+.nav-rail__icons {
+    min-width: 56px; /* icons column must never grow to force overflow */
+    box-sizing: border-box;
+}
+
+.nav-rail__icons { position: relative; }
+
+.rail-debug {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.9);
+    color: #374151;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(2,6,23,0.06);
+    pointer-events: none;
+    z-index: 10002;
+    font-size: 11px;
+}
+
+/* Explicitly allow pointer events on the icon column so clicks reach the buttons
+   even if an overlay exists elsewhere. */
+.nav-rail__icons {
+    pointer-events: auto;
 }
 
 .rail-icon {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     display: grid;
     place-items: center;
     border-radius: 12px;
@@ -35,11 +102,12 @@
 }
 
 .rail-icon:hover {
-    background: rgba(243,244,246,0.85);
-    border-color: #E5E7EB;
-    color: #374151; /* darker neutral */
+    /* keep the lavender hover used earlier */
+    background: #E9D5FF;
+    border-color: #D6BBFF;
+    color: #4C1D95; /* lavender-tinted hover color */
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(17,24,39,0.07);
+    box-shadow: 0 6px 14px rgba(76,29,149,0.07);
 }
 
 .rail-icon:active {
@@ -54,13 +122,15 @@
 }
 
 /* Slight hover feedback on the icon glyph */
-.rail-icon i {
+.rail-icon i,
+.rail-icon svg {
     transition: transform var(--transition-fast), color var(--transition-fast);
-}
-
-.rail-icon:hover i {
-    transform: scale(1.06);
-    color: #0f172a;
+    font-size: 1.25rem; /* slightly larger to fill the 44px button */
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+    width: 1em;
+    height: 1em;
 }
 
 /* Make only the profile button fully round */
@@ -77,7 +147,6 @@
     border-radius: 999px;
     background: #10B981; /* emerald-500 */
     left: 25px;
-    bottom: 8px;
     box-shadow: 0 0 0 2px #FFFFFF; /* white ring to separate from background */
     pointer-events: none;
 }
@@ -91,8 +160,33 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    padding-bottom: 0.5rem;
+    gap: 0.5rem; /* increase spacing between bottom icons */
+    padding-bottom: 0.75rem;
+    margin-bottom: 12px; /* small offset so the bottom group sits visually lower */
+    order: 9998; /* keep bottom controls above the logo which will be last */
+}
+
+/* Company logo button at the very bottom of the rail */
+.rail-logo--company {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    /* Keep the company logo fixed near the bottom of the rail but avoid
+       extremely high z-index values or debug outlines in production. */
+    position: fixed;
+    left: calc(var(--nav-rail-icons-width, 56px) / 2 - 18px);
+    bottom: 16px;
+    z-index: 10005;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #FFFFFF; /* small white background for contrast */
+    box-shadow: 0 8px 20px rgba(2,6,23,0.08);
+}
+.rail-logo--company img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
 .rail-logo {
@@ -104,6 +198,8 @@
     border: 1px solid #E5E7EB;
     background: #FFFFFF;
     overflow: hidden;
+    order: 0; /* keep top logo at natural position */
+    position: static; /* restore to document flow so bottom company logo is visible */
 }
 
 .rail-logo img {
@@ -114,11 +210,131 @@
 
 .nav-rail__panel {
     min-width: 0;
-    padding: 0.75rem 0.75rem 1rem 0.75rem;
+    /* brand gradient vars used for the subtle purple glow */
+    --brand-gradient-start: #7c3aed;
+    --brand-gradient-end: #9333ea;
+
+    padding: 0.5rem 0.5rem 0.75rem 0.5rem; /* reduced padding to match surface */
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    background: #FFFFFF; /* clean white panel like the reference */
+    /* Harmonize with the main surface: use the same surface color and subtle
+       border so the rail panel feels like part of the same UI plane. Remove
+       harsh contrasts and ensure scroll behavior remains internal. */
+    background: var(--surface-color, #FFFFFF);
+    border: 1px solid var(--divider-color, #E5E7EB);
+    border-radius: 1rem;
+    overflow-y: auto; /* make the list scrollable if it's taller than the panel */
+    max-height: calc(100vh - 2 * var(--spacing-md)); /* leave top/bottom breathing room */
+    box-sizing: border-box;
+    /* slightly narrower max width to give visual space between rail and content */
+    max-width: calc(var(--sidebar-width, 320px) - 72px);
+    /* 3D layered shadow: ambient, main drop, colored rim (purple) */
+    box-shadow:
+        0 6px 12px rgba(15, 23, 42, 0.04),   /* ambient */
+        0 20px 40px rgba(15, 23, 42, 0.08),  /* main drop */
+        4px 6px 28px rgba(124, 58, 237, 0.06); /* subtle purple rim */
+    transition: box-shadow 240ms cubic-bezier(.2,.9,.2,1), transform 220ms cubic-bezier(.2,.9,.2,1);
+    position: relative; /* for pseudo-elements (highlight + glow) */
+    will-change: transform, box-shadow;
+}
+
+/* gradient glow using a pseudo-element so we can control the spread and color smoothly */
+.nav-rail__panel::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    /* larger, softer glow ellipse to emphasize lower-right rim */
+    right: -18px;
+    bottom: -18px;
+    width: 68px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(124,58,237,0.16) 0%, rgba(147,51,234,0.08) 40%, transparent 70%);
+    filter: blur(18px);
+    opacity: 0.95;
+    transform: translateZ(0) scale(1);
+    transition: opacity 240ms ease, transform 240ms ease, filter 240ms ease;
+}
+
+/* soft top-left highlight to simulate a light source */
+.nav-rail__panel::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    right: 8px;
+    height: 10px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02));
+    filter: blur(6px);
+    opacity: 0.9;
+    transition: opacity 220ms ease, transform 220ms ease;
+}
+
+/* Hover: lift the panel slightly and intensify shadows/glow for a floating 3D feel */
+.nav-rail__panel:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 14px 28px rgba(15,23,42,0.06),
+        0 34px 64px rgba(15,23,42,0.12),
+        8px 12px 44px rgba(124,58,237,0.10);
+}
+.nav-rail__panel:hover::after {
+    transform: translateY(-6px) scale(1.06);
+    filter: blur(20px);
+    opacity: 1;
+}
+.nav-rail__panel:hover::before {
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+/* When panel is collapsed, hide shadow/glow to avoid orphaned visuals */
+.nav-rail__panel.collapsed {
+    box-shadow: none !important;
+}
+.nav-rail__panel.collapsed::after {
+    opacity: 0 !important;
+    transform: translateY(6px) scale(0.9) !important;
+}
+
+/* reduce intensity on smaller screens to improve performance and avoid visual noise */
+@media (max-width: 767px) {
+    .nav-rail__panel {
+        box-shadow: 0 10px 18px rgba(15,23,42,0.04);
+    }
+    .nav-rail__panel::after {
+        opacity: 0.6;
+        filter: blur(8px);
+        right: -8px;
+        bottom: -8px;
+        width: 28px;
+        height: 28px;
+    }
+}
+
+.nav-rail__panel.collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Keep internal scrolling behavior (so the rail doesn't force body/document scrolling)
+   but hide the native scrollbars so the rail visually has no scroll UI. This
+   preserves wheel/touch scrolling while preventing visible scrollbars. */
+.nav-rail__icons,
+.nav-rail__panel {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.nav-rail__icons::-webkit-scrollbar,
+.nav-rail__panel::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .panel-header {
@@ -200,19 +416,155 @@
 .panel-list {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.5rem; /* increased gap between panel items for readability */
     padding-right: 0.25rem;
 }
 
 .panel-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start; /* keep icon and label together on the left */
+    gap: 0.5rem; /* space between icon and label */
     padding: 0.6rem 0.75rem !important;
     border-radius: 10px !important;
     border: 1px solid transparent !important;
     color: #374151 !important;
     background: transparent !important;
+    min-height: 44px; /* ensure comfortable touch/click area */
+}
+
+/* Panel item icon + label layout to match avatar/list spacing */
+.panel-item__icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    background: rgba(243,244,246,0.8); /* subtle square background to make images/icons readable */
+    border-radius: 6px;
+    overflow: hidden;
+    margin-right: 0.5rem;
+    flex: 0 0 36px;
+}
+.panel-item__icon img,
+.panel-item__icon svg,
+.panel-item__icon i {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+.panel-item__label {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.nav-link.panel-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* High-specificity, valid CSS overrides to ensure nav-rail panel items keep
+   icon + label on a single horizontal row. This block is intentionally
+   explicit and uses !important where necessary to defeat app-wide `.nav-link`
+   rules that would otherwise force vertical stacking. */
+.nav-rail .panel-list .nav-link.panel-item,
+.nav-rail .panel-list .panel-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+}
+
+/* Ensure direct children participate in the single-row flow; this prevents
+   global selectors that set spans to display:block from stacking siblings. */
+.nav-rail .panel-list .nav-link.panel-item > * {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.nav-rail .panel-list .nav-link.panel-item > .panel-item__label {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 !important;
+}
+
+.nav-rail .panel-list .nav-link.panel-item > .panel-item__icon {
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+}
+
+
+/* Ensure the icon slot remains a fixed square and does not collapse or
+   center the label beneath it due to inherited styles. */
+.nav-rail .panel-list .nav-link.panel-item > .panel-item__icon,
+.nav-rail .panel-list .panel-item > .panel-item__icon {
+    flex: 0 0 36px !important;
+    display: grid !important;
+    place-items: center !important;
+    margin-right: 0.5rem !important;
+}
+
+.nav-rail .panel-list .nav-link.panel-item > .panel-item__label,
+.nav-rail .panel-list .panel-item > .panel-item__label {
+    flex: 1 1 auto !important;
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+}
+
+/* Strong rule set specifically for in-rail panel items using a dedicated class.
+   This avoids touching global selectors and provides a clear, maintainable
+   override that beats app-wide `.sidebar .nav-link span { display: block }` rules. */
+.nav-rail .panel-list .rail-panel-item,
+.nav-rail .panel-list .rail-panel-item > .panel-item__icon,
+.nav-rail .panel-list .rail-panel-item > .panel-item__label {
+    -webkit-font-smoothing: antialiased;
+}
+
+.nav-rail .panel-list .rail-panel-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.6rem 0.75rem !important;
+}
+
+.nav-rail .panel-list .rail-panel-item > .panel-item__icon {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+    margin-right: 0.5rem !important;
+}
+
+.nav-rail .panel-list .rail-panel-item > .panel-item__label {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 1 auto !important;
+}
+
+/* Defensive: prevent transform/justify rules from global nav-link hover from
+   pushing content into unexpected layouts. */
+.nav-rail .panel-list .nav-link.panel-item i,
+.nav-rail .panel-list .nav-link.panel-item svg {
+    display: block !important;
 }
 
 .panel-item:hover {
@@ -222,13 +574,15 @@
 
 .panel-item.active {
     background: #E5E7EB !important;
-    color: #111827 !important;
+    color: #4C1D95 !important;
 }
 
 /* Breakpoints: keep rail+panel for mobile and tablet */
 @media (max-width: 767px) {
     .nav-rail {
         grid-template-columns: 56px minmax(220px, calc(var(--sidebar-width, 320px) - 56px));
+        /* On small screens allow the rail to expand (no max-width) */
+        max-width: none;
     }
 }
 

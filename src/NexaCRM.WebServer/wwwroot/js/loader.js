@@ -1,4 +1,5 @@
 (function () {
+    if (window.nexacrmLoader && window.nexacrmLoader._nexacrm_init) return;
     'use strict';
 
     const loaderId = 'nexacrm-initial-loader';
@@ -48,4 +49,5 @@
     }, 5000);
 
     showLoader();
+    try { window.nexacrmLoader = window.nexacrmLoader || {}; window.nexacrmLoader._nexacrm_init = true; } catch (e) { }
 })();

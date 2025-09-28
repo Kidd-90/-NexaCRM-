@@ -44,7 +44,11 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         {
             await EnsureRealtimeSubscriptionAsync();
             var client = await _clientProvider.GetClientAsync();
-            var userId = EnsureUserId(client);
+            if (!TryEnsureUserId(client, out var userId))
+            {
+                _logger.LogDebug("No authenticated Supabase user available when loading notification feed; returning empty feed.");
+                return new List<NotificationFeedItem>();
+            }
 
             var response = await client.From<NotificationFeedRecord>()
                 .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
@@ -87,7 +91,11 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         }
 
         var client = await _clientProvider.GetClientAsync();
-        var userId = EnsureUserId(client);
+        if (!TryEnsureUserId(client, out var userId))
+        {
+            _logger.LogDebug("No authenticated Supabase user available when getting unread count; returning 0.");
+            return 0;
+        }
 
         var response = await client.From<NotificationFeedRecord>()
             .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
@@ -120,7 +128,11 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
     {
         await EnsureRealtimeSubscriptionAsync();
         var client = await _clientProvider.GetClientAsync();
-        var userId = EnsureUserId(client);
+        if (!TryEnsureUserId(client, out var userId))
+        {
+            _logger.LogDebug("No authenticated Supabase user available when marking notification as read; skipping.");
+            return;
+        }
 
         NotificationFeedItem? item;
         lock (_syncRoot)
@@ -173,7 +185,11 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
 
         await EnsureRealtimeSubscriptionAsync();
         var client = await _clientProvider.GetClientAsync();
-        var userId = EnsureUserId(client);
+        if (!TryEnsureUserId(client, out var userId))
+        {
+            _logger.LogDebug("No authenticated Supabase user available when adding notification; skipping insert.");
+            return;
+        }
         var timestamp = item.TimestampUtc == default ? DateTime.UtcNow : item.TimestampUtc;
         var timestampedItem = new NotificationFeedItem
         {
@@ -210,7 +226,11 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
             }
 
             var client = await _clientProvider.GetClientAsync();
-            EnsureUserId(client);
+            if (!TryEnsureUserId(client, out _))
+            {
+                _logger.LogDebug("Realtime subscription not initialized because no authenticated Supabase user is available.");
+                return;
+            }
             _changeHandler ??= HandleRealtimeChange;
             _realtimeChannel = await client.From<NotificationFeedRecord>()
                 .On(RealtimeListenType.All, _changeHandler);
@@ -231,6 +251,12 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
     {
         try
         {
+            // If we don't have a current user id set, ignore realtime events.
+            if (!_userId.HasValue)
+            {
+                return;
+            }
+
             var eventType = change.Payload?.Data?.Type;
             if (eventType is null)
             {
@@ -391,10 +417,22 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
 
     private Guid EnsureUserId(global::Supabase.Client client)
     {
-        var rawId = client.Auth.CurrentUser?.Id;
-        if (string.IsNullOrWhiteSpace(rawId) || !Guid.TryParse(rawId, out var parsed))
+        // Backwards-compatible helper that throws when no user id is available.
+        if (!TryEnsureUserId(client, out var id))
         {
             throw new InvalidOperationException("Supabase user id is required for notifications.");
+        }
+
+        return id;
+    }
+
+    private bool TryEnsureUserId(global::Supabase.Client client, out Guid userId)
+    {
+        userId = Guid.Empty;
+        var rawId = client?.Auth?.CurrentUser?.Id;
+        if (string.IsNullOrWhiteSpace(rawId) || !Guid.TryParse(rawId, out var parsed))
+        {
+            return false;
         }
 
         if (!_userId.HasValue || _userId.Value != parsed)
@@ -402,7 +440,8 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
             _userId = parsed;
         }
 
-        return _userId.Value;
+        userId = _userId.Value;
+        return true;
     }
 
     public ValueTask DisposeAsync()

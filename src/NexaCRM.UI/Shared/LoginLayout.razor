@@ -8,13 +8,33 @@
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>
-    <script src="_content/NexaCRM.UI/js/navigation.js"></script>
-    <script src="_content/NexaCRM.UI/js/culture.js"></script>
-    <script src="_content/NexaCRM.UI/js/theme-manager.js"></script>
-    <script src="_content/NexaCRM.UI/js/device.js"></script>
-    <script src="_content/NexaCRM.UI/js/interactions.js"></script>
-    <script src="_content/NexaCRM.UI/js/csv-export.js"></script>
+    <script>
+        (function () {
+            if (window.__nexacrm_ui_scripts_loaded) return;
+            window.__nexacrm_ui_scripts_loaded = true;
+
+            var base = '_content/NexaCRM.UI/js/';
+            var files = [
+                'auth-manager.js',
+                'navigation.js',
+                'culture.js',
+                'theme-manager.js',
+                'device.js',
+                'interactions.js',
+                'csv-export.js'
+            ];
+
+            files.forEach(function (file) {
+                var rel = base + file;
+                var selector = 'script[src="' + rel + '"], script[src="/' + rel + '"]';
+                if (document.querySelector(selector)) return;
+                var s = document.createElement('script');
+                s.src = rel;
+                s.defer = true;
+                document.head.appendChild(s);
+            });
+        })();
+    </script>
 </HeadContent>
 
 <div class="page">

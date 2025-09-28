@@ -22,14 +22,20 @@
         <a class="dismiss">🗙</a>
     </div>
     <script>
-    window.isDarkMode = function() {
-        const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('nexacrm-theme-preference') || 'light';
-        if (theme === 'dark') return true;
-        if (theme === 'auto') {
-            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-        return false;
-    };
+    (function(){
+        if (window.isDarkMode && window.isDarkMode._nexacrm_init) return;
+
+        window.isDarkMode = window.isDarkMode || function() {
+            const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('nexacrm-theme-preference') || 'light';
+            if (theme === 'dark') return true;
+            if (theme === 'auto') {
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            return false;
+        };
+
+        try { window.isDarkMode._nexacrm_init = true; } catch (e) { }
+    })();
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>

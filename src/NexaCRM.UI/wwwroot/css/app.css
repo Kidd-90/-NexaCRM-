@@ -239,6 +239,31 @@ a:hover, .btn-link:hover {
     overflow: hidden;
 }
 
+/* Layout helpers: ensure page-level content containers sit to the right of
+   the fixed nav rail and below the fixed page header. Uses JS-updated
+   --app-shell-page-header-offset and the shared --sidebar-width variable.
+   These rules are intentionally low-specificity so page authors can still
+   override them for special cases. */
+.layout-content-container {
+    /* push content to the right of the fixed rail */
+    margin-left: var(--sidebar-width, 0px);
+    /* ensure the container begins below the (possibly fixed) page header */
+    margin-top: var(--app-shell-page-header-offset, 0px);
+    /* give content a comfortable max width and preserve existing utility classes */
+    box-sizing: border-box;
+}
+
+/* On narrow screens, the rail becomes an overlay so content should be full-bleed
+   and only account for header height. */
+@media (max-width: 767px) {
+    .layout-content-container {
+        margin-left: 0 !important;
+        margin-top: var(--app-shell-page-header-offset-mobile, var(--mobile-header-height, 72px)) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 /* collapse 클래스가 없을 때만 보이기 (메뉴 열림) */
 .sidebar:not(.collapse) {
     transform: translateX(0);
@@ -686,6 +711,21 @@ a:hover, .btn-link:hover {
 @media (min-width: 768px) {
     .page {
         --sidebar-width: clamp(260px, 24vw, 320px);
+    }
+
+    /* Offset the main document content by the fixed navigation rail width on
+       desktop/tablet so content does not get covered when the rail is fixed. */
+    body {
+        padding-left: var(--sidebar-width);
+        transition: padding-left var(--transition-normal);
+        box-sizing: border-box;
+        overflow-x: hidden; /* Prevent leftover horizontal scrolling on desktop */
+    }
+
+    /* Hide legacy .sidebar (mobile drawer) on desktop/tablet to avoid having two
+       sidebars rendered at once (the fixed NavigationRail is used on desktop). */
+    .sidebar {
+        display: none !important;
     }
 
     /* Edge-to-edge layout on tablet and above */

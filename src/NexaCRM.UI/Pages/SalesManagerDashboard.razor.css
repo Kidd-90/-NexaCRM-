@@ -1,5 +1,24 @@
 /* SalesManagerDashboard Mobile Responsive Styles */
 
+/* Ensure page content sits below the fixed app-shell page header. This
+   uses the runtime-updated --app-shell-page-header-offset variable so the
+   stats-container and other content won't be occluded by the header. */
+.layout-content-container {
+    margin-top: var(--app-shell-page-header-offset, 0px) !important;
+}
+
+/* Ensure the stats container (page-level summary cards) always begins
+   below the fixed app-shell page header. We use the runtime-updated
+   --app-shell-page-header-offset so the page remains robust to changes
+   in header height across breakpoints and when hot-reloading. */
+.layout-content-container .stats-container {
+    margin-top: calc(var(--app-shell-page-header-offset, 0px) + 0.5rem) !important;
+    /* provide a small scroll margin so anchor-navigation doesn't put the
+       stats behind the fixed header */
+    scroll-margin-top: calc(var(--app-shell-page-header-offset, 0px) + 0.5rem);
+}
+
+
 /* Container query table responsive behavior */
 @container(max-width:120px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120{display: none;}}
 @container(max-width:240px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240{display: none;}}
@@ -225,5 +244,32 @@
 @media (prefers-reduced-motion: reduce) {
     .mobile-nav-menu {
         transition: none;
+    }
+}
+
+/* Ensure app shell content does not overlap or extend beneath the nav-rail.
+   We use a CSS variable --nav-rail-width so the layout can adapt if the
+   rail width changes. On small screens where the nav rail is hidden or
+   becomes an overlay, remove the left margin so the content can span full
+   width. */
+.app-shell__content {
+    /* default rail width — override with :root or a parent when needed */
+    --nav-rail-width: 72px;
+    margin-left: var(--nav-rail-width);
+    max-width: calc(100% - var(--nav-rail-width));
+    box-sizing: border-box;
+    position: relative;
+    overflow-wrap: break-word;
+    /* keep content scrollable within its area */
+    overflow-x: hidden;
+}
+
+/* If the app hides the nav-rail on small screens (or uses an overlay),
+   ensure the content doesn't keep the left offset. Adjust breakpoint to
+   match your layout's collapse point. */
+@media (max-width: 768px) {
+    .app-shell__content {
+        margin-left: 0 !important;
+        max-width: 100% !important;
     }
 }

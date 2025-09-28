@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="en" class="" data-theme-keyboard-listener="true" style="--blazor-load-percentage: 100%; --blazor-load-percentage-text: &quot;100%&quot;; --app-shell-page-header-offset: 67px; --app-shell-page-header-offset-desktop: 67px; --app-shell-page-header-offset-mobile: 67px; --app-shell-page-header-height: 57px;"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <base href="/">
+    <link href="_content/NexaCRM.UI/css/app.css" rel="stylesheet">
+    <link href="_content/NexaCRM.UI/css/mobile.css" rel="stylesheet">
+    <link href="NexaCRM.WebClient.styles.css" rel="stylesheet">
+<style id="nexacrm-theme-transition-styles">
+    .theme-transitioning * {
+        transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+</style><style id="nexacrm-ripple-styles">
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            .ripple {
+                overflow: hidden;
+            }
+        </style><style id="nexacrm-animation-styles">
+            .animate-element {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all var(--transition-normal);
+            }
+            
+            .animate-element.animate-in {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .animate-element.animate-out {
+                opacity: 0.7;
+                transform: translateY(10px);
+            }
+        </style><!--!--><!--!--><!--!--><title>NexaCRM.WebClient</title><!--!--><!--!--><!--!--><script src="_content/NexaCRM.UI/js/client-console-forwarder.js" defer=""></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" b-sq1rqjv87y="">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/open-iconic@1.1.1/font/css/open-iconic-bootstrap.css" b-sq1rqjv87y="">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" b-sq1rqjv87y="">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/variable/pretendardvariable.css" b-sq1rqjv87y="">
+    <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" b-sq1rqjv87y="">
+    <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" b-sq1rqjv87y="">
+    <script src="https://cdn.tailwindcss.com" b-sq1rqjv87y=""></script>
+    <!--!--><script b-sq1rqjv87y="">
+        (function () {
+            if (window.__nexacrm_ui_scripts_loaded) return;
+            window.__nexacrm_ui_scripts_loaded = true;
+
+            var base = '_content/NexaCRM.UI/js/';
+            var files = [
+                'auth-manager.js',
+                'navigation.js',
+                'culture.js',
+                'theme-manager.js',
+                'device.js',
+                'interactions.js',
+                'csv-export.js'
+            ];
+
+            files.forEach(function (file) {
+                var rel = base + file;
+                var selector = 'script[src="' + rel + '"], script[src="/' + rel + '"]';
+                if (document.querySelector(selector)) return;
+                var s = document.createElement('script');
+                s.src = rel;
+                s.defer = true;
+                document.head.appendChild(s);
+            });
+        })();
+    </script></head>
+
+<body>
+    <div id="app" style="display: flex; justify-content: center; align-items: center; height: 100vh;"><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><!--!-->
+
+<div class="page" b-sq1rqjv87y=""><!--!--><button title="Toggle theme" class="login-theme-toggle" data-theme-toggle="" aria-label="Switch theme" b-sq1rqjv87y="" data-theme-listener-attached="true"><span class="theme-light-icon" b-sq1rqjv87y="">🌞</span>
+        <span class="theme-dark-icon" b-sq1rqjv87y="">🌙</span></button>
+    
+    <main b-sq1rqjv87y=""><article class="content px-4 page-fade-enter" b-sq1rqjv87y=""><!--!--><div class="login-container mobile-login-container" b-ms02x3otsd=""><div class="mobile-login-card" b-ms02x3otsd=""><div class="brand-section" b-ms02x3otsd=""><!--!--><span class="brand-logo" b-ms02x3otsd="">Nexa DB</span>
+      <p class="brand-caption" b-ms02x3otsd="">계정에 로그인하세요</p></div><!--!-->
+
+    <div class="mobile-form" b-ms02x3otsd=""><div class="input-group" b-ms02x3otsd=""><label class="input-label" for="login-username" b-ms02x3otsd="">사용자 이름</label><!--!-->
+        <input id="login-username" placeholder="사용자 이름을 입력하세요" autocomplete="username" class="login-input" b-ms02x3otsd="" style=""></div><!--!-->
+
+      <div class="input-group" b-ms02x3otsd=""><label class="input-label" for="login-password" b-ms02x3otsd="">비밀번호</label><!--!-->
+        <div class="password-wrapper" b-ms02x3otsd=""><input id="login-password" type="password" placeholder="비밀번호를 입력하세요" autocomplete="current-password" class="login-input" b-ms02x3otsd="" style=""><!--!-->
+          <button type="button" class="password-toggle" b-ms02x3otsd="">보기</button></div></div><!--!-->
+
+      <label class="remember-me" b-ms02x3otsd=""><!--!--><input type="checkbox" class="remember-checkbox" b-ms02x3otsd="" style="">
+        <span b-ms02x3otsd="">로그인 상태 유지</span></label></div><button type="button" class="login-button" b-ms02x3otsd=""><span b-ms02x3otsd="">로그인</span></button><!--!-->
+
+    <div class="login-helper-links" b-ms02x3otsd=""><a href="/find-id-page" class="login-link" b-ms02x3otsd="">아이디 찾기</a><!--!-->
+      <span class="divider-dot" aria-hidden="true" b-ms02x3otsd=""></span>
+      <a href="/password-reset-page" class="login-link" b-ms02x3otsd="">비밀번호 재설정</a><!--!-->
+      <span class="divider-dot" aria-hidden="true" b-ms02x3otsd=""></span>
+      <a href="/user-registration-page" class="login-link" b-ms02x3otsd="">회원가입</a></div><!--!-->
+
+    <div class="login-divider" b-ms02x3otsd=""><span b-ms02x3otsd="">또는 다른 계정으로 로그인</span></div><!--!-->
+
+    <div class="social-login-grid" b-ms02x3otsd=""><button class="social-login-btn naver-btn" type="button" disabled="" aria-disabled="true" title="소셜 로그인 연동은 준비 중입니다." b-ms02x3otsd=""><!--!--><span class="social-icon" b-ms02x3otsd=""><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" b-ms02x3otsd=""><rect width="32" height="32" rx="16" fill="#03C75A" b-ms02x3otsd=""></rect>
+            
+            <path d="M19.8 10h-3.64v5.5L12.2 10H9v12h3.6v-5.5l3.96 5.5h3.24V10z" fill="#ffffff" transform="translate(1.6,0)" b-ms02x3otsd=""></path></svg></span>
+        <span class="social-text" b-ms02x3otsd="">네이버로 시작하기</span></button><!--!-->
+
+      <button class="social-login-btn google-btn" type="button" disabled="" aria-disabled="true" title="소셜 로그인 연동은 준비 중입니다." b-ms02x3otsd=""><!--!--><span class="social-icon" b-ms02x3otsd=""><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" b-ms02x3otsd=""><path fill="#4285F4" d="M28.16 16.26c0-.94-.08-1.8-.24-2.6H16v4.92h6.84c-.3 1.62-1.2 2.98-2.56 3.88v3.3h4.14c2.4-2.2 3.74-5.44 3.74-9.5z" b-ms02x3otsd=""></path>
+            <path fill="#34A853" d="M16 29.3c3.46 0 6.34-1.14 8.46-3.1l-4.14-3.3c-1.14.76-2.6 1.2-4.32 1.2-3.33 0-6.16-2.24-7.16-5.26H4.46v3.33C6.56 26.68 10.9 29.3 16 29.3z" b-ms02x3otsd=""></path>
+            <path fill="#FBBC05" d="M8.84 18.84c-.26-.78-.4-1.62-.4-2.48s.14-1.7.4-2.48V10.6H4.46A12.98 12.98 0 003 16.36c0 2.06.5 4 1.46 5.76l4.38-3.28.97-.7z" b-ms02x3otsd=""></path>
+            <path fill="#EA4335" d="M16 9.14c1.9 0 3.62.66 4.98 1.96l3.73-3.72C22.32 4.7 19.44 3.4 16 3.4 10.9 3.4 6.56 6.02 4.46 10.6l4.38 3.28c1-3.02 3.83-5.26 7.16-5.26z" b-ms02x3otsd=""></path></svg></span>
+        <span class="social-text" b-ms02x3otsd="">구글로 시작하기</span></button><!--!-->
+
+      <button class="social-login-btn kakao-btn" type="button" disabled="" aria-disabled="true" title="소셜 로그인 연동은 준비 중입니다." b-ms02x3otsd=""><!--!--><span class="social-icon" b-ms02x3otsd=""><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" b-ms02x3otsd=""><rect width="32" height="32" rx="16" fill="#FEE500" b-ms02x3otsd=""></rect>
+            <path d="M16 8c-4.7 0-8.5 2.76-8.5 6.16 0 2.34 1.76 4.36 4.32 5.42-.16.6-.58 2.1-.66 2.42-.1.4.14.78.56.66.58-.16 2.16-1.4 3.02-2.08.4.04.82.06 1.24.06 4.7 0 8.5-2.76 8.5-6.16C24.5 10.76 20.7 8 16 8z" fill="#381E1F" b-ms02x3otsd=""></path></svg></span>
+        <span class="social-text" b-ms02x3otsd="">카카오로 시작하기</span></button></div><!--!-->
+    <p class="social-login-notice" b-ms02x3otsd="">소셜 로그인 연동은 준비 중입니다.</p></div></div></article></main></div><!--!-->
+
+<!--!--><script b-sq1rqjv87y="">
+    // Update theme toggle button icons based on current theme
+    function updateLoginThemeToggleIcon() {
+        const themeToggle = document.querySelector('.login-theme-toggle');
+        if (!themeToggle) return;
+        
+        const lightIcon = themeToggle.querySelector('.theme-light-icon');
+        const darkIcon = themeToggle.querySelector('.theme-dark-icon');
+        
+        if (!lightIcon || !darkIcon) return;
+        
+        // Get current theme from document attribute or localStorage
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                           localStorage.getItem('nexacrm-theme-preference') || 
+                           'light';
+        
+        // Get system theme if theme is set to auto
+        let effectiveTheme = currentTheme;
+        if (currentTheme === 'auto') {
+            effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        // Update icon visibility based on effective theme
+        if (effectiveTheme === 'dark') {
+            lightIcon.style.display = 'inline';
+            darkIcon.style.display = 'none';
+            themeToggle.setAttribute('aria-label', 'Switch to light theme');
+        } else {
+            lightIcon.style.display = 'none';
+            darkIcon.style.display = 'inline';
+            themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+        }
+        
+        console.log('Login theme toggle icon updated for theme:', effectiveTheme);
+    }
+    
+    // Ensure theme toggle works on login page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Immediately update theme icon
+        updateLoginThemeToggleIcon();
+        
+        // Wait a bit for all scripts to load, then setup listeners
+        setTimeout(function() {
+            if (window.themeManager && window.themeManager.setupThemeToggleListeners) {
+                window.themeManager.setupThemeToggleListeners();
+                console.log('Theme toggle listeners setup for login page');
+            }
+            
+            // Update icon again after theme manager is initialized
+            setTimeout(updateLoginThemeToggleIcon, 100);
+        }, 500);
+    });
+    
+    // Also setup on page show (for browser back/forward navigation)
+    window.addEventListener('pageshow', function() {
+        updateLoginThemeToggleIcon();
+        
+        setTimeout(function() {
+            if (window.themeManager && window.themeManager.setupThemeToggleListeners) {
+                window.themeManager.setupThemeToggleListeners();
+            }
+            updateLoginThemeToggleIcon();
+        }, 100);
+    });
+    
+    // Listen for theme changes to update icon
+    window.addEventListener('themeChanged', function() {
+        setTimeout(updateLoginThemeToggleIcon, 50);
+    });
+    
+    // Listen for system theme changes (for auto mode)
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            const currentTheme = localStorage.getItem('nexacrm-theme-preference') || 'auto';
+            if (currentTheme === 'auto') {
+                setTimeout(updateLoginThemeToggleIcon, 50);
+            }
+        });
+    }
+</script><!--!--></div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload ripple">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script>
+    (function(){
+        if (window.isDarkMode && window.isDarkMode._nexacrm_init) return;
+
+        window.isDarkMode = window.isDarkMode || function() {
+            const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('nexacrm-theme-preference') || 'light';
+            if (theme === 'dark') return true;
+            if (theme === 'auto') {
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            return false;
+        };
+
+        try { window.isDarkMode._nexacrm_init = true; } catch (e) { }
+    })();
+    </script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>
+    <script src="_content/NexaCRM.UI/js/navigation.js"></script>
+    <script src="_content/NexaCRM.UI/js/culture.js"></script>
+    <script src="_content/NexaCRM.UI/js/theme-manager.js"></script>
+    <script src="_content/NexaCRM.UI/js/device.js"></script>
+    <script src="_content/NexaCRM.UI/js/interactions.js"></script>
+    <script src="_content/NexaCRM.UI/js/csv-export.js"></script>
+
+
+
+</body></html>

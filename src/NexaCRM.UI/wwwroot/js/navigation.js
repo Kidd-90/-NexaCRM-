@@ -1,5 +1,11 @@
 // Navigation menu functionality
-window.navigationHelper = {
+(function(){
+    if (window.navigationHelper && window.navigationHelper._nexacrm_init) {
+        console.debug('navigationHelper already initialized; skipping');
+        return;
+    }
+
+    const _nav = {
     // Navigation scroll and keyboard functionality
     setupNavigationScrolling: () => {
         const navContainer = document.querySelector('.nav-scroll-container');
@@ -705,7 +711,11 @@ window.navigationHelper = {
             });
         }
     }
-};
+    };
+
+    _nav._nexacrm_init = true;
+    window.navigationHelper = Object.assign(window.navigationHelper || {}, _nav);
+})();
 
 // 초기화 실행
 window.navigationHelper.initialize();

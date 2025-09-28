@@ -1,5 +1,11 @@
 // Authentication and session management
-window.authManager = {
+(function(){
+    if (window.authManager && window.authManager._nexacrm_init) {
+        console.debug('authManager already initialized; skipping');
+        return;
+    }
+
+    const _auth = {
     // 세션 타임아웃: 30분 (밀리초)
     SESSION_TIMEOUT: 30 * 60 * 1000,
 
@@ -213,11 +219,15 @@ window.authManager = {
 
         console.log('Auth manager initialized');
     }
-};
+    };
 
-// DOM 로드 완료 후 초기화
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', window.authManager.initialize);
-} else {
-    window.authManager.initialize();
-}
+    _auth._nexacrm_init = true;
+    window.authManager = Object.assign(window.authManager || {}, _auth);
+
+    // DOM 로드 완료 후 초기화
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', window.authManager.initialize);
+    } else {
+        window.authManager.initialize();
+    }
+})();

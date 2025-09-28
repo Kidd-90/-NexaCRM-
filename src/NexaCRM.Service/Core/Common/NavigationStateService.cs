@@ -141,7 +141,9 @@ public sealed class NavigationStateService : INavigationStateService, IAsyncDisp
             return _module;
         }
 
-        _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/layout.js");
+        // Import the layout module from the app root so the path resolves the same way
+        // as other absolute imports (e.g. MainLayout.razor uses "/js/layout.js").
+        _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/layout.js");
         return _module;
     }
 

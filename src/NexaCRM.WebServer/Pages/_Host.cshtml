@@ -11,7 +11,7 @@
     <base href="~/" />
     <link href="_content/NexaCRM.UI/css/app.css" rel="stylesheet" />
     <link href="_content/NexaCRM.UI/css/mobile.css" rel="stylesheet" />
-    <link href="css/loading.css" rel="stylesheet" />
+    <link href="_content/NexaCRM.UI/css/loading.css" rel="stylesheet" />
     <link href="NexaCRM.WebServer.styles.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
@@ -27,30 +27,57 @@
         <a class="dismiss">🗙</a>
     </div>
     <script>
-        window.isDarkMode = function () {
-            const theme = document.documentElement.getAttribute('data-theme')
-                || localStorage.getItem('nexacrm-theme-preference')
-                || 'light';
+        (function () {
+            if (window.isDarkMode && window.isDarkMode._nexacrm_init) return;
 
-            if (theme === 'dark') {
-                return true;
-            }
+            window.isDarkMode = window.isDarkMode || function () {
+                const theme = document.documentElement.getAttribute('data-theme')
+                    || localStorage.getItem('nexacrm-theme-preference')
+                    || 'light';
 
-            if (theme === 'auto') {
-                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            }
+                if (theme === 'dark') {
+                    return true;
+                }
 
-            return false;
-        };
+                if (theme === 'auto') {
+                    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+
+                return false;
+            };
+
+            // mark initialized to avoid later overwrites
+            try { window.isDarkMode._nexacrm_init = true; } catch (e) { /* ignore */ }
+        })();
     </script>
     <script src="js/loader.js"></script>
     <script src="_framework/blazor.server.js"></script>
-    <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>
-    <script src="_content/NexaCRM.UI/js/navigation.js"></script>
-    <script src="_content/NexaCRM.UI/js/culture.js"></script>
-    <script src="_content/NexaCRM.UI/js/theme-manager.js"></script>
-    <script src="_content/NexaCRM.UI/js/device.js"></script>
-    <script src="_content/NexaCRM.UI/js/interactions.js"></script>
-    <script src="_content/NexaCRM.UI/js/csv-export.js"></script>
+    <script>
+        (function () {
+            if (window.__nexacrm_ui_scripts_loaded) return;
+            window.__nexacrm_ui_scripts_loaded = true;
+
+            var base = '_content/NexaCRM.UI/js/';
+            var files = [
+                'auth-manager.js',
+                'navigation.js',
+                'culture.js',
+                'theme-manager.js',
+                'device.js',
+                'interactions.js',
+                'csv-export.js'
+            ];
+
+            files.forEach(function (file) {
+                var rel = base + file;
+                var selector = 'script[src="' + rel + '"], script[src="/' + rel + '"]';
+                if (document.querySelector(selector)) return;
+                var s = document.createElement('script');
+                s.src = rel;
+                s.defer = true;
+                document.head.appendChild(s);
+            });
+        })();
+    </script>
 </body>
 </html>
