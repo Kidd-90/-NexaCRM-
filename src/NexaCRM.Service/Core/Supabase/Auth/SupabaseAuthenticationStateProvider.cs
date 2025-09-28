@@ -5,45 +5,22 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using BCrypt.Net;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.UI.Models.Supabase;
 using NexaCRM.Service.Supabase.Configuration;
 using NexaCRM.UI.Services.Interfaces;
-using Supabase.Postgrest.Models;
 using LoginResult = NexaCRM.UI.Models.LoginResult;
 using LoginFailureReason = NexaCRM.UI.Models.LoginFailureReason;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
-using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Exceptions;
+using Supabase.Gotrue.Exceptions;
 using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using SupabaseAuthState = Supabase.Gotrue.Constants.AuthState;
 
 namespace NexaCRM.Service.Supabase;
-
-// NOTE: YOU MUST PROVIDE THE CORRECT TABLE AND COLUMN NAMES
-// I am assuming:
-// Table: "profiles"
-// Columns: "id" (uuid), "username" (text), "password_hash" (text), "email" (text)
-[Table("app_users")]
-public class UserAuthRecord : BaseModel
-{
-    [PrimaryKey("id")]
-    public Guid Id { get; set; }
-
-    [Column("username")]
-    public string? Username { get; set; }
-
-    [Column("password_hash")]
-    public string? PasswordHash { get; set; }
-
-    [Column("email")]
-    public string? Email { get; set; }
-}
-
 
 public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, IAuthenticationService, IAsyncDisposable
 {
@@ -59,6 +36,13 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
     private IGotrueClient<User, Session>.AuthEventHandler? _authEventHandler;
     private global::Supabase.Client? _subscribedClient;
     private bool _isDisposed;
+
+    private static readonly IReadOnlyDictionary<string, string> DemoAccountAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["manager"] = "manager@nexa.test",
+        ["sales"] = "sales@nexa.test",
+        ["develop"] = "develop@nexa.test"
+    };
 
     public SupabaseAuthenticationStateProvider(
         SupabaseClientProvider clientProvider,
@@ -98,43 +82,36 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
 
         try
         {
-            var serviceClient = await GetServiceClientAsync();
+            await EnsureInitializedAsync().ConfigureAwait(false);
 
-            // NOTE: Assumes the login form uses a 'username' field. If it's email, change the column name.
-            var response = await serviceClient.From<UserAuthRecord>()
-                .Filter(x => x.Username, PostgrestOperator.Equals, username)
-                .Limit(1)
-                .Get();
+            var publicClient = await _clientProvider.GetClientAsync().ConfigureAwait(false);
+            var accountRecord = await ResolveAccountAsync(publicClient, username).ConfigureAwait(false);
 
-            var userRecord = response.Models.FirstOrDefault();
-
-            if (userRecord?.PasswordHash is null)
+            if (accountRecord is null || string.IsNullOrWhiteSpace(accountRecord.Email))
             {
-                _logger.LogWarning("User not found or no password hash for {Username}.", username);
+                _logger.LogWarning("Unable to locate account for credential {Username}.", username);
                 return LoginResult.Failed(LoginFailureReason.UserNotFound, GetFailureMessage(LoginFailureReason.UserNotFound));
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(password, userRecord.PasswordHash))
+            if (!IsAccountActive(accountRecord))
             {
-                _logger.LogWarning("Invalid password attempt for {Username}.", username);
+                _logger.LogWarning(
+                    "Login attempt for {Username} blocked due to account status {Status}.",
+                    username,
+                    accountRecord.Status);
+
+                return LoginResult.Failed(
+                    LoginFailureReason.RequiresApproval,
+                    GetFailureMessage(LoginFailureReason.RequiresApproval));
+            }
+
+            var session = await publicClient.Auth.SignIn(accountRecord.Email, password).ConfigureAwait(false);
+
+            if (session?.User is null)
+            {
+                _logger.LogWarning("Supabase returned no session for {Username}.", username);
                 return LoginResult.Failed(LoginFailureReason.InvalidPassword, GetFailureMessage(LoginFailureReason.InvalidPassword));
             }
-
-            // We have a valid user. Now check if they are approved in the system.
-            // This uses the public client, but could also use the service client.
-            var publicClient = await _clientProvider.GetClientAsync().ConfigureAwait(false);
-            var isApproved = await IsUserApprovedAsync(publicClient, userRecord.Id).ConfigureAwait(false);
-            if (!isApproved)
-            {
-                return LoginResult.Failed(LoginFailureReason.RequiresApproval, GetFailureMessage(LoginFailureReason.RequiresApproval));
-            }
-
-            // Manually create a session-like object to build the principal
-            var session = new Session
-            {
-                User = new User { Id = userRecord.Id.ToString(), Email = userRecord.Email }
-                // Note: AccessToken is not set as we are not using Supabase RLS for this user.
-            };
 
             await UpdateAuthenticationStateAsync(session).ConfigureAwait(false);
             return LoginResult.Success();
@@ -142,6 +119,16 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
         catch (PostgrestException ex)
         {
             _logger.LogError(ex, "Database error during login for {Username}.", username);
+            return LoginResult.Failed(LoginFailureReason.Unknown, GetFailureMessage(LoginFailureReason.Unknown));
+        }
+        catch (GotrueException ex) when (IsInvalidCredentialError(ex))
+        {
+            _logger.LogWarning(ex, "Invalid Supabase credentials supplied for {Username}.", username);
+            return LoginResult.Failed(LoginFailureReason.InvalidPassword, GetFailureMessage(LoginFailureReason.InvalidPassword));
+        }
+        catch (GotrueException ex)
+        {
+            _logger.LogError(ex, "Supabase authentication failed unexpectedly for {Username}.", username);
             return LoginResult.Failed(LoginFailureReason.Unknown, GetFailureMessage(LoginFailureReason.Unknown));
         }
         catch (Exception ex)
@@ -213,8 +200,8 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
             _authEventHandler = async (sender, state) => await HandleAuthStateChangedAsync(sender, state).ConfigureAwait(false);
             client.Auth.AddStateChangedListener(_authEventHandler);
 
-            // With custom auth, the initial state is always unauthenticated from Supabase's perspective
-            await UpdateAuthenticationStateAsync(null).ConfigureAwait(false);
+            var existingSession = client.Auth.CurrentSession;
+            await UpdateAuthenticationStateAsync(existingSession).ConfigureAwait(false);
             _initialized = true;
         }
         finally
@@ -230,13 +217,17 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
             return;
         }
 
-        // This handler might be invoked if other parts of the app use Supabase auth functions.
-        // We need to decide if a Supabase-driven auth change should override our custom app login.
-        // For now, we log it and do not automatically change the state if the user is already authenticated.
-        if (state == SupabaseAuthState.SignedOut && IsAuthenticated)
+        switch (state)
         {
-            _logger.LogInformation("Supabase session was signed out, but user remains logged in via custom authentication.");
-            // To force a full logout, you could call: await UpdateAuthenticationStateAsync(null);
+            case SupabaseAuthState.SignedIn:
+                await UpdateAuthenticationStateAsync(sender.CurrentSession).ConfigureAwait(false);
+                break;
+            case SupabaseAuthState.SignedOut:
+                await UpdateAuthenticationStateAsync(null).ConfigureAwait(false);
+                break;
+            default:
+                _logger.LogDebug("Received Supabase auth state notification: {State}", state);
+                break;
         }
     }
 
@@ -265,33 +256,84 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
 
         try
         {
-            // Use the public client for loading roles, as this should be subject to RLS.
             var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, session.User.Id)
-            };
+            var claims = new List<Claim>();
 
-            if (!string.IsNullOrEmpty(session.User.Email))
+            if (!Guid.TryParse(session.User.Id, out var authUserId))
             {
-                claims.Add(new Claim(ClaimTypes.Email, session.User.Email));
-                claims.Add(new Claim(ClaimTypes.Name, session.User.Email));
+                _logger.LogWarning("Supabase session user id {UserId} is not a valid GUID.", session.User.Id);
+                return new ClaimsPrincipal(new ClaimsIdentity());
+            }
+
+            var account = await LoadAccountOverviewAsync(client, authUserId).ConfigureAwait(false);
+
+            if (account is not null)
+            {
+                var primaryIdentifier = account.AuthUserId != Guid.Empty
+                    ? account.AuthUserId.ToString()
+                    : session.User.Id;
+
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, primaryIdentifier));
+
+                if (!string.IsNullOrWhiteSpace(account.Cuid))
+                {
+                    claims.Add(new Claim("cuid", account.Cuid));
+                }
+
+                if (!string.IsNullOrWhiteSpace(account.Email))
+                {
+                    claims.Add(new Claim(ClaimTypes.Email, account.Email));
+                }
+
+                if (!string.IsNullOrWhiteSpace(account.FullName))
+                {
+                    claims.Add(new Claim(ClaimTypes.Name, account.FullName));
+                }
+                else if (!string.IsNullOrWhiteSpace(account.Username))
+                {
+                    claims.Add(new Claim(ClaimTypes.Name, account.Username));
+                }
+                else if (!string.IsNullOrEmpty(session.User.Email))
+                {
+                    claims.Add(new Claim(ClaimTypes.Name, session.User.Email));
+                }
+                else
+                {
+                    claims.Add(new Claim(ClaimTypes.Name, session.User.Id));
+                }
+
+                if (!string.IsNullOrWhiteSpace(account.Username))
+                {
+                    claims.Add(new Claim("preferred_username", account.Username));
+                }
+
+                foreach (var role in account.RoleCodes ?? Array.Empty<string>())
+                {
+                    if (!string.IsNullOrWhiteSpace(role))
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+                }
             }
             else
             {
-                claims.Add(new Claim(ClaimTypes.Name, session.User.Id));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, session.User.Id));
+                if (!string.IsNullOrEmpty(session.User.Email))
+                {
+                    claims.Add(new Claim(ClaimTypes.Email, session.User.Email));
+                    claims.Add(new Claim(ClaimTypes.Name, session.User.Email));
+                }
+                else
+                {
+                    claims.Add(new Claim(ClaimTypes.Name, session.User.Id));
+                }
             }
 
-            foreach (string role in await LoadRolesAsync(client, session.User.Id).ConfigureAwait(false))
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            return new ClaimsPrincipal(new ClaimsIdentity(claims, "CustomAppAuth"));
+            return new ClaimsPrincipal(new ClaimsIdentity(claims, "SupabaseAuth"));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to construct authentication principal from custom session.");
+            _logger.LogError(ex, "Failed to construct authentication principal from Supabase session.");
             return new ClaimsPrincipal(new ClaimsIdentity());
         }
     }
@@ -307,54 +349,6 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
             LoginFailureReason.RequiresApproval => "관리자 승인 대기 중인 계정입니다. 승인이 완료된 후 다시 시도해주세요.",
             _ => "로그인 중 오류가 발생했습니다. 다시 시도해주세요."
         };
-    }
-
-    protected virtual async Task<IEnumerable<string>> LoadRolesAsync(global::Supabase.Client client, string userId)
-    {
-        if (!Guid.TryParse(userId, out var userGuid))
-        {
-            return Enumerable.Empty<string>();
-        }
-
-        var response = await client.From<UserRoleRecord>()
-            .Filter(x => x.UserId, PostgrestOperator.Equals, userGuid)
-            .Get()
-            .ConfigureAwait(false);
-
-        var roles = new List<string>();
-        foreach (var record in response.Models)
-        {
-            if (!string.IsNullOrWhiteSpace(record.RoleCode))
-            {
-                roles.Add(record.RoleCode);
-            }
-        }
-
-        return roles;
-    }
-
-    protected virtual async Task<bool> IsUserApprovedAsync(global::Supabase.Client client, Guid userId)
-    {
-        var response = await client.From<OrganizationUserRecord>()
-            .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
-            .Limit(1)
-            .Get()
-            .ConfigureAwait(false);
-
-        var membership = response.Models?.FirstOrDefault();
-        if (membership is null)
-        {
-            _logger.LogInformation("User {UserId} attempted login without organization membership record.", userId);
-            return false;
-        }
-
-        var isApproved = string.Equals(membership.Status, "approved", StringComparison.OrdinalIgnoreCase);
-        if (!isApproved)
-        {
-            _logger.LogInformation("User {UserId} attempted login with status {Status}.", userId, membership.Status);
-        }
-
-        return isApproved;
     }
 
     public virtual async ValueTask DisposeAsync()
@@ -386,5 +380,63 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
         {
             _logger.LogWarning(ex, "Failed to remove Supabase auth event handler during disposal.");
         }
+    }
+
+    protected virtual async Task<UserAccountOverviewRecord?> ResolveAccountAsync(global::Supabase.Client client, string identifier)
+    {
+        if (string.IsNullOrWhiteSpace(identifier))
+        {
+            return null;
+        }
+
+        var normalized = identifier.Trim();
+
+        if (DemoAccountAliases.TryGetValue(normalized, out var aliasEmail))
+        {
+            normalized = aliasEmail;
+        }
+
+        var query = client.From<UserAccountOverviewRecord>();
+
+        var filteredQuery = normalized.Contains('@', StringComparison.Ordinal)
+            ? query.Filter(x => x.Email, PostgrestOperator.ILike, normalized)
+            : normalized.StartsWith("cuid_", StringComparison.OrdinalIgnoreCase)
+                ? query.Filter(x => x.Cuid, PostgrestOperator.Equals, normalized)
+                : query.Filter(x => x.Username, PostgrestOperator.ILike, normalized);
+
+        var response = await filteredQuery
+            .Limit(1)
+            .Get()
+            .ConfigureAwait(false);
+
+        return response.Models.FirstOrDefault();
+    }
+
+    protected virtual bool IsAccountActive(UserAccountOverviewRecord account)
+    {
+        return string.Equals(account.Status, "active", StringComparison.OrdinalIgnoreCase);
+    }
+
+    protected virtual async Task<UserAccountOverviewRecord?> LoadAccountOverviewAsync(global::Supabase.Client client, Guid authUserId)
+    {
+        var response = await client.From<UserAccountOverviewRecord>()
+            .Filter(x => x.AuthUserId, PostgrestOperator.Equals, authUserId)
+            .Limit(1)
+            .Get()
+            .ConfigureAwait(false);
+
+        return response.Models.FirstOrDefault();
+    }
+
+    private static bool IsInvalidCredentialError(GotrueException exception)
+    {
+        if (exception is null)
+        {
+            return false;
+        }
+
+        var message = exception.Message ?? string.Empty;
+        return message.Contains("invalid login credentials", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("invalid email or password", StringComparison.OrdinalIgnoreCase);
     }
 }

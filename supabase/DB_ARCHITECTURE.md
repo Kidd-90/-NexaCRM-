@@ -79,12 +79,13 @@ graph TD
 | 테이블 | 목적 | 주요 컬럼 | 연관 관계/비고 |
 | --- | --- | --- | --- |
 | `auth.users` | Supabase 기본 사용자 | id, email, metadata | 모든 사용자 기준 |
-| `app_users` | NexaCRM 전용 사용자 식별자 | cuid, auth_user_id, status | `auth.users`와 1:1 매핑되는 CUID 키, 모든 조직·권한 테이블이 참조.【F:supabase/migrations/schema.sql†L13-L37】 |
-| `user_infos` | 확장 사용자 프로필 | user_cuid, username, full_name, metadata | `app_users`를 FK로 사용하며 조직, 역할, 팀 데이터가 `user_cuid`로 조인.【F:supabase/migrations/schema.sql†L39-L59】 |
-| `profiles` | 공개 프로필 | user_cuid, username, full_name, avatar_url | `auth.users`와 `user_infos` 양쪽을 연결.【F:supabase/migrations/schema.sql†L61-L79】 |
+| `app_users` | NexaCRM 전용 사용자 식별자 | cuid, auth_user_id, status | `auth.users`와 1:1 매핑되는 CUID 키, 모든 조직·권한 테이블이 참조.【F:supabase/migrations/schema.sql†L17-L37】 |
+| `user_infos` | 확장 사용자 프로필 | user_cuid, username, full_name, metadata | `app_users`를 FK로 사용하며 조직, 역할, 팀 데이터가 `user_cuid`로 조인.【F:supabase/migrations/schema.sql†L38-L59】 |
+| `role_definitions` | 표준 역할 카탈로그 | code, name, description | 역할 중복을 막고 `user_roles`가 참조하는 기본 역할 집합.【F:supabase/migrations/schema.sql†L62-L89】 |
+| `profiles` | 공개 프로필 | user_cuid, username, full_name, avatar_url | `auth.users`와 `user_infos` 양쪽을 연결.【F:supabase/migrations/schema.sql†L92-L106】 |
 | `organization_units` | 조직 트리 관리 | id, tenant_id, parent_id, name | `OrganizationUnit` 모델 반영.【F:src/NexaCRM.Service/Admin.Abstractions/Models/Organization/OrganizationModels.cs†L6-L28】 |
 | `organization_users` | 조직 사용자 승인 흐름 | id, user_id, user_cuid, unit_id, role, status, approved_at, approval_memo | CUID 기반으로 조직·승인 상태를 관리.【F:supabase/migrations/schema.sql†L105-L126】 |
-| `user_roles` | 역할 매핑 | user_id, user_cuid, role_code, assigned_by, assigned_by_cuid | 역할 기반 권한 확인에 사용.【F:supabase/migrations/schema.sql†L128-L143】【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/IRolePermissionService.cs†L5-L30】 |
+| `user_roles` | 역할 매핑 | user_id, user_cuid, role_code, assigned_by, assigned_by_cuid | `role_definitions`를 FK로 사용해 표준 역할만 허용하며, 역할 기반 권한 확인에 사용.【F:supabase/migrations/schema.sql†L222-L233】【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/IRolePermissionService.cs†L5-L30】 |
 | `org_companies` | 테넌트별 내부 회사 마스터 | tenant_unit_id, code, name, contact, is_active | 관리자용 회사 기본 정보 저장.【F:supabase/migrations/schema.sql†L155-L171】 |
 | `org_branches` | 회사 지점 관리 | company_id, tenant_unit_id, code, name, manager_id, manager_cuid, is_active | 회사-지점 계층 구조 구성.【F:supabase/migrations/schema.sql†L173-L194】 |
 | `org_company_branch_lists` | 회사별 지점 리스트 캐싱 | tenant_unit_id, company_id, branch_id, branch_code, branch_name, manager_id, manager_cuid, team_count, member_count | 회사 단위 지점 현황/요약 제공.【F:supabase/migrations/schema.sql†L196-L214】 |
@@ -95,6 +96,12 @@ graph TD
 | `agents` | 영업·지원 에이전트 프로필 | user_id, user_cuid, display_name, email, role | `Agent` 모델 연계, 자동 배정 기준.【F:supabase/migrations/schema.sql†L236-L247】【F:src/NexaCRM.Service/Admin.Abstractions/Models/Agent.cs†L3-L9】【F:src/NexaCRM.UI/Services/Interfaces/IAgentService.cs†L7-L10】 |
 
 Row Level Security(RLS)은 `tenant_id`(조직 ID)와 역할 정보를 조합해 조직 단위 격리를 보장합니다. 조직 관리자는 동일 테넌트 하위의 사용자·팀을 열람/수정하고, 전사 관리자는 모든 테넌트 접근 권한을 갖도록 정책을 작성합니다.
+
+#### 사용자 계층 통합 뷰
+- `user_account_overview` 뷰는 `app_users`, `user_infos`, `user_roles`를 한 번에 조인해 계정 상태·프로필·역할을 조회하기 위한 통합 진입점을 제공합니다. CRM 백오피스에서 사용자 검색, 역할 검증, 연락처 표시 UI에 활용할 수 있습니다.【F:supabase/migrations/schema.sql†L240-L280】
+
+#### 로컬 개발 기본 계정
+- 스키마 로드 시 매니저(`manager@nexa.test`), 영업(`sales@nexa.test`), 개발(`develop@nexa.test`) 등 세 개의 기본 계정이 자동으로 생성되며 각각 `manager/manager`, `sales/sales`, `develop/develop` 자격 증명으로 로그인할 수 있습니다. 각 계정은 서로 다른 `role_definitions` 항목과 매핑되어 기능 테스트에 바로 활용할 수 있습니다.【F:supabase/migrations/schema.sql†L283-L400】
 
 ### 3.2 고객 및 데이터베이스(DB) 자산 관리
 | 테이블 | 목적 | 주요 컬럼 | 연관 관계/비고 |
