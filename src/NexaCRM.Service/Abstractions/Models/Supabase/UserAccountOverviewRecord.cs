@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 
 namespace NexaCRM.UI.Models.Supabase;
 
-[Table("user_account_overview", ignoreOnInsert: true, ignoreOnUpdate: true)]
+[Table("user_account_overview")]
 public sealed class UserAccountOverviewRecord : BaseModel
 {
     [PrimaryKey("cuid", false)]
