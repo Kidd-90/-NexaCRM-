@@ -59,6 +59,36 @@ CREATE TRIGGER set_timestamp_user_infos
   EXECUTE FUNCTION handle_updated_at();
 
 
+-- 1.c ROLE DEFINITIONS TABLE
+-- Central catalog of well-known application roles to prevent duplication across tables.
+CREATE TABLE role_definitions (
+  code TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE role_definitions IS 'Authoritative list of assignable application roles.';
+
+CREATE TRIGGER set_timestamp_role_definitions
+  BEFORE UPDATE ON role_definitions
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+-- Seed the baseline roles leveraged throughout the CRM.
+INSERT INTO role_definitions (code, name, description)
+VALUES
+  ('manager', 'Manager', 'Manages teams, deals, and organizational settings.'),
+  ('sales', 'Sales', 'Handles sales pipeline activities and customer outreach.'),
+  ('develop', 'Developer', 'Maintains integrations, automations, and technical tooling.')
+ON CONFLICT (code) DO UPDATE
+SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  updated_at = NOW();
+
+
 -- 2. PROFILES TABLE
 -- This table stores public user information and is linked to both auth.users and user_infos.
 CREATE TABLE profiles (
@@ -193,7 +223,7 @@ CREATE TABLE user_roles (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   user_cuid TEXT NOT NULL REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
-  role_code TEXT NOT NULL,
+  role_code TEXT NOT NULL REFERENCES role_definitions(code) ON DELETE RESTRICT,
   assigned_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   assigned_by_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
   assigned_at TIMESTAMPTZ DEFAULT NOW(),
@@ -205,6 +235,173 @@ CREATE TABLE user_roles (
 CREATE INDEX idx_organization_users_user_cuid ON organization_users(user_cuid);
 CREATE INDEX idx_user_roles_user_cuid ON user_roles(user_cuid);
 CREATE INDEX idx_user_roles_assigned_by_cuid ON user_roles(assigned_by_cuid);
+
+
+-- 1.d USER ACCOUNT OVERVIEW VIEW
+-- Provides a consolidated snapshot of identity, profile, and role assignments for application users.
+CREATE OR REPLACE VIEW user_account_overview AS
+SELECT
+  au.cuid,
+  au.auth_user_id,
+  au.email,
+  au.status,
+  au.created_at AS account_created_at,
+  au.updated_at AS account_updated_at,
+  ui.username,
+  ui.full_name,
+  ui.department,
+  ui.job_title,
+  ui.phone_number,
+  ui.created_at AS profile_created_at,
+  ui.updated_at AS profile_updated_at,
+  COALESCE(
+    ARRAY_AGG(ur.role_code ORDER BY ur.role_code)
+      FILTER (WHERE ur.role_code IS NOT NULL),
+    ARRAY[]::TEXT[]
+  ) AS role_codes
+FROM app_users au
+LEFT JOIN user_infos ui ON ui.user_cuid = au.cuid
+LEFT JOIN user_roles ur ON ur.user_cuid = au.cuid
+GROUP BY
+  au.cuid,
+  au.auth_user_id,
+  au.email,
+  au.status,
+  au.created_at,
+  au.updated_at,
+  ui.username,
+  ui.full_name,
+  ui.department,
+  ui.job_title,
+  ui.phone_number,
+  ui.created_at,
+  ui.updated_at;
+
+COMMENT ON VIEW user_account_overview IS 'Consolidated view of app users with enriched profile metadata and assigned role codes.';
+
+
+-- 1.e SEEDED TEST USERS FOR LOCAL DEVELOPMENT
+-- Creates deterministic demo accounts covering the primary roles (manager, sales, develop).
+DO $$
+DECLARE
+  v_instance_id CONSTANT UUID := '00000000-0000-0000-0000-000000000000';
+  v_manager_id UUID;
+  v_sales_id UUID;
+  v_develop_id UUID;
+BEGIN
+  -- Ensure auth.users records exist for each seeded account.
+  SELECT id INTO v_manager_id FROM auth.users WHERE email = 'manager@nexa.test';
+  IF v_manager_id IS NULL THEN
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password,
+      email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+      created_at, updated_at
+    )
+    VALUES (
+      v_instance_id,
+      gen_random_uuid(),
+      'authenticated',
+      'authenticated',
+      'manager@nexa.test',
+      crypt('manager', gen_salt('bf')),
+      NOW(),
+      jsonb_build_object('provider', 'email', 'providers', to_jsonb(ARRAY['email'])),
+      jsonb_build_object('seed', TRUE, 'role', 'manager'),
+      NOW(),
+      NOW()
+    )
+    RETURNING id INTO v_manager_id;
+  END IF;
+
+  SELECT id INTO v_sales_id FROM auth.users WHERE email = 'sales@nexa.test';
+  IF v_sales_id IS NULL THEN
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password,
+      email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+      created_at, updated_at
+    )
+    VALUES (
+      v_instance_id,
+      gen_random_uuid(),
+      'authenticated',
+      'authenticated',
+      'sales@nexa.test',
+      crypt('sales', gen_salt('bf')),
+      NOW(),
+      jsonb_build_object('provider', 'email', 'providers', to_jsonb(ARRAY['email'])),
+      jsonb_build_object('seed', TRUE, 'role', 'sales'),
+      NOW(),
+      NOW()
+    )
+    RETURNING id INTO v_sales_id;
+  END IF;
+
+  SELECT id INTO v_develop_id FROM auth.users WHERE email = 'develop@nexa.test';
+  IF v_develop_id IS NULL THEN
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password,
+      email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+      created_at, updated_at
+    )
+    VALUES (
+      v_instance_id,
+      gen_random_uuid(),
+      'authenticated',
+      'authenticated',
+      'develop@nexa.test',
+      crypt('develop', gen_salt('bf')),
+      NOW(),
+      jsonb_build_object('provider', 'email', 'providers', to_jsonb(ARRAY['email'])),
+      jsonb_build_object('seed', TRUE, 'role', 'develop'),
+      NOW(),
+      NOW()
+    )
+    RETURNING id INTO v_develop_id;
+  END IF;
+
+  -- Ensure app_users align with the auth users.
+  INSERT INTO app_users (cuid, auth_user_id, email, status)
+  VALUES
+    ('cuid_manager_001', v_manager_id, 'manager@nexa.test', 'active'),
+    ('cuid_sales_001', v_sales_id, 'sales@nexa.test', 'active'),
+    ('cuid_develop_001', v_develop_id, 'develop@nexa.test', 'active')
+  ON CONFLICT (cuid) DO UPDATE
+  SET
+    auth_user_id = EXCLUDED.auth_user_id,
+    email = EXCLUDED.email,
+    status = EXCLUDED.status,
+    updated_at = NOW();
+
+  -- Enrich profile metadata.
+  INSERT INTO user_infos (
+    user_cuid, username, full_name, department,
+    phone_number, job_title, metadata
+  )
+  VALUES
+    ('cuid_manager_001', 'manager', 'Manager One', 'Operations', '010-1000-2000', 'General Manager', jsonb_build_object('role', 'manager')),
+    ('cuid_sales_001', 'sales', 'Sales One', 'Sales', '010-2000-3000', 'Account Executive', jsonb_build_object('role', 'sales')),
+    ('cuid_develop_001', 'develop', 'Develop One', 'Engineering', '010-3000-4000', 'Software Developer', jsonb_build_object('role', 'develop'))
+  ON CONFLICT (user_cuid) DO UPDATE
+  SET
+    username = EXCLUDED.username,
+    full_name = EXCLUDED.full_name,
+    department = EXCLUDED.department,
+    phone_number = EXCLUDED.phone_number,
+    job_title = EXCLUDED.job_title,
+    metadata = EXCLUDED.metadata,
+    updated_at = NOW();
+
+  -- Attach role assignments.
+  INSERT INTO user_roles (user_id, user_cuid, role_code)
+  VALUES
+    (v_manager_id, 'cuid_manager_001', 'manager'),
+    (v_sales_id, 'cuid_sales_001', 'sales'),
+    (v_develop_id, 'cuid_develop_001', 'develop')
+  ON CONFLICT (user_id, role_code) DO UPDATE
+  SET
+    user_cuid = EXCLUDED.user_cuid,
+    updated_at = NOW();
+END $$;
 
 
 -- 8.a ORGANIZATION DIRECTORY TABLES
