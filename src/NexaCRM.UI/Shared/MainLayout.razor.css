@@ -9,7 +9,7 @@
        rely on this custom property never compute 'undefined' and accidentally
        overlap the fixed navigation rail. This value mirrors the default used
        in the app stylesheet but lives here as a defensive fallback. */
-    --sidebar-width: min(90vw, 320px);
+    --sidebar-width: min(90vw, 336px);
     --app-shell-surface-padding-top: 0.5rem; /* reduced top padding to better align with nav rail */
 }
 
@@ -246,8 +246,8 @@
    these rules only apply when a fixed .nav-rail exists earlier in the DOM.
    They also handle the collapsed rail and explicit mobile shell state. */
 .nav-rail ~ .app-shell__content {
-    margin-left: calc(var(--sidebar-width, 320px) + 6px) !important;
-    max-width: calc(100% - (var(--sidebar-width, 320px) + 6px)) !important;
+    margin-left: calc(var(--sidebar-width, 336px) + 6px) !important;
+    max-width: calc(100% - (var(--sidebar-width, 336px) + 6px)) !important;
     box-sizing: border-box;
 }
 
@@ -413,6 +413,6 @@
 @media (min-width: 768px) {
     .app-shell__surface {
         /* even smaller gutter between sidebar and surface to use more horizontal space */
-        margin-left: calc(var(--sidebar-width, 320px) + 6px) !important;
+        margin-left: calc(var(--sidebar-width, 336px) + 6px) !important;
     }
 }

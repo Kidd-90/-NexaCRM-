@@ -282,7 +282,7 @@ a:hover, .btn-link:hover {
 
 /* Navigation styles - 반응형 디자인 */
 .page {
-    --sidebar-width: min(90vw, 320px);
+    --sidebar-width: min(90vw, 336px);
     min-height: 100vh;
     transition: margin-left 0.3s ease-in-out;
     /* 기본적으로 전체 화면 사용 */
@@ -784,7 +784,7 @@ a:hover, .btn-link:hover {
 /* Desktop & tablet navigation layout */
 @media (min-width: 768px) {
     .page {
-        --sidebar-width: clamp(260px, 24vw, 320px);
+        --sidebar-width: clamp(260px, 24vw, 336px);
     }
 
     /* Offset the main document content by the fixed navigation rail width on
