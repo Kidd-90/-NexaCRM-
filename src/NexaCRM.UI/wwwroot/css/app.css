@@ -1,5 +1,35 @@
+/* Typography */
+@font-face {
+    font-family: 'Pretendard Variable';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.woff2') format('woff2-variations');
+}
+
 /* CSS Custom Properties for Theme Management */
 :root {
+    /* Typography tokens */
+    --font-family-sans: 'Pretendard Variable', 'Pretendard', 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                        'Apple SD Gothic Neo', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+    --font-family-heading: var(--font-family-sans);
+    --font-family-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.375rem;
+    --font-size-2xl: clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem);
+    --font-size-3xl: clamp(2.25rem, 1.8rem + 2.2vw, 3.125rem);
+    --body-line-height: 1.6;
+    --heading-line-height-tight: 1.2;
+    --heading-letter-spacing: -0.02em;
+    --body-letter-spacing: -0.01em;
+
     /* Design system colors */
     --color-primary: #2153C8;
     --color-secondary: #EEF2FF;
@@ -54,11 +84,18 @@
 
 /* Global typography: Prefer Pretendard Variable with robust fallbacks */
 html, body, button, input, select, textarea {
-    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-                 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', Arial,
-                 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+    font-family: var(--font-family-sans);
+    font-weight: var(--font-weight-regular);
     font-variant-numeric: tabular-nums; /* align dashboard numbers */
     font-optical-sizing: auto;
+    font-synthesis: none;
+    letter-spacing: var(--body-letter-spacing);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+code, pre, kbd, samp {
+    font-family: var(--font-family-mono);
 }
 
 /* Dark Theme Support */
@@ -132,7 +169,10 @@ html, body, button, input, select, textarea {
 }
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--body-line-height);
+    letter-spacing: var(--body-letter-spacing);
     margin: 0;
     padding: 0;
     width: 100%;
@@ -144,6 +184,40 @@ html, body {
     background-attachment: fixed;
     color: var(--text-primary);
     transition: background-color var(--transition-normal), color var(--transition-normal), background-image var(--transition-slow);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--heading-line-height-tight);
+    letter-spacing: var(--heading-letter-spacing);
+    color: var(--text-primary);
+    margin-top: 0;
+}
+
+h1 {
+    font-size: var(--font-size-3xl);
+}
+
+h2 {
+    font-size: var(--font-size-2xl);
+}
+
+h3 {
+    font-size: var(--font-size-xl);
+}
+
+h4 {
+    font-size: var(--font-size-lg);
+}
+
+h5 {
+    font-size: var(--font-size-base);
+}
+
+h6 {
+    font-size: var(--font-size-sm);
+    letter-spacing: 0;
 }
 
 /* Force clean white background on desktop/tablet */
