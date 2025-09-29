@@ -1,3 +1,4 @@
+@using System
 @using System.Linq
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
@@ -11,46 +12,93 @@
 
 <div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation" aria-label="@Localizer["MainNavigation"]">
     <div class="nav-rail__icons" role="tablist" aria-orientation="vertical">
-        <!-- Top home button: navigates home (icon-only) -->
-        <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home" aria-label="Home">
-            <i class="bi bi-house-door-fill" aria-hidden="true"></i>
-            <span class="visually-hidden">Home</span>
-        </NavLink>
+        <div class="nav-rail__layer">
+            <div class="nav-rail__layer-sheen" aria-hidden="true"></div>
+            <div class="nav-rail__layer-content">
+                @{
+                    var splitIndex = GetClusterSplitIndex(groups.Count);
+                }
 
-        @for (var index = 0; index < groups.Count; index++)
-        {
-            var group = groups[index];
-            var i = index; // capture loop variable to avoid closure capturing the mutated 'index'
-        <button type="button"
-            class="rail-icon @(i == activeGroupIndex ? "active" : null)"
-            role="tab"
-            title="@group.DisplayName"
-            aria-selected="@(i == activeGroupIndex)"
-            @onclick="async () => await SetActive(i)">
-                <i class="@group.IconCss" aria-hidden="true"></i>
-            </button>
-        }
+                <div class="nav-rail__top">
+                    <!-- Top home button: navigates home (icon-only) -->
+                    <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home" aria-label="Home">
+                        <i class="bi bi-house-door-fill" aria-hidden="true"></i>
+                        <span class="visually-hidden">Home</span>
+                    </NavLink>
+                </div>
 
-        <div class="rail-spacer" aria-hidden="true"></div>
+                <div class="nav-rail__clusters" role="presentation">
+                    @if (splitIndex > 0)
+                    {
+                        <div class="nav-rail__stack nav-rail__stack--top" role="presentation">
+                            @for (var index = 0; index < splitIndex; index++)
+                            {
+                                var group = groups[index];
+                                var i = index; // capture loop variable to avoid closure capturing the mutated 'index'
+                                <button type="button"
+                                        class="rail-icon @(i == activeGroupIndex ? "active" : null)"
+                                        role="tab"
+                                        title="@group.DisplayName"
+                                        aria-selected="@(i == activeGroupIndex)"
+                                        @onclick="async () => await SetActive(i)">
+                                    <i class="@group.IconCss" aria-hidden="true"></i>
+                                </button>
+                            }
+                        </div>
+                    }
 
-        <!-- Bottom area: notifications, help, settings + profile/login -->
-        <div class="nav-rail__bottom">
-            <NavLink class="rail-icon" href="/settings" title="설정">
-                <i class="bi bi-gear" aria-hidden="true"></i>
-            </NavLink>
+                    @if (splitIndex > 0 && splitIndex < groups.Count)
+                    {
+                        <div class="nav-rail__divider" aria-hidden="true"></div>
+                    }
 
-            <NavLink class="rail-icon rail-icon--profile" href="/account" title="내 계정">
-                <i class="bi bi-person-circle" aria-hidden="true"></i>
-            </NavLink>
+                    @if (splitIndex < groups.Count)
+                    {
+                        <div class="nav-rail__stack nav-rail__stack--bottom" role="presentation">
+                            @for (var index = splitIndex; index < groups.Count; index++)
+                            {
+                                var group = groups[index];
+                                var i = index; // capture loop variable to avoid closure capturing the mutated 'index'
+                                <button type="button"
+                                        class="rail-icon @(i == activeGroupIndex ? "active" : null)"
+                                        role="tab"
+                                        title="@group.DisplayName"
+                                        aria-selected="@(i == activeGroupIndex)"
+                                        @onclick="async () => await SetActive(i)">
+                                    <i class="@group.IconCss" aria-hidden="true"></i>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
 
-            <NavLink class="rail-icon" href="/help" title="도움말">
-                <i class="bi bi-question-circle" aria-hidden="true"></i>
-            </NavLink>
+                <div class="rail-spacer" aria-hidden="true"></div>
 
-            <NavLink class="rail-logo--company" href="/" title="회사 로고">
-                <!-- Use framework static web asset path as a fallback -->
-                <img src="_content/NexaCRM.UI/images/logo-36.svg" alt="회사 로고" onerror="this.style.display='none'" />
-            </NavLink>
+                <!-- Bottom area: notifications, help, settings + profile/login -->
+                <div class="nav-rail__bottom">
+                    <NavLink class="rail-icon" href="/settings" title="설정">
+                        <i class="bi bi-gear" aria-hidden="true"></i>
+                    </NavLink>
+
+                    <NavLink class="rail-icon rail-icon--profile" href="/account" title="내 계정">
+                        <i class="bi bi-person-circle" aria-hidden="true"></i>
+                    </NavLink>
+
+                    <NavLink class="rail-icon" href="/help" title="도움말">
+                        <i class="bi bi-question-circle" aria-hidden="true"></i>
+                    </NavLink>
+
+                    <NavLink class="rail-logo--company" href="/" title="회사 로고">
+                        <!-- Use framework static web asset path as a fallback -->
+                        <img src="_content/NexaCRM.UI/images/logo-36.svg" alt="회사 로고" onerror="this.style.display='none'" />
+                    </NavLink>
+                </div>
+            </div>
+
+            <div class="nav-rail__release" aria-hidden="true">
+                <span class="nav-rail__release-label">Release 2025 · W1</span>
+                <span class="nav-rail__status">Stable</span>
+            </div>
         </div>
     </div>
 
@@ -183,6 +231,26 @@
         }
 
         return href.StartsWith('/') ? href : $"/{href}";
+    }
+
+    private static int GetClusterSplitIndex(int totalGroups)
+    {
+        if (totalGroups <= 0)
+        {
+            return 0;
+        }
+
+        if (totalGroups == 1)
+        {
+            return 1;
+        }
+
+        if (totalGroups <= 4)
+        {
+            return Math.Max(1, totalGroups - 1);
+        }
+
+        return (int)Math.Ceiling(totalGroups / 2.0);
     }
 
     private async Task SetActive(int index)
