@@ -9,6 +9,12 @@
 - `wwwroot/css/mobile.css`: 모바일 네비게이션, 반응형 브레이크포인트, 터치 상호작용에 특화된 보조 규칙 제공.
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 
+## Typography Tokens
+- `app.css` 상단에서 `Pretendard Variable` 가변 글꼴을 `@font-face`로 선언하고, `--font-family-sans`, `--font-family-heading`, `--font-family-mono` 등
+  전역 타이포그래피 토큰을 제공합니다.
+- `--font-size-xs`부터 `--font-size-3xl`까지의 폰트 크기 토큰과 `--body-line-height`, `--heading-line-height-tight` 변수를 통해 페이지마다 일관된 타이포그래피 스케일을 적용할 수 있습니다.
+- 새로운 컴포넌트를 추가할 때는 `var(--font-family-sans)` 또는 `var(--font-family-heading)`을 사용하고, 필요 시 `--font-weight-*` 토큰으로 굵기를 설정하세요.
+
 ## Usage Guidance
 1. Razor 컴포넌트 또는 레이아웃에서 다음과 같이 정적 자산을 참조합니다.
    ```html
