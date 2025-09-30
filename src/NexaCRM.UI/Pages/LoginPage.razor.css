@@ -1,15 +1,25 @@
 .login-container {
-    --brand-gradient-start: #7c3aed;
-    --brand-gradient-end: #9333ea;
-    --surface-color: rgba(255, 255, 255, 0.95);
-    --card-shadow: 0 24px 60px rgba(123, 97, 255, 0.18);
-    --text-color: #1f2937;
-    --muted-color: #6b7280;
-    --input-border: rgba(148, 163, 184, 0.4);
-    --input-bg: rgba(248, 250, 255, 0.85);
-    --divider-color: rgba(148, 163, 184, 0.45);
+    --brand-gradient-start: var(--neutral-gray-800);
+    --brand-gradient-end: var(--neutral-black);
+    --surface-color: color-mix(in srgb, var(--neutral-white) 94%, transparent);
+    --surface-muted: color-mix(in srgb, var(--neutral-gray-100) 70%, var(--neutral-white) 30%);
+    --card-shadow: var(--shadow-soft-layer);
+    --text-color: var(--text-primary);
+    --muted-color: var(--text-secondary);
+    --input-border: color-mix(in srgb, var(--neutral-gray-100) 62%, transparent);
+    --input-bg: color-mix(in srgb, var(--neutral-white) 92%, transparent);
+    --input-placeholder: color-mix(in srgb, var(--neutral-gray-300) 72%, var(--neutral-gray-100) 28%);
+    --input-focus-border: color-mix(in srgb, var(--neutral-gray-600) 68%, var(--neutral-gray-800) 32%);
+    --divider-color: color-mix(in srgb, var(--neutral-gray-100) 58%, transparent);
+    --focus-ring-color: var(--focus-ring);
+    --link-color: color-mix(in srgb, var(--neutral-gray-800) 80%, var(--neutral-black) 20%);
+    --button-gradient: var(--gradient-deep);
+    --button-gradient-hover: linear-gradient(160deg,
+            color-mix(in srgb, var(--neutral-gray-800) 92%, var(--neutral-black) 8%) 0%,
+            var(--neutral-black) 100%);
+    --button-shadow: var(--shadow-deep-layer);
     font-family: var(--font-family-sans);
-    background: linear-gradient(180deg, #ffffff 0%, #f1efff 100%);
+    background: var(--app-background-gradient);
     color: var(--text-color);
     min-height: 100vh;
     padding: 48px 20px;
@@ -26,13 +36,16 @@
     width: 100%;
     max-width: 380px;
     background: var(--surface-color);
+    color: var(--text-color);
     border-radius: 28px;
+    border: 1px solid var(--frosted-border);
     box-shadow: var(--card-shadow);
     padding: 36px 28px 40px;
     display: flex;
     flex-direction: column;
     gap: 28px;
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 .brand-section {
@@ -104,13 +117,13 @@
 }
 
 .login-input::placeholder {
-    color: rgba(107, 114, 128, 0.78);
+    color: var(--input-placeholder);
 }
 
 .login-input:focus {
-    border-color: var(--brand-gradient-start);
-    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
-    background: rgba(255, 255, 255, 0.98);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 4px var(--focus-ring-color);
+    background: color-mix(in srgb, var(--neutral-white) 98%, transparent);
 }
 
 .password-toggle {
@@ -120,18 +133,20 @@
     transform: translateY(-50%);
     border: none;
     background: transparent;
-    color: var(--brand-gradient-start);
+    color: var(--link-color);
     font-weight: 700;
     font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 4px 0;
+    padding: 4px 6px;
+    border-radius: 999px;
 }
 
 .password-toggle:focus-visible {
-    color: var(--brand-gradient-end);
+    color: var(--link-color);
     outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
 .remember-me {
@@ -146,7 +161,7 @@
 .remember-checkbox {
     width: 20px;
     height: 20px;
-    accent-color: #7c3aed;
+    accent-color: var(--neutral-gray-800);
     border-radius: 6px;
 }
 
@@ -171,22 +186,22 @@
     padding: 16px;
     font-size: 1.05rem;
     font-weight: 700;
-    color: #ffffff;
-    background: linear-gradient(120deg, var(--brand-gradient-start), var(--brand-gradient-end));
-    box-shadow: 0 16px 32px rgba(124, 58, 237, 0.25);
+    color: var(--neutral-white);
+    background: var(--button-gradient);
+    box-shadow: var(--button-shadow);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .login-button:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 20px 36px rgba(124, 58, 237, 0.3);
-    filter: brightness(1.03);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+    background: var(--button-gradient-hover);
 }
 
 .login-button:focus-visible {
-    outline: 3px solid rgba(124, 58, 237, 0.3);
-    outline-offset: 3px;
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
 .login-button:disabled {
@@ -218,12 +233,13 @@
 }
 
 .login-link {
-    color: var(--brand-gradient-start);
+    color: var(--link-color);
     font-weight: 600;
     text-decoration: none;
 }
 
 .login-link:hover {
+    color: var(--neutral-black);
     text-decoration: underline;
 }
 
@@ -267,16 +283,16 @@
     align-items: center;
     gap: 12px;
     border-radius: 22px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--frosted-border);
     padding: 16px 12px;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 16px 28px rgba(148, 163, 184, 0.18);
-    color: var(--text-color);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-soft-layer);
+    color: var(--muted-color);
     font-weight: 600;
     font-size: 0.82rem;
     text-align: center;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .social-login-btn:disabled {
@@ -292,12 +308,13 @@
 
 .social-login-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 32px rgba(124, 58, 237, 0.22);
+    background: color-mix(in srgb, var(--surface-muted) 80%, var(--neutral-white) 20%);
+    box-shadow: var(--shadow-deep-layer);
 }
 
 .social-login-btn:focus-visible {
-    outline: 3px solid rgba(124, 58, 237, 0.28);
-    outline-offset: 3px;
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
 .social-icon {
@@ -448,13 +465,23 @@
 
 [data-theme="dark"] .login-container {
     background: radial-gradient(circle at top, #1b1830 0%, #0c091b 100%);
+    --brand-gradient-start: rgba(226, 232, 240, 0.92);
+    --brand-gradient-end: rgba(148, 163, 184, 0.88);
     --surface-color: rgba(24, 22, 35, 0.95);
+    --surface-muted: rgba(17, 24, 39, 0.72);
     --card-shadow: 0 24px 60px rgba(5, 5, 20, 0.6);
     --text-color: #f3f4f6;
     --muted-color: rgba(226, 232, 240, 0.78);
     --input-border: rgba(148, 163, 184, 0.38);
     --input-bg: rgba(17, 24, 39, 0.7);
+    --input-placeholder: rgba(203, 213, 225, 0.7);
+    --input-focus-border: rgba(96, 165, 250, 0.65);
     --divider-color: rgba(148, 163, 184, 0.3);
+    --focus-ring-color: rgba(59, 130, 246, 0.35);
+    --link-color: rgba(226, 232, 240, 0.92);
+    --button-gradient: linear-gradient(160deg, rgba(96, 165, 250, 0.85) 0%, rgba(37, 99, 235, 0.95) 100%);
+    --button-gradient-hover: linear-gradient(160deg, rgba(147, 197, 253, 0.9) 0%, rgba(29, 78, 216, 1) 100%);
+    --button-shadow: 0 24px 44px rgba(15, 23, 42, 0.55);
 }
 
 [data-theme="dark"] .login-container .login-input::placeholder {
@@ -462,12 +489,12 @@
 }
 
 [data-theme="dark"] .login-container .login-button {
-    box-shadow: 0 20px 40px rgba(124, 58, 237, 0.4);
+    box-shadow: var(--button-shadow);
 }
 
 [data-theme="dark"] .login-container .social-login-btn {
-    background: rgba(17, 24, 39, 0.72);
-    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.4);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-deep-layer);
 }
 
 [data-theme="dark"] .login-container .login-error-message {

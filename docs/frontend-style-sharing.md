@@ -15,6 +15,51 @@
 - `--font-size-xs`부터 `--font-size-3xl`까지의 폰트 크기 토큰과 `--body-line-height`, `--heading-line-height-tight` 변수를 통해 페이지마다 일관된 타이포그래피 스케일을 적용할 수 있습니다.
 - 새로운 컴포넌트를 추가할 때는 `var(--font-family-sans)` 또는 `var(--font-family-heading)`을 사용하고, 필요 시 `--font-weight-*` 토큰으로 굵기를 설정하세요.
 
+## White Theme Neutral Palette
+- `app.css`는 화이트 테마 전용 뉴트럴 팔레트를 커스텀 프로퍼티로 노출합니다. 아래 표는 각 색상과 추천 사용처입니다.
+
+| 구분 | HEX 코드 | 활용 예시 | 효과 응용 |
+| --- | --- | --- | --- |
+| 화이트 | `#FFFFFF` | 기본 텍스트, 대비 | 글래스모피즘 배경, Soft Glow |
+| 라이트 그레이 | `#E0E0E0` | 배경, 섹션 구분 | 그라디언트 시작점, 얇은 보더 |
+| 미드 그레이 | `#B0B0B0` | 서브텍스트, 보조 UI | Overlay 톤, 중간 단계 그라디언트 |
+| 다크 그레이 | `#4A4A4A` | 사이드바, 아이콘 | 그라디언트 중간톤, Shadow 배경 |
+| 딥 그레이 | `#2E2E2E` | 강조 배경, 패널 | 딥 섀도우, 버튼 Hover 배경 |
+| 블랙 | `#000000` | 텍스트, 아이콘 | 딥 그라디언트 끝점, 강한 그림자 |
+
+- 주요 그라디언트와 그림자, 오버레이 토큰은 다음과 같이 사용할 수 있습니다.
+  - `--gradient-light`: `linear-gradient(180deg, #FFFFFF 0%, #E0E0E0 100%)`
+  - `--gradient-medium`: `linear-gradient(145deg, #B0B0B0 0%, #4A4A4A 100%)`
+  - `--gradient-deep`: `linear-gradient(160deg, #2E2E2E 0%, #000000 100%)`
+  - `--shadow-soft-layer`: `0px 2px 6px rgba(0, 0, 0, 0.15)`
+  - `--shadow-deep-layer`: `0px 4px 12px rgba(0, 0, 0, 0.35)`
+  - `--overlay-glass-white`: `rgba(255, 255, 255, 0.1)` (blur와 함께 사용)
+  - `--overlay-black`: `rgba(0, 0, 0, 0.5)`
+  - `--glow-white`: `0px 0px 8px rgba(255, 255, 255, 0.8)`
+  - `--glow-dark`: `0px 0px 6px rgba(0, 0, 0, 0.6)`
+
+- 공통 유틸리티 클래스는 다음을 제공합니다.
+  ```html
+  <div class="white-theme white-theme-gradient-light white-theme-border">
+      <div class="white-theme-surface white-theme-glass">
+          <p class="text-glow-white">...</p>
+      </div>
+  </div>
+  ```
+  - `white-theme`, `white-theme-surface`, `white-theme-surface-muted`: 배경/타이포 일관성 유지.
+  - `white-theme-glass`: 글래스모피즘 효과(blur + 반투명 화이트 오버레이).
+  - `white-theme-gradient-*`: 제공된 밝기 단계별 그라디언트 적용.
+  - `shadow-soft`, `shadow-deep`: 지정된 깊이의 박스 섀도우 빠른 적용.
+  - `text-glow-white`, `text-glow-dark`: 텍스트 글로우 효과 프리셋.
+
+> **Tip**: 카드, 헤더, 패널에 `white-theme-glass shadow-soft` 조합을 사용하면 Glassmorphism 기반의 화이트 테마를 쉽게 조합할 수 있습니다.
+
+## Login Experience Refresh
+- `Pages/LoginPage.razor` 컨테이너에 `white-theme`와 `white-theme-gradient-light` 클래스를 부여해 전역 화이트 팔레트의 배경/텍스트 토큰을 그대로 사용합니다.
+- `LoginPage.razor.css`에서는 `--surface-color`, `--surface-muted`, `--input-*`, `--button-gradient` 등 화이트 테마용 커스텀 프로퍼티를 재정의하여 글래스모피즘 카드, 입력 필드, CTA 버튼이 뉴트럴 팔레트에 맞춰 렌더링됩니다.
+- 다크 테마에서도 동일한 컴포넌트 구조를 유지할 수 있도록 `data-theme="dark"` 범위에서 버튼 그라디언트와 포커스 링, 링크 색상을 재조정했습니다.
+- 소셜 로그인 카드와 패스워드 토글과 같은 상호작용 요소는 전역 `--focus-ring` 토큰과 `var(--surface-muted)` 조합을 사용해 접근성과 일관성을 확보했습니다.
+
 ## Usage Guidance
 1. Razor 컴포넌트 또는 레이아웃에서 다음과 같이 정적 자산을 참조합니다.
    ```html
