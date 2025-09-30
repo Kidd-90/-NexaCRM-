@@ -44,32 +44,79 @@
 
 .nav-rail__icons {
     display: grid;
-    grid-template-rows: 3fr 1fr;
-    width: var(--nav-rail-icons-width, 56px);
-    height: calc(100% - 2 * var(--nav-rail-icons-margin, 0.75rem));
-    margin: var(--nav-rail-icons-margin, 0.75rem);
-    padding: 0;
-    border-right: 1px solid #E5E7EB; /* neutral divider */
-    background: transparent; /* removed background color per request */
+     /* Make the top/main area visually larger while preventing it from
+         overflowing the grid. Use a flexible minmax for the main row and
+         min-content for the bottom so the bottom group keeps its natural
+         height and remains visible. This keeps a ~4:1 visual ratio while
+         avoiding overflow that hides the bottom icons. */
+     grid-template-rows: minmax(0, 4fr) min-content;
+     width: var(--nav-rail-icons-width, 56px);
+     /* Fill the full height of the rail so the grid rows (4fr / 1fr)
+         correctly position the bottom area. Use box-sizing so padding
+         is included and avoid subtracting margins from the height. */
+     height: 100%;
+     margin: var(--nav-rail-icons-margin, 0.75rem);
+     padding: 0;
+     /* make room at the bottom so .nav-rail__bottom won't be clipped by
+         the fixed company logo (or device safe-area). The 72px value roughly
+         matches the logo/button height + margin; adjust if your logo is larger. */
+      /* increase reserved bottom space slightly to account for larger logos
+          or comfortable spacing so bottom icons remain visible */
+      padding-bottom: calc(var(--nav-rail-icons-margin, 0.75rem) + 88px + env(safe-area-inset-bottom));
+    background: transparent;
     gap: 0.75rem;
     min-width: var(--nav-rail-icons-width, 56px);
     box-sizing: border-box;
     position: relative;
+    /* Allow the bottom group to be visible even if padding is applied */
+    overflow: visible;
     pointer-events: auto;
     align-content: stretch;
+    margin-left: 12px; /* 아이콘 영역을 더 중앙에 오도록 좌측 여백 추가 */
+    margin-right: 0;
 }
 
 .nav-rail__main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem; /* vertical rhythm between icons */
+    gap: 0.6rem; /* slightly reduced spacing so the main area is a bit more compact */
     overflow-y: auto; /* allow icon stack to scroll independently */
     min-height: 0;
     padding: 0;
-    width: 100%;
+    /* allow the main area to grow/shrink inside the icons grid and keep
+       the bottom area visible: reserve the same bottom spacing used by
+       .nav-rail__icons so the main column can't push the bottom off-screen */
+    flex: 1 1 auto;
+    box-sizing: border-box;
+    /* reduce the maximum height slightly so the bottom boundary remains visible */
+    max-height: calc(100% - (var(--nav-rail-icons-margin, 0.75rem) + 88px + env(safe-area-inset-bottom) + 8px));
+    /* make the main column slightly narrower so the edge/border reads clearly */
+    width: calc(var(--nav-rail-icons-width, 56px) + 8px);
+    padding-bottom: 6px; /* small padding so bottom border isn't flush against content */
+    margin: 0 auto; /* center within the icons column */
+    border-radius: 1rem;
+    border-color: #fff;
+    background: #fff;
+    /* visible separation between main and bottom */
+    border-bottom: 1px solid var(--divider-color, #E5E7EB);
     justify-content: flex-start;
 }
+
+.nav-rail__main-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem; /* tightened spacing to match outer column */
+    padding: 0.25rem 0;
+        /* inner panel uses the logical icon width and has left/right padding (margin) to sit inset */
+        width: var(--nav-rail-icons-width, 56px);
+        margin: 0 6px; /* left/right inset spacing */
+    border-radius: 1rem;
+    border-color: #2E2E2E;
+    background-color: #2E2E2E;;
+}
+
 .rail-debug {
     position: absolute;
     top: 6px;
@@ -96,8 +143,8 @@
     place-items: center;
     border-radius: 12px;
     border: 1px solid transparent; /* transparent by default like notif-button */
-    background: transparent; /* transparent default */
-    color: #6B7280; /* neutral icon */
+    background: #2E2E2E; /* default dark background for icons */
+    color: #F3F4F6; /* light icon color for contrast */
     font-size: 1.1rem;
     transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
     cursor: pointer;
@@ -105,23 +152,30 @@
 }
 
 .rail-icon:hover {
-    /* keep the lavender hover used earlier */
-    background: #E9D5FF;
-    border-color: #D6BBFF;
-    color: #4C1D95; /* lavender-tinted hover color */
+    /* visually prominent gray hover for better contrast on dark rail */
+    background: #4B5563; /* gray-600 */
+    border-color: #6B7280; /* gray-500 border on hover */
+    color: #FFFFFF; /* bright icon color on hover for contrast */
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(76,29,149,0.07);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.18);
 }
 
 .rail-icon:active {
     transform: translateY(0);
-    box-shadow: 0 4px 10px rgba(17,24,39,0.06);
+    box-shadow: 0 4px 10px rgba(2,6,23,0.12);
 }
 
 .rail-icon.active {
     border-color: #D1D5DB;
     color: #111827; /* active = near-black */
     background: #E5E7EB; /* subtle neutral highlight */
+}
+
+/* Make active icons visually larger without changing layout flow */
+.rail-icon.active,
+.rail-icon.active:hover {
+    transform: translateY(-1px) scale(1.12);
+    box-shadow: 0 10px 26px rgba(2,6,23,0.18);
 }
 
 /* Slight hover feedback on the icon glyph */
@@ -160,7 +214,24 @@
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem; /* increase spacing between bottom icons */
+    /* keep a top padding but ensure the bottom group sits above the fixed company logo */
     padding: 0.25rem 0 0.75rem;
+     /* keep the bottom group visually pinned within the icons column so
+         it remains visible even if the main area needs to scroll */
+     position: sticky;
+     /* nudge the sticky anchor lower so settings icon sits further down */
+     bottom: calc(6px + env(safe-area-inset-bottom));
+     z-index: 10008; /* sit above the fixed company logo (which is 10005) */
+    /* ensure bottom group sits at the end of the icons grid and is clickable */
+    align-self: end;
+    /* add modest bottom offset so the icons sit comfortably above the fixed logo */
+    /* increase bottom padding so clickable targets clear the fixed logo */
+    padding-bottom: calc(36px + env(safe-area-inset-bottom));
+    /* add a subtle top border so the main/bottom boundary is visually obvious */
+    border-top: 1px solid var(--divider-color, #E5E7EB);
+    border-radius: 1rem;
+    border-color: #fff;
+    background: #fff;
     min-height: 0;
     width: 100%;
 }
@@ -169,12 +240,12 @@
 .rail-logo--company {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     /* Keep the company logo fixed near the bottom of the rail but avoid
        extremely high z-index values or debug outlines in production. */
     position: fixed;
-    left: calc(var(--nav-rail-icons-margin, 0.75rem) + var(--nav-rail-icons-width, 56px) / 2 - 18px);
+    left: calc(var(--nav-rail-icons-margin, 0.75rem) + var(--nav-rail-icons-width, 56px) / 2 - 22px);
     bottom: 16px;
     z-index: 10005;
     border-radius: 8px;
@@ -191,9 +262,9 @@
 .rail-logo {
     display: grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     border: 1px solid #E5E7EB;
     background: #FFFFFF;
     overflow: hidden;
@@ -390,6 +461,46 @@
     color: #111827; /* solid title */
 }
 
+/* Top user summary inside the panel */
+.panel-user {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 0.6rem 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--divider-color, #E5E7EB);
+}
+.panel-user__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #F3F4F6, #E5E7EB);
+    color: #374151;
+    font-weight: 700;
+}
+.panel-user__info {
+    display: flex;
+    flex-direction: column;
+}
+.panel-user__name {
+    font-weight: 700;
+    color: #111827;
+    font-size: 0.95rem;
+}
+.panel-user__email {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+/* Bottom area inside the panel for per-page content */
+.panel-footer {
+    margin-top: 0.6rem;
+    padding: 0.6rem;
+    border-top: 1px solid var(--divider-color, #E5E7EB);
+    background: transparent;
+}
+
 .panel-action {
     display: inline-flex;
     align-items: center;
@@ -443,6 +554,65 @@
     flex-direction: column;
     gap: 0.4rem;
     padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+}
+
+/* Badge shown along the rail with vertical text and a subtle engraved top border */
+.nav-rail__badge {
+    display: flex;
+    align-items: center; /* center vertically */
+    justify-content: center; /* center horizontally */
+    width: 100%;
+    padding: 4px 0; /* reduce top padding so badge centers with inner text */
+    box-sizing: border-box;
+    position: relative; /* for positioned divider between panel and text */
+}
+
+.nav-rail__badge-line {
+    display: block;
+    width: 100%;
+    height: 0; /* visual divider handled by top-border on text */
+}
+
+.nav-rail__badge-text {
+    display: inline-block;
+    writing-mode: vertical-rl; /* render text vertically top-to-bottom */
+    text-orientation: mixed;
+    transform: rotate(180deg); /* flip so reading direction is top-to-bottom left-to-right */
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #9CA3AF; /* muted gray for badge text */
+    /* reduce bottom padding so the visual divider sits between the panel and the middle of the text */
+    padding: 6px 6px 2px 6px;
+    /* switch to bottom border per request; thicker for stronger separation */
+    border-bottom: 2px solid rgba(156,163,175,0.20);
+    align-self: center;
+    margin: 0 auto;
+}
+
+/* Footer variant: slightly smaller, lighter text */
+.nav-rail__badge--footer .nav-rail__badge-text {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    padding: 4px 6px;
+    border-bottom-color: rgba(156,163,175,0.12);
+}
+
+/* Precise divider placed between the bottom of the inner panel and the badge text's middle.
+   This gives finer control over vertical placement without relying solely on the text border. */
+.nav-rail__badge::after {
+    content: "";
+    position: absolute;
+    /* center the divider within the badge area so it aligns with the inner panel */
+    left: 50%;
+    transform: translateX(-50%);
+    /* match the inner panel width exactly so the divider lines up with .nav-rail__main-inner */
+    width: var(--nav-rail-icons-width, 56px);
+    height: 2px; /* thicker divider per request */
+    background: rgba(156,163,175,0.20);
+    /* nudge the line slightly lower than center so it visually sits between
+       the bottom edge of the inner panel and roughly the middle of the vertical text */
+    top: calc(50% + 8px);
+    pointer-events: none;
 }
 
 .rail-panel-item {

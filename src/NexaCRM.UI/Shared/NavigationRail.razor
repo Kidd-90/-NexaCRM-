@@ -1,4 +1,5 @@
 @using System.Linq
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -63,6 +64,18 @@
     </div>
 
     <div class="@($"nav-rail__panel{(panelVisible ? "" : " collapsed")}")" role="tabpanel" aria-hidden="@(panelVisible ? "false" : "true")">
+        <!-- Top: user summary (avatar, name, email) -->
+        <div class="panel-user">
+            <div class="panel-user__avatar" aria-hidden="true">@userInitials</div>
+            <div class="panel-user__info">
+                <div class="panel-user__name">@userDisplayName</div>
+                @if (!string.IsNullOrEmpty(userEmail))
+                {
+                    <div class="panel-user__email">@userEmail</div>
+                }
+            </div>
+        </div>
+
         @if (groups.Count == 0)
         {
             <div class="panel-header">
@@ -72,7 +85,7 @@
         }
         else
         {
-            var group = groups[activeGroupIndex];
+            NavigationGroupViewModel? group = groups[activeGroupIndex];
             <div class="panel-header">
                 <div class="panel-title">@group.DisplayName</div>
             </div>
@@ -88,6 +101,14 @@
                 }
             </nav>
         }
+
+        <!-- Bottom: per-page injected area -->
+        @if (PanelFooter != null)
+        {
+            <div class="panel-footer">
+                @PanelFooter
+            </div>
+        }
     </div>
 </div>
 
@@ -96,12 +117,52 @@
     private int activeGroupIndex;
     private bool panelVisible = true;
     private string[] userRoles = Array.Empty<string>();
+    // user summary fields for top of panel
+    private string userDisplayName = "";
+    private string userEmail = "";
+    private string userInitials = "";
+
+    [Parameter]
+    public RenderFragment? PanelFooter { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         await LoadRolesAsync();
         BuildGroups();
+        await LoadUserSummaryAsync();
+    }
+
+    private async Task LoadUserSummaryAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                userDisplayName = user.FindFirst(ClaimTypes.Name)?.Value ?? user.Identity.Name ?? "User";
+                userEmail = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+                // derive initials from display name
+                var parts = (userDisplayName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0)
+                {
+                    userInitials = "U";
+                }
+                else if (parts.Length == 1)
+                {
+                    userInitials = parts[0].Substring(0, 1).ToUpperInvariant();
+                }
+                else
+                {
+                    userInitials = (parts[0].Substring(0,1) + parts[^1].Substring(0,1)).ToUpperInvariant();
+                }
+            }
+        }
+        catch
+        {
+            // keep defaults
+        }
     }
 
     private async Task LoadRolesAsync()
