@@ -33,7 +33,7 @@
     /* Design system colors */
     --color-primary: #2153C8;
     --color-secondary: #EEF2FF;
-    --color-background: #F6F8FF;
+    --color-background: #E0E0E0;
     --color-dark-bg: #1a1e3c;
 
     /* Light Theme Colors */
@@ -177,7 +177,7 @@ html, body {
     padding: 0;
     width: 100%;
     overflow-x: hidden; /* 가로 스크롤 방지 */
-    background-color: var(--background-color);
+    background-color: #E0E0E0;
     background-image: var(--app-background-gradient);
     background-repeat: no-repeat;
     background-size: cover;

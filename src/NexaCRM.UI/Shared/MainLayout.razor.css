@@ -3,6 +3,10 @@
     background: var(--surface-gradient, var(--surface-color));
 }
 
+html:not([data-theme="dark"]) .app-shell--desktop {
+    background: #E5E7EB;
+}
+
 /* Global spacing overrides for shell alignment with the nav rail */
 :root {
     /* Provide a safe default for sidebar width so fixed-position elements that

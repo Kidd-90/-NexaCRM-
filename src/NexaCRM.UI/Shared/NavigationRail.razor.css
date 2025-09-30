@@ -2,7 +2,7 @@
 .nav-rail {
     display: grid;
     /* icons column + panel (panel made slightly narrower for visual balance) */
-    grid-template-columns: 56px minmax(180px, 1fr);
+    grid-template-columns: calc(var(--nav-rail-icons-width, 56px) + 2 * var(--nav-rail-icons-margin, 0.75rem)) minmax(180px, 1fr);
     gap: 0;
     /* Fix the rail to the left side of the viewport so it doesn't move on page scroll */
      position: fixed;
@@ -17,6 +17,7 @@
          contributing to horizontal overflow. */
     width: var(--sidebar-width, 320px);
     --nav-rail-icons-width: 56px; /* logical width of the icons column - used for centering fixed logo */
+    --nav-rail-icons-margin: 0.75rem; /* consistent breathing room around the icon rail */
      /* enforce box-sizing and prevent the rail from causing document overflow */
      box-sizing: border-box;
      overflow: hidden; /* Prevent internal content from expanding beyond the rail */
@@ -37,30 +38,38 @@
 /* When collapsed, constrain the rail to a narrow column so the app content
    is not obscured. The panel (second column) will be effectively hidden. */
 .nav-rail.collapsed {
-    grid-template-columns: 56px 0px !important;
-    width: 56px !important;
+    grid-template-columns: calc(var(--nav-rail-icons-width, 56px) + 2 * var(--nav-rail-icons-margin, 0.75rem)) 0px !important;
+    width: calc(var(--nav-rail-icons-width, 56px) + 2 * var(--nav-rail-icons-margin, 0.75rem)) !important;
 }
 
 .nav-rail__icons {
+    display: grid;
+    grid-template-rows: 3fr 1fr;
+    width: var(--nav-rail-icons-width, 56px);
+    height: calc(100% - 2 * var(--nav-rail-icons-margin, 0.75rem));
+    margin: var(--nav-rail-icons-margin, 0.75rem);
+    padding: 0;
+    border-right: 1px solid #E5E7EB; /* neutral divider */
+    background: transparent; /* removed background color per request */
+    gap: 0.75rem;
+    min-width: var(--nav-rail-icons-width, 56px);
+    box-sizing: border-box;
+    position: relative;
+    pointer-events: auto;
+    align-content: stretch;
+}
+
+.nav-rail__main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.5rem 0.5rem;
-    border-right: 1px solid #E5E7EB; /* neutral divider */
-    background: transparent; /* removed background color per request */
-    gap: 0.5rem; /* increased vertical gap between icons */
-    height: 100%; /* stretch to the fixed container */
-    overflow-y: auto; /* allow icon column to scroll independently if needed */
-    padding-bottom: 36px; /* reduced reserved bottom so bottom controls sit lower */
+    gap: 0.5rem; /* vertical rhythm between icons */
+    overflow-y: auto; /* allow icon stack to scroll independently */
+    min-height: 0;
+    padding: 0;
+    width: 100%;
+    justify-content: flex-start;
 }
-
-.nav-rail__icons {
-    min-width: 56px; /* icons column must never grow to force overflow */
-    box-sizing: border-box;
-}
-
-.nav-rail__icons { position: relative; }
-
 .rail-debug {
     position: absolute;
     top: 6px;
@@ -76,12 +85,6 @@
     pointer-events: none;
     z-index: 10002;
     font-size: 11px;
-}
-
-/* Explicitly allow pointer events on the icon column so clicks reach the buttons
-   even if an overlay exists elsewhere. */
-.nav-rail__icons {
-    pointer-events: auto;
 }
 
 .rail-icon {
@@ -151,19 +154,15 @@
     pointer-events: none;
 }
 
-.rail-spacer {
-    flex: 1 1 auto;
-}
-
 .nav-rail__bottom {
-    margin-top: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     gap: 0.5rem; /* increase spacing between bottom icons */
-    padding-bottom: 0.75rem;
-    margin-bottom: 12px; /* small offset so the bottom group sits visually lower */
-    order: 9998; /* keep bottom controls above the logo which will be last */
+    padding: 0.25rem 0 0.75rem;
+    min-height: 0;
+    width: 100%;
 }
 
 /* Company logo button at the very bottom of the rail */
@@ -175,7 +174,7 @@
     /* Keep the company logo fixed near the bottom of the rail but avoid
        extremely high z-index values or debug outlines in production. */
     position: fixed;
-    left: calc(var(--nav-rail-icons-width, 56px) / 2 - 18px);
+    left: calc(var(--nav-rail-icons-margin, 0.75rem) + var(--nav-rail-icons-width, 56px) / 2 - 18px);
     bottom: 16px;
     z-index: 10005;
     border-radius: 8px;
@@ -352,12 +351,12 @@
 /* Keep internal scrolling behavior (so the rail doesn't force body/document scrolling)
    but hide the native scrollbars so the rail visually has no scroll UI. This
    preserves wheel/touch scrolling while preventing visible scrollbars. */
-.nav-rail__icons,
+.nav-rail__main,
 .nav-rail__panel {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
-.nav-rail__icons::-webkit-scrollbar,
+.nav-rail__main::-webkit-scrollbar,
 .nav-rail__panel::-webkit-scrollbar {
     width: 0;
     height: 0;
