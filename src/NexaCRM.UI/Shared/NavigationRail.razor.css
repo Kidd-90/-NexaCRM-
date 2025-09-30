@@ -1,7 +1,34 @@
 /* Navigation Rail - responsive icon rail + detail panel */
+.nav-rail__panel {
+    animation: navPanelReveal 480ms cubic-bezier(.2,.9,.2,1);
+    box-shadow: 0 8px 32px rgba(76,29,149,0.08), 0 1.5px 0 rgba(76,29,149,0.04);
+    background: #F9FAFB;
+    border-radius: 1.2rem;
+    will-change: transform, opacity;
+}
+
+@keyframes navPanelReveal {
+    0% {
+        opacity: 0;
+        transform: translateX(32px) scale(0.98);
+        box-shadow: none;
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(0) scale(1.01);
+        box-shadow: 0 8px 32px rgba(76,29,149,0.08);
+    }
+    100% {
+        opacity: 1;
+        transform: none;
+        box-shadow: 0 8px 32px rgba(76,29,149,0.08), 0 1.5px 0 rgba(76,29,149,0.04);
+    }
+}
 .nav-rail {
     display: grid;
+    /* outline 180ms ease; */ /* Removed invalid property */
     /* icons column + panel (panel made slightly narrower for visual balance) */
+             box-shadow: 0 1.5px 0 rgba(76,29,149,0.04);
     grid-template-columns: calc(var(--nav-rail-icons-width, 56px) + 2 * var(--nav-rail-icons-margin, 0.75rem)) minmax(180px, 1fr);
     gap: 0;
     /* Fix the rail to the left side of the viewport so it doesn't move on page scroll */
@@ -9,18 +36,26 @@
      /* offset the rail slightly to match the main surface top padding so
          the panel and surface align visually */
     top: calc(var(--spacing-md) / 2);
+             outline: 2px solid #C7D2FE;
+             outline-offset: 2px;
+             background: linear-gradient(120deg, rgba(236,233,254,0.7), rgba(250,245,255,0.85));
     left: 0;
     bottom: 0;
     height: 100vh;
+             transform: scale(0.98) translateX(2px);
+             box-shadow: 0 2px 8px rgba(76,29,149,0.10);
+             background: linear-gradient(120deg, rgba(236,233,254,0.95), rgba(250,245,255,0.98));
      /* Use the app's shared sidebar width variable so the fixed rail and the
          main content offset remain in sync. This prevents the fixed rail from
          contributing to horizontal overflow. */
     width: var(--sidebar-width, 320px);
+             box-shadow: 0 0 0 2px #A5B4FC;
     --nav-rail-icons-width: 56px; /* logical width of the icons column - used for centering fixed logo */
     --nav-rail-icons-margin: 0.75rem; /* consistent breathing room around the icon rail */
      /* enforce box-sizing and prevent the rail from causing document overflow */
      box-sizing: border-box;
      overflow: hidden; /* Prevent internal content from expanding beyond the rail */
+             box-shadow: 0 0.5px 0 rgba(76,29,149,0.04);
      min-width: 56px; /* ensure collapsed baseline */
      max-width: var(--sidebar-width, 320px);
 }
@@ -29,6 +64,7 @@
    and accepts pointer events so icon clicks are not blocked. Keep this modest
    to avoid covering toasts and modal backdrops which intentionally sit above. */
 .nav-rail {
+             box-shadow: 0 2px 8px rgba(76,29,149,0.10);
     /* Keep a high stacking context so the rail stays interactive above
        most app overlays. When fixed it should still accept pointer events. */
     z-index: 20000;
@@ -97,7 +133,7 @@
     margin: 0 auto; /* center within the icons column */
     border-radius: 1rem;
     border-color: #fff;
-    background: #fff;
+    background: #F9FAFB;
     /* visible separation between main and bottom */
     border-bottom: 1px solid var(--divider-color, #E5E7EB);
     justify-content: flex-start;
@@ -114,7 +150,7 @@
         margin: 0 6px; /* left/right inset spacing */
     border-radius: 1rem;
     border-color: #2E2E2E;
-    background-color: #2E2E2E;;
+    background-color: #2E2E2E;
 }
 
 .rail-debug {
@@ -126,8 +162,9 @@
     gap: 2px;
     padding: 6px 8px;
     background: rgba(255,255,255,0.9);
-    color: #374151;
-    border-radius: 6px;
+        width: var(--nav-rail-icons-width, 56px);
+        min-width: var(--nav-rail-icons-width, 56px);
+        max-width: var(--nav-rail-icons-width, 56px);
     box-shadow: 0 2px 6px rgba(2,6,23,0.06);
     pointer-events: none;
     z-index: 10002;
@@ -231,7 +268,7 @@
     border-top: 1px solid var(--divider-color, #E5E7EB);
     border-radius: 1rem;
     border-color: #fff;
-    background: #fff;
+    background: #F9FAFB;
     min-height: 0;
     width: 100%;
 }
@@ -651,25 +688,38 @@
 
 .rail-panel-item::after {
     content: "";
+     border: 1.5px solid #E5E7EB;
+     box-shadow: 0 2px 8px rgba(76,29,149,0.10), 0 1.5px 0 rgba(76,29,149,0.04), 0 0.5px 0 #fff inset;
+    background: #F9FAFB;
+     position: relative;
     position: absolute;
     left: 10px;
     top: 14px;
     bottom: 14px;
+     box-shadow: 0 4px 16px 0 rgba(76,29,149,0.10), 0 0.5px 0 #fff inset;
+     border: 1.5px solid #C7D2FE;
     width: 3px;
     border-radius: 999px;
     background: linear-gradient(180deg, rgba(124,58,237,0.0), rgba(124,58,237,0.4), rgba(124,58,237,0.0));
     opacity: 0;
+     background: linear-gradient(135deg, #E0E7FF 60%, #fff 100%);
+     box-shadow: 0 2px 8px rgba(76,29,149,0.12), 0 0.5px 0 #fff inset, 0 0.5px 0 #A5B4FC;
+     border: 1.5px solid #C7D2FE;
     transform: scaleY(0.4);
     transition: opacity 200ms ease, transform 220ms cubic-bezier(.2,.9,.2,1);
 }
 
 .rail-panel-item:hover,
 .rail-panel-item:focus-visible {
+     background: linear-gradient(135deg, #C7D2FE 60%, #fff 100%);
+     box-shadow: 0 4px 16px rgba(76,29,149,0.18), 0 0.5px 0 #fff inset, 0 0.5px 0 #A5B4FC;
+     border: 1.5px solid #7C3AED;
     color: #4C1D95;
     transform: translateX(4px);
     box-shadow: inset 0 0 0 1px rgba(76,29,149,0.08), 0 8px 18px rgba(76,29,149,0.08);
+     text-shadow: 0 2px 8px #A5B4FC, 0 0.5px 0 #fff;
+     filter: drop-shadow(0 1px 2px #7C3AED) drop-shadow(0 0.5px 0 #fff);
 }
-
 .rail-panel-item:hover::before,
 .rail-panel-item:focus-visible::before {
     opacity: 1;
@@ -729,17 +779,40 @@
 .rail-panel-item__icon i,
 .rail-panel-item__icon svg {
     font-size: 0.98rem; /* slightly smaller to match reduced container */
+    background: linear-gradient(135deg, #E0E7FF 60%, #fff 100%);
+    box-shadow:
+        0 2px 8px rgba(76,29,149,0.16), /* 깊은 그림자 */
+        0 0.5px 0 #fff inset, /* 내부 하이라이트 */
+        0 1.5px 0 #A5B4FC, /* 외곽선 하이라이트 */
+        0 0 0 2px #C7D2FE inset; /* 입체감 강조 */
+    border: 2px solid #C7D2FE;
+    position: relative;
     line-height: 1;
     transition: transform 160ms cubic-bezier(.2,.9,.2,1);
 }
 
 .rail-panel-item:hover .rail-panel-item__icon i,
 .rail-panel-item:focus-visible .rail-panel-item__icon i,
+.rail-panel-item:hover .rail-panel-item__icon i,
+.rail-panel-item:focus-visible .rail-panel-item__icon i {
+    background: linear-gradient(135deg, #C7D2FE 60%, #fff 100%);
+    box-shadow:
+        0 4px 16px rgba(76,29,149,0.22),
+        0 1px 0 #fff inset,
+        0 2px 0 #C7D2FE,
+        0 0 0 3px #A5B4FC inset;
+    border: 2px solid #C7D2FE;
+}
 .rail-panel-item.active .rail-panel-item__icon i {
     transform: scale(1.05);
 }
 
 .rail-panel-item__label {
+    text-shadow:
+        0 2px 8px #A5B4FC,
+        0 0.5px 0 #fff,
+        0 1px 2px #C7D2FE;
+    filter: drop-shadow(0 1px 2px #C7D2FE);
     display: block;
     min-width: 0;
     overflow: hidden;
