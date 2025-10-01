@@ -32,7 +32,9 @@
 
     /* Neutral palette for white theme */
     --neutral-white: #FFFFFF;
+    --neutral-gray-050: #F5F5F5;
     --neutral-gray-100: #E0E0E0;
+    --neutral-gray-200: #D6D6D6;
     --neutral-gray-300: #B0B0B0;
     --neutral-gray-600: #4A4A4A;
     --neutral-gray-800: #2E2E2E;
