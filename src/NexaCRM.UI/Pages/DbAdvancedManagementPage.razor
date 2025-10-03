@@ -1,15 +1,19 @@
 @page "/db/advanced"
 @using System
+@using System.Text
+@using System.Threading
 @using Microsoft.AspNetCore.Components
 @using NexaCRM.Services.Admin.Models.Db
 @using NexaCRM.Services.Admin.Interfaces
 @using Microsoft.Extensions.Localization
 @inject IDbDataService DbDataService
+@inject IDbAdminService DbAdminService
 @inject IStringLocalizer<DbStatus> StatusLocalizer
 @inject INotificationFeedService NotificationFeed
 @inject IDuplicateService DuplicateService
 @inject IDedupeConfigService DedupeConfig
 @inject IJSRuntime JS
+@implements IDisposable
 
 <div class="advanced-db">
     <header class="advanced-db__header">
@@ -18,7 +22,7 @@
             <button class="btn btn-light preview-action" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
             <button class="btn btn-light" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
             <button class="btn btn-light" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
-            <button class="btn btn-light preview-action" @onclick="ExportCsv" title="곧 제공 예정 기능입니다."><i class="bi bi-download"></i> 내보내기</button>
+            <button class="btn btn-light" @onclick="ExportCsv" disabled="@isExporting"><i class="bi bi-download"></i> 내보내기</button>
             <label class="btn btn-success preview-action" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
             <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
         </div>
@@ -26,7 +30,7 @@
 
     <div class="preview-banner" role="status" aria-live="polite">
         <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
-        <span>저장/내보내기 기능은 현재 데모 모드로 안내되며 곧 정식 제공될 예정입니다.</span>
+        <span>체험 데이터 기반으로 동작합니다. CSV 내보내기와 삭제는 실제로 수행됩니다.</span>
     </div>
 
     <nav class="tabs" role="tablist">
@@ -55,8 +59,16 @@
                     </select>
                 </div>
                 <div class="filter-group">
+                    <label>분배일(시작)</label>
+                    <input class="form-control" type="date" @bind="filterFrom" @bind:after="ApplyFiltersAfter" />
+                </div>
+                <div class="filter-group">
+                    <label>분배일(종료)</label>
+                    <input class="form-control" type="date" @bind="filterTo" @bind:after="ApplyFiltersAfter" />
+                </div>
+                <div class="filter-group">
                     <label>검색</label>
-                    <input class="form-control" placeholder="이름/연락처" @bind="search" @oninput="ApplyFilters" />
+                    <input class="form-control" placeholder="이름/연락처" value="@search" @oninput="OnSearchChanged" />
                 </div>
             </aside>
 
@@ -72,10 +84,20 @@
                                 <th>분배일</th>
                                 <th>상태</th>
                                 <th>최종 컨택일</th>
+                                <th class="text-end">작업</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if (filtered?.Any() == true)
+                            @if (isLoading)
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                                        <span class="ms-2">데이터를 불러오는 중...</span>
+                                    </td>
+                                </tr>
+                            }
+                            else if (filtered.Count > 0)
                             {
                                 @foreach (var c in filtered)
                                 {
@@ -87,12 +109,20 @@
                                         <td>@c.AssignedDate.ToShortDateString()</td>
                                         <td class="@GetStatusClass(c.Status)">@StatusLocalizer[c.Status.ToString()]</td>
                                         <td>@c.LastContactDate.ToShortDateString()</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-link text-danger p-0" title="삭제"
+                                                    disabled="@deletingIds.Contains(c.ContactId)"
+                                                    @onclick="() => DeleteCustomerAsync(c)">
+                                                <span class="visually-hidden">삭제</span>
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 }
                             }
                             else
                             {
-                                <tr><td colspan="7" class="text-center text-muted">데이터가 없습니다.</td></tr>
+                                <tr><td colspan="8" class="text-center text-muted">데이터가 없습니다.</td></tr>
                             }
                         </tbody>
                     </table>
@@ -669,10 +699,18 @@
     }
     private Tab activeTab = Tab.Explore;
 
-    private IEnumerable<DbCustomer>? data;
-    private IEnumerable<DbCustomer>? filtered;
+    private const int SearchDebounceDelayMilliseconds = 350;
+
+    private List<DbCustomer> data = new();
+    private List<DbCustomer> filtered = new();
     private string? search;
     private string? filterStatus;
+    private DateTime? filterFrom;
+    private DateTime? filterTo;
+    private bool isLoading;
+    private bool isExporting;
+    private readonly HashSet<int> deletingIds = new();
+    private CancellationTokenSource? searchDebounceCts;
     private bool dedupeEnabled;
     private int dedupeDays = 30;
     private bool includeFuzzy;
@@ -685,8 +723,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        data = await DbDataService.GetAllDbListAsync();
-        ApplyFilters();
+        await RefreshDataAsync();
         // Initialize from shared config
         dedupeEnabled = DedupeConfig.Enabled;
         dedupeDays = DedupeConfig.Days;
@@ -698,15 +735,97 @@
 
     private void SetTab(Tab t) => activeTab = t;
 
-    private void ApplyFilters(ChangeEventArgs? _ = null)
+    private void ApplyFilters()
     {
-        filtered = data
-            ?.Where(c => string.IsNullOrWhiteSpace(search)
-                         || (c.CustomerName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true)
-                         || (c.ContactNumber?.Contains(search, StringComparison.OrdinalIgnoreCase) == true))
-            .Where(c => string.IsNullOrWhiteSpace(filterStatus)
-                         || string.Equals(c.Status.ToString(), filterStatus, StringComparison.OrdinalIgnoreCase))
+        IEnumerable<DbCustomer> query = data;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search!.Trim();
+            query = query.Where(c =>
+                (c.CustomerName?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (c.ContactNumber?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filterStatus) && Enum.TryParse<DbStatus>(filterStatus, out var statusFilter))
+        {
+            query = query.Where(c => c.Status == statusFilter);
+        }
+
+        if (filterFrom.HasValue)
+        {
+            var fromDate = filterFrom.Value.Date;
+            query = query.Where(c => c.AssignedDate.Date >= fromDate);
+        }
+
+        if (filterTo.HasValue)
+        {
+            var toDate = filterTo.Value.Date;
+            query = query.Where(c => c.AssignedDate.Date <= toDate);
+        }
+
+        filtered = query
+            .OrderByDescending(c => c.AssignedDate)
+            .ThenBy(c => c.CustomerName, StringComparer.OrdinalIgnoreCase)
             .ToList();
+    }
+
+    private async Task RefreshDataAsync(CancellationToken cancellationToken = default)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var criteria = BuildCriteria();
+            var results = await DbAdminService.SearchAsync(criteria);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
+            data = results?.ToList() ?? new List<DbCustomer>();
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "dbAdmin.loadFailed", ex.Message);
+            await JS.InvokeVoidAsync("alert", "고객 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+        finally
+        {
+            var wasCancelled = cancellationToken.IsCancellationRequested;
+            isLoading = false;
+
+            if (!wasCancelled)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private DbSearchCriteria BuildCriteria(bool includeDuplicates = false)
+    {
+        var criteria = new DbSearchCriteria
+        {
+            CheckDuplicates = includeDuplicates,
+            From = filterFrom,
+            To = filterTo,
+            SearchTerm = string.IsNullOrWhiteSpace(search) ? null : search,
+            IncludeArchived = false
+        };
+
+        if (!string.IsNullOrWhiteSpace(filterStatus) && Enum.TryParse<DbStatus>(filterStatus, out var status))
+        {
+            criteria.Status = status;
+        }
+
+        return criteria;
     }
 
     private async Task RecomputeDuplicates(ChangeEventArgs? _ = null)
@@ -730,7 +849,42 @@
     }
 
     // Parameterless helpers for @bind:after (expects Action or Func<Task>)
-    private void ApplyFiltersAfter() => ApplyFilters();
+    private async Task ApplyFiltersAfter()
+    {
+        ApplyFilters();
+        await RefreshDataAsync();
+    }
+
+    private async Task OnSearchChanged(ChangeEventArgs args)
+    {
+        search = args.Value?.ToString();
+        ApplyFilters();
+
+        searchDebounceCts?.Cancel();
+        searchDebounceCts?.Dispose();
+
+        var cts = new CancellationTokenSource();
+        searchDebounceCts = cts;
+
+        try
+        {
+            await Task.Delay(SearchDebounceDelayMilliseconds, cts.Token);
+            await RefreshDataAsync(cts.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            // Swallow cancellation when user keeps typing.
+        }
+        finally
+        {
+            if (ReferenceEquals(searchDebounceCts, cts))
+            {
+                searchDebounceCts = null;
+            }
+
+            cts.Dispose();
+        }
+    }
     private Task RecomputeDuplicatesAfter() => RecomputeDuplicates();
 
     // Rule config bindings (checkbox+weight) with recompute
@@ -997,10 +1151,45 @@
         });
     }
 
+    private async Task DeleteCustomerAsync(DbCustomer customer)
+    {
+        if (customer is null || deletingIds.Contains(customer.ContactId))
+        {
+            return;
+        }
+
+        var name = string.IsNullOrWhiteSpace(customer.CustomerName) ? "이 항목" : customer.CustomerName;
+        var confirmed = await JS.InvokeAsync<bool>("confirm", $"{name}을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        deletingIds.Add(customer.ContactId);
+
+        try
+        {
+            await DbAdminService.DeleteEntryAsync(customer.ContactId);
+            await RefreshDataAsync();
+            await RecomputeDuplicates();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "dbAdmin.deleteFailed", ex.Message);
+            await JS.InvokeVoidAsync("alert", "삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+        finally
+        {
+            deletingIds.Remove(customer.ContactId);
+            StateHasChanged();
+        }
+    }
+
     private async Task ArchiveGroup(DuplicateGroup g)
     {
         await DuplicateService.ArchiveAsync(g);
         await RecomputeDuplicates();
+        await RefreshDataAsync();
     }
 
     private async Task DeleteGroup(DuplicateGroup g)
@@ -1009,6 +1198,7 @@
         if (!ok) return;
         await DuplicateService.DeleteAsync(g);
         await RecomputeDuplicates();
+        await RefreshDataAsync();
     }
 
     private async Task MergeGroup(DuplicateGroup g)
@@ -1018,17 +1208,67 @@
         if (dupIds.Count == 0) return;
         await DuplicateService.MergeAsync(primaryId, dupIds);
         await RecomputeDuplicates();
+        await RefreshDataAsync();
     }
 
     private Task SaveCurrentView() => NotifyPreviewFeatureAsync("보기 저장");
 
-    private Task ExportCsv() => NotifyPreviewFeatureAsync("CSV 내보내기");
+    private async Task ExportCsv()
+    {
+        if (isExporting)
+        {
+            return;
+        }
+
+        isExporting = true;
+
+        try
+        {
+            var fields = new List<string>
+            {
+                nameof(DbCustomer.CustomerName),
+                nameof(DbCustomer.ContactNumber),
+                nameof(DbCustomer.Group),
+                nameof(DbCustomer.AssignedTo),
+                nameof(DbCustomer.AssignedDate),
+                nameof(DbCustomer.Status),
+                nameof(DbCustomer.LastContactDate)
+            };
+
+            var bytes = await DbAdminService.ExportToExcelAsync(new DbExportSettings(fields), BuildCriteria());
+            if (bytes.Length == 0)
+            {
+                await JS.InvokeVoidAsync("alert", "내보낼 데이터가 없습니다.");
+                return;
+            }
+
+            var csv = Encoding.UTF8.GetString(bytes);
+            var fileName = $"db_export_{DateTime.Now:yyyyMMddHHmmss}.csv";
+            await JS.InvokeVoidAsync("downloadCsv", fileName, csv);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "dbAdmin.exportFailed", ex.Message);
+            await JS.InvokeVoidAsync("alert", "CSV 내보내기에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+        finally
+        {
+            isExporting = false;
+        }
+    }
 
     private Task OnImportFileSelected(ChangeEventArgs e) => NotifyPreviewFeatureAsync("고객 DB 추가하기");
 
     private Task NotifyPreviewFeatureAsync(string featureName)
     {
         return JS.InvokeVoidAsync("alert", $"{featureName} 기능은 준비 중입니다. 곧 제공될 예정입니다.").AsTask();
+    }
+
+    public void Dispose()
+    {
+        searchDebounceCts?.Cancel();
+        searchDebounceCts?.Dispose();
+        searchDebounceCts = null;
     }
 
     private static string GetStatusClass(DbStatus status) => status switch
