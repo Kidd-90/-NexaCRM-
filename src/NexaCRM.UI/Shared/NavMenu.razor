@@ -119,6 +119,7 @@
     [Parameter] public EventCallback OnNavigate { get; set; }
 
     private readonly List<NavigationGroupViewModel> accessibleGroups = new();
+    private static readonly HashSet<string> ManagerDashboardRoles = new(new[] { "Manager", "Admin", "Developer" }, StringComparer.OrdinalIgnoreCase);
     private string[] userRoles = Array.Empty<string>();
 
     protected override async Task OnInitializedAsync()
@@ -157,7 +158,7 @@
                 }
 
                 var displayName = Localizer[link.ResourceKey]?.Value ?? link.ResourceKey;
-                accessibleLinks.Add(new NavigationLinkViewModel(GetHref(link.Href), displayName, link.IconCssClass));
+                accessibleLinks.Add(new NavigationLinkViewModel(ResolveLinkHref(link, roleSet), displayName, link.IconCssClass));
             }
 
             if (accessibleLinks.Count == 0)
@@ -167,6 +168,24 @@
 
             accessibleGroups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass, accessibleLinks));
         }
+    }
+
+    private string ResolveLinkHref(NavigationLinkDefinition link, HashSet<string> roles)
+    {
+        if (!string.Equals(link.ResourceKey, "Dashboard", StringComparison.OrdinalIgnoreCase))
+        {
+            return GetHref(link.Href);
+        }
+
+        foreach (var role in roles)
+        {
+            if (ManagerDashboardRoles.Contains(role))
+            {
+                return GetHref("sales-manager-dashboard");
+            }
+        }
+
+        return GetHref("main-dashboard");
     }
 
     private static bool IsLinkAllowed(NavigationLinkDefinition link, HashSet<string> userRoleSet)

@@ -112,17 +112,6 @@
 
         <section class="app-shell__page-header">
             <div class="app-shell__page-meta">
-                <span class="app-shell__page-icon"><i class="@headerActionIcon" aria-hidden="true"></i></span>
-                <div class="app-shell__page-titles">
-                    @if (isDetailPage && !string.IsNullOrWhiteSpace(parentPageTitle))
-                    {
-                        <button class="app-shell__parent-link" type="button" @onclick="NavigateBack">
-                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                            <span>@parentPageTitle</span>
-                        </button>
-                    }
-                    <h1>@currentPageTitle</h1>
-                </div>
             </div>
             <!-- Add quick search within the page header for faster navigation -->
             <div class="app-shell__page-search">

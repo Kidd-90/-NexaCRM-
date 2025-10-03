@@ -10,11 +10,13 @@ namespace NexaCRM.UI.Models.Navigation;
 /// </summary>
 public static class NavigationCatalog
 {
-    private static readonly NavigationLinkDefinition[] OverviewLinks =
+    private static readonly NavigationLinkDefinition[] ProjectLinks =
     {
-        new("Home", "bi bi-house", string.Empty, Array.Empty<string>(), Keywords("home", "start", "landing")),
-        new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles("Sales", "Manager", "Admin"), Keywords("overview", "metrics")),
-        new("ManagerDashboard", "bi bi-speedometer", "sales-manager-dashboard", Roles("Manager", "Admin"), Keywords("management", "team"))
+        new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("overview", "metrics")),
+        new("StatusAlerts", "bi bi-bell", "notifications/alerts", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("alerts", "notifications")),
+        new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("updates", "notifications")),
+        new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("announcements", "notifications")),
+        new("HistoryRecent", "bi bi-clock-history", "history/recent", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("history", "recent"))
     };
 
     private static readonly NavigationLinkDefinition[] SalesWorkspaceLinks =
@@ -85,7 +87,7 @@ public static class NavigationCatalog
 
     private static readonly NavigationGroupDefinition[] GroupsInternal =
     {
-        new("NavigationOverview", "bi bi-compass", Array.Empty<string>(), OverviewLinks),
+        new("NavigationProjects", "bi bi-kanban", Array.Empty<string>(), ProjectLinks),
         new("SalesWorkspace", "bi bi-briefcase", Roles("Sales", "Manager"), SalesWorkspaceLinks),
         new("DbManagement", "bi bi-database", Roles("Sales", "Manager", "Developer"), DatabaseLinks),
     // Use a distinct chat icon for Engagement so it doesn't conflict with Organization/people icons
@@ -108,7 +110,7 @@ public static class NavigationCatalog
     {
         if (string.IsNullOrWhiteSpace(relativeUri))
         {
-            return OverviewLinks.FirstOrDefault(l => string.IsNullOrEmpty(l.Href));
+            return ProjectLinks.FirstOrDefault();
         }
 
         var normalized = Normalize(relativeUri);

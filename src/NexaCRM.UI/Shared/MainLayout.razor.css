@@ -122,8 +122,10 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 }
 
 .app-shell__action {
-    border: none;
-    background: var(--surface-muted);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border-radius: 0.9rem;
     width: 2.75rem;
     height: 2.75rem;
@@ -131,13 +133,16 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     place-items: center;
     color: var(--text-secondary);
     position: relative;
-    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
 }
 
 .app-shell__action:hover {
     transform: translateY(-1px);
-    background: var(--hover-overlay);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
     color: var(--text-primary);
+    box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.2);
 }
 
 .app-shell__theme {
@@ -193,9 +198,9 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     justify-content: space-between;
     padding: var(--spacing-md) clamp(0.5rem, 1vw, 0.75rem);
     border-radius: 1.5rem;
-    background: var(--surface-color);
-    border: 1px solid var(--divider-color);
-    box-shadow: 0 24px 48px var(--shadow-light);
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 :root {
@@ -239,8 +244,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 .app-shell__content {
     /* push content below the fixed header so it isn't hidden */
     margin-top: var(--app-shell-page-header-offset) !important;
-    /* also provide a small padding-top fallback for browsers that compute
-       margin differently or when header is dynamically sized at runtime */
+    /* also provide a small padding-top for consistent spacing */
     padding-top: calc(var(--app-shell-surface-padding-top) + 0.25rem);
     transition: margin-top 220ms ease, padding-top 220ms ease;
 }
@@ -281,6 +285,16 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+}
+
+.app-shell__page-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .app-shell__page-icon {

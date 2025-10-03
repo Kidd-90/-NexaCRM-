@@ -52,7 +52,7 @@
 </div>
 
 @code {
-    private IEnumerable<DbCustomer> customers;
+    private IEnumerable<DbCustomer> customers = Enumerable.Empty<DbCustomer>();
 
     protected override async Task OnInitializedAsync()
     {

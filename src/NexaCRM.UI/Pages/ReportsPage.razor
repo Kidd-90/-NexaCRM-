@@ -78,9 +78,12 @@
                                         <tr><th class="border px-2">Field</th><th class="border px-2">Value</th></tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in preview.Data)
+                                        @if (preview.Data != null)
                                         {
-                                            <tr><td class="border px-2">@item.Key</td><td class="border px-2">@item.Value</td></tr>
+                                            @foreach (var item in preview.Data)
+                                            {
+                                                <tr><td class="border px-2">@item.Key</td><td class="border px-2">@item.Value</td></tr>
+                                            }
                                         }
                                     </tbody>
                                 </table>

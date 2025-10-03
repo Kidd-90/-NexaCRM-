@@ -590,8 +590,11 @@
 
         try
         {
-            var unreadCount = await NotificationFeed.GetUnreadCountAsync();
-            unreadNotificationsCount = Math.Max(0, unreadCount);
+            if (NotificationFeed != null)
+            {
+                var unreadCount = await NotificationFeed.GetUnreadCountAsync();
+                unreadNotificationsCount = Math.Max(0, unreadCount);
+            }
         }
         catch (Exception ex)
         {

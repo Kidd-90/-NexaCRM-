@@ -33,9 +33,8 @@
     gap: 0;
     /* Fix the rail to the left side of the viewport so it doesn't move on page scroll */
      position: fixed;
-     /* offset the rail slightly to match the main surface top padding so
-         the panel and surface align visually */
-    top: calc(var(--spacing-md) / 2);
+     /* offset the rail to match the main content top margin for visual alignment */
+    top: var(--app-shell-page-header-offset);
              outline: 2px solid #C7D2FE;
              outline-offset: 2px;
              background: linear-gradient(120deg, rgba(236,233,254,0.7), rgba(250,245,255,0.85));
@@ -299,20 +298,23 @@
 .rail-logo {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-    background: #FFFFFF;
-    overflow: hidden;
+    width: calc(var(--nav-rail-icons-width, 56px));
+    height: calc(var(--nav-rail-icons-width, 56px));
+    padding: 0.35rem;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: linear-gradient(160deg, rgba(7, 21, 44, 0.92), rgba(15, 78, 185, 0.85));
+    box-shadow: 0 10px 24px rgba(12, 24, 46, 0.22);
+    overflow: visible; /* allow the SVG to render fully without clipping */
     order: 0; /* keep top logo at natural position */
     position: static; /* restore to document flow so bottom company logo is visible */
 }
 
-.rail-logo img {
+.rail-logo__image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(14, 26, 45, 0.35));
 }
 
 .nav-rail__panel {
@@ -471,31 +473,97 @@
 }
 
 .panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.5rem 0.35rem 0.75rem 0.35rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 0.4rem 0.75rem;
+    padding: 0.6rem 0.45rem 0.8rem 0.45rem;
     border-bottom: 1px solid #E5E7EB;
 }
 
-/* When in DB panel, place the import button beneath the title */
-.panel-header--db {
-    flex-wrap: wrap;
-    align-items: flex-start;
+.panel-header > :not(.panel-title) {
+    justify-self: end;
+    align-self: center;
 }
 
-.panel-header--db .panel-title {
-    flex: 1 0 100%;
+/* When a header needs a secondary action (DB panel, etc.) position it beneath titles */
+.panel-header--db {
+    grid-template-columns: minmax(0, 1fr);
 }
 
 .panel-header--db .import-button {
-    margin-top: 0.35rem;
+    justify-self: start;
+    margin-top: 0.4rem;
 }
 
 .panel-title {
+    grid-column: 1 / -1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     font-weight: 700;
-    color: #111827; /* solid title */
+    color: #0F172A;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    -webkit-font-smoothing: antialiased;
+}
+
+.panel-header > .panel-title:first-of-type {
+    font-size: clamp(1.18rem, 1rem + 0.6vw, 1.6rem);
+}
+
+.panel-header > .panel-title:nth-of-type(n+2) {
+    font-size: clamp(0.72rem, 0.66rem + 0.35vw, 0.95rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: #64748B;
+    line-height: 1.25;
+}
+
+.panel-header > .panel-title + .panel-title {
+    margin-top: 0.15rem;
+}
+
+.panel-title--section,
+.section-title {
+    display: block;
+    align-items: initial;
+    gap: 0;
+    font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #999999;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    line-height: 1.3;
+    margin: 20px 0 8px 0;
+}
+
+.panel-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.35rem 0.35rem 0.5rem 0.35rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.panel-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0.25rem;
+}
+
+.panel-section:first-of-type {
+    margin-top: 0.15rem;
+}
+
+.divider-soft {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.6), rgba(200, 200, 200, 0.6));
+    margin: 20px 0;
+    border-radius: 1px;
 }
 
 /* Top user summary inside the panel */
@@ -593,6 +661,10 @@
     padding: 0.25rem 0.25rem 0.5rem 0.25rem;
 }
 
+.panel-section .panel-list {
+    padding: 0;
+}
+
 /* Badge shown along the rail with vertical text and a subtle engraved top border */
 .nav-rail__badge {
     display: flex;
@@ -652,73 +724,60 @@
     pointer-events: none;
 }
 
-.nav-rail__panel .rail-panel-item {
-    /* increase specificity to override any global .nav-link rules */
+.nav-rail__panel .rail-panel-item,
+.nav-rail__panel .nav-link.rail-panel-item {
     position: relative;
-    display: flex; /* ensure icon and label align horizontally */
-    flex-direction: row;
-    align-items: center;
-    gap: 0.6rem; /* slightly tighter for smaller icon */
-    padding: 0.45rem 0.6rem; /* reduce padding so small icon + label fit on one line */
-    border-radius: 12px;
-    min-height: 36px;
-    color: #1F2937;
-    font-weight: 600;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    padding: 8px 12px;
+    border-radius: 10px;
+    min-height: 40px;
+    height: 40px;
+    font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #000000;
     text-decoration: none;
     background: transparent;
-    box-shadow: inset 0 0 0 0 rgba(148,163,184,0.18);
-    transition: transform 200ms cubic-bezier(.2,.9,.2,1),
-                color 180ms ease,
-                box-shadow 220ms ease,
-                background-color 180ms ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
     isolation: isolate;
+    line-height: 1;
 }
 
 .rail-panel-item::before {
     content: "";
     position: absolute;
-    inset: 4px;
-    border-radius: 12px;
-    background: linear-gradient(130deg, rgba(124,58,237,0.12), rgba(59,130,246,0.08));
+    inset: 0;
+    border-radius: 10px;
+    background: rgba(59,130,246,0.08);
     opacity: 0;
-    transform: scale(0.92);
-    transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1);
+    transform: scale(0.96);
+    transition: opacity 200ms ease, transform 200ms ease;
     z-index: -1;
 }
 
 .rail-panel-item::after {
     content: "";
-     border: 1.5px solid #E5E7EB;
-     box-shadow: 0 2px 8px rgba(76,29,149,0.10), 0 1.5px 0 rgba(76,29,149,0.04), 0 0.5px 0 #fff inset;
-    background: #F9FAFB;
-     position: relative;
     position: absolute;
-    left: 10px;
-    top: 14px;
-    bottom: 14px;
-     box-shadow: 0 4px 16px 0 rgba(76,29,149,0.10), 0 0.5px 0 #fff inset;
-     border: 1.5px solid #C7D2FE;
-    width: 3px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(124,58,237,0.0), rgba(124,58,237,0.4), rgba(124,58,237,0.0));
+    inset: 0;
+    border-radius: 10px;
+    border: 1px solid rgba(59,130,246,0.15);
     opacity: 0;
-     background: linear-gradient(135deg, #E0E7FF 60%, #fff 100%);
-     box-shadow: 0 2px 8px rgba(76,29,149,0.12), 0 0.5px 0 #fff inset, 0 0.5px 0 #A5B4FC;
-     border: 1.5px solid #C7D2FE;
-    transform: scaleY(0.4);
-    transition: opacity 200ms ease, transform 220ms cubic-bezier(.2,.9,.2,1);
+    transform: scale(0.94);
+    transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .rail-panel-item:not(.active):hover,
 .rail-panel-item:not(.active):focus-visible {
-     background: linear-gradient(135deg, #C7D2FE 60%, #fff 100%);
-     box-shadow: 0 4px 16px rgba(76,29,149,0.18), 0 0.5px 0 #fff inset, 0 0.5px 0 #A5B4FC;
-     border: 1.5px solid #7C3AED;
-    color: #4C1D95;
-    transform: translateX(4px);
-    box-shadow: inset 0 0 0 1px rgba(76,29,149,0.08), 0 8px 18px rgba(76,29,149,0.08);
-     text-shadow: 0 2px 8px #A5B4FC, 0 0.5px 0 #fff;
-     filter: drop-shadow(0 1px 2px #7C3AED) drop-shadow(0 0.5px 0 #fff);
+    color: #0F172A;
+    background: rgba(59,130,246,0.08);
+    border-color: rgba(59,130,246,0.25);
+    transform: translateX(3px);
 }
 .rail-panel-item:not(.active):hover::before,
 .rail-panel-item:not(.active):focus-visible::before {
@@ -729,7 +788,7 @@
 .rail-panel-item:not(.active):hover::after,
 .rail-panel-item:not(.active):focus-visible::after {
     opacity: 1;
-    transform: scaleY(1);
+    transform: scale(1);
 }
 
 .rail-panel-item:focus-visible {
@@ -738,124 +797,102 @@
 
 .rail-panel-item.active,
 .rail-panel-item.active:hover {
-    color: var(--neutral-gray-800);
-    background: linear-gradient(140deg,
-        var(--neutral-gray-050) 0%,
-        color-mix(in srgb, var(--neutral-white) 65%, var(--neutral-gray-200) 35%) 100%);
-    border: 1px solid var(--frosted-border);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        0 10px 24px var(--shadow-light),
-        0 0 0 1px color-mix(in srgb, var(--neutral-white) 72%, transparent);
-    text-shadow: none;
+    color: #000000;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: transparent;
+    border-left: 3px solid #000000;
+    padding-left: 9px;
     transform: none;
-    filter: none;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .rail-panel-item.active::before {
-    opacity: 1;
+    opacity: 0;
     transform: scale(1);
-    background: linear-gradient(160deg,
-        rgba(255, 255, 255, 0.75) 0%,
-        color-mix(in srgb, var(--neutral-white) 40%, var(--neutral-gray-200) 60%) 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    background: transparent;
 }
 
 .rail-panel-item.active::after {
     opacity: 0;
-    transform: scaleY(0.4);
-    box-shadow: none;
-    border: none;
-    background: transparent;
+    transform: scale(1);
 }
 
 .rail-panel-item__icon {
-    /* smaller, transparent icon container to match compact row layout */
-    width: 28px;
-    height: 28px;
-    display: grid;
-    place-items: center;
+    width: 24px;
+    height: 24px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
     border-radius: 8px;
-    background: transparent; /* user requested transparent background */
+    background: transparent;
     color: inherit;
     transition: transform 160ms cubic-bezier(.2,.9,.2,1), background-color 160ms ease;
-    flex: 0 0 auto; /* keep icon at fixed size inside flex row */
+    flex: 0 0 24px !important;
+    flex-shrink: 0 !important;
     border: none;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .nav-rail__panel .rail-panel-item:not(.active):hover .rail-panel-item__icon,
 .nav-rail__panel .rail-panel-item:not(.active):focus-visible .rail-panel-item__icon {
-    /* keep hover feedback subdued when container background is transparent */
-    background: rgba(250,245,255,0.6);
+    background: rgba(59,130,246,0.1);
     transform: translateX(1px);
 }
 
 .nav-rail__panel .rail-panel-item.active .rail-panel-item__icon {
-    background: color-mix(in srgb, var(--neutral-white) 82%, var(--neutral-gray-100) 18%);
-    border: 1px solid color-mix(in srgb, var(--neutral-gray-100) 60%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 6px 12px rgba(0, 0, 0, 0.12);
+    background: rgba(59,130,246,0.15);
+    border: none;
+    box-shadow: none;
     transform: none;
-    color: var(--neutral-gray-800);
+    color: inherit;
 }
 
 
 .rail-panel-item__icon i,
 .rail-panel-item__icon svg {
-    font-size: 0.98rem; /* slightly smaller to match reduced container */
-    background: linear-gradient(135deg, #E0E7FF 60%, #fff 100%);
-    box-shadow:
-        0 2px 8px rgba(76,29,149,0.16), /* 깊은 그림자 */
-        0 0.5px 0 #fff inset, /* 내부 하이라이트 */
-        0 1.5px 0 #A5B4FC, /* 외곽선 하이라이트 */
-        0 0 0 2px #C7D2FE inset; /* 입체감 강조 */
-    border: 2px solid #C7D2FE;
+    font-size: 1rem;
     position: relative;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
     transition: transform 160ms cubic-bezier(.2,.9,.2,1);
 }
 
 .rail-panel-item.active .rail-panel-item__icon i,
 .rail-panel-item.active .rail-panel-item__icon svg {
-    background: none;
-    border: none;
-    box-shadow: none;
-    color: var(--neutral-gray-800);
+    color: inherit;
     transform: none;
 }
 
 .rail-panel-item:not(.active):hover .rail-panel-item__icon i,
 .rail-panel-item:not(.active):focus-visible .rail-panel-item__icon i,
-.rail-panel-item:not(.active):hover .rail-panel-item__icon i,
-.rail-panel-item:not(.active):focus-visible .rail-panel-item__icon i {
-    background: linear-gradient(135deg, #C7D2FE 60%, #fff 100%);
-    box-shadow:
-        0 4px 16px rgba(76,29,149,0.22),
-        0 1px 0 #fff inset,
-        0 2px 0 #C7D2FE,
-        0 0 0 3px #A5B4FC inset;
-    border: 2px solid #C7D2FE;
+.rail-panel-item:not(.active):hover .rail-panel-item__icon svg,
+.rail-panel-item:not(.active):focus-visible .rail-panel-item__icon svg {
+    transform: translateX(1px);
 }
 .rail-panel-item__label {
-    text-shadow:
-        0 2px 8px #A5B4FC,
-        0 0.5px 0 #fff,
-        0 1px 2px #C7D2FE;
-    filter: drop-shadow(0 1px 2px #C7D2FE);
-    display: block;
+    display: inline-flex !important;
+    align-items: center;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.95rem;
-    flex: 1 1 auto; /* allow label to take remaining space and shrink when needed */
+    font-size: 15px;
+    font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 500;
+    color: inherit;
+    flex: 1 1 auto !important;
+    line-height: 1.2;
+    height: 100%;
+    vertical-align: middle;
 }
 
 .nav-rail__panel .rail-panel-item.active .rail-panel-item__label {
-    color: var(--neutral-gray-800);
-    text-shadow: none;
-    filter: none;
+    color: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {

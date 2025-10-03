@@ -10,10 +10,13 @@
     gap: var(--spacing-sm);
     width: 100%;
     padding-inline: var(--spacing-sm);
-    background-color: var(--surface-muted);
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border-radius: 999px;
-    border: 1px solid transparent;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    transition: all var(--transition-fast);
 }
 
 .global-search__icon {
@@ -33,10 +36,7 @@
     outline: none;
 }
 
-.global-search__input-wrapper:focus-within {
-    border-color: color-mix(in srgb, var(--primary-color) 65%, transparent);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-}
+/* 포커스 효과 제거 - 기본 상태 유지 */
 
 .global-search__results {
     position: absolute;

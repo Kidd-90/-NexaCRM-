@@ -90,6 +90,9 @@
 
     private void ProcessDataForChart()
     {
+        if (customers == null)
+            return;
+            
         statusCounts = customers
             .GroupBy(c => c.Status)
             .ToDictionary(g => g.Key, g => g.Count());

@@ -336,7 +336,7 @@
             .Where(owner => !string.IsNullOrWhiteSpace(owner))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(owner => owner, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            .ToList()!;
 
         ApplyFilters();
         isLoading = false;

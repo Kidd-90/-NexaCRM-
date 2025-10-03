@@ -154,7 +154,7 @@
         StateHasChanged();
     }
 
-    private void OnKeyDown(KeyboardEventArgs args)
+    private async Task OnKeyDown(KeyboardEventArgs args)
     {
         if (!ShowResults)
         {
@@ -174,7 +174,7 @@
             case "Enter":
                 if (activeIndex >= 0 && activeIndex < filteredResults.Count)
                 {
-                    NavigateTo(filteredResults[activeIndex]);
+                    await NavigateTo(filteredResults[activeIndex]);
                 }
                 break;
             case "Escape":

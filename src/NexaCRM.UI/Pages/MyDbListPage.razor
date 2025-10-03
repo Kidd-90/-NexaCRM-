@@ -81,17 +81,17 @@
 
 @code {
     [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
 
-    private IEnumerable<DbCustomer> customers;
-    private string agentName;
+    private IEnumerable<DbCustomer> customers = Enumerable.Empty<DbCustomer>();
+    private string agentName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationStateTask;
         var user = authState.User;
 
-        if (user.Identity.IsAuthenticated)
+        if (user.Identity?.IsAuthenticated == true)
         {
             // For the mock data, we need to decide which user to simulate
             if (user.IsInRole("Manager"))

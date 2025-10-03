@@ -117,22 +117,6 @@ public class MockDbDataService : IDbDataService
         DbCustomer? Latest(Func<DbCustomer, object?> sel)
             => dups.OrderByDescending(x => x.AssignedDate).FirstOrDefault(x => sel(x) != null && !string.IsNullOrWhiteSpace(sel(x)?.ToString()));
 
-        void FillIfEmpty(ref string? target, Func<DbCustomer, string?> sel)
-        {
-            if (!string.IsNullOrWhiteSpace(target)) return;
-            var src = Latest(sel);
-            if (src != null)
-                target = sel(src);
-        }
-
-        void FillIfNull<T>(ref T? target, Func<DbCustomer, T?> sel) where T : struct
-        {
-            if (target.HasValue) return;
-            var src = dups.OrderByDescending(x => x.AssignedDate).FirstOrDefault(x => sel(x).HasValue);
-            if (src != null)
-                target = sel(src);
-        }
-
         primary.Gender = string.IsNullOrWhiteSpace(primary.Gender) ? Latest(c => c.Gender)?.Gender ?? primary.Gender : primary.Gender;
         primary.Address = string.IsNullOrWhiteSpace(primary.Address) ? Latest(c => c.Address)?.Address ?? primary.Address : primary.Address;
         primary.JobTitle = string.IsNullOrWhiteSpace(primary.JobTitle) ? Latest(c => c.JobTitle)?.JobTitle ?? primary.JobTitle : primary.JobTitle;
@@ -162,20 +146,6 @@ public class MockDbDataService : IDbDataService
     {
         var target = _dbCustomers.FirstOrDefault(c => c.ContactId == contactId);
         if (target is null) return Task.CompletedTask;
-
-        void SetStr(ref string? field, string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value)) return;
-            if (overwriteEmptyOnly && !string.IsNullOrWhiteSpace(field)) return;
-            field = value;
-        }
-
-        void SetVal<T>(ref T? field, T? value) where T : struct
-        {
-            if (!value.HasValue) return;
-            if (overwriteEmptyOnly && field.HasValue) return;
-            field = value;
-        }
 
         if (!string.IsNullOrWhiteSpace(patch.Gender) && (!overwriteEmptyOnly || string.IsNullOrWhiteSpace(target.Gender)))
             target.Gender = patch.Gender;

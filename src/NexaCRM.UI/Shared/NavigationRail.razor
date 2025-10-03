@@ -24,9 +24,7 @@
             <div class="nav-rail__main-inner" role="tablist" aria-orientation="vertical">
                 <!-- Top logo button: links to home using the company mark -->
                 <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home" aria-label="Home">
-                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="rail-logo__mark">
-                        <path d="M12 3v18M21 12H3M18.364 5.636 5.636 18.364M18.364 18.364 5.636 5.636" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
-                    </svg>
+                    <img src="/_content/NexaCRM.UI/images/naf-logo.svg" alt="NAF" class="rail-logo__image" />
                     <span class="visually-hidden">Home</span>
                 </NavLink>
 
@@ -86,20 +84,43 @@
         else
         {
             NavigationGroupViewModel? group = groups[activeGroupIndex];
-            <div class="panel-header">
+            <div class="panel-title panel-title--section">
                 <div class="panel-title">@group.DisplayName</div>
             </div>
-            <nav class="panel-list">
-                @foreach (var link in group.Links)
+
+            @foreach (var navSection in group.Sections)
+            {
+                if (navSection.Links.Count == 0)
                 {
-                    <NavLink class="nav-link rail-panel-item" href="@link.Href">
-                        <span class="rail-panel-item__icon">
-                            <i class="@link.IconCss" aria-hidden="true"></i>
-                        </span>
-                        <span class="rail-panel-item__label">@link.DisplayName</span>
-                    </NavLink>
+                    continue;
                 }
-            </nav>
+
+                <div class="panel-section" role="group" aria-label="@(navSection.Title ?? group.DisplayName)">
+                    @if (!string.IsNullOrEmpty(navSection.Title))
+                    {
+                        if (navSection.ResourceKey is "NavigationSectionStatus" or "NavigationSectionHistory")
+                        {
+                            <div class="divider-soft" aria-hidden="true"></div>
+                        }
+
+                        <div class="panel-title panel-title--section">
+                            @navSection.Title
+                        </div>
+                    }
+
+                    <nav class="panel-list">
+                        @foreach (var link in navSection.Links)
+                        {
+                            <NavLink class="nav-link rail-panel-item" href="@link.Href">
+                                <span class="rail-panel-item__icon">
+                                    <i class="@link.IconCss" aria-hidden="true"></i>
+                                </span>
+                                <span class="rail-panel-item__label">@link.DisplayName</span>
+                            </NavLink>
+                        }
+                    </nav>
+                </div>
+            }
         }
 
         <!-- Bottom: per-page injected area -->
@@ -114,6 +135,15 @@
 
 @code {
     private readonly List<NavigationGroupViewModel> groups = new();
+    private static readonly Dictionary<string, string?> LinkSectionMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Dashboard"] = null,
+        ["StatusAlerts"] = "NavigationSectionStatus",
+        ["StatusUpdates"] = "NavigationSectionStatus",
+        ["StatusAnnouncements"] = "NavigationSectionStatus",
+        ["HistoryRecent"] = "NavigationSectionHistory"
+    };
+    private static readonly HashSet<string> ManagerDashboardRoles = new(new[] { "Manager", "Admin", "Developer" }, StringComparer.OrdinalIgnoreCase);
     private int activeGroupIndex;
     private bool panelVisible = true;
     private string[] userRoles = Array.Empty<string>();
@@ -185,7 +215,7 @@
 
         foreach (var group in NavigationCatalog.Groups)
         {
-            var accessibleLinks = new List<NavigationLinkViewModel>();
+            var entries = new List<(NavigationLinkViewModel Link, string? SectionResourceKey)>();
             foreach (var link in group.Links)
             {
                 if (!IsAccessible(link, roleSet))
@@ -193,15 +223,24 @@
                     continue;
                 }
 
-                accessibleLinks.Add(new NavigationLinkViewModel(GetHref(link.Href), Localizer[link.ResourceKey]?.Value ?? link.ResourceKey, link.IconCssClass));
+                var href = ResolveLinkHref(link, roleSet);
+                if (string.IsNullOrWhiteSpace(href))
+                {
+                    continue;
+                }
+
+                var displayName = Localizer[link.ResourceKey]?.Value ?? link.ResourceKey;
+                var sectionResourceKey = GetSectionResourceKey(link);
+                entries.Add((new NavigationLinkViewModel(href, displayName, link.IconCssClass), sectionResourceKey));
             }
 
-            if (accessibleLinks.Count == 0)
+            if (entries.Count == 0)
             {
                 continue;
             }
 
-            groups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass, accessibleLinks));
+            var sections = BuildSections(entries);
+            groups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass, sections));
         }
 
         if (groups.Count == 0)
@@ -219,6 +258,67 @@
         // populated. Fire-and-forget the JS interop call to avoid changing the
         // synchronous nature of this method.
         // BuildGroups: no runtime JS logging in production code.
+    }
+
+    private IReadOnlyList<NavigationSectionViewModel> BuildSections(List<(NavigationLinkViewModel Link, string? SectionResourceKey)> entries)
+    {
+        var sections = new List<NavigationSectionViewModel>();
+        List<NavigationLinkViewModel>? currentLinks = null;
+        string? currentSectionKey = null;
+
+        foreach (var entry in entries)
+        {
+            if (currentLinks is null || !string.Equals(entry.SectionResourceKey, currentSectionKey, StringComparison.OrdinalIgnoreCase))
+            {
+                currentSectionKey = entry.SectionResourceKey;
+                currentLinks = new List<NavigationLinkViewModel>();
+                sections.Add(new NavigationSectionViewModel(currentSectionKey, LocalizeSection(currentSectionKey), currentLinks));
+            }
+
+            currentLinks.Add(entry.Link);
+        }
+
+        return sections;
+    }
+
+    private string? LocalizeSection(string? sectionResourceKey)
+    {
+        if (string.IsNullOrEmpty(sectionResourceKey))
+        {
+            return null;
+        }
+
+        try
+        {
+            return Localizer[sectionResourceKey]?.Value ?? sectionResourceKey;
+        }
+        catch
+        {
+            return sectionResourceKey;
+        }
+    }
+
+    private static string? GetSectionResourceKey(NavigationLinkDefinition link)
+    {
+        return LinkSectionMap.TryGetValue(link.ResourceKey, out var sectionKey) ? sectionKey : null;
+    }
+
+    private string ResolveLinkHref(NavigationLinkDefinition link, HashSet<string> roles)
+    {
+        if (!string.Equals(link.ResourceKey, "Dashboard", StringComparison.OrdinalIgnoreCase))
+        {
+            return GetHref(link.Href);
+        }
+
+        foreach (var role in roles)
+        {
+            if (ManagerDashboardRoles.Contains(role))
+            {
+                return GetHref("sales-manager-dashboard");
+            }
+        }
+
+        return GetHref("main-dashboard");
     }
 
     private static bool IsAccessible(NavigationLinkDefinition link, HashSet<string> roles)
@@ -305,7 +405,9 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 
-    private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationLinkViewModel> Links);
+    private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationSectionViewModel> Sections);
+
+    private sealed record NavigationSectionViewModel(string? ResourceKey, string? Title, IReadOnlyList<NavigationLinkViewModel> Links);
 
     private sealed record NavigationLinkViewModel(string Href, string DisplayName, string IconCss);
 }

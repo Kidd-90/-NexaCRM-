@@ -195,8 +195,8 @@
   <data name="UserManagement" xml:space="preserve">
     <value>User Management</value>
   </data>
-  <data name="NavigationOverview" xml:space="preserve">
-    <value>Overview</value>
+  <data name="NavigationProjects" xml:space="preserve">
+    <value>Projects</value>
   </data>
   <data name="SalesWorkspace" xml:space="preserve">
     <value>Workspace</value>
@@ -218,6 +218,24 @@
   </data>
   <data name="SearchNavigation" xml:space="preserve">
     <value>Search navigation</value>
+  </data>
+  <data name="StatusAlerts" xml:space="preserve">
+    <value>Alerts</value>
+  </data>
+  <data name="StatusUpdates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="StatusAnnouncements" xml:space="preserve">
+    <value>Announcements</value>
+  </data>
+  <data name="HistoryRecent" xml:space="preserve">
+    <value>Recent History</value>
+  </data>
+  <data name="NavigationSectionStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="NavigationSectionHistory" xml:space="preserve">
+    <value>History</value>
   </data>
   <data name="GlobalSearchPlaceholder" xml:space="preserve">
     <value>Search pages, data and tools</value>

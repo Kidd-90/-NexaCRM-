@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="512" height="512" viewBox="0 0 900 380" role="img" aria-labelledby="title desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="title">NAF Circuit Mark</title>
+  <desc id="desc">Stylised NAF logotype with circuit accents in blue and silver.</desc>
+  <defs>
+    <linearGradient id="grad-n" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#53A3FF" />
+      <stop offset="50%" stop-color="#1575FF" />
+      <stop offset="100%" stop-color="#003894" />
+    </linearGradient>
+    <linearGradient id="grad-a" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F5F8FF" />
+      <stop offset="50%" stop-color="#D9DEE8" />
+      <stop offset="100%" stop-color="#9BA0AA" />
+    </linearGradient>
+    <linearGradient id="grad-f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F4F7FC" />
+      <stop offset="45%" stop-color="#D8DCE4" />
+      <stop offset="100%" stop-color="#8C929D" />
+    </linearGradient>
+    <linearGradient id="grad-stripe" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0EB5FF" />
+      <stop offset="100%" stop-color="#0069FF" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="15" flood-color="#0C182E" flood-opacity="0.35" />
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M80 330 V50 H190 L335 205 V50 H445 V330 H338 L190 165 V330 Z" fill="url(#grad-n)" />
+    <g fill="none" stroke="#00D5FF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M315 235 L360 275 L415 210 C435 190 450 190 470 205" />
+      <path d="M330 255 L368 292" />
+      <path d="M348 238 L386 276" />
+    </g>
+    <g fill="#00D5FF">
+      <circle cx="315" cy="235" r="12" />
+      <circle cx="360" cy="275" r="9" />
+      <circle cx="470" cy="205" r="9" />
+    </g>
+    <path d="M470 330 L552 50 H662 L744 330 H654 L632 260 H522 L500 330 Z" fill="url(#grad-a)" />
+    <path d="M560 208 H622 L640 260 H548 Z" fill="#0E1A2D" opacity="0.15" />
+    <path d="M580 150 L704 150 L696 178 L566 178 Z" fill="url(#grad-stripe)" opacity="0.75" />
+    <path d="M770 50 H886 V120 H834 V178 H880 V248 H836 V330 H770 Z" fill="url(#grad-f)" />
+    <path d="M836 178 H886 V248 H836 Z" fill="#0E1A2D" opacity="0.1" />
+  </g>
+</svg>

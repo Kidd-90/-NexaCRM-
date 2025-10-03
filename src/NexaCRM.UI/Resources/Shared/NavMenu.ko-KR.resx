@@ -195,8 +195,8 @@
   <data name="UserManagement" xml:space="preserve">
     <value>사용자 관리</value>
   </data>
-  <data name="NavigationOverview" xml:space="preserve">
-    <value>개요</value>
+  <data name="NavigationProjects" xml:space="preserve">
+    <value>프로젝트</value>
   </data>
   <data name="SalesWorkspace" xml:space="preserve">
     <value>업무 공간</value>
@@ -218,6 +218,24 @@
   </data>
   <data name="SearchNavigation" xml:space="preserve">
     <value>내비게이션 검색</value>
+  </data>
+  <data name="StatusAlerts" xml:space="preserve">
+    <value>알람</value>
+  </data>
+  <data name="StatusUpdates" xml:space="preserve">
+    <value>업데이트</value>
+  </data>
+  <data name="StatusAnnouncements" xml:space="preserve">
+    <value>공지사항</value>
+  </data>
+  <data name="HistoryRecent" xml:space="preserve">
+    <value>최근 히스토리</value>
+  </data>
+  <data name="NavigationSectionStatus" xml:space="preserve">
+    <value>상태</value>
+  </data>
+  <data name="NavigationSectionHistory" xml:space="preserve">
+    <value>히스토리</value>
   </data>
   <data name="GlobalSearchPlaceholder" xml:space="preserve">
     <value>페이지·데이터·도구 검색</value>
