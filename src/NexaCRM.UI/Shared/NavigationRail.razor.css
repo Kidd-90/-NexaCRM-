@@ -34,7 +34,7 @@
     /* Fix the rail to the left side of the viewport so it doesn't move on page scroll */
      position: fixed;
      /* offset the rail to match the main content top margin for visual alignment */
-    top: var(--app-shell-page-header-offset);
+    top: calc(var(--app-shell-page-header-offset, 0px) + var(--app-shell-content-top-gap, 0px));
              outline: 2px solid #C7D2FE;
              outline-offset: 2px;
              background: linear-gradient(120deg, rgba(236,233,254,0.7), rgba(250,245,255,0.85));
@@ -91,7 +91,7 @@
          is included and avoid subtracting margins from the height. */
      height: 100%;
     margin: var(--nav-rail-icons-margin, 0.75rem);
-    margin-top: var(--app-shell-content-top-gap, calc(var(--nav-rail-icons-margin, 0.75rem)));
+    margin-top: 0;
      padding: 0;
      /* make room at the bottom so .nav-rail__bottom won't be clipped by
          the fixed company logo (or device safe-area). The 72px value roughly
@@ -324,7 +324,7 @@
     --brand-gradient-start: #7c3aed;
     --brand-gradient-end: #9333ea;
 
-    padding: var(--app-shell-content-top-gap, 0.75rem) 0.5rem 0.75rem 0.5rem; /* top spacing aligned with page content */
+    padding: 0.5rem 0.5rem 0.75rem 0.5rem; /* top spacing aligned with page content */
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
