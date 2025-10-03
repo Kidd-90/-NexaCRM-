@@ -90,7 +90,8 @@
          correctly position the bottom area. Use box-sizing so padding
          is included and avoid subtracting margins from the height. */
      height: 100%;
-     margin: var(--nav-rail-icons-margin, 0.75rem);
+    margin: var(--nav-rail-icons-margin, 0.75rem);
+    margin-top: var(--app-shell-content-top-gap, calc(var(--nav-rail-icons-margin, 0.75rem)));
      padding: 0;
      /* make room at the bottom so .nav-rail__bottom won't be clipped by
          the fixed company logo (or device safe-area). The 72px value roughly
@@ -323,7 +324,7 @@
     --brand-gradient-start: #7c3aed;
     --brand-gradient-end: #9333ea;
 
-    padding: 0.5rem 0.5rem 0.75rem 0.5rem; /* reduced padding to match surface */
+    padding: var(--app-shell-content-top-gap, 0.75rem) 0.5rem 0.75rem 0.5rem; /* top spacing aligned with page content */
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -657,7 +658,7 @@
 .panel-list {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.6rem;
     padding: 0.25rem 0.25rem 0.5rem 0.25rem;
 }
 

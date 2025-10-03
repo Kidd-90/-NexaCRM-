@@ -15,6 +15,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
        in the app stylesheet but lives here as a defensive fallback. */
     --sidebar-width: min(90vw, 320px);
     --app-shell-surface-padding-top: 0.5rem; /* reduced top padding to better align with nav rail */
+    --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem); /* consistent top spacing for rail + content */
 }
 
 .app-shell__surface {
@@ -245,7 +246,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     /* push content below the fixed header so it isn't hidden */
     margin-top: var(--app-shell-page-header-offset) !important;
     /* also provide a small padding-top for consistent spacing */
-    padding-top: calc(var(--app-shell-surface-padding-top) + 0.25rem);
+    padding-top: var(--app-shell-content-top-gap);
     transition: margin-top 220ms ease, padding-top 220ms ease;
 }
 

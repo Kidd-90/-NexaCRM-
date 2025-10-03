@@ -13,7 +13,7 @@ public static class NavigationCatalog
     private static readonly NavigationLinkDefinition[] ProjectLinks =
     {
         new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("overview", "metrics")),
-        new("StatusAlerts", "bi bi-bell", "notifications/alerts", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("alerts", "notifications")),
+        new("StatusAlerts", "bi bi-bell", "notifications", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("alerts", "notifications")),
         new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("updates", "notifications")),
         new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("announcements", "notifications")),
         new("HistoryRecent", "bi bi-clock-history", "history/recent", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("history", "recent"))
