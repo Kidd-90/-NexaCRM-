@@ -29,4 +29,8 @@
   - 초기 로딩 및 필터링, 삭제, CSV 내보내기를 `IDbAdminService`를 통해 수행합니다.
   - 검색어/상태/기간 필터는 UI에서 즉시 적용되며, 동일 조건으로 내보내기 기능을 이용할 수 있습니다.
 
+## 호스트 DI 등록 위치
+- **Blazor Server**: `src/NexaCRM.WebServer/Startup.cs`의 `ConfigureServices`에서 `services.AddNexaCrmAdminServices()`를 호출해 서버 호스트가 `DbAdminService`와 관련 관리자 서비스를 공용 DI 컨테이너에 등록합니다.
+- **Blazor WebAssembly**: `src/NexaCRM.WebClient/Program.cs`에서 `builder.Services.AddNexaCrmAdminServices()`를 호출하고, WebAssembly 환경에 맞는 Scoped/Mock 구현으로 필요한 서비스들을 다시 등록해 UI가 동일한 `IDbAdminService` 계약을 사용할 수 있습니다.
+
 > 이 문서는 DbAdminService 기능 확장 시 최신 상태를 유지하기 위해 관리합니다.
