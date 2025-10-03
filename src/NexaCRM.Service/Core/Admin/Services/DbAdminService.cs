@@ -103,8 +103,8 @@ public sealed class DbAdminService : IDbAdminService
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             filtered = filtered.Where(c =>
-                (c.CustomerName?.Contains(searchTerm, StringComparer.OrdinalIgnoreCase) ?? false)
-                || (c.ContactNumber?.Contains(searchTerm, StringComparer.OrdinalIgnoreCase) ?? false));
+                (c.CustomerName?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (c.ContactNumber?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         if (criteria?.Status is DbStatus status)
