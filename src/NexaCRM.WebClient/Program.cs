@@ -35,6 +35,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddAuthorizationCore();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddNexaCrmAdminServices();
 builder.Services.AddSupabaseClientOptions(builder.Configuration, validateOnStart: false);
 builder.Services.AddScoped<SupabaseSessionPersistence>();
 builder.Services.AddScoped<ISupabaseClientConfigurator, WebAssemblySupabaseClientConfigurator>();
