@@ -509,6 +509,32 @@ public sealed class Startup
         {
             _ = StartDuplicateMonitorAsync(scopeFactory, logger);
         });
+
+        ValidateAdminServices(app.ApplicationServices, logger);
+    }
+
+    private static void ValidateAdminServices(IServiceProvider serviceProvider, ILogger logger)
+    {
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        using var scope = serviceProvider.CreateScope();
+        try
+        {
+            var adminService = scope.ServiceProvider.GetRequiredService<IDbAdminService>();
+            _ = scope.ServiceProvider.GetRequiredService<IDbDataService>();
+            _ = scope.ServiceProvider.GetRequiredService<IDuplicateService>();
+            _ = scope.ServiceProvider.GetRequiredService<INotificationFeedService>();
+
+            logger.LogInformation(
+                "Db admin services resolved successfully for WebServer host using {AdminService}.",
+                adminService.GetType().FullName);
+        }
+        catch (Exception ex)
+        {
+            logger.LogCritical(ex, "Failed to resolve Db admin service dependencies during WebServer startup.");
+            throw new InvalidOperationException("Db admin services are not configured correctly for WebServer.", ex);
+        }
     }
 
     private static async Task StartDuplicateMonitorAsync(IServiceScopeFactory scopeFactory, ILogger logger)
