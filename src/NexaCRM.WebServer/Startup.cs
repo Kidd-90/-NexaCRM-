@@ -95,6 +95,7 @@ public sealed class Startup
         services.AddScoped<IReportService, SupabaseReportService>();
         services.AddScoped<IActivityService, SupabaseActivityService>();
         services.AddScoped<ISalesManagementService, SupabaseSalesManagementService>();
+        services.AddScoped<INoticeService, SupabaseNoticeService>();
         services.AddScoped<IEmailTemplateService, SupabaseEmailTemplateService>();
         services.AddScoped<ITeamService, SupabaseTeamService>();
 
