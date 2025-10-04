@@ -1,217 +1,416 @@
 @page "/support/notices"
-@using Microsoft.AspNetCore.Components.Forms
-@using NexaCRM.Services.Admin.Models.CustomerCenter
+@using System.Globalization
+@using System.Linq
+@using Microsoft.Extensions.Logging
 @using NexaCRM.Services.Admin.Interfaces
+@using NexaCRM.Services.Admin.Models.CustomerCenter
 @inject INoticeService NoticeService
-@inject IJSRuntime JSRuntime
+@inject ILogger<NoticeManagementPage> Logger
 
 <ResponsivePage>
-    <h3>Notice Management</h3>
+    <section class="notice-board">
+        <header class="notice-board__header">
+            <div class="notice-board__headline">
+                <p class="notice-board__eyebrow">고객센터</p>
+                <h1 class="notice-board__title">공지사항</h1>
+                <p class="notice-board__description">
+                    서비스 공지, 점검 일정, 기능 업데이트 소식을 한눈에 확인하세요.
+                </p>
+            </div>
+            <div class="notice-board__search">
+                <input class="notice-board__search-input"
+                       type="search"
+                       placeholder="검색어를 입력하세요"
+                       @bind="SearchTerm"
+                       @bind:event="oninput" />
+            </div>
+        </header>
 
-    <div class="search-bar mb-3">
-        <input class="form-control flex-grow-1" placeholder="Search notices" value="@searchTerm" @oninput="OnSearchChanged" />
-        <button class="btn btn-success" @onclick="ShowCreateModal">
-            <span class="oi oi-plus"></span> New Notice
-        </button>
-    </div>
-
-    @if (PagedNotices.Any())
-    {
-        <div class="table-responsive d-none d-md-block">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th class="text-end"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var notice in PagedNotices)
-                    {
-                        <tr>
-                            <td>@notice.Title</td>
-                            <td>@notice.Content</td>
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-primary" @onclick="() => ShowEditModal(notice)">
-                                        <span class="oi oi-pencil"></span>
-                                    </button>
-                                    <button class="btn btn-danger" @onclick="() => DeleteNotice(notice.Id)">
-                                        <span class="oi oi-trash"></span>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="d-md-none">
-            @foreach (var notice in PagedNotices)
+        <div class="notice-board__filters">
+            @foreach (var option in FilterOptions)
             {
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h5 class="card-title">@notice.Title</h5>
-                        <p class="card-text">@notice.Content</p>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-sm btn-primary me-1" @onclick="() => ShowEditModal(notice)">
-                                <span class="oi oi-pencil"></span>
-                            </button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteNotice(notice.Id)">
-                                <span class="oi oi-trash"></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <button type="button"
+                        class="notice-chip @(IsSelected(option.Category) ? "notice-chip--active" : string.Empty)"
+                        @onclick="() => SetCategoryFilter(option.Category)">
+                    @option.Label
+                </button>
             }
         </div>
 
-        @if (TotalPages > 1)
-        {
-            <nav>
-                <ul class="pagination">
-                    <li class="page-item @(currentPage == 1 ? "disabled" : string.Empty)">
-                        <button class="page-link" @onclick="PreviousPage">Prev</button>
-                    </li>
-                    @for (int i = 1; i <= TotalPages; i++)
+        <div class="notice-board__layout">
+            <div class="notice-board__list">
+                @if (isLoading)
+                {
+                    <div class="notice-board__placeholder">
+                        <span class="spinner"></span>
+                        <span>공지사항을 불러오는 중입니다.</span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(loadError))
+                {
+                    <div class="notice-board__placeholder notice-board__placeholder--error">
+                        <strong>오류가 발생했습니다.</strong>
+                        <p>@loadError</p>
+                    </div>
+                }
+                else if (!PagedNotices.Any())
+                {
+                    <div class="notice-board__placeholder">
+                        <strong>등록된 공지사항이 없습니다.</strong>
+                        <p>관리자가 새로운 공지를 등록하면 이곳에서 확인할 수 있습니다.</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var notice in PagedNotices)
                     {
-                        <li class="page-item @(currentPage == i ? "active" : string.Empty)">
-                            <button class="page-link" @onclick="() => GoToPage(i)">@i</button>
-                        </li>
+                        <button type="button"
+                                class="notice-list-item @(selectedNotice?.Id == notice.Id ? "is-active" : string.Empty)"
+                                @onclick="() => SelectNotice(notice)">
+                            <div class="notice-list-item__meta">
+                                <span class="notice-chip notice-chip--category @GetCategoryClass(notice.Category)">
+                                    @GetCategoryLabel(notice.Category)
+                                </span>
+                                <span class="notice-chip notice-chip--importance @GetImportanceClass(notice.Importance)">
+                                    @GetImportanceLabel(notice.Importance)
+                                </span>
+                                @if (notice.IsPinned)
+                                {
+                                    <span class="notice-chip notice-chip--pinned">상단고정</span>
+                                }
+                            </div>
+                            <div class="notice-list-item__title">@notice.Title</div>
+                            <div class="notice-list-item__summary">@notice.Summary</div>
+                            <time class="notice-list-item__date" datetime="@notice.PublishedAt.ToString("O")">
+                                @notice.PublishedAt.ToLocalTime().ToString("yyyy.MM.dd", CultureInfo.CurrentCulture)
+                            </time>
+                        </button>
                     }
-                    <li class="page-item @(currentPage == TotalPages ? "disabled" : string.Empty)">
-                        <button class="page-link" @onclick="NextPage">Next</button>
-                    </li>
-                </ul>
-            </nav>
-        }
-    }
-    else
-    {
-        <p>No notices found.</p>
-    }
+                }
+
+                @if (!isLoading && string.IsNullOrEmpty(loadError) && FilteredNotices.Count > PageSize)
+                {
+                    <nav class="notice-board__pagination" aria-label="공지사항 페이지네이션">
+                        <button type="button"
+                                class="notice-page-button"
+                                disabled="@(currentPage == 1)"
+                                @onclick="PreviousPage">
+                            이전
+                        </button>
+                        @for (var pageNumber = 1; pageNumber <= TotalPages; pageNumber++)
+                        {
+                            <button type="button"
+                                    class="notice-page-button @(currentPage == pageNumber ? "notice-page-button--active" : string.Empty)"
+                                    @onclick="() => GoToPage(pageNumber)">
+                                @pageNumber
+                            </button>
+                        }
+                        <button type="button"
+                                class="notice-page-button"
+                                disabled="@(currentPage == TotalPages)"
+                                @onclick="NextPage">
+                            다음
+                        </button>
+                    </nav>
+                }
+            </div>
+
+            <aside class="notice-board__detail" aria-live="polite">
+                @if (selectedNotice is null)
+                {
+                    <div class="notice-detail notice-detail--empty">
+                        <strong>열람할 공지사항을 선택하세요.</strong>
+                        <p>리스트에서 항목을 클릭하면 상세 내용을 확인할 수 있습니다.</p>
+                    </div>
+                }
+                else
+                {
+                    <article class="notice-detail">
+                        <header class="notice-detail__header">
+                            <div class="notice-detail__chips">
+                                <span class="notice-chip notice-chip--category @GetCategoryClass(selectedNotice.Category)">
+                                    @GetCategoryLabel(selectedNotice.Category)
+                                </span>
+                                <span class="notice-chip notice-chip--importance @GetImportanceClass(selectedNotice.Importance)">
+                                    @GetImportanceLabel(selectedNotice.Importance)
+                                </span>
+                                @if (selectedNotice.IsPinned)
+                                {
+                                    <span class="notice-chip notice-chip--pinned">상단고정</span>
+                                }
+                            </div>
+                            <h2 class="notice-detail__title">@selectedNotice.Title</h2>
+                            <div class="notice-detail__meta">
+                                <time datetime="@selectedNotice.PublishedAt.ToString("O")">
+                                    @selectedNotice.PublishedAt.ToLocalTime().ToString("yyyy년 M월 d일 (ddd)", CultureInfo.CurrentCulture)
+                                </time>
+                                @if (!string.IsNullOrWhiteSpace(selectedNotice.ReferenceUrl))
+                                {
+                                    <a class="notice-detail__link" href="@selectedNotice.ReferenceUrl" target="_blank" rel="noreferrer">상세 보기</a>
+                                }
+                            </div>
+                        </header>
+                        <div class="notice-detail__body">
+                            @foreach (var paragraph in GetContentParagraphs(selectedNotice))
+                            {
+                                <p>@paragraph</p>
+                            }
+                        </div>
+                    </article>
+                }
+            </aside>
+        </div>
+    </section>
 </ResponsivePage>
 
-@if (showModal)
-{
-    <div class="modal-backdrop" @onclick="CloseModal">
-        <div class="modal-content" @onclick:stopPropagation="true">
-            <EditForm OnValidSubmit="SaveNotice">
-                <div class="mb-3">
-                    <label class="form-label">Title</label>
-                    <InputText class="form-control" @bind-Value="editTitle" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Content</label>
-                    <InputTextArea class="form-control" @bind-Value="editContent" />
-                </div>
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary me-2">Save</button>
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-}
-
 @code {
-    private List<Notice> notices = new();
-    private string searchTerm = string.Empty;
+    private static readonly IReadOnlyList<(NoticeCategory? Category, string Label)> FilterOptions = new List<(NoticeCategory?, string)>
+    {
+        (null, "전체"),
+        (NoticeCategory.General, "공지"),
+        (NoticeCategory.Update, "업데이트"),
+        (NoticeCategory.Maintenance, "점검"),
+        (NoticeCategory.Security, "보안"),
+        (NoticeCategory.Policy, "약관"),
+        (NoticeCategory.Promotion, "프로모션")
+    };
+
+    private static readonly IReadOnlyDictionary<NoticeCategory, string> CategoryLabels = new Dictionary<NoticeCategory, string>
+    {
+        [NoticeCategory.General] = "공지",
+        [NoticeCategory.Update] = "업데이트",
+        [NoticeCategory.Maintenance] = "점검",
+        [NoticeCategory.Security] = "보안",
+        [NoticeCategory.Policy] = "약관",
+        [NoticeCategory.Promotion] = "프로모션"
+    };
+
+    private static readonly IReadOnlyDictionary<NoticeImportance, string> ImportanceLabels = new Dictionary<NoticeImportance, string>
+    {
+        [NoticeImportance.Normal] = "일반",
+        [NoticeImportance.Highlight] = "중요",
+        [NoticeImportance.Critical] = "긴급"
+    };
+
+    private readonly List<Notice> _allNotices = new();
+    private readonly List<Notice> _filteredNotices = new();
+    private bool _filtersDirty = true;
+
+    private Notice? selectedNotice;
+    private NoticeCategory? selectedCategory;
+    private bool isLoading = true;
+    private string? loadError;
     private int currentPage = 1;
-    private const int PageSize = 5;
-    private bool showModal;
-    private int? editingId;
-    private string editTitle = string.Empty;
-    private string editContent = string.Empty;
+    private const int PageSize = 8;
+    private string searchTerm = string.Empty;
 
-    private IEnumerable<Notice> FilteredNotices =>
-        string.IsNullOrWhiteSpace(searchTerm)
-            ? notices
-            : notices.Where(n => n.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                 n.Content.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+    private string SearchTerm
+    {
+        get => searchTerm;
+        set
+        {
+            if (searchTerm == value)
+            {
+                return;
+            }
 
-    private int TotalPages => (int)Math.Ceiling(FilteredNotices.Count() / (double)PageSize);
+            searchTerm = value ?? string.Empty;
+            currentPage = 1;
+            InvalidateFilters();
+            EnsureSelection();
+        }
+    }
 
-    private IEnumerable<Notice> PagedNotices =>
-        FilteredNotices.Skip((currentPage - 1) * PageSize).Take(PageSize);
+    private IReadOnlyList<Notice> FilteredNotices
+    {
+        get
+        {
+            if (_filtersDirty)
+            {
+                _filteredNotices.Clear();
+
+                IEnumerable<Notice> query = _allNotices;
+
+                if (selectedCategory.HasValue)
+                {
+                    query = query.Where(n => n.Category == selectedCategory.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    query = query.Where(n =>
+                        n.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        n.Summary.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        n.Content.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                }
+
+                var ordered = query
+                    .OrderByDescending(n => n.IsPinned)
+                    .ThenByDescending(n => n.PublishedAt)
+                    .ToList();
+
+                _filteredNotices.AddRange(ordered);
+                _filtersDirty = false;
+            }
+
+            return _filteredNotices;
+        }
+    }
+
+    private IReadOnlyList<Notice> PagedNotices => FilteredNotices
+        .Skip((currentPage - 1) * PageSize)
+        .Take(PageSize)
+        .ToList();
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredNotices.Count / (double)PageSize));
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadNotices();
+        try
+        {
+            var notices = await NoticeService.GetNoticesAsync();
+            _allNotices.AddRange(notices);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load notices.");
+            loadError = "공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.";
+        }
+        finally
+        {
+            isLoading = false;
+            InvalidateFilters();
+            EnsureSelection();
+        }
     }
 
-    private async Task LoadNotices()
+    private void SetCategoryFilter(NoticeCategory? category)
     {
-        notices = (await NoticeService.GetNoticesAsync()).ToList();
+        if (selectedCategory == category)
+        {
+            return;
+        }
+
+        selectedCategory = category;
         currentPage = 1;
+        InvalidateFilters();
+        EnsureSelection();
     }
 
-    private void OnSearchChanged(ChangeEventArgs e)
+    private bool IsSelected(NoticeCategory? category) => selectedCategory == category;
+
+    private void SelectNotice(Notice notice)
     {
-        searchTerm = e.Value?.ToString() ?? string.Empty;
-        currentPage = 1;
-    }
+        if (notice is null)
+        {
+            return;
+        }
 
-    private void GoToPage(int page) => currentPage = page;
+        selectedNotice = notice;
+    }
 
     private void PreviousPage()
     {
-        if (currentPage > 1)
+        if (currentPage <= 1)
         {
-            currentPage--;
+            return;
         }
+
+        currentPage--;
+        EnsureSelection();
     }
 
     private void NextPage()
     {
-        if (currentPage < TotalPages)
+        if (currentPage >= TotalPages)
         {
-            currentPage++;
-        }
-    }
-
-    private void ShowCreateModal()
-    {
-        editingId = null;
-        editTitle = string.Empty;
-        editContent = string.Empty;
-        showModal = true;
-    }
-
-    private void ShowEditModal(Notice notice)
-    {
-        editingId = notice.Id;
-        editTitle = notice.Title;
-        editContent = notice.Content;
-        showModal = true;
-    }
-
-    private void CloseModal() => showModal = false;
-
-    private async Task SaveNotice()
-    {
-        if (editingId.HasValue)
-        {
-            await NoticeService.UpdateNoticeAsync(new Notice(editingId.Value, editTitle, editContent));
-        }
-        else
-        {
-            await NoticeService.CreateNoticeAsync(new Notice(0, editTitle, editContent));
+            return;
         }
 
-        showModal = false;
-        await LoadNotices();
+        currentPage++;
+        EnsureSelection();
     }
 
-    private async Task DeleteNotice(int id)
+    private void GoToPage(int page)
     {
-        if (await JSRuntime.InvokeAsync<bool>("confirm", "Delete this notice?"))
+        if (page == currentPage)
         {
-            await NoticeService.DeleteNoticeAsync(id);
-            await LoadNotices();
+            return;
         }
+
+        currentPage = Math.Clamp(page, 1, TotalPages);
+        EnsureSelection();
     }
+
+    private void EnsureSelection()
+    {
+        var filtered = FilteredNotices;
+        if (filtered.Count == 0)
+        {
+            selectedNotice = null;
+            currentPage = 1;
+            return;
+        }
+
+        var maxPage = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PageSize));
+        if (currentPage > maxPage)
+        {
+            currentPage = maxPage;
+        }
+
+        if (selectedNotice is not null && filtered.Any(n => n.Id == selectedNotice.Id))
+        {
+            return;
+        }
+
+        selectedNotice = filtered
+            .Skip((currentPage - 1) * PageSize)
+            .FirstOrDefault()
+            ?? filtered.First();
+    }
+
+    private static IEnumerable<string> GetContentParagraphs(Notice notice)
+    {
+        if (string.IsNullOrWhiteSpace(notice.Content))
+        {
+            return Array.Empty<string>();
+        }
+
+        return notice.Content
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => p.Trim());
+    }
+
+    private static string GetCategoryLabel(NoticeCategory category)
+    {
+        return CategoryLabels.TryGetValue(category, out var label)
+            ? label
+            : category.ToString();
+    }
+
+    private static string GetImportanceLabel(NoticeImportance importance)
+    {
+        return ImportanceLabels.TryGetValue(importance, out var label)
+            ? label
+            : importance.ToString();
+    }
+
+    private static string GetCategoryClass(NoticeCategory category) => category switch
+    {
+        NoticeCategory.Update => "is-update",
+        NoticeCategory.Maintenance => "is-maintenance",
+        NoticeCategory.Security => "is-security",
+        NoticeCategory.Policy => "is-policy",
+        NoticeCategory.Promotion => "is-promotion",
+        _ => string.Empty
+    };
+
+    private static string GetImportanceClass(NoticeImportance importance) => importance switch
+    {
+        NoticeImportance.Highlight => "is-highlight",
+        NoticeImportance.Critical => "is-critical",
+        _ => string.Empty
+    };
+
+    private void InvalidateFilters() => _filtersDirty = true;
 }
-
