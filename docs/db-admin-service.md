@@ -16,7 +16,8 @@
 
 ## 연계 서비스
 - `IDbDataService`
-  - 모든 동작이 인메모리 또는 실제 저장소 구현과 연계되므로, 서비스 DI 구성에서 해당 인터페이스 구현을 주입해야 합니다.
+  - 모든 동작이 Supabase 기반 `SupabaseDbDataService`와 연계되며, 오프라인/테스트 용도의 인메모리 구현도 동일 계약을 따릅니다.
+  - 서비스 DI 구성에서 `SupabaseClientProvider`가 초기화되고 올바른 Supabase URL/Anon Key가 주입되어야 합니다.
 - `DuplicateService`
   - `SearchAsync`의 중복 탐지 로직은 `DuplicateService`와 동일하게 연락처 번호를 기준으로 하며, 향후 필요 시 고급 스코어링 로직으로 확장할 수 있습니다.
 
@@ -30,7 +31,11 @@
   - 검색어/상태/기간 필터는 UI에서 즉시 적용되며, 동일 조건으로 내보내기 기능을 이용할 수 있습니다.
 
 ## 호스트 DI 등록 위치
-- **Blazor Server**: `src/NexaCRM.WebServer/Startup.cs`의 `ConfigureServices`에서 `services.AddNexaCrmAdminServices()`를 호출해 서버 호스트가 `DbAdminService`와 관련 관리자 서비스를 공용 DI 컨테이너에 등록합니다. `Configure` 단계에서는 `ValidateAdminServices`를 실행해 필수 의존성이 빠져 있을 경우 즉시 예외를 발생시키므로, 잘못된 DI 구성을 조기에 파악할 수 있습니다.
-- **Blazor WebAssembly**: `src/NexaCRM.WebClient/Program.cs`에서 `builder.Services.AddNexaCrmAdminServices()`를 호출하고, WebAssembly 환경에 맞는 Scoped/Mock 구현으로 필요한 서비스들을 다시 등록해 UI가 동일한 `IDbAdminService` 계약을 사용할 수 있습니다.
+- **Blazor Server**: `src/NexaCRM.WebServer/Startup.cs`의 `ConfigureServices`에서 `services.AddNexaCrmAdminServices()`를 호출하면 서버 호스트가 `SupabaseDbDataService`와 `DbAdminService`를 포함한 관리자 서비스를 공용 DI 컨테이너에 등록합니다. `Configure` 단계에서는 `ValidateAdminServices`를 실행해 필수 의존성이 빠져 있을 경우 즉시 예외를 발생시키므로, 잘못된 DI 구성을 조기에 파악할 수 있습니다.
+- **Blazor WebAssembly**: `src/NexaCRM.WebClient/Program.cs`에서 `builder.Services.AddNexaCrmAdminServices()`를 호출하면 WebAssembly 호스트에서도 동일한 Supabase 데이터 소스가 주입됩니다. 추가 Mock 재등록 없이도 클라이언트와 서버가 동일한 DB 데이터를 참조합니다.
+
+## Supabase 연동 참고
+- 실제 테이블은 `supabase/migrations/schema.sql`에 정의된 `db_customers` 스키마와 매핑되며, `SupabaseDbDataService`는 PostgREST API를 통해 CRUD 및 병합 작업을 수행합니다.
+- Supabase 환경값이 비어 있는 경우 `AddSupabaseClientOptions`가 오프라인 URL/Anon Key로 폴백하지만, 실서비스 배포 시 반드시 유효한 키를 주입해야 합니다.
 
 > 이 문서는 DbAdminService 기능 확장 시 최신 상태를 유지하기 위해 관리합니다.
