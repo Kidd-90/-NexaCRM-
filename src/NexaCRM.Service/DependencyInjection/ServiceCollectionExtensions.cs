@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using NexaCRM.Service.InMemory;
+using NexaCRM.Service.Supabase;
 using NexaCRM.Services.Admin;
 using NexaCRM.Services.Admin.Interfaces;
 
@@ -13,7 +14,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<IDbDataService, InMemoryDbDataService>();
+        services.AddScoped<IDbDataService, SupabaseDbDataService>();
         services.AddSingleton<IDbAdminService, DbAdminService>();
         services.AddSingleton<IDuplicateService, DuplicateService>();
         services.AddSingleton<IDedupeConfigService, DedupeConfigService>();

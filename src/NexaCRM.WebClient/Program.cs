@@ -18,7 +18,6 @@ using NexaCRM.Service.Supabase.Configuration;
 using NexaCRM.Service.Supabase.Enterprise;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
-using NexaCRM.UI.Services.Mock;
 using NexaCRM.WebClient.Supabase.Environment;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -56,7 +55,6 @@ builder.Services.AddScoped<IReportService, SupabaseReportService>();
 builder.Services.AddScoped<IActivityService, SupabaseActivityService>();
 builder.Services.AddScoped<ISalesManagementService, SupabaseSalesManagementService>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
-builder.Services.AddScoped<IDbDataService, MockDbDataService>();
 builder.Services.AddScoped<IDuplicateService, DuplicateService>();
 builder.Services.AddSingleton<IDedupeConfigService, DedupeConfigService>();
 builder.Services.AddScoped<IDuplicateMonitorService, DuplicateMonitorService>();
