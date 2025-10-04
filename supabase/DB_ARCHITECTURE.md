@@ -147,7 +147,7 @@ DB 자산 영역은 `IDuplicateService`가 사용하는 중복 점수, 후보 �
 | `ticket_sla_events` | SLA 측정 | ticket_id, event_type(opened/responded/resolved), occurred_at | SLA 리포트 |
 | `ticket_tags` | 태그 | ticket_id, tag | 카테고리화 |
 | `ticket_attachments` | 첨부 파일 | ticket_id, storage_path, file_name, content_type | Storage 연동 |
-| `customer_notices` | 공지사항 | title, content, published_at, tenant_id | `Notice` 모델 매핑.【F:src/NexaCRM.Service/Admin.Abstractions/Models/CustomerCenter/CustomerCenterModels.cs†L5-L20】【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/INoticeService.cs†L7-L14】 |
+| `customer_notices` | 공지사항 | title, summary, content, category, importance, is_pinned, published_at, tenant_id, reference_url | `Notice` 모델 매핑 및 Supabase 실시간 구독 확장 포인트 제공.【F:src/NexaCRM.Service/Abstractions/Models/CustomerCenter/CustomerCenterModels.cs†L5-L56】【F:src/NexaCRM.Service/Core/Supabase/Services/SupabaseNoticeService.cs†L1-L169】 |
 | `customer_faqs` | FAQ | category, question, answer, display_order | `FaqItem` 구조 및 FAQ 서비스 대응.【F:src/NexaCRM.Service/Admin.Abstractions/Models/CustomerCenter/CustomerCenterModels.cs†L7-L20】【F:src/NexaCRM.Service/Admin.Abstractions/Interfaces/IFaqService.cs†L7-L12】 |
 
 ### 3.6 마케팅 & 커뮤니케이션 채널
