@@ -23,6 +23,11 @@
 - 오프라인 envelope 등록, 미적용 envelope 조회, 적용 처리, 충돌 기록/조회 기능을 제공합니다.
 - 충돌 정보는 envelope-organization 조합으로 그룹화되어 모바일/데스크톱 클라이언트가 쉽게 수집할 수 있습니다.
 
+## WebServer 통합 현황
+- Blazor Server 기반 `NexaCRM.WebServer` 프로젝트에서도 동일한 Supabase 서비스 구성을 사용하도록 정비했습니다.
+- 서버 호스트는 `SupabaseEnterpriseDataStore`를 싱글톤으로 등록해 WebClient와 동일한 인메모리 스토어를 공유합니다.
+- 기존 Mock 서비스 의존성은 모두 `Supabase*` 구현체로 교체되어, 서버와 WebClient가 동일한 인증/동기화/거버넌스 흐름을 따릅니다.
+
 ## 테스트 전략
 - `SupabaseEnterpriseDataStore`는 순수 C# 인메모리 컬렉션을 사용하므로 단위 테스트에서 별도의 외부 의존성을 요구하지 않습니다.
 - 서비스별 동작은 `NexaCRM.WebClient.UnitTests` 프로젝트에서 검증하며, 향후 실 Supabase 연동 시에는 통합 테스트를 추가할 수 있습니다.

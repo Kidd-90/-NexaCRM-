@@ -21,8 +21,8 @@ using NexaCRM.Service.Supabase.Configuration;
 using NexaCRM.Services.Admin.Interfaces;
 using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
-using NexaCRM.UI.Services.Mock;
 using NexaCRM.WebServer.Services;
+using NexaCRM.Service.Supabase.Enterprise;
 
 namespace NexaCRM.WebServer;
 
@@ -78,23 +78,25 @@ public sealed class Startup
         services.AddScoped<INavigationStateService, NavigationStateService>();
         services.AddScoped<IDeviceService, DeviceService>();
         services.AddScoped<IUserFavoritesService, UserFavoritesService>();
-        services.AddSingleton<ISyncOrchestrationService, MockSyncOrchestrationService>();
-        services.AddSingleton<ICommunicationHubService, MockCommunicationHubService>();
-        services.AddSingleton<IFileHubService, MockFileHubService>();
-        services.AddSingleton<ISettingsCustomizationService, MockSettingsCustomizationService>();
-        services.AddSingleton<IUserGovernanceService, MockUserGovernanceService>();
+        services.AddSingleton<SupabaseEnterpriseDataStore>();
 
-        services.AddScoped<IContactService, MockContactService>();
-        services.AddScoped<IDealService, MockDealService>();
-        services.AddScoped<ITaskService, MockTaskService>();
-        services.AddScoped<ISupportTicketService, MockSupportTicketService>();
-        services.AddScoped<IAgentService, MockAgentService>();
-        services.AddScoped<IMarketingCampaignService, MockMarketingCampaignService>();
-        services.AddScoped<IReportService, MockReportService>();
-        services.AddScoped<IActivityService, MockActivityService>();
-        services.AddScoped<ISalesManagementService, MockSalesManagementService>();
-        services.AddScoped<IEmailTemplateService, MockEmailTemplateService>();
-        services.AddScoped<ITeamService, MockTeamService>();
+        services.AddScoped<ISyncOrchestrationService, SupabaseSyncOrchestrationService>();
+        services.AddScoped<ICommunicationHubService, SupabaseCommunicationHubService>();
+        services.AddScoped<IFileHubService, SupabaseFileHubService>();
+        services.AddScoped<ISettingsCustomizationService, SupabaseSettingsCustomizationService>();
+        services.AddScoped<IUserGovernanceService, SupabaseUserGovernanceService>();
+
+        services.AddScoped<IContactService, SupabaseContactService>();
+        services.AddScoped<IDealService, SupabaseDealService>();
+        services.AddScoped<ITaskService, SupabaseTaskService>();
+        services.AddScoped<ISupportTicketService, SupabaseSupportTicketService>();
+        services.AddScoped<IAgentService, SupabaseAgentService>();
+        services.AddScoped<IMarketingCampaignService, SupabaseMarketingCampaignService>();
+        services.AddScoped<IReportService, SupabaseReportService>();
+        services.AddScoped<IActivityService, SupabaseActivityService>();
+        services.AddScoped<ISalesManagementService, SupabaseSalesManagementService>();
+        services.AddScoped<IEmailTemplateService, SupabaseEmailTemplateService>();
+        services.AddScoped<ITeamService, SupabaseTeamService>();
 
     }
 
