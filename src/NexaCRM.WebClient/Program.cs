@@ -65,7 +65,7 @@ builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IDbAdminService, DbAdminService>();
 builder.Services.AddScoped<IStatisticsService, SupabaseStatisticsService>();
 builder.Services.AddScoped<ICustomerCenterService, CustomerCenterService>();
-builder.Services.AddScoped<INoticeService, NoticeService>();
+builder.Services.AddScoped<INoticeService, SupabaseNoticeService>();
 builder.Services.AddScoped<ISmsService, SupabaseSmsService>();
 builder.Services.AddScoped<ISystemInfoService, SystemInfoService>();
 builder.Services.AddScoped<IFaqService, FaqService>();

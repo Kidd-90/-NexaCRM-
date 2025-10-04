@@ -21,8 +21,27 @@ public sealed class CustomerCenterService : ICustomerCenterService
     {
         _notices = new List<Notice>
         {
-            new(1, "정기 점검 안내", "서비스 점검이 10월 5일 예정되어 있습니다."),
-            new(2, "신규 기능 출시", "고객 설문 자동화 기능이 추가되었습니다."),
+            new()
+            {
+                Id = 1,
+                Title = "정기 점검 안내",
+                Summary = "10월 5일(목) 01:00~03:00 사이 서비스 접속이 일시적으로 제한됩니다.",
+                Content = "보다 안정적인 서비스를 위해 정기 점검을 진행합니다. 점검 시간 동안에는 CRM 일부 기능 이용이 제한될 수 있습니다.",
+                Category = NoticeCategory.Maintenance,
+                Importance = NoticeImportance.Highlight,
+                PublishedAt = DateTimeOffset.UtcNow.AddDays(-6),
+                IsPinned = true
+            },
+            new()
+            {
+                Id = 2,
+                Title = "신규 기능 출시",
+                Summary = "고객 설문 자동화 플로우가 추가되어 NPS 관리가 더 쉬워졌습니다.",
+                Content = "설문 자동화 기능을 활용하면 고객 세그먼트별 맞춤 설문 전송과 응답 기반 후속 액션 설정이 가능합니다.",
+                Category = NoticeCategory.Update,
+                Importance = NoticeImportance.Normal,
+                PublishedAt = DateTimeOffset.UtcNow.AddDays(-3)
+            },
         };
 
         _faqItems = new List<FaqItem>
