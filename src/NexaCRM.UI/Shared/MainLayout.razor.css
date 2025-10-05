@@ -211,7 +211,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
      /* Increase desktop offset so the fixed page header starts lower and
          doesn't overlap page content. Tune this value if your header content
          (title/actions) grows larger. */
-     --app-shell-page-header-offset-desktop: 72px; /* increased header height + spacing */
+     --app-shell-page-header-offset-desktop: 10px; /* increased header height + spacing */
      --app-shell-page-header-offset-mobile: 96px;  /* stacked header on mobile is taller */
     --app-shell-page-header-offset: var(--app-shell-page-header-offset-desktop);
 }
