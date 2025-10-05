@@ -1,7 +1,7 @@
 # -NexaCRM-
 NexaCRM은 고객 관리부터 워크플로우 자동화, 보고서까지 한 번에 처리할 수 있는 종합 CRM 솔루션입니다. 반응형 UI와 메시지 브로커 기반 백엔드를 통해 유연한 확장과 안정적인 운영을 지원합니다.
 
-👉 최신 main 브랜치 배포는 https://c1a16e15.nexacrm.pages.dev 에서 확인할 수 있으며, Merge 될 때마다 자동으로 갱신됩니다.
+👉 최신 main 브랜치 배포는 [naf-nexacrm.netlify.app](https://naf-nexacrm.netlify.app/) 에서 확인할 수 있으며, Merge 될 때마다 자동으로 갱신됩니다.
 
 🗂️ 추후 예정된 Supabase 연동 및 서비스 고도화 계획은 [NexaCRM 고도화 및 기능 추가 로드맵](NexaCRM_Enhancement_Roadmap.md)에 정리되어 있습니다.
 🧱 Supabase로 전환할 데이터 모델과 RLS 전략은 [Supabase DB 아키텍처 가이드](supabase/DB_ARCHITECTURE.md)에서 도메인별 테이블 구조와 운영 고려 사항으로 요약돼 있습니다.
