@@ -200,10 +200,11 @@ html, body {
     width: 100%;
     overflow-x: hidden; /* 가로 스크롤 방지 */
     background-color: var(--background-color);
-    background-image: var(--app-background-gradient);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
+    background-image: var(--app-background-gradient), url('/background.png');
+    background-repeat: no-repeat, repeat;
+    background-size: cover, auto;
+    background-position: center, top left;
+    background-attachment: fixed, fixed;
     color: var(--text-primary);
     transition: background-color var(--transition-normal), color var(--transition-normal), background-image var(--transition-slow);
 }
@@ -246,7 +247,11 @@ h6 {
 @media (min-width: 768px) {
   html, body {
     background-color: var(--background-color) !important;
-    background-image: var(--app-background-gradient) !important;
+    background-image: var(--app-background-gradient), url('/background.png') !important;
+    background-repeat: no-repeat, repeat !important;
+    background-size: cover, auto !important;
+    background-position: center, top left !important;
+    background-attachment: fixed, fixed !important;
   }
 }
 
