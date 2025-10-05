@@ -15,11 +15,11 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddScoped<IDbDataService, SupabaseDbDataService>();
-        services.AddSingleton<IDbAdminService, DbAdminService>();
-        services.AddSingleton<IDuplicateService, DuplicateService>();
+        services.AddScoped<IDbAdminService, DbAdminService>();
+        services.AddScoped<IDuplicateService, DuplicateService>();
         services.AddSingleton<IDedupeConfigService, DedupeConfigService>();
         services.AddSingleton<INotificationFeedService, InMemoryNotificationFeedService>();
-        services.AddSingleton<IDuplicateMonitorService, DuplicateMonitorService>();
+        services.AddScoped<IDuplicateMonitorService, DuplicateMonitorService>();
         services.AddSingleton<ICustomerCenterService, CustomerCenterService>();
         services.AddSingleton<IFaqService, FaqService>();
         services.AddSingleton<INoticeService, NoticeService>();
