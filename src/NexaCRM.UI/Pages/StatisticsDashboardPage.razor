@@ -1,4 +1,5 @@
 @page "/statistics/dashboard"
+@attribute [Authorize(Roles = "Manager,Admin,Developer")]
 @using System.Collections.Generic
 @using System.Globalization
 @using System.Linq

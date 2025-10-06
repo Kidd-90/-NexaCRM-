@@ -1,4 +1,5 @@
 @page "/system/info"
+@attribute [Authorize(Roles = "Admin,Developer")]
 @using NexaCRM.Services.Admin.Interfaces
 @using NexaCRM.Services.Admin.Models.SystemInfo
 @inject ISystemInfoService SystemInfoService

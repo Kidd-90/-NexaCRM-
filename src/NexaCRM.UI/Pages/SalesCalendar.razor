@@ -1,4 +1,5 @@
 @page "/sales-calendar"
+@attribute [Authorize(Roles = "Sales,Manager")]
 @using Microsoft.Extensions.Localization
 @using NexaCRM.UI.Models
 @using NexaCRM.UI.Models.Enums

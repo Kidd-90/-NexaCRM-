@@ -1,4 +1,5 @@
 @page "/schedule/sent-history"
+@attribute [Authorize(Roles = "Sales,Manager")]
 @using System.Globalization
 @using System.Linq
 @using NexaCRM.Services.Admin.Models.Sms

@@ -1,4 +1,5 @@
 @page "/reports-page"
+@attribute [Authorize(Roles = "Manager,Admin,Developer")]
 @using Microsoft.Extensions.Localization
 @using NexaCRM.UI.Models
 @using NexaCRM.UI.Services.Interfaces

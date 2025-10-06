@@ -1,4 +1,5 @@
 @page "/settings/sms"
+@attribute [Authorize(Roles = "Sales,Manager")]
 @using NexaCRM.Services.Admin.Models.Settings
 @using NexaCRM.Services.Admin.Interfaces
 @inject ISmsService SmsService

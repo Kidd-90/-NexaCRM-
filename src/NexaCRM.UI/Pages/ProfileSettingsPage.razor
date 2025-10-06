@@ -1,4 +1,5 @@
 @page "/profile-settings-page"
+@attribute [Authorize(Roles = "Sales,Manager,Admin,Developer")]
 @using Microsoft.Extensions.Localization
 @using NexaCRM.Services.Admin.Models.Settings
 @using NexaCRM.Services.Admin.Interfaces

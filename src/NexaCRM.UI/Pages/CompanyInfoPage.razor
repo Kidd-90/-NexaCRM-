@@ -1,4 +1,5 @@
 @page "/settings/company-info"
+@attribute [Authorize(Roles = "Manager,Admin,Developer")]
 
 <ResponsivePage>
     <h3>Company Information Management</h3>
