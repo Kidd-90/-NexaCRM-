@@ -41,7 +41,10 @@ public sealed class Startup
         services.AddAuthorizationCore();
 
         services.AddRazorPages();
-        services.AddServerSideBlazor();
+        services.AddServerSideBlazor(options =>
+        {
+            options.DetailedErrors = true;
+        });
 
         services.AddNexaCrmAdminServices();
 
