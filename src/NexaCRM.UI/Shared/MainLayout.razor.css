@@ -11,10 +11,12 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 .app-shell__background {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 83px;
+    min-width: calc(100% - 83px);
+    max-height: calc(100vh - 0.5 * var(--spacing-md));
     right: 0;
     bottom: 0;
-    background: var(--surface-color, #F9FAFB);
+    background: var(--surface-color, red);
     border: 1px solid var(--divider-color, #E5E7EB);
     border-radius: 1rem;
     z-index: 0;
@@ -276,8 +278,10 @@ html:not([data-theme="dark"]) .app-shell--desktop {
    these rules only apply when a fixed .nav-rail exists earlier in the DOM.
    They also handle the collapsed rail and explicit mobile shell state. */
 .nav-rail ~ .app-shell__content {
-    margin-left: calc(var(--sidebar-width, 320px) + 6px) !important;
-    max-width: calc(100% - (var(--sidebar-width, 320px) + 6px)) !important;
+    margin: 9px 9px 9px 241px !important;
+    width: calc(100% - 250px) !important;
+    height: calc(100vh - 18px) !important;
+    max-width: calc(100% - 250px) !important;
     box-sizing: border-box;
 }
 
@@ -349,8 +353,8 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 
 .app-shell__content {
     flex: 1;
-    border-radius: 1.5rem;
-    background: var(--surface-color);
+    border-radius: 1rem;
+    background: var(--background-color);
     border: 1px solid var(--divider-color);
     padding: clamp(0.75rem, 1.2vw, 1rem);
     /* main surface shadow: more pronounced on right and bottom for subtle 3D lift */
@@ -363,8 +367,9 @@ html:not([data-theme="dark"]) .app-shell--desktop {
    sidebar is removed/overlaid so we clear the offsets. */
 .app-shell__content {
     /* add a small visual gutter so the main surface doesn't touch the rail */
-    margin-left: calc(var(--sidebar-width, 0px) + 6px) !important;
-    max-width: calc(100% - (var(--sidebar-width, 0px) + 6px)) !important;
+    margin-left: 240px !important;
+    width: calc(100% - 240px) !important;
+    max-width: calc(100% - 240px) !important;
     box-sizing: border-box;
 }
 
