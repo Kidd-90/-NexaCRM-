@@ -22,14 +22,135 @@
     background: var(--app-background-gradient);
     color: var(--text-color);
     min-height: 100vh;
+    height: auto;
     padding: 48px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .mobile-login-container {
     overflow: hidden;
+    height: 100vh;
+}
+
+/* 이미지 섹션 - 모바일에서는 숨김 */
+.login-image-section {
+    display: none;
+}
+
+/* 데스크톱/태블릿에서는 컨텐츠에 맞게 높이 조절 */
+@media (min-width: 769px) {
+    .login-container {
+        height: 100vh;
+        min-height: 100vh;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        gap: 0;
+    }
+    
+    /* 왼쪽 이미지 영역 */
+    .login-image-section {
+        display: flex;
+        flex: 1;
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        overflow: hidden;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        margin-right: -2rem;
+        transition: background-image 0.5s ease-in-out;
+    }
+    
+    /* 이미지 위 그라데이션 오버레이 */
+    .login-image-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+    }
+    
+    .login-image-content {
+        text-align: center;
+        color: white;
+        z-index: 1;
+        position: relative;
+    }
+    
+    .login-image-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .login-image-subtitle {
+        font-size: 1.25rem;
+        font-weight: 500;
+        opacity: 0.95;
+        letter-spacing: -0.01em;
+    }
+    
+    /* 이미지 인디케이터 */
+    .image-indicators {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
+        display: flex;
+        gap: 0.75rem;
+        z-index: 2;
+    }
+    
+    .indicator-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0;
+    }
+    
+    .indicator-dot:hover {
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(1.2);
+    }
+    
+    .indicator-dot.active {
+        background: rgba(255, 255, 255, 1);
+        border-color: rgba(255, 255, 255, 1);
+    }
+    
+    .indicator-dot:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+    
+    /* 오른쪽 로그인 폼 영역 */
+    .mobile-login-card {
+        flex: 0 0 450px;
+        max-width: 450px;
+        height: 100vh;
+        border-radius: 2rem 0 0 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2rem 3rem;
+        position: relative;
+        z-index: 1;
+        overflow-y: auto;
+    }
 }
 
 .mobile-login-card {
@@ -37,7 +158,7 @@
     max-width: 380px;
     background: var(--surface-color);
     color: var(--text-color);
-    border-radius: 28px;
+    border-radius: 1.5rem;
     border: 1px solid var(--frosted-border);
     box-shadow: var(--card-shadow);
     padding: 36px 28px 40px;

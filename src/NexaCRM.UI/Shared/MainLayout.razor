@@ -67,60 +67,26 @@
         <NavigationRail />
     }
 
-    <div class="app-shell__surface">
-        <header class="app-shell__header">
-            <div class="app-shell__brand">
-                <button type="button" class="app-shell__nav-toggle" @onclick="ToggleNavMenu" aria-label="Toggle navigation">
-                    <i class="bi bi-list" aria-hidden="true"></i>
-                </button>
-                <a class="app-shell__logo" href="/">
-                    <span class="app-shell__logo-mark">NC</span>
-                    <span class="app-shell__logo-text">NexaCRM</span>
-                </a>
-            </div>
+    <div class="app-shell__background">
+        <div class="app-shell__surface">
+            <header class="app-shell__header">
+                <div class="app-shell__brand">
+                    <button type="button" class="app-shell__nav-toggle" @onclick="ToggleNavMenu" aria-label="Toggle navigation">
+                        <i class="bi bi-list" aria-hidden="true"></i>
+                    </button>
+                    <a class="app-shell__logo" href="/">
+                        <span class="app-shell__logo-mark">NC</span>
+                        <span class="app-shell__logo-text">NexaCRM</span>
+                    </a>
+                </div>
 
-            <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
-
-            <div class="app-shell__actions">
-                <button type="button" class="app-shell__theme theme-toggle-button" data-theme-toggle aria-label="Switch theme">
-                    <span class="theme-light-icon">🌞</span>
-                    <span class="theme-dark-icon">🌙</span>
-                </button>
-                <button class="app-shell__action" title="Notifications" @onclick="OnNotificationsClick">
-                    <i class="bi bi-bell" aria-hidden="true"></i>
-                    @if (unreadNotificationsCount > 0)
-                    {
-                        <span class="app-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
-                    }
-                </button>
-                <AuthorizeView>
-                    <Authorized>
-                        <button class="app-shell__profile" @onclick="GoToProfile" title="Open profile settings">
-                            <span class="app-shell__avatar">@userInitials</span>
-                            <span class="app-shell__profile-name">@userDisplayName</span>
-                        </button>
-                    </Authorized>
-                    <NotAuthorized>
-                        <button class="app-shell__profile" @onclick="GoToProfile" title="Sign in">
-                            <span class="app-shell__avatar"><i class="bi bi-person" aria-hidden="true"></i></span>
-                            <span class="app-shell__profile-name">@userDisplayName</span>
-                        </button>
-                    </NotAuthorized>
-                </AuthorizeView>
-            </div>
-        </header>
-
-        <section class="app-shell__page-header">
-            <div class="app-shell__page-meta">
-            </div>
-            <!-- Add quick search within the page header for faster navigation -->
-            <div class="app-shell__page-search">
                 <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
-            </div>
 
-            <div class="app-shell__page-actions">
-                @if (!isMobile)
-                {
+                <div class="app-shell__actions">
+                    <button type="button" class="app-shell__theme theme-toggle-button" data-theme-toggle aria-label="Switch theme">
+                        <span class="theme-light-icon">🌞</span>
+                        <span class="theme-dark-icon">🌙</span>
+                    </button>
                     <button class="app-shell__action" title="Notifications" @onclick="OnNotificationsClick">
                         <i class="bi bi-bell" aria-hidden="true"></i>
                         @if (unreadNotificationsCount > 0)
@@ -128,21 +94,57 @@
                             <span class="app-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
                         }
                     </button>
-                }
-                else
-                {
-                    <button class="app-shell__action" title="@headerActionLabel">
-                        <i class="@headerActionIcon" aria-hidden="true"></i>
-                    </button>
-                }
-            </div>
-        </section>
+                    <AuthorizeView>
+                        <Authorized>
+                            <button class="app-shell__profile" @onclick="GoToProfile" title="Open profile settings">
+                                <span class="app-shell__avatar">@userInitials</span>
+                                <span class="app-shell__profile-name">@userDisplayName</span>
+                            </button>
+                        </Authorized>
+                        <NotAuthorized>
+                            <button class="app-shell__profile" @onclick="GoToProfile" title="Sign in">
+                                <span class="app-shell__avatar"><i class="bi bi-person" aria-hidden="true"></i></span>
+                                <span class="app-shell__profile-name">@userDisplayName</span>
+                            </button>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+            </header>
 
+            <section class="app-shell__page-header">
+                <div class="app-shell__page-meta">
+                </div>
+                <!-- Add quick search within the page header for faster navigation -->
+                <div class="app-shell__page-search">
+                    <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
+                </div>
+
+                <div class="app-shell__page-actions">
+                    @if (!isMobile)
+                    {
+                        <button class="app-shell__action" title="Notifications" @onclick="OnNotificationsClick">
+                            <i class="bi bi-bell" aria-hidden="true"></i>
+                            @if (unreadNotificationsCount > 0)
+                            {
+                                <span class="app-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
+                            }
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="app-shell__action" title="@headerActionLabel">
+                            <i class="@headerActionIcon" aria-hidden="true"></i>
+                        </button>
+                    }
+                </div>
+            </section>
+
+        </div>
+
+        <article class="content app-shell__content">
+            @Body
+        </article>
     </div>
-
-    <article class="content app-shell__content">
-        @Body
-    </article>
 
     @if (isMobile && favoriteShortcuts.Count > 0)
     {

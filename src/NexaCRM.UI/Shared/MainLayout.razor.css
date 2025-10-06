@@ -7,6 +7,24 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     background: #E5E7EB;
 }
 
+/* Background wrapper for nav-rail panel and content */
+.app-shell__background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--surface-color, #F9FAFB);
+    border: 1px solid var(--divider-color, #E5E7EB);
+    border-radius: 1rem;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.app-shell__background > * {
+    pointer-events: auto;
+}
+
 /* Global spacing overrides for shell alignment with the nav rail */
 :root {
     /* Provide a safe default for sidebar width so fixed-position elements that
@@ -248,6 +266,9 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     /* also provide a small padding-top for consistent spacing */
     padding-top: var(--app-shell-content-top-gap);
     transition: margin-top 220ms ease, padding-top 220ms ease;
+    /* 상하 스크롤 비활성화 */
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 
 /* Stronger, higher-specificity rules to prevent the main content from

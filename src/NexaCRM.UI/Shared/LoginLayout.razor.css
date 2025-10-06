@@ -3,7 +3,7 @@
     min-height: 100vh;
     width: 100%;
     margin-left: 0;
-    overflow-x: hidden;
+    overflow: hidden;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
 }
@@ -12,6 +12,7 @@
     padding: 0 !important;
     width: 100%;
     min-height: 100vh;
+    overflow: hidden;
 }
 
 /* Hide any floating menu toggle on login page */
@@ -49,7 +50,9 @@
     transition: all var(--transition-fast, 0.15s ease);
     box-shadow: 0 4px 12px var(--shadow-light, rgba(0, 0, 0, 0.12));
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
     user-select: none;
+    -webkit-backdrop-filter: blur(10px); /* Safari 지원 */
     backdrop-filter: blur(10px); /* 블러 효과 추가 */
 }
 

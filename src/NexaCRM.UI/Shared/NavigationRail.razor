@@ -109,7 +109,7 @@
                     }
 
                     <nav class="panel-list">
-                        @foreach (var link in navSection.Links)
+                        @foreach (NavigationLinkViewModel link in navSection.Links)
                         {
                             <NavLink class="nav-link rail-panel-item" href="@link.Href">
                                 <span class="rail-panel-item__icon">
@@ -213,7 +213,7 @@
         groups.Clear();
         var roleSet = new HashSet<string>(userRoles ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
 
-        foreach (var group in NavigationCatalog.Groups)
+        foreach (NavigationGroupDefinition group in NavigationCatalog.Groups)
         {
             var entries = new List<(NavigationLinkViewModel Link, string? SectionResourceKey)>();
             foreach (var link in group.Links)

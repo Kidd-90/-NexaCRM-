@@ -335,7 +335,7 @@
     border: 1px solid var(--divider-color, #E5E7EB);
     border-radius: 1rem;
     overflow: hidden; /* keep wheel gestures flowing to the page instead of scrolling the panel */
-    max-height: calc(100vh - 2 * var(--spacing-md)); /* leave top/bottom breathing room */
+    max-height: calc(100vh - 0.5 * var(--spacing-md)); /* leave top/bottom breathing room */
     box-sizing: border-box;
     /* slightly narrower max width to give visual space between rail and content */
     max-width: calc(var(--sidebar-width, 320px) - 72px);
@@ -793,7 +793,7 @@
 }
 
 .rail-panel-item:focus-visible {
-    outline: none;
+    outline: none !important;
 }
 
 .rail-panel-item.active,

@@ -7,6 +7,7 @@
 @using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
+@implements IDisposable
 @inject IStringLocalizer<LoginPage> Localizer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthenticationService AuthenticationService
@@ -15,6 +16,25 @@
 @inject ILogger<LoginPage> Logger
 
 <div class="login-container mobile-login-container white-theme white-theme-gradient-light">
+  <!-- 태블릿/데스크톱용 이미지 영역 -->
+  <div class="login-image-section" style="background-image: url('@GetCurrentImageUrl()')">
+    <div class="login-image-content">
+      <h1 class="login-image-title">Welcome to Nexa DB</h1>
+      <p class="login-image-subtitle">Your powerful CRM solution</p>
+    </div>
+    
+    <!-- 이미지 선택 인디케이터 -->
+    <div class="image-indicators">
+      @for (int i = 0; i < imageUrls.Length; i++)
+      {
+        var index = i;
+        <button class="indicator-dot @(currentImageIndex == index ? "active" : "")" 
+                @onclick="() => SetImage(index)"
+                aria-label="@($"이미지 {index + 1}")"></button>
+      }
+    </div>
+  </div>
+  
   <div class="mobile-login-card">
     <div class="brand-section">
       <span class="brand-logo">Nexa DB</span>
@@ -234,5 +254,54 @@
     private void TogglePasswordVisibility()
     {
         isPasswordVisible = !isPasswordVisible;
+    }
+
+    // 이미지 슬라이드쇼
+    private string[] imageUrls = new[]
+    {
+        "_content/NexaCRM.UI/images/split1.jpg",
+        "_content/NexaCRM.UI/images/split2.jpg",
+        "_content/NexaCRM.UI/images/split3.jpg"
+    };
+    
+    private int currentImageIndex = 0;
+    private System.Threading.Timer? imageTimer;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        StartImageSlideshow();
+    }
+
+    private void StartImageSlideshow()
+    {
+        imageTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                currentImageIndex = (currentImageIndex + 1) % imageUrls.Length;
+                StateHasChanged();
+            });
+        }, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
+
+    private void SetImage(int index)
+    {
+        currentImageIndex = index;
+        StateHasChanged();
+        
+        // 타이머 재시작
+        imageTimer?.Dispose();
+        StartImageSlideshow();
+    }
+
+    private string GetCurrentImageUrl()
+    {
+        return imageUrls[currentImageIndex];
+    }
+
+    public void Dispose()
+    {
+        imageTimer?.Dispose();
     }
 }
