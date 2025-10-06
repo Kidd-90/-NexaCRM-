@@ -7,6 +7,8 @@
     border-radius: 1.25rem;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
     border: 1px solid var(--border-color);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .notice-board__header {
