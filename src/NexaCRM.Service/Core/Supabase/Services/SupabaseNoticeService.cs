@@ -28,23 +28,30 @@ public sealed class SupabaseNoticeService : INoticeService
     {
         try
         {
+            _logger.LogInformation("Starting to fetch notices from Supabase...");
+            
             var client = await _clientProvider.GetClientAsync();
+            _logger.LogInformation("Supabase client obtained successfully.");
+            
             var response = await client.From<CustomerNoticeRecord>()
                 .Order(x => x.IsPinned, PostgrestOrdering.Descending)
                 .Order(x => x.PublishedAt, PostgrestOrdering.Descending)
                 .Get();
 
             var records = response.Models ?? new List<CustomerNoticeRecord>();
+            _logger.LogInformation("Successfully fetched {Count} notices from Supabase.", records.Count);
+            
             return records.Select(MapToNotice).ToList();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load notices from Supabase.");
+            _logger.LogError(ex, "Failed to load notices from Supabase. Error type: {ErrorType}, Message: {Message}", 
+                ex.GetType().Name, ex.Message);
             throw;
         }
     }
 
-    public async Task<Notice?> GetNoticeAsync(int id)
+    public async Task<Notice?> GetNoticeAsync(long id)
     {
         try
         {
@@ -72,16 +79,39 @@ public sealed class SupabaseNoticeService : INoticeService
 
         try
         {
+            _logger.LogInformation("Creating notice: {Title}", notice.Title);
             var client = await _clientProvider.GetClientAsync();
-            var record = MapToRecord(notice);
-            record.Id = default;
+            _logger.LogInformation("Supabase client obtained for create operation.");
+            
+            // Id는 데이터베이스에서 자동 생성되므로 제외
+            var recordToInsert = new CustomerNoticeRecord
+            {
+                Title = notice.Title ?? string.Empty,
+                Summary = string.IsNullOrWhiteSpace(notice.Summary) ? string.Empty : notice.Summary,
+                Content = notice.Content ?? string.Empty,
+                Category = SerializeCategory(notice.Category),
+                Importance = SerializeImportance(notice.Importance),
+                PublishedAt = DateTime.SpecifyKind(
+                    notice.PublishedAt == default ? DateTime.UtcNow : notice.PublishedAt.UtcDateTime, 
+                    DateTimeKind.Utc),
+                IsPinned = notice.IsPinned,
+                ReferenceUrl = string.IsNullOrWhiteSpace(notice.ReferenceUrl) ? null : notice.ReferenceUrl,
+                TenantId = notice.TenantId
+            };
+            
+            _logger.LogInformation("Mapped notice to record. Title={Title}, Category={Category}, Importance={Importance}", 
+                recordToInsert.Title, recordToInsert.Category, recordToInsert.Importance);
 
-            await client.From<CustomerNoticeRecord>()
-                .Insert(record);
+            var response = await client.From<CustomerNoticeRecord>()
+                .Insert(recordToInsert);
+                
+            _logger.LogInformation("Notice created successfully. Response model count: {Count}", 
+                response?.Models?.Count ?? 0);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create notice in Supabase.");
+            _logger.LogError(ex, "Failed to create notice in Supabase. Title={Title}, Error: {Message}", 
+                notice.Title, ex.Message);
             throw;
         }
     }
@@ -95,21 +125,30 @@ public sealed class SupabaseNoticeService : INoticeService
 
         try
         {
+            _logger.LogInformation("Updating notice: {NoticeId}, {Title}", notice.Id, notice.Title);
             var client = await _clientProvider.GetClientAsync();
+            _logger.LogInformation("Supabase client obtained for update operation.");
+            
             var record = MapToRecord(notice);
+            
+            _logger.LogInformation("Mapped notice to record. Id={Id}, Title={Title}", 
+                record.Id, record.Title);
 
-            await client.From<CustomerNoticeRecord>()
+            var response = await client.From<CustomerNoticeRecord>()
                 .Filter(x => x.Id, PostgrestOperator.Equals, notice.Id)
                 .Update(record);
+                
+            _logger.LogInformation("Notice updated successfully. Id={NoticeId}", notice.Id);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update notice {NoticeId} in Supabase.", notice.Id);
+            _logger.LogError(ex, "Failed to update notice {NoticeId} in Supabase. Error: {Message}", 
+                notice.Id, ex.Message);
             throw;
         }
     }
 
-    public async Task DeleteNoticeAsync(int id)
+    public async Task DeleteNoticeAsync(long id)
     {
         try
         {
@@ -158,14 +197,14 @@ public sealed class SupabaseNoticeService : INoticeService
         return new CustomerNoticeRecord
         {
             Id = notice.Id,
-            Title = notice.Title,
-            Summary = string.IsNullOrWhiteSpace(notice.Summary) ? null : notice.Summary,
-            Content = string.IsNullOrWhiteSpace(notice.Content) ? null : notice.Content,
+            Title = notice.Title ?? string.Empty,
+            Summary = string.IsNullOrWhiteSpace(notice.Summary) ? string.Empty : notice.Summary,
+            Content = notice.Content ?? string.Empty,
             Category = SerializeCategory(notice.Category),
             Importance = SerializeImportance(notice.Importance),
             PublishedAt = DateTime.SpecifyKind(publishedAt, DateTimeKind.Utc),
             IsPinned = notice.IsPinned,
-            ReferenceUrl = notice.ReferenceUrl,
+            ReferenceUrl = string.IsNullOrWhiteSpace(notice.ReferenceUrl) ? null : notice.ReferenceUrl,
             TenantId = notice.TenantId
         };
     }

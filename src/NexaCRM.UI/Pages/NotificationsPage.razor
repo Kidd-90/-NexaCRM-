@@ -1,23 +1,57 @@
 @page "/notifications"
 @using System.Text.Json
+@using Microsoft.Extensions.Logging
 @inject IJSRuntime JS
 @inject INotificationFeedService Feed
+@inject ILogger<NotificationsPage> Logger
 
 <div class="notifications-page">
     <div class="notifications-header">
         <h1>알림</h1>
         <div class="actions">
-            <button class="mark-read" @onclick="MarkAllRead">모두 읽음 처리</button>
+            @if (!isLoading)
+            {
+                <button class="refresh-button" @onclick="RefreshAsync" title="새로고침">
+                    <span>🔄</span>
+                </button>
+                <button class="mark-read" @onclick="MarkAllRead" disabled="@(items.Count == 0 || items.All(x => x.IsRead))">
+                    모두 읽음 처리
+                </button>
+            }
             <a class="settings-link" href="/notification-settings-page">알림 설정</a>
         </div>
     </div>
 
-    @if (items.Count == 0)
+    @if (isLoading)
     {
-        <div class="empty-state">표시할 알림이 없습니다.</div>
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <span>알림을 불러오는 중입니다...</span>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="error-state">
+            <strong>오류가 발생했습니다</strong>
+            <p>@errorMessage</p>
+            <button class="retry-button" @onclick="RefreshAsync">다시 시도</button>
+        </div>
+    }
+    else if (items.Count == 0)
+    {
+        <div class="empty-state">
+            <span class="empty-icon">🔔</span>
+            <p>표시할 알림이 없습니다.</p>
+            <p class="empty-hint">로그인이 되어 있지 않거나 새로운 알림이 없습니다.</p>
+        </div>
     }
     else
     {
+        <div class="notifications-stats">
+            <span class="total-count">전체 @(items.Count)개</span>
+            <span class="unread-count">읽지 않음 @(items.Count(x => !x.IsRead))개</span>
+        </div>
+        
         <ul class="notif-list">
             @for (var i = 0; i < items.Count; i++)
             {
@@ -39,6 +73,8 @@
 @code {
     private List<NotificationItem> items = new();
     private HashSet<int> justReadIndices = new();
+    private bool isLoading = true;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,8 +83,47 @@
 
     private async Task LoadAsync()
     {
-        var list = await Feed.GetAsync();
-        items = list.Select(x => new NotificationItem(x.Title, x.Message, x.TimestampUtc, x.IsRead, ToType(x.Type))).ToList();
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            Logger.LogInformation("[NotificationsPage] Loading notifications...");
+            
+            var list = await Feed.GetAsync();
+            Logger.LogInformation("[NotificationsPage] Feed.GetAsync returned {Count} items.", list.Count);
+            
+            items = list.Select(x => new NotificationItem(
+                x.Title, 
+                x.Message, 
+                x.TimestampUtc, 
+                x.IsRead, 
+                ToType(x.Type)
+            )).ToList();
+            
+            Logger.LogInformation("[NotificationsPage] Successfully loaded {Count} notifications.", items.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "[NotificationsPage] Failed to load notifications. Error: {Message}", ex.Message);
+            
+            var detailedError = $"알림을 불러오지 못했습니다: {ex.Message}";
+            if (ex.InnerException != null)
+            {
+                detailedError += $" (내부 오류: {ex.InnerException.Message})";
+                Logger.LogError("[NotificationsPage] Inner exception: {InnerMessage}", ex.InnerException.Message);
+            }
+            
+            errorMessage = detailedError;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task RefreshAsync()
+    {
+        await LoadAsync();
     }
 
     private async Task MarkAllRead()

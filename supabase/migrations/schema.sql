@@ -926,6 +926,38 @@ CREATE INDEX idx_statistics_daily_metric_date ON statistics_daily(metric_date);
 CREATE INDEX idx_statistics_daily_tenant ON statistics_daily(tenant_unit_id);
 
 
+-- 20. CUSTOMER NOTICES TABLE
+-- Customer center notices and announcements
+CREATE TABLE customer_notices (
+  id BIGSERIAL PRIMARY KEY,
+  tenant_id UUID,
+  title TEXT NOT NULL,
+  summary TEXT,
+  content TEXT,
+  category TEXT,
+  importance TEXT,
+  is_pinned BOOLEAN DEFAULT FALSE,
+  published_at TIMESTAMPTZ DEFAULT NOW(),
+  reference_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE customer_notices IS 'Customer center notices and announcements';
+COMMENT ON COLUMN customer_notices.category IS 'Notice category: General, Update, Maintenance, Security, Policy, Promotion';
+COMMENT ON COLUMN customer_notices.importance IS 'Importance level: Normal, Highlight, Critical';
+COMMENT ON COLUMN customer_notices.is_pinned IS 'Whether the notice is pinned to the top of the list';
+
+CREATE INDEX idx_customer_notices_tenant ON customer_notices(tenant_id);
+CREATE INDEX idx_customer_notices_published_at ON customer_notices(published_at DESC);
+CREATE INDEX idx_customer_notices_is_pinned ON customer_notices(is_pinned);
+CREATE INDEX idx_customer_notices_category ON customer_notices(category);
+
+CREATE TRIGGER on_customer_notices_updated
+  BEFORE UPDATE ON customer_notices
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+
 -- Ensure realtime payloads include previous values for proper diffing.
 ALTER TABLE tasks REPLICA IDENTITY FULL;
 ALTER TABLE support_tickets REPLICA IDENTITY FULL;
@@ -1019,5 +1051,73 @@ INSERT INTO deal_stages (name, sort_order) VALUES
 ('Negotiation', 5),
 ('Won', 6),
 ('Lost', 7);
+
+
+-- 10. SEED DATA for customer_notices
+-- Insert sample notices for testing and demonstration
+INSERT INTO customer_notices (title, summary, content, category, importance, is_pinned, published_at) VALUES
+(
+  '시스템 업데이트 안내',
+  'NexaCRM 시스템이 업데이트됩니다.',
+  '2025년 10월 15일 오전 2시부터 4시까지 시스템 업데이트가 진행됩니다. 이 시간 동안 서비스 이용이 일시적으로 중단될 수 있습니다. 양해 부탁드립니다.',
+  'Update',
+  'Highlight',
+  true,
+  NOW()
+),
+(
+  '보안 패치 적용 완료',
+  '최신 보안 패치가 적용되었습니다.',
+  '고객 데이터 보호를 위한 보안 패치가 성공적으로 적용되었습니다. 별도의 조치는 필요하지 않으며, 모든 사용자는 계속해서 안전하게 시스템을 이용하실 수 있습니다.',
+  'Security',
+  'Normal',
+  false,
+  NOW() - INTERVAL '1 day'
+),
+(
+  '새로운 기능 출시: AI 리드 스코어링',
+  'AI 기반 리드 스코어링 기능이 추가되었습니다.',
+  '머신러닝을 활용한 AI 리드 스코어링 기능이 새롭게 추가되었습니다. 영업 대시보드에서 확인하실 수 있으며, 고객 전환 가능성을 자동으로 분석하여 우선순위를 제시합니다.',
+  'Update',
+  'Highlight',
+  true,
+  NOW() - INTERVAL '2 days'
+),
+(
+  '정기 점검 일정 안내',
+  '매월 첫째 주 일요일 정기 점검이 진행됩니다.',
+  '서비스 품질 향상을 위해 매월 첫째 주 일요일 오전 2시부터 5시까지 정기 점검이 진행됩니다. 점검 시간 동안 일부 서비스 이용이 제한될 수 있습니다.',
+  'Maintenance',
+  'Normal',
+  false,
+  NOW() - INTERVAL '5 days'
+),
+(
+  '개인정보 처리방침 업데이트',
+  '개인정보 처리방침이 업데이트되었습니다.',
+  '2025년 10월 1일부로 개인정보 처리방침이 업데이트되었습니다. 주요 변경 사항은 데이터 보관 기간 및 제3자 제공 범위에 관한 내용입니다. 자세한 내용은 고객센터를 참고해 주세요.',
+  'Policy',
+  'Normal',
+  false,
+  NOW() - INTERVAL '7 days'
+),
+(
+  '프로모션: 연간 구독 20% 할인',
+  '10월 한정 연간 구독 특별 할인 이벤트',
+  '10월 한 달간 연간 구독 시 20% 할인 혜택을 제공합니다. 이 기회를 통해 NexaCRM의 모든 프리미엄 기능을 더욱 저렴하게 이용하세요. 자세한 내용은 영업팀에 문의해 주세요.',
+  'Promotion',
+  'Highlight',
+  false,
+  NOW() - INTERVAL '3 days'
+),
+(
+  '고객센터 운영 시간 안내',
+  '고객센터 운영 시간이 확대되었습니다.',
+  '더 나은 고객 지원을 위해 고객센터 운영 시간이 평일 오전 9시부터 오후 8시까지로 확대되었습니다. 주말 및 공휴일은 오전 10시부터 오후 6시까지 운영됩니다.',
+  'General',
+  'Normal',
+  false,
+  NOW() - INTERVAL '10 days'
+);
 
 -- End of schema

@@ -7,9 +7,9 @@ namespace NexaCRM.Services.Admin.Interfaces;
 public interface INoticeService
 {
     Task<IEnumerable<Notice>> GetNoticesAsync();
-    Task<Notice?> GetNoticeAsync(int id);
+    Task<Notice?> GetNoticeAsync(long id);
     Task CreateNoticeAsync(Notice notice);
     Task UpdateNoticeAsync(Notice notice);
-    Task DeleteNoticeAsync(int id);
+    Task DeleteNoticeAsync(long id);
 }
 

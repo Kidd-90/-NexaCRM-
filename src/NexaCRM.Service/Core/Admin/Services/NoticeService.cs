@@ -39,7 +39,7 @@ public sealed class NoticeService : INoticeService
     public Task<IEnumerable<Notice>> GetNoticesAsync() =>
         Task.FromResult<IEnumerable<Notice>>(_notices);
 
-    public Task<Notice?> GetNoticeAsync(int id) =>
+    public Task<Notice?> GetNoticeAsync(long id) =>
         Task.FromResult(_notices.FirstOrDefault(n => n.Id == id));
 
     public Task CreateNoticeAsync(Notice notice)
@@ -59,7 +59,7 @@ public sealed class NoticeService : INoticeService
         return Task.CompletedTask;
     }
 
-    public Task DeleteNoticeAsync(int id)
+    public Task DeleteNoticeAsync(long id)
     {
         var notice = _notices.FirstOrDefault(n => n.Id == id);
         if (notice is not null)

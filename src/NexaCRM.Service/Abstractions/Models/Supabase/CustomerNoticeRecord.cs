@@ -7,8 +7,8 @@ namespace NexaCRM.UI.Models.Supabase;
 [Table("customer_notices")]
 public sealed class CustomerNoticeRecord : BaseModel
 {
-    [PrimaryKey("id")]
-    public int Id { get; set; }
+    [PrimaryKey("id", false)]
+    public long Id { get; set; }
 
     [Column("tenant_id")]
     public Guid? TenantId { get; set; }
@@ -36,7 +36,4 @@ public sealed class CustomerNoticeRecord : BaseModel
 
     [Column("reference_url")]
     public string? ReferenceUrl { get; set; }
-
-    [Column("status")]
-    public string? Status { get; set; }
 }

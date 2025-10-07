@@ -14,8 +14,8 @@ public sealed class CustomerCenterService : ICustomerCenterService
 {
     private readonly List<Notice> _notices;
     private readonly List<FaqItem> _faqItems;
-    private int _nextNoticeId;
-    private int _nextFaqId;
+    private long _nextNoticeId;
+    private long _nextFaqId;
 
     public CustomerCenterService()
     {

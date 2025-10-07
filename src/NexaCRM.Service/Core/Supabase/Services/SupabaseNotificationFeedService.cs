@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using NexaCRM.Services.Admin.Interfaces;
 using NexaCRM.UI.Models.Supabase;
@@ -18,6 +20,7 @@ namespace NexaCRM.Service.Supabase;
 public sealed class SupabaseNotificationFeedService : INotificationFeedService, IAsyncDisposable
 {
     private readonly SupabaseClientProvider _clientProvider;
+    private readonly AuthenticationStateProvider _authStateProvider;
     private readonly ILogger<SupabaseNotificationFeedService> _logger;
     private readonly Dictionary<Guid, NotificationFeedItem> _cache = new();
     private readonly object _syncRoot = new();
@@ -32,9 +35,11 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
 
     public SupabaseNotificationFeedService(
         SupabaseClientProvider clientProvider,
+        AuthenticationStateProvider authStateProvider,
         ILogger<SupabaseNotificationFeedService> logger)
     {
         _clientProvider = clientProvider;
+        _authStateProvider = authStateProvider;
         _logger = logger;
     }
 
@@ -42,21 +47,50 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
     {
         try
         {
+            _logger.LogInformation("[GetAsync] Starting to load notification feed...");
+            
             await EnsureRealtimeSubscriptionAsync();
-            var client = await _clientProvider.GetClientAsync();
-            if (!TryEnsureUserId(client, out var userId))
+            _logger.LogInformation("[GetAsync] Realtime subscription ensured.");
+            
+            // Get user ID from authentication state (claims)
+            var (hasUserId, userId) = await TryEnsureUserIdAsync();
+            if (!hasUserId)
             {
-                _logger.LogDebug("No authenticated Supabase user available when loading notification feed; returning empty feed.");
+                _logger.LogWarning("[GetAsync] ❌ No authenticated user available when loading notification feed; returning empty feed.");
                 return new List<NotificationFeedItem>();
             }
+            
+            _logger.LogInformation("[GetAsync] ✅ User ID obtained from claims: {UserId}", userId);
+            
+            var client = await _clientProvider.GetClientAsync();
+            _logger.LogInformation("[GetAsync] Supabase client obtained.");
 
+            _logger.LogInformation("[GetAsync] 🔍 Executing query: SELECT * FROM notification_feed WHERE user_id = '{UserId}' ORDER BY created_at DESC", userId);
             var response = await client.From<NotificationFeedRecord>()
-                .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
+                .Filter(x => x.UserId, PostgrestOperator.Equals, userId.ToString())
                 .Order(x => x.CreatedAt, PostgrestOrdering.Descending)
                 .Get();
 
+            _logger.LogInformation("[GetAsync] ✅ Query executed successfully. Response Models Count: {Count}", response.Models?.Count ?? 0);
+            
+            // HTTP 응답 상태 코드만 로깅 (Content는 이미 dispose되었을 수 있음)
+            if (response.ResponseMessage != null)
+            {
+                _logger.LogInformation("[GetAsync] HTTP Status: {StatusCode}", response.ResponseMessage.StatusCode);
+            }
+            
             var records = response.Models ?? new List<NotificationFeedRecord>();
+            _logger.LogInformation("[GetAsync] Retrieved {Count} records from database.", records.Count);
+            
+            if (records.Count > 0)
+            {
+                var firstRecord = records.First();
+                _logger.LogInformation("[GetAsync] First record - Id: {Id}, Title: {Title}, Type: {Type}, IsRead: {IsRead}",
+                    firstRecord.Id, firstRecord.Title, firstRecord.Type, firstRecord.IsRead);
+            }
+            
             var items = records.Select(MapToItem).ToList();
+            _logger.LogInformation("[GetAsync] Mapped {Count} records to NotificationFeedItems.", items.Count);
 
             lock (_syncRoot)
             {
@@ -66,14 +100,22 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
                     _cache[item.Id] = item;
                 }
             }
+            
+            _logger.LogInformation("[GetAsync] Cache updated with {Count} items.", items.Count);
 
             NotifyUnreadCount();
             NotifyFeedUpdated(items);
+            
+            _logger.LogInformation("[GetAsync] Successfully loaded notification feed with {Count} items.", items.Count);
             return items;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load notification feed from Supabase.");
+            _logger.LogError(ex, "[GetAsync] Failed to load notification feed from Supabase. Error: {Message}", ex.Message);
+            if (ex.InnerException != null)
+            {
+                _logger.LogError("[GetAsync] Inner exception: {InnerMessage}", ex.InnerException.Message);
+            }
             throw;
         }
     }
@@ -98,7 +140,7 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         }
 
         var response = await client.From<NotificationFeedRecord>()
-            .Filter(x => x.UserId, PostgrestOperator.Equals, userId)
+            .Filter(x => x.UserId, PostgrestOperator.Equals, userId.ToString())
             .Filter(x => x.IsRead, PostgrestOperator.Equals, false)
             .Get();
 
@@ -143,7 +185,7 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         if (item is null)
         {
             var response = await client.From<NotificationFeedRecord>()
-                .Filter(x => x.Id, PostgrestOperator.Equals, id)
+                .Filter(x => x.Id, PostgrestOperator.Equals, id.ToString())
                 .Get();
             var record = response.Models.FirstOrDefault();
             if (record is null)
@@ -170,7 +212,7 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         };
         var updatedRecord = MapToRecord(updatedItem, userId);
         await client.From<NotificationFeedRecord>()
-            .Filter(x => x.Id, PostgrestOperator.Equals, id)
+            .Filter(x => x.Id, PostgrestOperator.Equals, id.ToString())
             .Update(updatedRecord);
 
         StoreNotification(updatedItem);
@@ -426,8 +468,44 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         return id;
     }
 
-    private bool TryEnsureUserId(global::Supabase.Client client, out Guid userId)
+    private async Task<(bool success, Guid userId)> TryEnsureUserIdAsync()
     {
+        try
+        {
+            // Try to get user ID from AuthenticationStateProvider
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                // Try to get user ID from NameIdentifier claim
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsed))
+                {
+                    _logger.LogInformation("[TryEnsureUserIdAsync] ✅ User ID from claims: {UserId}", parsed);
+                    
+                    if (!_userId.HasValue || _userId.Value != parsed)
+                    {
+                        _userId = parsed;
+                    }
+                    
+                    return (true, _userId.Value);
+                }
+            }
+            
+            _logger.LogWarning("[TryEnsureUserIdAsync] ❌ No authenticated user found in claims");
+            return (false, Guid.Empty);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[TryEnsureUserIdAsync] ❌ Error getting user ID from authentication state");
+            return (false, Guid.Empty);
+        }
+    }
+    
+    private bool TryEnsureUserId(global::Supabase.Client? client, out Guid userId)
+    {
+        // Legacy synchronous version - fallback to client.Auth
         userId = Guid.Empty;
         var rawId = client?.Auth?.CurrentUser?.Id;
         if (string.IsNullOrWhiteSpace(rawId) || !Guid.TryParse(rawId, out var parsed))

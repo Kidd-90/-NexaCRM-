@@ -112,18 +112,19 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
                     GetFailureMessage(LoginFailureReason.RequiresApproval));
             }
 
-            // Create a mock session or use existing session if available
-            var session = publicClient.Auth.CurrentSession ?? new Session
+            // Create a session with user information
+            var session = new Session
             {
                 User = new User
                 {
                     Id = accountRecord.AuthUserId.ToString(),
-                    Email = accountRecord.Email,
+                    Email = accountRecord.Email ?? string.Empty,
                     UserMetadata = new Dictionary<string, object>()
-                },
-                AccessToken = "mock_token", // You might need to generate a proper token or handle differently
-                RefreshToken = "mock_refresh_token"
+                }
             };
+
+            _logger.LogInformation("[SignInAsync] ✅ Login successful for user {UserId} ({Email})", 
+                accountRecord.AuthUserId, accountRecord.Email);
 
             await UpdateAuthenticationStateAsync(session).ConfigureAwait(false);
             return LoginResult.Success();
