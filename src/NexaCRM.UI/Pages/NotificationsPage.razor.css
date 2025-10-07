@@ -20,6 +20,26 @@
   align-items: center;
   gap: 0.5rem;
 }
+.notifications-header .refresh-button {
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #111827;
+  height: 36px;
+  width: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.notifications-header .refresh-button:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+.notifications-header .refresh-button:active {
+  transform: scale(0.95);
+}
 .notifications-header .mark-read {
   border: 1px solid #E5E7EB;
   background: #FFFFFF;
@@ -27,16 +47,122 @@
   height: 36px;
   padding: 0 0.75rem;
   border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.notifications-header .mark-read:hover:not(:disabled) {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+.notifications-header .mark-read:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .notifications-header .settings-link {
   color: var(--secondary-color);
   font-weight: 600;
+  text-decoration: none;
+}
+.notifications-header .settings-link:hover {
+  text-decoration: underline;
 }
 
-.empty-state {
+/* Loading state */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
   color: #6B7280;
-  padding: 2rem 1rem;
+}
+.loading-state .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #3B82F6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error state */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
   text-align: center;
+}
+.error-state strong {
+  color: #DC2626;
+  font-size: 1.125rem;
+}
+.error-state p {
+  color: #6B7280;
+  margin: 0;
+}
+.error-state .retry-button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #3B82F6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.error-state .retry-button:hover {
+  background: #2563EB;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: #6B7280;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+.empty-state .empty-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+.empty-state p {
+  margin: 0;
+}
+.empty-state .empty-hint {
+  font-size: 0.875rem;
+  color: #9CA3AF;
+}
+
+/* Notifications stats */
+.notifications-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #F9FAFB;
+  border-radius: 10px;
+  font-size: 0.875rem;
+}
+.notifications-stats .total-count {
+  color: #374151;
+  font-weight: 600;
+}
+.notifications-stats .unread-count {
+  color: #3B82F6;
+  font-weight: 600;
 }
 
 .notif-list {

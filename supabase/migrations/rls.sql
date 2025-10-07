@@ -581,4 +581,33 @@ CREATE POLICY "Admins manage statistics"
   WITH CHECK (public.user_has_role('admin'));
 
 
+-- 19. CUSTOMER NOTICES
+ALTER TABLE customer_notices ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Enable read access for all users"
+  ON customer_notices
+  FOR SELECT
+  TO public
+  USING (true);
+
+CREATE POLICY "Enable insert for authenticated users only"
+  ON customer_notices
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "Enable update for authenticated users only"
+  ON customer_notices
+  FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Enable delete for authenticated users only"
+  ON customer_notices
+  FOR DELETE
+  TO authenticated
+  USING (true);
+
+
 -- End of RLS policies

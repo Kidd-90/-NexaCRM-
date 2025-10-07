@@ -18,7 +18,7 @@ public sealed class FaqService : IFaqService
         new() { Id = 2, Category = "결제", Question = "결제 수단은 무엇이 있나요?", Answer = "신용카드와 계좌이체를 지원합니다.", Order = 1 },
     };
 
-    private int _nextId = 3;
+    private long _nextId = 3;
 
     public Task<List<FaqItem>> GetFaqsAsync()
     {

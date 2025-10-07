@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -25,8 +26,8 @@ public sealed class NotificationFeedRecord : BaseModel
     [Column("is_read")]
     public bool IsRead { get; set; }
 
-    [Column("metadata")]
-    public string? Metadata { get; set; }
+    // metadata 필드 제거 - JSONB 타입으로 인한 역직렬화 오류 방지
+    // 필요한 경우 별도 쿼리로 처리
 
     [Column("created_at")]
     public DateTime? CreatedAt { get; set; }

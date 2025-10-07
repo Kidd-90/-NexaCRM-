@@ -101,6 +101,7 @@ public sealed class Startup
         services.AddScoped<ISalesManagementService, SupabaseSalesManagementService>();
         services.AddScoped<INoticeService, SupabaseNoticeService>();
         services.AddScoped<IEmailTemplateService, SupabaseEmailTemplateService>();
+        services.AddScoped<INotificationFeedService, SupabaseNotificationFeedService>();
         services.AddScoped<ITeamService, SupabaseTeamService>();
 
     }
@@ -517,15 +518,16 @@ public sealed class Startup
             _ = StartDuplicateMonitorAsync(scopeFactory, logger);
         });
 
-        ValidateAdminServices(app.ApplicationServices, logger);
+        // Validate services asynchronously to support IAsyncDisposable
+        _ = ValidateAdminServicesAsync(app.ApplicationServices, logger);
     }
 
-    private static void ValidateAdminServices(IServiceProvider serviceProvider, ILogger logger)
+    private static async Task ValidateAdminServicesAsync(IServiceProvider serviceProvider, ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
-        using var scope = serviceProvider.CreateScope();
+        await using var scope = serviceProvider.CreateAsyncScope();
         try
         {
             var adminService = scope.ServiceProvider.GetRequiredService<IDbAdminService>();

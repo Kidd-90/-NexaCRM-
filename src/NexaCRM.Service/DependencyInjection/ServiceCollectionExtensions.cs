@@ -18,12 +18,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDbAdminService, DbAdminService>();
         services.AddScoped<IDuplicateService, DuplicateService>();
         services.AddSingleton<IDedupeConfigService, DedupeConfigService>();
-        services.AddSingleton<INotificationFeedService, InMemoryNotificationFeedService>();
+        // INotificationFeedService는 Program.cs에서 SupabaseNotificationFeedService로 등록됨
         services.AddScoped<IDuplicateMonitorService, DuplicateMonitorService>();
         services.AddSingleton<ICustomerCenterService, CustomerCenterService>();
         services.AddSingleton<IFaqService, FaqService>();
         services.AddSingleton<INoticeService, NoticeService>();
-        services.AddSingleton<INotificationService, NotificationService>();
+        services.AddScoped<INotificationService, NotificationService>(); // Scoped: SupabaseClientProvider 사용
         services.AddSingleton<IOrganizationService, OrganizationService>();
         services.AddSingleton<IRolePermissionService, RolePermissionService>();
         services.AddSingleton<ISecurityService, SecurityService>();

@@ -3,10 +3,12 @@
 @using System.Globalization
 @using System.Linq
 @using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.Services.Admin.Interfaces
 @using NexaCRM.Services.Admin.Models.CustomerCenter
 @inject INoticeService NoticeService
 @inject ILogger<NoticeManagementPage> Logger
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <ResponsivePage>
     <section class="notice-board">
@@ -18,12 +20,22 @@
                     서비스 공지, 점검 일정, 기능 업데이트 소식을 한눈에 확인하세요.
                 </p>
             </div>
-            <div class="notice-board__search">
-                <input class="notice-board__search-input"
-                       type="search"
-                       placeholder="검색어를 입력하세요"
-                       @bind="SearchTerm"
-                       @bind:event="oninput" />
+            <div class="notice-board__actions">
+                <div class="notice-board__search">
+                    <input class="notice-board__search-input"
+                           type="search"
+                           placeholder="검색어를 입력하세요"
+                           @bind="SearchTerm"
+                           @bind:event="oninput" />
+                </div>
+                <AuthorizeView Roles="Admin,Manager">
+                    <Authorized>
+                        <button type="button" class="notice-board__add-button" @onclick="ShowAddNoticeForm">
+                            <span class="icon">➕</span>
+                            <span>공지사항 추가</span>
+                        </button>
+                    </Authorized>
+                </AuthorizeView>
             </div>
         </header>
 
@@ -164,6 +176,116 @@
     </section>
 </ResponsivePage>
 
+@* 공지사항 추가/수정 모달 *@
+@if (showNoticeForm)
+{
+    <div class="notice-modal-overlay" @onclick="CloseNoticeForm">
+        <div class="notice-modal" @onclick:stopPropagation>
+            <div class="notice-modal__header">
+                <h2 class="notice-modal__title">@(isEditMode ? "공지사항 수정" : "공지사항 추가")</h2>
+                <button type="button" class="notice-modal__close" @onclick="CloseNoticeForm" aria-label="닫기">✕</button>
+            </div>
+
+            <div class="notice-modal__body">
+                @if (!string.IsNullOrEmpty(formError))
+                {
+                    <div class="notice-form__error">
+                        <strong>오류</strong>
+                        <p>@formError</p>
+                    </div>
+                }
+
+                <div class="notice-form">
+                    <div class="notice-form__field">
+                        <label class="notice-form__label" for="notice-title">제목 *</label>
+                        <input class="notice-form__input"
+                               id="notice-title"
+                               type="text"
+                               placeholder="공지사항 제목을 입력하세요"
+                               @bind="formNotice.Title"
+                               maxlength="200" />
+                    </div>
+
+                    <div class="notice-form__field">
+                        <label class="notice-form__label" for="notice-summary">요약</label>
+                        <input class="notice-form__input"
+                               id="notice-summary"
+                               type="text"
+                               placeholder="간단한 요약을 입력하세요"
+                               @bind="formNotice.Summary"
+                               maxlength="300" />
+                    </div>
+
+                    <div class="notice-form__field">
+                        <label class="notice-form__label" for="notice-content">내용 *</label>
+                        <textarea class="notice-form__textarea"
+                                  id="notice-content"
+                                  rows="8"
+                                  placeholder="공지사항 내용을 입력하세요"
+                                  @bind="formNotice.Content"></textarea>
+                    </div>
+
+                    <div class="notice-form__row">
+                        <div class="notice-form__field">
+                            <label class="notice-form__label" for="notice-category">카테고리 *</label>
+                            <select class="notice-form__select" id="notice-category" @bind="formNotice.Category">
+                                <option value="@NoticeCategory.General">공지</option>
+                                <option value="@NoticeCategory.Update">업데이트</option>
+                                <option value="@NoticeCategory.Maintenance">점검</option>
+                                <option value="@NoticeCategory.Security">보안</option>
+                                <option value="@NoticeCategory.Policy">약관</option>
+                                <option value="@NoticeCategory.Promotion">프로모션</option>
+                            </select>
+                        </div>
+
+                        <div class="notice-form__field">
+                            <label class="notice-form__label" for="notice-importance">중요도 *</label>
+                            <select class="notice-form__select" id="notice-importance" @bind="formNotice.Importance">
+                                <option value="@NoticeImportance.Normal">일반</option>
+                                <option value="@NoticeImportance.Highlight">중요</option>
+                                <option value="@NoticeImportance.Critical">긴급</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="notice-form__field">
+                        <label class="notice-form__label" for="notice-reference-url">참고 링크</label>
+                        <input class="notice-form__input"
+                               id="notice-reference-url"
+                               type="url"
+                               placeholder="https://example.com"
+                               @bind="formNotice.ReferenceUrl" />
+                    </div>
+
+                    <div class="notice-form__field">
+                        <label class="notice-form__checkbox">
+                            <input type="checkbox" @bind="formNotice.IsPinned" />
+                            <span>상단 고정</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notice-modal__footer">
+                <button type="button" class="notice-button notice-button--secondary" @onclick="CloseNoticeForm">
+                    취소
+                </button>
+                <button type="button" class="notice-button notice-button--primary" @onclick="SaveNotice" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-small"></span>
+                        <span>저장 중...</span>
+                    }
+                    else
+                    {
+                        <span>@(isEditMode ? "수정" : "등록")</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private static readonly IReadOnlyList<(NoticeCategory? Category, string Label)> FilterOptions = new List<(NoticeCategory?, string)>
     {
@@ -204,6 +326,62 @@
     private int currentPage = 1;
     private const int PageSize = 8;
     private string searchTerm = string.Empty;
+
+    // Form state
+    private bool showNoticeForm = false;
+    private bool isEditMode = false;
+    private bool isSaving = false;
+    private string? formError;
+    private NoticeFormModel formNotice = new NoticeFormModel();
+
+    // Form DTO class with mutable properties
+    private class NoticeFormModel
+    {
+        public long Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Summary { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public NoticeCategory Category { get; set; } = NoticeCategory.General;
+        public NoticeImportance Importance { get; set; } = NoticeImportance.Normal;
+        public bool IsPinned { get; set; }
+        public DateTimeOffset PublishedAt { get; set; } = DateTimeOffset.Now;
+        public string? ReferenceUrl { get; set; }
+        public Guid? TenantId { get; set; }
+
+        public Notice ToNotice()
+        {
+            return new Notice
+            {
+                Id = Id,
+                Title = Title,
+                Summary = Summary,
+                Content = Content,
+                Category = Category,
+                Importance = Importance,
+                IsPinned = IsPinned,
+                PublishedAt = PublishedAt,
+                ReferenceUrl = ReferenceUrl,
+                TenantId = TenantId
+            };
+        }
+
+        public static NoticeFormModel FromNotice(Notice notice)
+        {
+            return new NoticeFormModel
+            {
+                Id = notice.Id,
+                Title = notice.Title,
+                Summary = notice.Summary,
+                Content = notice.Content,
+                Category = notice.Category,
+                Importance = notice.Importance,
+                IsPinned = notice.IsPinned,
+                PublishedAt = notice.PublishedAt,
+                ReferenceUrl = notice.ReferenceUrl,
+                TenantId = notice.TenantId
+            };
+        }
+    }
 
     private string SearchTerm
     {
@@ -267,10 +445,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadNotices();
+    }
+
+    private async Task LoadNotices()
+    {
         try
         {
+            isLoading = true;
             var notices = await NoticeService.GetNoticesAsync();
+            _allNotices.Clear();
             _allNotices.AddRange(notices);
+            loadError = null;
         }
         catch (Exception ex)
         {
@@ -282,6 +468,89 @@
             isLoading = false;
             InvalidateFilters();
             EnsureSelection();
+        }
+    }
+
+    private void ShowAddNoticeForm()
+    {
+        isEditMode = false;
+        formNotice = new NoticeFormModel
+        {
+            Category = NoticeCategory.General,
+            Importance = NoticeImportance.Normal,
+            IsPinned = false,
+            PublishedAt = DateTimeOffset.Now
+        };
+        formError = null;
+        showNoticeForm = true;
+    }
+
+    private void ShowEditNoticeForm(Notice notice)
+    {
+        isEditMode = true;
+        formNotice = NoticeFormModel.FromNotice(notice);
+        formError = null;
+        showNoticeForm = true;
+    }
+
+    private void CloseNoticeForm()
+    {
+        showNoticeForm = false;
+        formError = null;
+        formNotice = new NoticeFormModel();
+    }
+
+    private async Task SaveNotice()
+    {
+        if (string.IsNullOrWhiteSpace(formNotice.Title))
+        {
+            formError = "제목을 입력해주세요.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(formNotice.Content))
+        {
+            formError = "내용을 입력해주세요.";
+            return;
+        }
+
+        try
+        {
+            isSaving = true;
+            formError = null;
+
+            var notice = formNotice.ToNotice();
+
+            if (isEditMode)
+            {
+                await NoticeService.UpdateNoticeAsync(notice);
+                Logger.LogInformation("Notice updated: {NoticeId}", notice.Id);
+            }
+            else
+            {
+                await NoticeService.CreateNoticeAsync(notice);
+                Logger.LogInformation("Notice created: {NoticeTitle}", notice.Title);
+            }
+
+            // 목록 새로고침
+            await LoadNotices();
+            CloseNoticeForm();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save notice. Title={Title}, Error={Message}", formNotice.Title, ex.Message);
+            formError = $"공지사항을 저장하지 못했습니다: {ex.Message}";
+            
+            // InnerException이 있으면 추가 정보 표시
+            if (ex.InnerException != null)
+            {
+                Logger.LogError("Inner exception: {InnerMessage}", ex.InnerException.Message);
+                formError += $" (상세: {ex.InnerException.Message})";
+            }
+        }
+        finally
+        {
+            isSaving = false;
         }
     }
 
