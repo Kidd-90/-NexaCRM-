@@ -31,6 +31,9 @@ public class UserInfoRecord : BaseModel
     [Column("job_title")]
     public string? JobTitle { get; set; }
 
+    [Column("password_hash")]
+    public string? PasswordHash { get; set; }
+
     [Column("role")]
     public string? Role { get; set; }
 
@@ -74,6 +77,9 @@ public class AppUserRecord : BaseModel
 
     [Column("email")]
     public string? Email { get; set; }
+
+    [Column("password_hash")]
+    public string? PasswordHash { get; set; }
 
     [Column("status")]
     public string? Status { get; set; }

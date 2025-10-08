@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NexaCRM.Services.Admin.Interfaces;
 using NexaCRM.Services.Admin.Models.Db;
+using NexaCRM.Services.Admin.Services;
 using NexaCRM.WebClient;
 // using NexaCRM.WebClient.Pages; // App.razor은 프로젝트 루트에 있으므로 필요 없음
 using Microsoft.AspNetCore.Components.Authorization;
@@ -62,6 +63,7 @@ builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<ISecurityService, SecurityService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<IUserManagementService, SupabaseUserManagementService>();
 builder.Services.AddScoped<IDbAdminService, DbAdminService>();
 builder.Services.AddScoped<IStatisticsService, SupabaseStatisticsService>();
 builder.Services.AddScoped<ICustomerCenterService, CustomerCenterService>();

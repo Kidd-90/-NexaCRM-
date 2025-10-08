@@ -144,6 +144,9 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
             _logger.LogInformation("[SignInAsync] ✅ Login successful for user {UserId} ({Email})", 
                 accountRecord.AuthUserId, accountRecord.Email);
 
+            // Update last_login_at in user_infos table
+            await UpdateLastLoginAsync(publicClient, accountRecord.Cuid).ConfigureAwait(false);
+
             await UpdateAuthenticationStateAsync(session).ConfigureAwait(false);
             return LoginResult.Success();
         }
@@ -530,5 +533,49 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
         var message = exception.Message ?? string.Empty;
         return message.Contains("invalid login credentials", StringComparison.OrdinalIgnoreCase)
             || message.Contains("invalid email or password", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Updates the last_login_at timestamp in user_infos table
+    /// </summary>
+    protected virtual async Task UpdateLastLoginAsync(global::Supabase.Client client, string cuid)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(cuid))
+            {
+                _logger.LogWarning("Cannot update last_login_at: CUID is null or empty");
+                return;
+            }
+
+            _logger.LogInformation("Updating last_login_at for CUID: {Cuid}", cuid);
+
+            // Fetch the current user_info record
+            var response = await client.From<UserInfoRecord>()
+                .Filter("user_cuid", PostgrestOperator.Equals, cuid)
+                .Get()
+                .ConfigureAwait(false);
+
+            var userInfo = response.Models.FirstOrDefault();
+            if (userInfo == null)
+            {
+                _logger.LogWarning("UserInfo record not found for CUID: {Cuid}", cuid);
+                return;
+            }
+
+            // Update the last_login_at field
+            userInfo.LastLoginAt = DateTime.UtcNow;
+
+            await client.From<UserInfoRecord>()
+                .Update(userInfo)
+                .ConfigureAwait(false);
+
+            _logger.LogInformation("Successfully updated last_login_at for CUID: {Cuid}", cuid);
+        }
+        catch (Exception ex)
+        {
+            // Log but don't fail login if this update fails
+            _logger.LogError(ex, "Failed to update last_login_at for CUID: {Cuid}", cuid);
+        }
     }
 }

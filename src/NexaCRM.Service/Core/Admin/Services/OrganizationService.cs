@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NexaCRM.Services.Admin.Interfaces;
@@ -308,13 +310,17 @@ public sealed class OrganizationService : IOrganizationService
             {
                 var authUserId = string.IsNullOrEmpty(signUpResponse.User.Id) ? (Guid?)null : Guid.Parse(signUpResponse.User.Id);
                 var cuid = Guid.NewGuid().ToString("N"); // CUID 생성
+                
+                // 비밀번호 해싱
+                var passwordHash = HashPassword(user.Password.Trim());
 
-                // 1. app_users 테이블에 먼저 삽입
+                // 1. app_users 테이블에 먼저 삽입 (email, auth_user_id, password_hash 포함)
                 var appUserRecord = new AppUserRecord
                 {
                     Cuid = cuid,
                     AuthUserId = authUserId,
                     Email = user.Email.Trim(),
+                    PasswordHash = passwordHash,
                     Status = "Pending"
                 };
 
@@ -322,9 +328,9 @@ public sealed class OrganizationService : IOrganizationService
                     .From<AppUserRecord>()
                     .Insert(appUserRecord);
 
-                _logger.LogInformation("app_users 테이블에 사용자 추가 완료: {Email}, CUID: {Cuid}", user.Email, cuid);
+                _logger.LogInformation("app_users 테이블에 사용자 추가 완료: {Email}, CUID: {Cuid}, PasswordHash 저장됨", user.Email, cuid);
 
-                // 2. user_infos 테이블에 상세 정보 삽입
+                // 2. user_infos 테이블에 상세 정보 삽입 (password_hash 포함)
                 var userInfoRecord = new UserInfoRecord
                 {
                     UserCuid = cuid,
@@ -332,6 +338,7 @@ public sealed class OrganizationService : IOrganizationService
                     FullName = user.FullName.Trim(),
                     Department = null,
                     PhoneNumber = null,
+                    PasswordHash = passwordHash,
                     Role = "Member",
                     Status = "Pending",
                     RegisteredAt = DateTime.UtcNow
@@ -341,7 +348,7 @@ public sealed class OrganizationService : IOrganizationService
                     .From<UserInfoRecord>()
                     .Insert(userInfoRecord);
 
-                _logger.LogInformation("user_infos 테이블에 사용자 정보 추가 완료: {Username}, CUID: {Cuid}", user.UserId, cuid);
+                _logger.LogInformation("user_infos 테이블에 사용자 정보 추가 완료: {Username}, CUID: {Cuid}, PasswordHash 저장됨", user.UserId, cuid);
 
                 // 3. user_profiles 테이블에 공개 프로필 삽입
                 if (authUserId.HasValue)
@@ -562,5 +569,16 @@ public sealed class OrganizationService : IOrganizationService
         }
 
         _organizationUnits.RemoveAll(u => u.Id == id);
+    }
+
+    /// <summary>
+    /// Hashes a password using SHA256
+    /// </summary>
+    private static string HashPassword(string password)
+    {
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
     }
 }

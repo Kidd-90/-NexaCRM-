@@ -23,6 +23,7 @@ using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 using NexaCRM.WebServer.Services;
 using NexaCRM.Service.Supabase.Enterprise;
+using NexaCRM.Services.Admin.Services;
 
 namespace NexaCRM.WebServer;
 
@@ -107,6 +108,8 @@ public sealed class Startup
         services.AddScoped<IFileHubService, SupabaseFileHubService>();
         services.AddScoped<ISettingsCustomizationService, SupabaseSettingsCustomizationService>();
         services.AddScoped<IUserGovernanceService, SupabaseUserGovernanceService>();
+
+        services.AddScoped<IUserManagementService, SupabaseUserManagementService>();
 
         services.AddScoped<IContactService, SupabaseContactService>();
         services.AddScoped<IDealService, SupabaseDealService>();

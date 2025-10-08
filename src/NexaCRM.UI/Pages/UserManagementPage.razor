@@ -9,7 +9,7 @@
 @using NexaCRM.Services.Admin.Models.Organization
 @using NexaCRM.Services.Admin.Interfaces
 
-@inject IOrganizationService OrganizationService
+@inject IUserManagementService UserManagementService
 
 <ResponsivePage>
     <div class="user-management-page">
@@ -211,15 +211,27 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">역할</label>
-                                <InputText class="form-control" @bind-Value="_editUser.Role" placeholder="예: Admin" />
+                                <InputSelect class="form-select" @bind-Value="_editUser.Role">
+                                    <option value="">역할 없음</option>
+                                    @foreach (var role in _allSystemRoles)
+                                    {
+                                        <option value="@role">@role</option>
+                                    }
+                                </InputSelect>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">부서</label>
-                                <InputText class="form-control" @bind-Value="_editUser.Department" placeholder="소속 부서" />
+                                <label class="form-label">부서/팀</label>
+                                <InputSelect class="form-select" @bind-Value="_editUser.Department">
+                                    <option value="">부서 선택</option>
+                                    @foreach (var team in _allTeams)
+                                    {
+                                        <option value="@team">@team</option>
+                                    }
+                                </InputSelect>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">연락처</label>
-                                <InputText class="form-control" @bind-Value="_editUser.PhoneNumber" placeholder="휴대전화" />
+                                <InputText class="form-control" @bind-Value="_editUser.PhoneNumber" placeholder="휴대전화 번호" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">상태</label>
@@ -313,6 +325,8 @@
     private readonly List<OrganizationUser> _filteredUsers = new();
     private readonly List<OrganizationUser> _pendingUsers = new();
     private readonly List<string> _availableRoles = new();
+    private readonly List<string> _allSystemRoles = new();
+    private readonly List<string> _allTeams = new();
 
     private UserFilterModel _filter = new();
     private bool _isLoading = true;
@@ -327,13 +341,45 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadSystemRolesAsync();
+        await LoadTeamsAsync();
         await LoadUsersAsync();
+    }
+
+    private async Task LoadSystemRolesAsync()
+    {
+        try
+        {
+            var roles = await UserManagementService.GetAvailableRolesAsync();
+            _allSystemRoles.Clear();
+            _allSystemRoles.AddRange(roles);
+        }
+        catch (Exception ex)
+        {
+            // Log error and continue - role dropdown will be empty if this fails
+            Console.WriteLine($"Failed to load system roles: {ex.Message}");
+        }
+    }
+
+    private async Task LoadTeamsAsync()
+    {
+        try
+        {
+            var teams = await UserManagementService.GetAvailableTeamsAsync();
+            _allTeams.Clear();
+            _allTeams.AddRange(teams);
+        }
+        catch (Exception ex)
+        {
+            // Log error and continue - teams dropdown will be empty if this fails
+            Console.WriteLine($"Failed to load teams: {ex.Message}");
+        }
     }
 
     private async Task LoadUsersAsync()
     {
         _isLoading = true;
-        var data = await OrganizationService.GetUsersAsync();
+        var data = await UserManagementService.GetAllUsersAsync();
         _users.Clear();
         _users.AddRange(data);
         UpdateAvailableRoles();
@@ -393,12 +439,23 @@
 
     private void OpenEdit(OrganizationUser user)
     {
+        // Role may contain multiple roles like "Admin, Manager" - extract first one for editing
+        var roleValue = string.Empty;
+        if (!string.IsNullOrWhiteSpace(user.Role))
+        {
+            var roles = user.Role.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            roleValue = roles.Length > 0 ? roles[0] : string.Empty;
+        }
+
+        Console.WriteLine($"[OpenEdit] Opening edit for user: CUID={user.UserId ?? "(null)"}, Email={user.Email ?? "(null)"}, Name={user.Name ?? "(null)"}, Department={user.Department ?? "(null)"}, PhoneNumber={user.PhoneNumber ?? "(null)"}");
+
         _editUser = new UserEditModel
         {
             Id = user.Id,
+            UserId = user.UserId,
             Name = user.Name ?? string.Empty,
             Email = user.Email ?? string.Empty,
-            Role = user.Role ?? string.Empty,
+            Role = roleValue,
             Department = user.Department ?? string.Empty,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
             Status = user.Status ?? "Pending",
@@ -406,6 +463,8 @@
             ApprovedAt = user.ApprovedAt,
             ApprovalMemo = user.ApprovalMemo
         };
+
+        Console.WriteLine($"[OpenEdit] _editUser created: Email={_editUser.Email}, Department={_editUser.Department}, PhoneNumber={_editUser.PhoneNumber}");
         _showEditModal = true;
     }
 
@@ -425,6 +484,7 @@
         var updated = new OrganizationUser
         {
             Id = _editUser.Id,
+            UserId = _editUser.UserId,
             Name = _editUser.Name,
             Email = _editUser.Email,
             Role = NormalizeOrNull(_editUser.Role),
@@ -436,7 +496,7 @@
             ApprovalMemo = NormalizeOrNull(_editUser.ApprovalMemo)
         };
 
-        await OrganizationService.UpdateUserAsync(updated);
+        await UserManagementService.UpdateUserAsync(updated);
         await LoadUsersAsync();
         CloseEditModal();
     }
@@ -455,12 +515,12 @@
 
     private async Task ConfirmDeleteAsync()
     {
-        if (_selectedUser is null)
+        if (_selectedUser is null || string.IsNullOrEmpty(_selectedUser.UserId))
         {
             return;
         }
 
-        await OrganizationService.DeleteUserAsync(_selectedUser.Id);
+        await UserManagementService.DeleteUserAsync(_selectedUser.UserId);
         await LoadUsersAsync();
         CloseDeleteModal();
     }
@@ -469,7 +529,7 @@
     {
         _rejectRequest = new RejectRequest
         {
-            UserId = user.Id,
+            UserId = user.UserId ?? string.Empty,
             Name = user.Name ?? "이름 미확인",
             Reason = user.ApprovalMemo
         };
@@ -489,19 +549,19 @@
             return;
         }
 
-        await OrganizationService.RejectUserAsync(_rejectRequest.UserId, NormalizeOrNull(_rejectRequest.Reason));
+        await UserManagementService.RejectUserAsync(_rejectRequest.UserId, NormalizeOrNull(_rejectRequest.Reason));
         await LoadUsersAsync();
         CloseRejectModal();
     }
 
     private async Task ApproveAsync(OrganizationUser user)
     {
-        if (user is null)
+        if (user is null || string.IsNullOrEmpty(user.UserId))
         {
             return;
         }
 
-        await OrganizationService.ApproveUserAsync(user.Id);
+        await UserManagementService.ApproveUserAsync(user.UserId);
         await LoadUsersAsync();
     }
 
@@ -596,6 +656,7 @@
     private class UserEditModel
     {
         public int Id { get; set; }
+        public string? UserId { get; set; }
 
         [Required(ErrorMessage = "이름을 입력해 주세요.")]
         public string Name { get; set; } = string.Empty;
@@ -615,7 +676,7 @@
 
     private class RejectRequest
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
 
         [MaxLength(500, ErrorMessage = "사유는 500자 이하로 입력해 주세요.")]
