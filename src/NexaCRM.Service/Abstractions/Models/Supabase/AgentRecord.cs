@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 
 namespace NexaCRM.UI.Models.Supabase;
 
-[Table("agents")]
+[Table("agent_users")]
 public sealed class AgentRecord : BaseModel
 {
     [PrimaryKey("id")]

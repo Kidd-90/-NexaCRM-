@@ -80,8 +80,8 @@ BEGIN
     
     RAISE NOTICE '✅ Created/Updated user_infos record';
     
-    -- profiles 테이블에 추가
-    INSERT INTO profiles (id, user_cuid, username, full_name, avatar_url, updated_at)
+    -- user_profiles 테이블에 추가
+    INSERT INTO user_profiles (id, user_cuid, username, full_name, avatar_url, updated_at)
     VALUES (v_auth_user_id, v_admin_cuid, 'admin', 'System Administrator', NULL, NOW())
     ON CONFLICT (id) DO UPDATE
     SET user_cuid = EXCLUDED.user_cuid,
@@ -89,7 +89,7 @@ BEGIN
         full_name = EXCLUDED.full_name,
         updated_at = NOW();
     
-    RAISE NOTICE '✅ Created/Updated profiles record';
+    RAISE NOTICE '✅ Created/Updated user_profiles record';
     
     -- organization_users 생성/업데이트
     -- user_cuid에 UNIQUE 제약조건이 없으므로 먼저 확인 후 INSERT/UPDATE
@@ -152,7 +152,7 @@ SELECT
     ) AS assigned_roles
 FROM app_users au
 LEFT JOIN user_infos ui ON ui.user_cuid = au.cuid
-LEFT JOIN profiles p ON p.id = au.auth_user_id
+LEFT JOIN user_profiles p ON p.id = au.auth_user_id
 LEFT JOIN organization_users ou ON ou.user_cuid = au.cuid
 LEFT JOIN user_roles ur ON ur.user_cuid = au.cuid
 WHERE au.email = 'admin@nexa.test'

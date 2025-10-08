@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 
 namespace NexaCRM.UI.Models.Supabase;
 
-[Table("profiles")]
+[Table("user_profiles")]
 public sealed class ProfileLookupRecord : BaseModel
 {
     [PrimaryKey("id")]

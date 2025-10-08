@@ -86,9 +86,9 @@ public class AppUserRecord : BaseModel
 }
 
 /// <summary>
-/// Represents profiles table record
+/// Represents user_profiles table record
 /// </summary>
-[Table("profiles")]
+[Table("user_profiles")]
 public class ProfileRecord : BaseModel
 {
     [PrimaryKey("id", false)]

@@ -91,9 +91,9 @@ SET
   updated_at = NOW();
 
 
--- 2. PROFILES TABLE
+-- 2. USER PROFILES TABLE
 -- This table stores public user information and is linked to both auth.users and user_infos.
-CREATE TABLE profiles (
+CREATE TABLE user_profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   user_cuid TEXT NOT NULL UNIQUE REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
   username TEXT UNIQUE,
@@ -103,9 +103,9 @@ CREATE TABLE profiles (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-COMMENT ON TABLE profiles IS 'Public-facing user profile information.';
-COMMENT ON COLUMN profiles.id IS 'Foreign key to auth.users.id.';
-COMMENT ON COLUMN profiles.user_cuid IS 'Foreign key to user_infos.user_cuid.';
+COMMENT ON TABLE user_profiles IS 'Public-facing user profile information.';
+COMMENT ON COLUMN user_profiles.id IS 'Foreign key to auth.users.id.';
+COMMENT ON COLUMN user_profiles.user_cuid IS 'Foreign key to user_infos.user_cuid.';
 
 
 -- 3. COMPANIES TABLE
@@ -512,8 +512,8 @@ CREATE TABLE tasks (
 COMMENT ON TABLE tasks IS 'User tasks tracked for follow-up and workflow management.';
 
 
--- 10. AGENT & TEAM TABLES
-CREATE TABLE agents (
+-- 10. AGENT USERS & TEAM TABLES
+CREATE TABLE agent_users (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   user_cuid TEXT REFERENCES user_infos(user_cuid) ON DELETE SET NULL,
@@ -525,33 +525,33 @@ CREATE TABLE agents (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_agents_user_cuid ON agents(user_cuid);
+CREATE INDEX idx_agent_users_user_cuid ON agent_users(user_cuid);
 
--- Enable RLS for agents table
-ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
+-- Enable RLS for agent_users table
+ALTER TABLE agent_users ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies for agents table
-CREATE POLICY "Allow all access to read agents"
-  ON agents
+-- RLS Policies for agent_users table
+CREATE POLICY "Allow all access to read agent_users"
+  ON agent_users
   FOR SELECT
   TO authenticated, anon, service_role
   USING (true);
 
-CREATE POLICY "Allow all access to insert agents"
-  ON agents
+CREATE POLICY "Allow all access to insert agent_users"
+  ON agent_users
   FOR INSERT
   TO authenticated, anon, service_role
   WITH CHECK (true);
 
-CREATE POLICY "Allow all access to update agents"
-  ON agents
+CREATE POLICY "Allow all access to update agent_users"
+  ON agent_users
   FOR UPDATE
   TO authenticated, anon, service_role
   USING (true)
   WITH CHECK (true);
 
-CREATE POLICY "Allow all access to delete agents"
-  ON agents
+CREATE POLICY "Allow all access to delete agent_users"
+  ON agent_users
   FOR DELETE
   TO authenticated, anon, service_role
   USING (true);
@@ -1082,8 +1082,8 @@ ALTER TABLE sms_history REPLICA IDENTITY FULL;
 
 -- 20. TRIGGERS for updated_at
 -- Apply the `handle_updated_at` trigger to all tables that have an `updated_at` column.
-CREATE TRIGGER on_profiles_updated
-  BEFORE UPDATE ON profiles
+CREATE TRIGGER on_user_profiles_updated
+  BEFORE UPDATE ON user_profiles
   FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
 
 CREATE TRIGGER on_companies_updated
@@ -1102,8 +1102,8 @@ CREATE TRIGGER on_tasks_updated
   BEFORE UPDATE ON tasks
   FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
 
-CREATE TRIGGER on_agents_updated
-  BEFORE UPDATE ON agents
+CREATE TRIGGER on_agent_users_updated
+  BEFORE UPDATE ON agent_users
   FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
 
 CREATE TRIGGER on_teams_updated

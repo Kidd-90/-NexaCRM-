@@ -10,6 +10,8 @@ using NexaCRM.Services.Admin.Models.Supabase;
 using Supabase;
 using AgentModel = NexaCRM.Services.Admin.Models.Agent;
 using NewUserModel = NexaCRM.Services.Admin.Models.NewUser;
+using UserDirectoryEntryRecord = NexaCRM.UI.Models.Supabase.UserDirectoryEntryRecord;
+using UserRoleRecord = NexaCRM.UI.Models.Supabase.UserRoleRecord;
 
 namespace NexaCRM.Services.Admin;
 
@@ -341,7 +343,7 @@ public sealed class OrganizationService : IOrganizationService
 
                 _logger.LogInformation("user_infos 테이블에 사용자 정보 추가 완료: {Username}, CUID: {Cuid}", user.UserId, cuid);
 
-                // 3. profiles 테이블에 공개 프로필 삽입
+                // 3. user_profiles 테이블에 공개 프로필 삽입
                 if (authUserId.HasValue)
                 {
                     var profileRecord = new ProfileRecord
@@ -357,7 +359,7 @@ public sealed class OrganizationService : IOrganizationService
                         .From<ProfileRecord>()
                         .Insert(profileRecord);
 
-                    _logger.LogInformation("profiles 테이블에 공개 프로필 추가 완료: {Username}", user.UserId);
+                    _logger.LogInformation("user_profiles 테이블에 공개 프로필 추가 완료: {Username}", user.UserId);
                 }
 
                 // 4. organization_users 테이블에 조직 멤버십 삽입
@@ -382,6 +384,56 @@ public sealed class OrganizationService : IOrganizationService
                         .Insert(orgUserRecord);
 
                     _logger.LogInformation("organization_users 테이블에 조직 멤버십 추가 완료: {Username}", user.UserId);
+                }
+
+                // 5. user_directory_entries 테이블에 디렉토리 정보 삽입
+                if (authUserId.HasValue)
+                {
+                    var directoryEntry = new UserDirectoryEntryRecord
+                    {
+                        UserId = authUserId.Value,
+                        UserCuid = cuid,
+                        CompanyId = null,
+                        BranchId = null,
+                        TeamId = null,
+                        TenantUnitId = null,
+                        JobTitle = null,
+                        EmployeeNumber = null,
+                        EmploymentType = null,
+                        Status = "active",
+                        HiredOn = DateTime.UtcNow.Date,
+                        EndedOn = null,
+                        Notes = "신규 회원가입",
+                        CreatedBy = null,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    await _supabaseClient
+                        .From<UserDirectoryEntryRecord>()
+                        .Insert(directoryEntry);
+
+                    _logger.LogInformation("user_directory_entries 테이블에 디렉토리 정보 추가 완료: {Username}", user.UserId);
+                }
+
+                // 6. user_roles 테이블에 기본 역할(User) 추가
+                if (authUserId.HasValue)
+                {
+                    var userRole = new UserRoleRecord
+                    {
+                        UserId = authUserId.Value,
+                        UserCuid = cuid,
+                        RoleCode = "User",
+                        AssignedBy = null,
+                        AssignedByCuid = null,
+                        AssignedAt = DateTime.UtcNow
+                    };
+
+                    await _supabaseClient
+                        .From<UserRoleRecord>()
+                        .Insert(userRole);
+
+                    _logger.LogInformation("user_roles 테이블에 기본 역할(User) 추가 완료: {Username}", user.UserId);
                 }
 
                 // 메모리 리스트에도 추가 (임시 - 나중에 DB에서 조회로 변경 가능)

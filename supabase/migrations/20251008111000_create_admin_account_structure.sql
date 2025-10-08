@@ -66,8 +66,8 @@ BEGIN
         NOW()
     );
 
-    -- Note: profiles table will be populated when user registers through Supabase Auth
-    -- because profiles.id has a foreign key constraint to auth.users(id)
+    -- Note: user_profiles table will be populated when user registers through Supabase Auth
+    -- because user_profiles.id has a foreign key constraint to auth.users(id)
 
     -- Insert into organization_users
     INSERT INTO organization_users (

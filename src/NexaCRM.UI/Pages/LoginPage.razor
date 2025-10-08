@@ -231,7 +231,7 @@
             }
 
             // 인증 상태가 업데이트될 시간을 주기 위해 지연
-            await Task.Delay(200);
+            //await Task.Delay(200);
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;

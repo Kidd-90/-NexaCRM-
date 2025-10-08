@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Supabase.Gotrue;
@@ -11,6 +12,7 @@ public sealed class SupabaseServerSessionPersistence : IGotrueSessionPersistence
 {
     private readonly ILogger<SupabaseServerSessionPersistence> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private const string SessionCookieName = "NexaCRM.SupabaseSession";
     
     // Singleton으로 등록된 경우를 위한 전역 세션 저장소
     private static readonly ConcurrentDictionary<string, Session> _globalSessions = new();
@@ -40,6 +42,9 @@ public sealed class SupabaseServerSessionPersistence : IGotrueSessionPersistence
             _logger.LogInformation("✅ Supabase session saved to global memory for user {UserId}", session.User?.Id);
         }
         
+        // 3. 쿠키에 저장 (브라우저 새로고침 대응)
+        SaveSessionToCookie(session);
+        
         _logger.LogDebug("Supabase session persisted for user {UserId}.", session.User?.Id);
     }
 
@@ -55,21 +60,144 @@ public sealed class SupabaseServerSessionPersistence : IGotrueSessionPersistence
             _logger.LogInformation("🗑️ Supabase session removed from global memory for user {UserId}", userId);
         }
         
+        // 쿠키에서 제거
+        DeleteSessionCookie();
+        
         _logger.LogDebug("Supabase session destroyed.");
     }
 
     public Session? LoadSession()
     {
-        // 현재 Circuit의 세션 반환
+        // 1. 현재 Circuit의 세션 반환
         if (_session != null)
         {
             _logger.LogDebug("Returning existing Supabase session from memory.");
             return _session;
         }
         
-        // 다른 Circuit에서 저장된 세션이 있는지 확인 (제한적)
-        // 참고: forceLoad 사용 시 새 Circuit이 생성되어 복원 불가
-        _logger.LogDebug("No Supabase session found in current Circuit.");
+        // 2. 쿠키에서 세션 복원 시도 (브라우저 새로고침 대응)
+        var sessionFromCookie = LoadSessionFromCookie();
+        if (sessionFromCookie != null)
+        {
+            _session = sessionFromCookie;
+            
+            // 전역 저장소에도 복원
+            if (!string.IsNullOrEmpty(sessionFromCookie.User?.Id))
+            {
+                _globalSessions[sessionFromCookie.User.Id] = sessionFromCookie;
+                _logger.LogInformation("🔄 Supabase session restored from cookie for user {UserId}", sessionFromCookie.User?.Id);
+            }
+            
+            return sessionFromCookie;
+        }
+        
+        _logger.LogDebug("No Supabase session found in current Circuit or cookie.");
         return null;
+    }
+    
+    private void SaveSessionToCookie(Session session)
+    {
+        try
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                _logger.LogWarning("⚠️ HttpContext is null, cannot save session to cookie");
+                return;
+            }
+            
+            // Session을 JSON으로 직렬화
+            var sessionJson = JsonSerializer.Serialize(session);
+            
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = session.ExpiresAt(),
+                Path = "/"
+            };
+            
+            httpContext.Response.Cookies.Append(SessionCookieName, sessionJson, cookieOptions);
+            _logger.LogDebug("✅ Session saved to cookie for user {UserId}", session.User?.Id);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Headers already sent - 이 경우는 무시 (Circuit 재연결 시 발생 가능)
+            _logger.LogDebug("⚠️ Could not save session to cookie (headers already sent): {Message}", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Failed to save session to cookie");
+        }
+    }
+    
+    private Session? LoadSessionFromCookie()
+    {
+        try
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                _logger.LogDebug("HttpContext is null, cannot load session from cookie");
+                return null;
+            }
+            
+            if (!httpContext.Request.Cookies.TryGetValue(SessionCookieName, out var sessionJson) || 
+                string.IsNullOrEmpty(sessionJson))
+            {
+                _logger.LogDebug("No session cookie found");
+                return null;
+            }
+            
+            var session = JsonSerializer.Deserialize<Session>(sessionJson);
+            
+            if (session == null)
+            {
+                _logger.LogWarning("Failed to deserialize session from cookie");
+                return null;
+            }
+            
+            // 세션 만료 확인
+            if (session.ExpiresAt() < DateTimeOffset.UtcNow)
+            {
+                _logger.LogInformation("Session cookie expired for user {UserId}", session.User?.Id);
+                DeleteSessionCookie();
+                return null;
+            }
+            
+            _logger.LogDebug("✅ Session loaded from cookie for user {UserId}", session.User?.Id);
+            return session;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Failed to load session from cookie");
+            return null;
+        }
+    }
+    
+    private void DeleteSessionCookie()
+    {
+        try
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                _logger.LogDebug("HttpContext is null, cannot delete session cookie");
+                return;
+            }
+            
+            httpContext.Response.Cookies.Delete(SessionCookieName);
+            _logger.LogDebug("🗑️ Session cookie deleted");
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Headers already sent - 무시
+            _logger.LogDebug("⚠️ Could not delete session cookie (headers already sent): {Message}", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Failed to delete session cookie");
+        }
     }
 }
