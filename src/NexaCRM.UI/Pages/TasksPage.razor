@@ -1,5 +1,5 @@
 @page "/tasks-page"
-@attribute [Authorize(Roles = "Sales,Manager")]
+@attribute [Authorize(Roles = "Admin,Sales,Manager")]
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<TasksPage> Localizer
 

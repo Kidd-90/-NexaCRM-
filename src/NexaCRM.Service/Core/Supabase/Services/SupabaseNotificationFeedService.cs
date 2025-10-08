@@ -14,6 +14,7 @@ using RealtimeEventType = global::Supabase.Realtime.Constants.EventType;
 using RealtimeListenType = global::Supabase.Realtime.PostgresChanges.PostgresChangesOptions.ListenType;
 using global::Supabase.Realtime.Interfaces;
 using global::Supabase.Realtime.PostgresChanges;
+using RealtimeException = global::Supabase.Realtime.Exceptions.RealtimeException;
 
 namespace NexaCRM.Service.Supabase;
 
@@ -49,8 +50,16 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
         {
             _logger.LogInformation("[GetAsync] Starting to load notification feed...");
             
-            await EnsureRealtimeSubscriptionAsync();
-            _logger.LogInformation("[GetAsync] Realtime subscription ensured.");
+            // Realtime 구독은 시도하되 실패해도 계속 진행
+            try
+            {
+                await EnsureRealtimeSubscriptionAsync();
+                _logger.LogInformation("[GetAsync] Realtime subscription ensured.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex, "[GetAsync] Realtime subscription failed, continuing without real-time updates.");
+            }
             
             // Get user ID from authentication state (claims)
             var (hasUserId, userId) = await TryEnsureUserIdAsync();
@@ -122,7 +131,15 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
 
     public async Task<int> GetUnreadCountAsync()
     {
-        await EnsureRealtimeSubscriptionAsync();
+        // Realtime 구독은 시도하되 실패해도 계속 진행
+        try
+        {
+            await EnsureRealtimeSubscriptionAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Realtime subscription failed in GetUnreadCountAsync, continuing with direct query.");
+        }
 
         lock (_syncRoot)
         {
@@ -132,24 +149,40 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
             }
         }
 
-        var client = await _clientProvider.GetClientAsync();
-        if (!TryEnsureUserId(client, out var userId))
+        try
         {
-            _logger.LogDebug("No authenticated Supabase user available when getting unread count; returning 0.");
+            var client = await _clientProvider.GetClientAsync();
+            if (!TryEnsureUserId(client, out var userId))
+            {
+                _logger.LogDebug("No authenticated Supabase user available when getting unread count; returning 0.");
+                return 0;
+            }
+
+            // Boolean 필터는 "eq.false" 문자열로 직접 처리
+            var response = await client.From<NotificationFeedRecord>()
+                .Filter(x => x.UserId, PostgrestOperator.Equals, userId.ToString())
+                .Filter("is_read", PostgrestOperator.Equals, "false")
+                .Get();
+
+            return response.Models?.Count ?? 0;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get unread count from database.");
             return 0;
         }
-
-        var response = await client.From<NotificationFeedRecord>()
-            .Filter(x => x.UserId, PostgrestOperator.Equals, userId.ToString())
-            .Filter(x => x.IsRead, PostgrestOperator.Equals, false)
-            .Get();
-
-        return response.Models.Count;
     }
 
     public async Task MarkAllReadAsync()
     {
-        await EnsureRealtimeSubscriptionAsync();
+        try
+        {
+            await EnsureRealtimeSubscriptionAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Realtime subscription failed in MarkAllReadAsync, continuing with direct updates.");
+        }
 
         List<Guid> unreadIds;
         lock (_syncRoot)
@@ -168,7 +201,15 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
 
     public async Task MarkAsReadAsync(Guid id)
     {
-        await EnsureRealtimeSubscriptionAsync();
+        try
+        {
+            await EnsureRealtimeSubscriptionAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Realtime subscription failed in MarkAsReadAsync, continuing with direct update.");
+        }
+
         var client = await _clientProvider.GetClientAsync();
         if (!TryEnsureUserId(client, out var userId))
         {
@@ -273,11 +314,36 @@ public sealed class SupabaseNotificationFeedService : INotificationFeedService, 
                 _logger.LogDebug("Realtime subscription not initialized because no authenticated Supabase user is available.");
                 return;
             }
-            _changeHandler ??= HandleRealtimeChange;
-            _realtimeChannel = await client.From<NotificationFeedRecord>()
-                .On(RealtimeListenType.All, _changeHandler);
 
-            _subscriptionInitialized = true;
+            // Realtime Socket 연결 먼저 시도
+            try
+            {
+                if (client.Realtime.Socket?.IsConnected != true)
+                {
+                    _logger.LogDebug("Connecting to Supabase Realtime...");
+                    await client.Realtime.ConnectAsync();
+                    _logger.LogInformation("Successfully connected to Supabase Realtime.");
+                }
+
+                _changeHandler ??= HandleRealtimeChange;
+                _realtimeChannel = await client.From<NotificationFeedRecord>()
+                    .On(RealtimeListenType.All, _changeHandler);
+
+                _subscriptionInitialized = true;
+                _logger.LogInformation("✅ Realtime notification subscription initialized successfully.");
+            }
+            catch (RealtimeException)
+            {
+                // Realtime이 테이블에 활성화되지 않은 경우
+                _logger.LogInformation("ℹ️ Realtime is not enabled for notification_feed table. Notifications will work using polling instead of real-time updates. To enable: Supabase Dashboard → Database → Replication → Enable for 'notification_feed'");
+                _subscriptionInitialized = true; // 재시도하지 않도록 플래그 설정
+            }
+            catch (Exception ex)
+            {
+                // 기타 Realtime 연결 실패
+                _logger.LogDebug(ex, "Failed to connect to Supabase Realtime. Notifications will work but won't update in real-time.");
+                _subscriptionInitialized = true; // 재시도하지 않도록 플래그 설정
+            }
         }
         catch (Exception ex)
         {

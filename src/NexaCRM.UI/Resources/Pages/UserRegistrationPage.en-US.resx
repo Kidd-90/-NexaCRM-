@@ -73,7 +73,7 @@
     <value>Create a secure user ID</value>
   </data>
   <data name="UserIdRequirements" xml:space="preserve">
-    <value>Use 6-20 characters with at least one of . _ @ - and avoid repeated or sequential characters.</value>
+    <value>Use 6-20 characters including letters, numbers, and special characters.</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
@@ -88,7 +88,7 @@
     <value>Enter your password</value>
   </data>
   <data name="PasswordRequirements" xml:space="preserve">
-    <value>Use 10-64 characters including uppercase, lowercase, numbers, special symbols, and avoid sequences.</value>
+    <value>Use 6-64 characters for your password.</value>
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>

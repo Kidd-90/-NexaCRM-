@@ -38,6 +38,24 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddLocalization(options => options.ResourcesPath = "Resources");
+        
+        // HttpContext 접근을 위한 서비스 등록
+        services.AddHttpContextAccessor();
+        
+        // 🔒 Cookie Authentication 추가 (Blazor Server 필수)
+        services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "NexaCRM.Auth";
+                options.LoginPath = "/login";
+                options.LogoutPath = "/logout";
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.SlidingExpiration = true;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+            });
+        
         services.AddAuthorizationCore();
 
         services.AddRazorPages();

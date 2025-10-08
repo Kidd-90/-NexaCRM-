@@ -1,5 +1,5 @@
 @page "/db/customer/all"
-@attribute [Authorize(Roles = "Manager")]
+@attribute [Authorize(Roles = "Admin,Manager")]
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using NexaCRM.Services.Admin.Models.Db

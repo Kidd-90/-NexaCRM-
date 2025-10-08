@@ -15,10 +15,11 @@ public class NewUser
     [Required]
     [Display(Name = "User ID")]
     [StringLength(20, MinimumLength = 6, ErrorMessage = "User ID must be between 6 and 20 characters.")]
-    [RegularExpression(
-        "^(?=.*[A-Za-z])(?=.*[@._-])[A-Za-z0-9@._-]+$",
-        ErrorMessage = "User ID must contain letters and at least one of the following special characters: . _ @ -.")]
-    [DisallowSequentialCharacters(3, ErrorMessage = "User ID cannot contain repeated or sequential character runs of length 3 or more.")]
+    // 옵션 처리: 특수문자 요구사항 비활성화
+    // [RegularExpression(
+    //     "^(?=.*[A-Za-z])(?=.*[@._-])[A-Za-z0-9@._-]+$",
+    //     ErrorMessage = "User ID must contain letters and at least one of the following special characters: . _ @ -.")]
+    // [DisallowSequentialCharacters(3, ErrorMessage = "User ID cannot contain repeated or sequential character runs of length 3 or more.")]
     public string UserId { get; set; } = string.Empty;
 
     [Required]
@@ -27,11 +28,12 @@ public class NewUser
 
     [Required]
     [DataType(DataType.Password)]
-    [StringLength(64, MinimumLength = 10, ErrorMessage = "Password must be between 10 and 64 characters.")]
-    [RegularExpression(
-        "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{10,64}$",
-        ErrorMessage = "Password must contain uppercase, lowercase, number, and special characters.")]
-    [DisallowSequentialCharacters(3, ErrorMessage = "Password cannot contain repeated or sequential character runs of length 3 or more.")]
+    [StringLength(64, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 64 characters.")]
+    // 옵션 처리: 복잡도 요구사항 비활성화
+    // [RegularExpression(
+    //     "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{10,64}$",
+    //     ErrorMessage = "Password must contain uppercase, lowercase, number, and special characters.")]
+    // [DisallowSequentialCharacters(3, ErrorMessage = "Password cannot contain repeated or sequential character runs of length 3 or more.")]
     public string Password { get; set; } = string.Empty;
 
     [Required]

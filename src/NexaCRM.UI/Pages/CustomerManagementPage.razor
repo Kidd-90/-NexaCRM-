@@ -1,6 +1,6 @@
 @page "/customer-management"
 @using Microsoft.AspNetCore.Components.Authorization
-@attribute [Authorize(Roles = "Manager, Sales")]
+@attribute [Authorize(Roles = "Admin,Manager,Sales")]
 @inject IStringLocalizer<CustomerManagementPage> Localizer
 
 <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">

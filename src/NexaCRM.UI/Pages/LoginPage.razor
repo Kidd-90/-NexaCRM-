@@ -2,7 +2,6 @@
 @page "/"
 @layout LoginLayout
 @attribute [AllowAnonymous]
-@rendermode RenderMode.InteractiveAuto
 @using System.Linq
 @using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -213,35 +212,74 @@
 
         try
         {
-            await JSRuntime.InvokeVoidAsync(identifier: "console.log", "Attempting Supabase login");
+            try
+            {
+                await JSRuntime.InvokeVoidAsync(identifier: "console.log", "Attempting Supabase login");
+            }
+            catch (JSException) { /* JSInterop 실패 무시 */ }
 
             var result = await AuthenticationService.SignInAsync(username, password);
             if (!result.Succeeded)
             {
                 errorMessage = result.ErrorMessage ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
-                await JSRuntime.InvokeVoidAsync("console.warn", $"Login failed for {username} with reason {result.FailureReason}.");
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("console.warn", $"Login failed for {username} with reason {result.FailureReason}.");
+                }
+                catch (JSException) { /* JSInterop 실패 무시 */ }
                 return;
             }
+
+            // 인증 상태가 업데이트될 시간을 주기 위해 지연
+            await Task.Delay(200);
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
+            var isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+            var roles = string.Join(",", user.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value));
+            
+            Logger.LogInformation("🔐 Login complete - IsAuthenticated={IsAuth}, Roles={Roles}", isAuthenticated, roles);
+            
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("console.log", $"Auth state after login: IsAuthenticated={isAuthenticated}, Roles={roles}");
+            }
+            catch (JSException) { /* JSInterop 실패 무시 */ }
+
+            if (!isAuthenticated)
+            {
+                Logger.LogWarning("⚠️ User not authenticated after login, staying on login page");
+                errorMessage = "인증 상태 확인 실패. 다시 시도해주세요.";
+                return;
+            }
+
+            // 같은 Circuit에서 네비게이션 (forceLoad 제거하여 세션 유지)
+            string targetUrl;
             if (user.IsInRole("Manager"))
             {
-                NavigationManager.NavigateTo("/sales-manager-dashboard");
+                targetUrl = "/sales-manager-dashboard";
             }
             else if (user.IsInRole("Sales"))
             {
-                NavigationManager.NavigateTo("/main-dashboard");
+                targetUrl = "/main-dashboard";
             }
             else
             {
-                NavigationManager.NavigateTo("/main-dashboard");
+                targetUrl = "/main-dashboard";
             }
+            
+            Logger.LogInformation("🚀 Navigating to {Url}", targetUrl);
+            NavigationManager.NavigateTo(targetUrl);
+        }
+        catch (JSException jsEx)
+        {
+            Logger.LogWarning("JSInterop error during login (safe to ignore): {Message}", jsEx.Message);
+            // JSInterop 오류는 무시하고 계속 진행
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.error", $"Error during login: {ex.Message}");
+            Logger.LogError(ex, "Error during login for user {User}", username);
             errorMessage = "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
         }
         finally

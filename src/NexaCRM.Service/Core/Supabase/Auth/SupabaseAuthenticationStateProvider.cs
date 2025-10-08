@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NexaCRM.Service.Abstractions.Models.Supabase;
+using NexaCRM.Services.Admin.Models.Supabase;
 using NexaCRM.Service.Supabase.Configuration;
 using NexaCRM.UI.Services.Interfaces;
 using LoginResult = NexaCRM.UI.Models.LoginResult;
@@ -86,20 +87,30 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
             await EnsureInitializedAsync().ConfigureAwait(false);
 
             var publicClient = await _clientProvider.GetClientAsync().ConfigureAwait(false);
-            var accountRecord = await ResolveAccountAsync(publicClient, username).ConfigureAwait(false);
+            
+            _logger.LogInformation("Attempting to resolve account for username: {Username}", username);
+            
+            UserAccountOverviewRecord? accountRecord;
+            try
+            {
+                accountRecord = await ResolveAccountAsync(publicClient, username).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to resolve account for {Username}. Error details: {ErrorMessage}", username, ex.Message);
+                throw;
+            }
 
             if (accountRecord is null || string.IsNullOrWhiteSpace(accountRecord.Email))
             {
                 _logger.LogWarning("Unable to locate account for credential {Username}.", username);
                 return LoginResult.Failed(LoginFailureReason.UserNotFound, GetFailureMessage(LoginFailureReason.UserNotFound));
             }
-
-            if (string.IsNullOrWhiteSpace(accountRecord.PasswordHash) || !BCrypt.Net.BCrypt.Verify(password, accountRecord.PasswordHash))
-            {
-                _logger.LogWarning("Invalid password supplied for {Username}.", username);
-                return LoginResult.Failed(LoginFailureReason.InvalidPassword, GetFailureMessage(LoginFailureReason.InvalidPassword));
-            }
             
+            _logger.LogInformation("Account found: {Email}, Status: {Status}, AuthUserId: {AuthUserId}", 
+                accountRecord.Email, accountRecord.Status, accountRecord.AuthUserId);
+
+            // 계정 상태 확인 (승인 대기 중인지 체크)
             if (!IsAccountActive(accountRecord))
             {
                 _logger.LogWarning(
@@ -112,16 +123,23 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
                     GetFailureMessage(LoginFailureReason.RequiresApproval));
             }
 
-            // Create a session with user information
-            var session = new Session
+            // Supabase Auth로 로그인 시도
+            Session? session;
+            try
             {
-                User = new User
+                session = await publicClient.Auth.SignIn(accountRecord.Email, password).ConfigureAwait(false);
+
+                if (session?.User is null)
                 {
-                    Id = accountRecord.AuthUserId.ToString(),
-                    Email = accountRecord.Email ?? string.Empty,
-                    UserMetadata = new Dictionary<string, object>()
+                    _logger.LogWarning("Supabase Auth returned null session for {Username}.", username);
+                    return LoginResult.Failed(LoginFailureReason.InvalidPassword, GetFailureMessage(LoginFailureReason.InvalidPassword));
                 }
-            };
+            }
+            catch (GotrueException ex) when (IsInvalidCredentialError(ex))
+            {
+                _logger.LogWarning(ex, "Invalid credentials for {Username} during Supabase Auth sign in.", username);
+                return LoginResult.Failed(LoginFailureReason.InvalidPassword, GetFailureMessage(LoginFailureReason.InvalidPassword));
+            }
 
             _logger.LogInformation("[SignInAsync] ✅ Login successful for user {UserId} ({Email})", 
                 accountRecord.AuthUserId, accountRecord.Email);
@@ -131,7 +149,8 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
         }
         catch (PostgrestException ex)
         {
-            _logger.LogError(ex, "Database error during login for {Username}.", username);
+            _logger.LogError(ex, "Database error during login for {Username}. Error: {ErrorCode} - {ErrorMessage}", 
+                username, ex.Reason, ex.Message);
             return LoginResult.Failed(LoginFailureReason.Unknown, GetFailureMessage(LoginFailureReason.Unknown));
         }
         catch (GotrueException ex) when (IsInvalidCredentialError(ex))
@@ -141,12 +160,14 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
         }
         catch (GotrueException ex)
         {
-            _logger.LogError(ex, "Supabase authentication failed unexpectedly for {Username}.", username);
+            _logger.LogError(ex, "Supabase authentication failed unexpectedly for {Username}. Error: {ErrorMessage}", 
+                username, ex.Message);
             return LoginResult.Failed(LoginFailureReason.Unknown, GetFailureMessage(LoginFailureReason.Unknown));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected login failure for {Username}.", username);
+            _logger.LogError(ex, "Unexpected login failure for {Username}. Exception type: {ExceptionType}, Message: {ErrorMessage}", 
+                username, ex.GetType().Name, ex.Message);
             return LoginResult.Failed(LoginFailureReason.Unknown, GetFailureMessage(LoginFailureReason.Unknown));
         }
     }
@@ -338,12 +359,25 @@ public class SupabaseAuthenticationStateProvider : AuthenticationStateProvider, 
                     claims.Add(new Claim("preferred_username", account.Username));
                 }
 
-                foreach (var role in account.RoleCodes ?? Array.Empty<string>())
+                // 🔍 DEBUG: 역할 로드 상태 확인
+                var roleCodes = account.RoleCodes ?? Array.Empty<string>();
+                _logger.LogInformation("🔍 [CreatePrincipal] Account {Email} has {RoleCount} roles: [{Roles}]", 
+                    account.Email, 
+                    roleCodes.Length, 
+                    string.Join(", ", roleCodes));
+
+                foreach (var role in roleCodes)
                 {
                     if (!string.IsNullOrWhiteSpace(role))
                     {
+                        _logger.LogInformation("✅ [CreatePrincipal] Adding role claim: {Role}", role);
                         claims.Add(new Claim(ClaimTypes.Role, role));
                     }
+                }
+
+                if (roleCodes.Length == 0)
+                {
+                    _logger.LogWarning("⚠️ [CreatePrincipal] No roles found for account {Email}! Check user_roles table.", account.Email);
                 }
             }
             else

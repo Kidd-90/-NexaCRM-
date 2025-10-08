@@ -73,7 +73,7 @@
     <value>보안성 높은 사용자 ID를 입력하세요</value>
   </data>
   <data name="UserIdRequirements" xml:space="preserve">
-    <value>6~20자의 영문과 . _ @ - 중 하나 이상의 특수문자를 포함하고 반복 또는 연속 문자를 피하세요.</value>
+    <value>6~20자의 영문, 숫자, 특수문자를 사용할 수 있습니다.</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>이메일</value>
@@ -88,7 +88,7 @@
     <value>비밀번호를 입력하세요</value>
   </data>
   <data name="PasswordRequirements" xml:space="preserve">
-    <value>10~64자의 대문자, 소문자, 숫자, 특수문자를 모두 포함하고 연속 문자를 피하세요.</value>
+    <value>6~64자의 비밀번호를 입력하세요.</value>
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>비밀번호 확인</value>

@@ -571,6 +571,7 @@
     gap: 0.65rem;
     padding: 0.6rem 0.6rem 0.4rem 0.6rem;
     border-bottom: 1px solid var(--divider-color, #E5E7EB);
+    position: relative;
 }
 .panel-user__avatar {
     width: 40px;
@@ -581,19 +582,202 @@
     background: linear-gradient(180deg, #F3F4F6, #E5E7EB);
     color: #374151;
     font-weight: 700;
+    flex-shrink: 0;
 }
 .panel-user__info {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-width: 0;
 }
 .panel-user__name {
     font-weight: 700;
     color: #111827;
     font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .panel-user__email {
     font-size: 0.8rem;
     color: #6B7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.panel-user__details-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.panel-user__details-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #111827;
+}
+.panel-user__details-btn:active {
+    transform: scale(0.95);
+}
+
+/* User details dropdown */
+.panel-user-details {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                0 0 0 1px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    margin: 0.5rem;
+    overflow: hidden;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel-user-details__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #F9FAFB, #F3F4F6);
+    border-bottom: 1px solid #E5E7EB;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #111827;
+}
+
+.panel-user-details__close {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.panel-user-details__close:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #111827;
+}
+
+.panel-user-details__list {
+    padding: 0.5rem;
+}
+
+.panel-user-details__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.panel-user-details__item:hover {
+    background: #F9FAFB;
+}
+
+.panel-user-details__item > i {
+    font-size: 1.1rem;
+    color: #6B7280;
+    margin-top: 0.1rem;
+}
+
+.panel-user-details__item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.panel-user-details__item-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.panel-user-details__item-value {
+    font-size: 0.875rem;
+    color: #111827;
+    word-break: break-word;
+}
+
+.panel-user-details__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.5rem;
+    border-top: 1px solid #E5E7EB;
+    background: #F9FAFB;
+}
+
+.panel-user-details__action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.panel-user-details__action-btn:hover {
+    background: #F3F4F6;
+    border-color: #D1D5DB;
+    color: #111827;
+}
+
+.panel-user-details__action-btn:active {
+    transform: scale(0.98);
+}
+
+.panel-user-details__action-btn--danger {
+    color: #DC2626;
+    border-color: #FCA5A5;
+}
+
+.panel-user-details__action-btn--danger:hover {
+    background: #FEF2F2;
+    border-color: #F87171;
+    color: #B91C1C;
+}
+
+.panel-user-details__action-btn > i {
+    font-size: 1rem;
 }
 
 /* Bottom area inside the panel for per-page content */

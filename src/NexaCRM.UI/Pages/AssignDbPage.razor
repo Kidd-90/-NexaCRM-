@@ -1,5 +1,5 @@
 @page "/db/distribution/assign/{ContactId:int}"
-@attribute [Authorize(Roles = "Manager")]
+@attribute [Authorize(Roles = "Admin,Manager")]
 
 @using NexaCRM.UI.Models
 @using NexaCRM.Services.Admin.Interfaces

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NexaCRM.Services.Admin.Interfaces;
 using NexaCRM.Services.Admin.Models.Organization;
+using NexaCRM.Services.Admin.Models.Supabase;
+using Supabase;
 using AgentModel = NexaCRM.Services.Admin.Models.Agent;
 using NewUserModel = NexaCRM.Services.Admin.Models.NewUser;
 
@@ -12,6 +15,15 @@ namespace NexaCRM.Services.Admin;
 
 public sealed class OrganizationService : IOrganizationService
 {
+    private readonly Client _supabaseClient;
+    private readonly ILogger<OrganizationService> _logger;
+
+    public OrganizationService(Client supabaseClient, ILogger<OrganizationService> logger)
+    {
+        _supabaseClient = supabaseClient ?? throw new ArgumentNullException(nameof(supabaseClient));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     private readonly List<OrganizationUnit> _organizationUnits =
     [
         new(1, "Head Office", null),
@@ -239,10 +251,11 @@ public sealed class OrganizationService : IOrganizationService
         return Task.CompletedTask;
     }
 
-    public Task RegisterUserAsync(NewUserModel user)
+    public async Task RegisterUserAsync(NewUserModel user)
     {
         ArgumentNullException.ThrowIfNull(user);
 
+        // 유효성 검사
         var results = new List<ValidationResult>();
         var context = new ValidationContext(user);
 
@@ -260,23 +273,155 @@ public sealed class OrganizationService : IOrganizationService
             throw new ValidationException(message);
         }
 
-        var newUser = new OrganizationUser
+        try
         {
-            Id = GenerateUserId(),
-            UserId = user.UserId.Trim(),
-            Name = user.FullName.Trim(),
-            Email = user.Email.Trim(),
-            Role = "Member",
-            Status = "Pending",
-            Department = string.Empty,
-            PhoneNumber = string.Empty,
-            RegisteredAt = DateTime.UtcNow,
-            ApprovedAt = null,
-            ApprovalMemo = "Registration requested"
-        };
+            _logger.LogInformation("사용자 등록 시도: {Email}", user.Email);
 
-        _users.Add(newUser);
-        return Task.CompletedTask;
+            // Supabase Auth를 통한 사용자 생성
+            var signUpResponse = await _supabaseClient.Auth.SignUp(
+                email: user.Email.Trim(),
+                password: user.Password.Trim(),
+                options: new Supabase.Gotrue.SignUpOptions
+                {
+                    Data = new Dictionary<string, object>
+                    {
+                        { "full_name", user.FullName.Trim() },
+                        { "user_id", user.UserId.Trim() },
+                        { "role", "Member" },
+                        { "status", "Pending" }
+                    }
+                }
+            );
+
+            if (signUpResponse?.User == null)
+            {
+                throw new InvalidOperationException("사용자 생성에 실패했습니다.");
+            }
+
+            _logger.LogInformation("사용자 등록 성공: {Email}, Supabase User ID: {UserId}", 
+                user.Email, signUpResponse.User.Id);
+
+            // 사용자 데이터를 app_users와 user_infos 테이블에 저장
+            try
+            {
+                var authUserId = string.IsNullOrEmpty(signUpResponse.User.Id) ? (Guid?)null : Guid.Parse(signUpResponse.User.Id);
+                var cuid = Guid.NewGuid().ToString("N"); // CUID 생성
+
+                // 1. app_users 테이블에 먼저 삽입
+                var appUserRecord = new AppUserRecord
+                {
+                    Cuid = cuid,
+                    AuthUserId = authUserId,
+                    Email = user.Email.Trim(),
+                    Status = "Pending"
+                };
+
+                await _supabaseClient
+                    .From<AppUserRecord>()
+                    .Insert(appUserRecord);
+
+                _logger.LogInformation("app_users 테이블에 사용자 추가 완료: {Email}, CUID: {Cuid}", user.Email, cuid);
+
+                // 2. user_infos 테이블에 상세 정보 삽입
+                var userInfoRecord = new UserInfoRecord
+                {
+                    UserCuid = cuid,
+                    Username = user.UserId.Trim(),
+                    FullName = user.FullName.Trim(),
+                    Department = null,
+                    PhoneNumber = null,
+                    Role = "Member",
+                    Status = "Pending",
+                    RegisteredAt = DateTime.UtcNow
+                };
+
+                await _supabaseClient
+                    .From<UserInfoRecord>()
+                    .Insert(userInfoRecord);
+
+                _logger.LogInformation("user_infos 테이블에 사용자 정보 추가 완료: {Username}, CUID: {Cuid}", user.UserId, cuid);
+
+                // 3. profiles 테이블에 공개 프로필 삽입
+                if (authUserId.HasValue)
+                {
+                    var profileRecord = new ProfileRecord
+                    {
+                        Id = authUserId.Value,
+                        UserCuid = cuid,
+                        Username = user.UserId.Trim(),
+                        FullName = user.FullName.Trim(),
+                        AvatarUrl = null
+                    };
+
+                    await _supabaseClient
+                        .From<ProfileRecord>()
+                        .Insert(profileRecord);
+
+                    _logger.LogInformation("profiles 테이블에 공개 프로필 추가 완료: {Username}", user.UserId);
+                }
+
+                // 4. organization_users 테이블에 조직 멤버십 삽입
+                if (authUserId.HasValue)
+                {
+                    var orgUserRecord = new OrganizationUserRecord
+                    {
+                        UserId = authUserId.Value,
+                        UserCuid = cuid,
+                        UnitId = null, // 기본 조직 단위 없음 (나중에 관리자가 할당)
+                        Role = "Member",
+                        Status = "pending",
+                        Department = null,
+                        PhoneNumber = null,
+                        RegisteredAt = DateTime.UtcNow,
+                        ApprovedAt = null,
+                        ApprovalMemo = "신규 회원가입"
+                    };
+
+                    await _supabaseClient
+                        .From<OrganizationUserRecord>()
+                        .Insert(orgUserRecord);
+
+                    _logger.LogInformation("organization_users 테이블에 조직 멤버십 추가 완료: {Username}", user.UserId);
+                }
+
+                // 메모리 리스트에도 추가 (임시 - 나중에 DB에서 조회로 변경 가능)
+                var newUser = new OrganizationUser
+                {
+                    Id = GenerateUserId(),
+                    UserId = user.UserId.Trim(),
+                    Name = user.FullName.Trim(),
+                    Email = user.Email.Trim(),
+                    Role = "Member",
+                    Status = "Pending",
+                    Department = string.Empty,
+                    PhoneNumber = string.Empty,
+                    RegisteredAt = DateTime.UtcNow,
+                    ApprovedAt = null,
+                    ApprovalMemo = "Registration requested via Supabase Auth"
+                };
+
+                _users.Add(newUser);
+
+                _logger.LogInformation("모든 테이블에 사용자 데이터 삽입 완료: {Email}", user.Email);
+            }
+            catch (Exception dbEx)
+            {
+                _logger.LogWarning(dbEx, "데이터베이스 테이블 삽입 실패 (Auth 가입은 성공): {Email}", user.Email);
+                // 데이터베이스 삽입 실패해도 Auth 가입은 성공했으므로 계속 진행
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "사용자 등록 실패: {Email}", user.Email);
+            
+            // 사용자 친화적인 에러 메시지
+            if (ex.Message.Contains("already registered") || ex.Message.Contains("User already registered"))
+            {
+                throw new InvalidOperationException("이미 등록된 이메일입니다.");
+            }
+            
+            throw new InvalidOperationException($"사용자 등록 중 오류가 발생했습니다: {ex.Message}", ex);
+        }
     }
 
     public Task<IEnumerable<NewUserModel>> GetPendingUsersAsync()

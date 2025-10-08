@@ -1,16 +1,18 @@
 @using System.Linq
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
+@using NexaCRM.UI.Services.Interfaces
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IRolePermissionService RolePermissionService
+@inject IAuthenticationService AuthenticationService
 @inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
 @using NexaCRM.UI.Models.Navigation
 
 @implements IDisposable
 
-<div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation" aria-label="@Localizer["MainNavigation"]">
+<div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation" aria-label="@Localizer["MainNavigation"]" @onclick="HandleOutsideClick">
     <div class="nav-rail__icons">
         <div class="nav-rail__main">
             <div class="nav-rail__accent" aria-hidden="true">
@@ -72,7 +74,66 @@
                     <div class="panel-user__email">@userEmail</div>
                 }
             </div>
+            <button type="button" 
+                    class="panel-user__details-btn" 
+                    title="세부 내역"
+                    @onclick="ToggleUserDetails"
+                    @onclick:stopPropagation="true">
+                <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+            </button>
         </div>
+        
+        @if (showUserDetails)
+        {
+            <div class="panel-user-details" @onclick:stopPropagation="true">
+                <div class="panel-user-details__header">
+                    <span>사용자 정보</span>
+                    <button type="button" class="panel-user-details__close" @onclick="ToggleUserDetails">
+                        <i class="bi bi-x" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="panel-user-details__list">
+                    <div class="panel-user-details__item">
+                        <i class="bi bi-person" aria-hidden="true"></i>
+                        <div class="panel-user-details__item-content">
+                            <div class="panel-user-details__item-label">이름</div>
+                            <div class="panel-user-details__item-value">@userDisplayName</div>
+                        </div>
+                    </div>
+                    <div class="panel-user-details__item">
+                        <i class="bi bi-envelope" aria-hidden="true"></i>
+                        <div class="panel-user-details__item-content">
+                            <div class="panel-user-details__item-label">이메일</div>
+                            <div class="panel-user-details__item-value">@(!string.IsNullOrEmpty(userEmail) ? userEmail : "N/A")</div>
+                        </div>
+                    </div>
+                    <div class="panel-user-details__item">
+                        <i class="bi bi-shield-check" aria-hidden="true"></i>
+                        <div class="panel-user-details__item-content">
+                            <div class="panel-user-details__item-label">역할</div>
+                            <div class="panel-user-details__item-value">@string.Join(", ", userRoles.Length > 0 ? userRoles : new[] { "User" })</div>
+                        </div>
+                    </div>
+                    <div class="panel-user-details__item">
+                        <i class="bi bi-calendar-check" aria-hidden="true"></i>
+                        <div class="panel-user-details__item-content">
+                            <div class="panel-user-details__item-label">마지막 로그인</div>
+                            <div class="panel-user-details__item-value">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-user-details__actions">
+                    <button type="button" class="panel-user-details__action-btn" @onclick="NavigateToProfile">
+                        <i class="bi bi-person-gear" aria-hidden="true"></i>
+                        <span>프로필 설정</span>
+                    </button>
+                    <button type="button" class="panel-user-details__action-btn panel-user-details__action-btn--danger" @onclick="HandleLogout">
+                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                        <span>로그아웃</span>
+                    </button>
+                </div>
+            </div>
+        }
 
         @if (groups.Count == 0)
         {
@@ -151,6 +212,7 @@
     private string userDisplayName = "";
     private string userEmail = "";
     private string userInitials = "";
+    private bool showUserDetails = false;
 
     [Parameter]
     public RenderFragment? PanelFooter { get; set; }
@@ -383,6 +445,53 @@
         catch (Exception ex)
         {
             try { _ = JSRuntime.InvokeVoidAsync("console.error", "NavigationRail.SetActive.exception -> " + ex?.ToString()); } catch { }
+        }
+    }
+
+    private void ToggleUserDetails()
+    {
+        showUserDetails = !showUserDetails;
+        StateHasChanged();
+    }
+
+    private void HandleOutsideClick()
+    {
+        if (showUserDetails)
+        {
+            showUserDetails = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToProfile()
+    {
+        showUserDetails = false;
+        NavigationManager.NavigateTo("/settings/profile");
+    }
+
+    private async Task HandleLogout()
+    {
+        try
+        {
+            showUserDetails = false;
+            
+            // AuthenticationService를 통해 완전한 로그아웃 처리
+            await AuthenticationService.LogoutAsync();
+            
+            // 로그아웃 후 로그인 페이지로 리디렉션
+            // LogoutAsync 내부에서 이미 처리되지만, 명시적으로 추가
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            // 로그아웃 실패 시에도 로그인 페이지로 이동
+            try 
+            { 
+                await JSRuntime.InvokeVoidAsync("console.error", "Logout error: " + ex?.ToString()); 
+            } 
+            catch { }
+            
+            NavigationManager.NavigateTo("/login", forceLoad: true);
         }
     }
 

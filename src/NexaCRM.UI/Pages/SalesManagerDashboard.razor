@@ -1,7 +1,7 @@
 @page "/sales-manager-dashboard"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Localization
-@attribute [Authorize(Roles = "Manager")]
+@attribute [Authorize(Roles = "Admin,Manager")]
 @inject IStringLocalizer<SalesManagerDashboard> Localizer
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
