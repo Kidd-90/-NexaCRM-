@@ -259,8 +259,8 @@ h6 {
 
 .white-theme-glass {
     background: var(--overlay-glass-white);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--frosted-border);
     box-shadow: var(--shadow-soft-layer);
 }
@@ -284,8 +284,15 @@ h6 {
 }
 
 .white-theme-border {
-    border: 1px solid var(--divider-color);
-    border: 1px solid color-mix(in srgb, var(--neutral-gray-100) 55%, transparent);
+    border: 1px solid var(--divider-color); /* base fallback */
+    border: 1px solid rgba(224,224,224,0.55); /* approximate of color-mix for older Chrome */
+}
+
+/* Use color-mix only when supported */
+@supports (color: color-mix(in srgb, black, white)) {
+    .white-theme-border {
+        border: 1px solid color-mix(in srgb, var(--neutral-gray-100) 55%, transparent);
+    }
 }
 
 .text-glow-white {
@@ -383,8 +390,8 @@ a:hover, .btn-link:hover {
     transition: transform var(--transition-normal);
     will-change: transform;
     box-shadow: 0 24px 48px var(--shadow-light);
-    backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
     transform: translateX(-100%);
     overflow: hidden;
 }
@@ -438,8 +445,14 @@ a:hover, .btn-link:hover {
     align-items: center;
     gap: 0.85rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-    border-bottom: 1px solid color-mix(in srgb, rgba(255, 255, 255, 0.65) 50%, transparent);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35); /* Fallback for Chrome < 111 (no color-mix support) */
+}
+
+/* Use color-mix only when supported */
+@supports (color: color-mix(in srgb, black, white)) {
+    .nav-drawer__header {
+        border-bottom: 1px solid color-mix(in srgb, rgba(255, 255, 255, 0.65) 50%, transparent);
+    }
 }
 
 .nav-drawer__logo {
@@ -457,16 +470,25 @@ a:hover, .btn-link:hover {
 
 @media (max-width: 767px) {
     .nav-drawer__logo {
+        /* Fallback styles for browsers without color-mix support */
         background: linear-gradient(135deg, rgba(33, 83, 200, 0.75), rgba(33, 83, 200, 0.55));
-        background: linear-gradient(
-            135deg,
-            color-mix(in srgb, var(--primary-color) 65%, var(--surface-color) 35%),
-            color-mix(in srgb, var(--primary-color) 45%, var(--surface-muted) 55%)
-        );
         box-shadow: 0 12px 24px rgba(33, 83, 200, 0.18);
-        box-shadow: 0 12px 24px color-mix(in srgb, var(--primary-color) 18%, transparent);
         border: 1px solid rgba(33, 83, 200, 0.18);
-        border: 1px solid color-mix(in srgb, var(--primary-color) 26%, transparent);
+    }
+}
+
+/* Enhanced styles only when color-mix is supported (Chrome 111+, modern browsers) */
+@supports (color: color-mix(in srgb, black, white)) {
+    @media (max-width: 767px) {
+        .nav-drawer__logo {
+            background: linear-gradient(
+                135deg,
+                color-mix(in srgb, var(--primary-color) 65%, var(--surface-color) 35%),
+                color-mix(in srgb, var(--primary-color) 45%, var(--surface-muted) 55%)
+            );
+            box-shadow: 0 12px 24px color-mix(in srgb, var(--primary-color) 18%, transparent);
+            border: 1px solid color-mix(in srgb, var(--primary-color) 26%, transparent);
+        }
     }
 }
 
@@ -492,7 +514,8 @@ a:hover, .btn-link:hover {
     overflow-y: auto;
     padding-right: 0.35rem;
     margin: 0;
-    scrollbar-width: thin;
+    /* Removed 'scrollbar-width: thin;' for broader browser compatibility;
+       Firefox will use default width, WebKit styling handled below */
 }
 
 .nav-scroll-container::-webkit-scrollbar {
@@ -542,8 +565,8 @@ a:hover, .btn-link:hover {
     align-items: center !important;
     justify-content: center !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smoother easing */
-    backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(10px) !important;
     z-index: 9999 !important; /* Very high z-index to ensure it's always visible */
     box-shadow: 0 18px 32px var(--shadow-light) !important; /* Light shadow */
     /* Improve accessibility */
@@ -756,8 +779,8 @@ a:hover, .btn-link:hover {
     position: fixed;
     inset: 0;
     background: linear-gradient(180deg, rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.45));
-    backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
     z-index: 1090; /* Below the header but above main content */
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
@@ -909,8 +932,8 @@ a:hover, .btn-link:hover {
         border-bottom: none;
         background: #F3F4F6; /* neutral gray */
         box-shadow: none; /* flush */
-        backdrop-filter: none;
         -webkit-backdrop-filter: none;
+        backdrop-filter: none;
         padding: 0;
         overflow: hidden;
     }
@@ -1082,12 +1105,19 @@ a:hover, .btn-link:hover {
         border-radius: 2rem;
         padding: clamp(2.25rem, 5vw, 3rem);
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 247, 255, 0.92));
-        border: 1px solid color-mix(in srgb, var(--divider-color) 55%, transparent);
+        /* Fallback border for browsers without color-mix (e.g., Chrome < 111) */
+        border: 1px solid rgba(176, 176, 176, 0.2);
         box-shadow: 0 32px 64px rgba(15, 23, 42, 0.12);
         display: flex;
         flex-direction: column;
         gap: clamp(1.5rem, 3vw, 2.25rem);
         flex: 1;
+    }
+    /* Enhance border when color-mix is supported */
+    @supports (color: color-mix(in srgb, black, white)) {
+        .desktop-layout .content {
+            border: 1px solid color-mix(in srgb, var(--divider-color) 55%, transparent);
+        }
     }
 
     .desktop-layout .floating-menu-toggle {
@@ -1233,12 +1263,12 @@ input, select, textarea {
     /* Mobile-optimized table container */
     .dashboard-table-container {
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain; /* prevent parent scroll chaining */
     }
     
     /* Better touch scrolling for dashboard */
     .dashboard-container {
-        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain; /* standards-based scroll behavior without deprecated vendor property */
     }
 }
 
@@ -1957,8 +1987,8 @@ textarea::placeholder {
     color: #065F46; /* emerald-800 */
     border: 1px solid rgba(16, 185, 129, 0.35);
     box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
-    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     z-index: 40;
     pointer-events: none; /* purely informational */
 }
