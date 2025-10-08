@@ -28,7 +28,7 @@
             <label class="form-label">@Localizer["SelectAgentLabel"]</label>
             <select class="form-select" @bind="selectedAgentName">
                 <option value="">@Localizer["SelectAgentPlaceholder"]</option>
-                @foreach (var agent in agents)
+                @foreach (AgentModel agent in agents)
                 {
                     <option value="@agent.Name">@agent.Name</option>
                 }

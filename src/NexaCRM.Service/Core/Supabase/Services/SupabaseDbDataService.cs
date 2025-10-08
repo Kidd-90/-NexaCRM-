@@ -286,14 +286,39 @@ public sealed class SupabaseDbDataService : IDbDataService
     {
         try
         {
+            _logger.LogInformation("Loading DB customers from Supabase...");
             var client = await _clientProvider.GetClientAsync().ConfigureAwait(false);
+            _logger.LogInformation("Supabase client obtained successfully");
+            
+            _logger.LogInformation("Executing query on db_customers table...");
             var response = await client.From<DbCustomerRecord>().Get().ConfigureAwait(false);
+            
+            _logger.LogInformation("Query executed. Response received");
+            _logger.LogInformation("Response Model Count: {Count}", response.Models?.Count ?? 0);
+            _logger.LogInformation("Response Content: {Content}", response.Content ?? "null");
+            
             var records = response.Models ?? new List<DbCustomerRecord>();
-            return records.Select(MapToCustomer).ToList();
+            _logger.LogInformation("Loaded {Count} DB customer records from Supabase", records.Count);
+            
+            if (records.Count == 0)
+            {
+                _logger.LogWarning("No DB customer records found in database. Check if data exists and RLS policies are correct.");
+                _logger.LogWarning("Response was empty. This could mean: 1) No data in table, 2) RLS blocking access, 3) Wrong table name");
+            }
+            else
+            {
+                _logger.LogInformation("First record sample - ContactId: {ContactId}, Name: {Name}, Status: {Status}", 
+                    records[0].ContactId, records[0].CustomerName, records[0].Status);
+            }
+            
+            var customers = records.Select(MapToCustomer).ToList();
+            _logger.LogInformation("Mapped {Count} DB customers successfully", customers.Count);
+            
+            return customers;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load DB customers from Supabase.");
+            _logger.LogError(ex, "Failed to load DB customers from Supabase. Error: {Message}", ex.Message);
             throw;
         }
     }
@@ -325,11 +350,11 @@ public sealed class SupabaseDbDataService : IDbDataService
         return response.Models ?? new List<DbCustomerRecord>();
     }
 
-    private static Task UpdateRecordAsync(global::Supabase.Client client, DbCustomerRecord record)
+    private static async Task UpdateRecordAsync(global::Supabase.Client client, DbCustomerRecord record)
     {
-        return client
+        await client
             .From<DbCustomerRecord>()
-            .Filter(r => r.Id, PostgrestOperator.Equals, record.Id)
+            .Where(r => r.Id == record.Id)
             .Update(record);
     }
 
@@ -344,7 +369,7 @@ public sealed class SupabaseDbDataService : IDbDataService
             ContactId = record.ContactId,
             CustomerName = record.CustomerName,
             ContactNumber = record.ContactNumber,
-            Group = record.Group,
+            Group = record.CustomerGroup,
             AssignedTo = record.AssignedTo,
             Assigner = record.Assigner,
             AssignedDate = assignedDate,
@@ -551,9 +576,9 @@ public sealed class SupabaseDbDataService : IDbDataService
             target.ContactNumber = patch.ContactNumber;
         }
 
-        if (ShouldAssign(patch.Group, target.Group, overwriteEmptyOnly))
+        if (ShouldAssign(patch.Group, target.CustomerGroup, overwriteEmptyOnly))
         {
-            target.Group = patch.Group;
+            target.CustomerGroup = patch.Group;
         }
 
         if (ShouldAssign(patch.AssignedTo, target.AssignedTo, overwriteEmptyOnly))

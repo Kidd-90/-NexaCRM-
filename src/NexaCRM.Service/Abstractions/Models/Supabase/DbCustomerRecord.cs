@@ -19,8 +19,8 @@ public sealed class DbCustomerRecord : BaseModel
     [Column("contact_number")]
     public string? ContactNumber { get; set; }
 
-    [Column("\"group\"")]
-    public string? Group { get; set; }
+    [Column("customer_group")]
+    public string? CustomerGroup { get; set; }
 
     [Column("assigned_to")]
     public string? AssignedTo { get; set; }

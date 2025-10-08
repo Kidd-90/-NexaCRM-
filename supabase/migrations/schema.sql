@@ -527,6 +527,35 @@ CREATE TABLE agents (
 
 CREATE INDEX idx_agents_user_cuid ON agents(user_cuid);
 
+-- Enable RLS for agents table
+ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for agents table
+CREATE POLICY "Allow all access to read agents"
+  ON agents
+  FOR SELECT
+  TO authenticated, anon, service_role
+  USING (true);
+
+CREATE POLICY "Allow all access to insert agents"
+  ON agents
+  FOR INSERT
+  TO authenticated, anon, service_role
+  WITH CHECK (true);
+
+CREATE POLICY "Allow all access to update agents"
+  ON agents
+  FOR UPDATE
+  TO authenticated, anon, service_role
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Allow all access to delete agents"
+  ON agents
+  FOR DELETE
+  TO authenticated, anon, service_role
+  USING (true);
+
 CREATE TABLE teams (
   id BIGSERIAL PRIMARY KEY,
   tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
@@ -958,8 +987,93 @@ CREATE TRIGGER on_customer_notices_updated
   FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
 
 
+-- 21. DB CUSTOMERS TABLE
+-- Database customer management and tracking
+CREATE TABLE db_customers (
+  id BIGSERIAL PRIMARY KEY,
+  contact_id INTEGER UNIQUE NOT NULL,
+  customer_name TEXT,
+  contact_number TEXT,
+  customer_group TEXT,
+  assigned_to TEXT,
+  assigner TEXT,
+  assigned_date TIMESTAMPTZ,
+  last_contact_date TIMESTAMPTZ,
+  status TEXT,
+  is_starred BOOLEAN DEFAULT FALSE,
+  is_archived BOOLEAN DEFAULT FALSE,
+  gender TEXT,
+  address TEXT,
+  job_title TEXT,
+  marital_status TEXT,
+  proof_number TEXT,
+  db_price DECIMAL(18, 2),
+  headquarters TEXT,
+  insurance_name TEXT,
+  car_join_date TIMESTAMPTZ,
+  region TEXT,
+  status_detail TEXT,
+  consultation_count INTEGER DEFAULT 0,
+  purchase_amount DECIMAL(18, 2),
+  notes TEXT,
+  tags TEXT,
+  referral_source TEXT,
+  last_updated_by TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_db_customers_contact_id ON db_customers(contact_id);
+CREATE INDEX idx_db_customers_assigned_to ON db_customers(assigned_to);
+CREATE INDEX idx_db_customers_status ON db_customers(status);
+CREATE INDEX idx_db_customers_is_archived ON db_customers(is_archived);
+CREATE INDEX idx_db_customers_is_starred ON db_customers(is_starred);
+CREATE INDEX idx_db_customers_assigned_date ON db_customers(assigned_date DESC);
+CREATE INDEX idx_db_customers_last_contact_date ON db_customers(last_contact_date DESC);
+
+-- Add comments for documentation
+COMMENT ON TABLE db_customers IS 'Database customer management and tracking';
+COMMENT ON COLUMN db_customers.contact_id IS 'Reference to the contacts table';
+COMMENT ON COLUMN db_customers.customer_group IS 'Customer group or category';
+COMMENT ON COLUMN db_customers.assigned_to IS 'User assigned to manage this customer';
+COMMENT ON COLUMN db_customers.status IS 'Current status of the customer (e.g., Active, Inactive, Prospect)';
+COMMENT ON COLUMN db_customers.is_starred IS 'Flag for starred/important customers';
+COMMENT ON COLUMN db_customers.is_archived IS 'Flag for archived customers';
+
+-- Create trigger for db_customers updated_at
+CREATE TRIGGER on_db_customers_updated
+  BEFORE UPDATE ON db_customers
+  FOR EACH ROW EXECUTE PROCEDURE handle_updated_at();
+
+-- Enable RLS for db_customers table
+ALTER TABLE db_customers ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for db_customers table
+CREATE POLICY "Allow all access to read db_customers"
+  ON db_customers FOR SELECT
+  TO authenticated, anon, service_role
+  USING (true);
+
+CREATE POLICY "Allow all access to insert db_customers"
+  ON db_customers FOR INSERT
+  TO authenticated, anon, service_role
+  WITH CHECK (true);
+
+CREATE POLICY "Allow all access to update db_customers"
+  ON db_customers FOR UPDATE
+  TO authenticated, anon, service_role
+  USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all access to delete db_customers"
+  ON db_customers FOR DELETE
+  TO authenticated, anon, service_role
+  USING (true);
+
+
 -- Ensure realtime payloads include previous values for proper diffing.
 ALTER TABLE tasks REPLICA IDENTITY FULL;
+ALTER TABLE db_customers REPLICA IDENTITY FULL;
 ALTER TABLE support_tickets REPLICA IDENTITY FULL;
 ALTER TABLE notification_feed REPLICA IDENTITY FULL;
 ALTER TABLE sms_schedules REPLICA IDENTITY FULL;

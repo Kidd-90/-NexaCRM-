@@ -26,25 +26,42 @@ public sealed class SupabaseAgentService : IAgentService
     {
         try
         {
+            _logger.LogInformation("Loading agents from Supabase...");
             var client = await _clientProvider.GetClientAsync();
+            _logger.LogInformation("Supabase client obtained successfully");
+            
+            _logger.LogInformation("Executing query on agents table...");
             var response = await client.From<AgentRecord>()
                 .Order(x => x.DisplayName, PostgrestOrdering.Ascending)
                 .Get();
 
+            _logger.LogInformation("Query executed. Response received");
+            _logger.LogInformation("Response Model Count: {Count}", response.Models?.Count ?? 0);
+            _logger.LogInformation("Response Content: {Content}", response.Content ?? "null");
+
             var records = response.Models ?? new List<AgentRecord>();
+            _logger.LogInformation("Loaded {Count} agent records from Supabase", records.Count);
+            
             if (records.Count == 0)
             {
+                _logger.LogWarning("No agent records found in database. Check if data exists and RLS policies are correct.");
                 return Array.Empty<AgentModel>();
             }
 
-            return records
-                .Where(record => record.IsActive)
-                .Select(MapToAgent)
-                .ToList();
+            var activeRecords = records.Where(record => record.IsActive).ToList();
+            _logger.LogInformation("Found {Count} active agents (filtered from {Total} total)", activeRecords.Count, records.Count);
+            
+            if (activeRecords.Count > 0)
+            {
+                _logger.LogInformation("First active agent sample - Id: {Id}, Name: {Name}, Role: {Role}", 
+                    activeRecords[0].Id, activeRecords[0].DisplayName, activeRecords[0].Role);
+            }
+
+            return activeRecords.Select(MapToAgent).ToList();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load agents from Supabase.");
+            _logger.LogError(ex, "Failed to load agents from Supabase. Error: {Message}", ex.Message);
             throw;
         }
     }

@@ -209,19 +209,36 @@
 
     protected override async Task OnInitializedAsync()
     {
-        customers = (await DbDataService.GetAllDbListAsync())?.ToList();
-
-        if (customers != null)
+        try
         {
-            groupOptions = customers
-                .Select(c => c.Group)
-                .Where(g => !string.IsNullOrWhiteSpace(g))
-                .Distinct()
-                .OrderBy(g => g)
-                .Cast<string>();
-        }
+            customers = (await DbDataService.GetAllDbListAsync())?.ToList();
 
-        FilterCustomers();
+            if (customers != null)
+            {
+                Console.WriteLine($"[AllDbListPage] Loaded {customers.Count} customers from database");
+                
+                groupOptions = customers
+                    .Select(c => c.Group)
+                    .Where(g => !string.IsNullOrWhiteSpace(g))
+                    .Distinct()
+                    .OrderBy(g => g)
+                    .Cast<string>();
+
+                Console.WriteLine($"[AllDbListPage] Found {groupOptions.Count()} groups");
+            }
+            else
+            {
+                Console.WriteLine("[AllDbListPage] No customers loaded - result was null");
+            }
+
+            FilterCustomers();
+            Console.WriteLine($"[AllDbListPage] After filtering: {filteredCustomers?.Count ?? 0} customers");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AllDbListPage] Error loading customers: {ex.Message}");
+            Console.WriteLine($"[AllDbListPage] Stack trace: {ex.StackTrace}");
+        }
     }
 
     private void OnFilterInput(ChangeEventArgs e)
