@@ -167,7 +167,7 @@ const HEADER_OFFSET_CHANGE_THRESHOLD_PX = 4;
 let __layoutStable = false;
 // Debug logging: enable by adding `?layoutDebug=1` to the URL or
 // setting `localStorage.setItem('nexacrm-layout-debug','1')` in the console.
-const LAYOUT_DEBUG = (typeof window !== 'undefined') && (function() {
+const LAYOUT_DEBUG = (typeof window !== 'undefined') && (function () {
     try {
         const s = typeof window !== 'undefined' && window.location ? window.location.search : '';
         const params = new URLSearchParams(s || '');
@@ -178,6 +178,25 @@ const LAYOUT_DEBUG = (typeof window !== 'undefined') && (function() {
     }
 })();
 let __headerObserver = null;
+// Detect whether current layout is mobile. Prefer CSS class set by the app shell,
+// fall back to viewport media query.
+function isMobileLayout() {
+    try {
+        if (document.querySelector('.app-shell--mobile')) return true;
+        // Respect explicit UA hint from user: treat common mobile UAs as mobile
+        const ua = (typeof navigator !== 'undefined' && navigator.userAgent) ? navigator.userAgent : '';
+        const MOBILE_UA = /(Mobi|Android|iPhone|iPad|iPod|Windows Phone|IEMobile|BlackBerry|BB10|webOS|Opera Mini|Opera Mobi|Kindle|Silk)/i;
+        if (MOBILE_UA.test(ua)) return true;
+        // iPadOS Safari sometimes reports as Mac; detect touch-capable Mac as iPad
+        try {
+            const platform = navigator.platform || '';
+            if (/Mac/i.test(platform) && 'ontouchend' in document) return true;
+        } catch { }
+        return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+    } catch {
+        return false;
+    }
+}
 function measureHeaderOffset() {
     try {
         if (__measureTimeout) {
@@ -186,15 +205,19 @@ function measureHeaderOffset() {
         __measureTimeout = window.setTimeout(() => {
             __measureTimeout = null;
             const header = document.querySelector('.app-shell__page-header');
+            const mobile = isMobileLayout();
             // If header is not yet present, fall back to a conservative default
             // header height and compute the effective offset as height + gap.
-            if (!header) {
-                // Apply a sensible default so content starts below the fixed header
-                const effectiveDefault = Math.max(0, DEFAULT_HEADER_HEIGHT_PX + DESIRED_CONTENT_GAP_PX);
+            // On desktop (non-mobile) the page header is hidden by design, so we force 0 offset.
+            const headerComputed = header ? getComputedStyle(header) : null;
+            const headerHidden = !header || headerComputed.display === 'none' || headerComputed.visibility === 'hidden';
+            if (!header || headerHidden) {
+                // Apply 0 on desktop; only add default gap on mobile
+                const effectiveDefault = mobile ? Math.max(0, DEFAULT_HEADER_HEIGHT_PX + DESIRED_CONTENT_GAP_PX) : 0;
                 // If we've already applied an offset and the default wouldn't
                 // change it by more than the threshold, keep the existing value
                 if (__lastAppliedOffset !== null && Math.abs(__lastAppliedOffset - effectiveDefault) <= HEADER_OFFSET_CHANGE_THRESHOLD_PX) {
-                    try { applyContentOffsets(); } catch {}
+                    try { applyContentOffsets(); } catch { }
                     return;
                 }
 
@@ -202,10 +225,10 @@ function measureHeaderOffset() {
                 document.documentElement.style.setProperty('--app-shell-page-header-offset-desktop', effectiveDefault + 'px');
                 document.documentElement.style.setProperty('--app-shell-page-header-offset-mobile', effectiveDefault + 'px');
                 // Also expose a header height variable (used to size the surface)
-                document.documentElement.style.setProperty('--app-shell-page-header-height', DEFAULT_HEADER_HEIGHT_PX + 'px');
+                document.documentElement.style.setProperty('--app-shell-page-header-height', (mobile ? DEFAULT_HEADER_HEIGHT_PX : 0) + 'px');
                 __lastAppliedOffset = effectiveDefault;
                 if (LAYOUT_DEBUG) console.info('[layout.debug] header missing, applying default offset=', effectiveDefault, 'headerHeight=', DEFAULT_HEADER_HEIGHT_PX);
-                try { applyContentOffsets(); } catch {}
+                try { applyContentOffsets(); } catch { }
                 return;
             }
 
@@ -228,7 +251,7 @@ function measureHeaderOffset() {
                 if (LAYOUT_DEBUG) console.info('[layout.debug] sample spread high, scheduling re-measure', spread);
                 // schedule another measurement after a short delay and skip
                 // applying the offset now — the later measurement will update.
-                window.setTimeout(() => { try { measureHeaderOffset(); } catch {} }, 60);
+                window.setTimeout(() => { try { measureHeaderOffset(); } catch { } }, 60);
                 return;
             }
             // expose the measured header height so other layout pieces
@@ -236,7 +259,8 @@ function measureHeaderOffset() {
             document.documentElement.style.setProperty('--app-shell-page-header-height', height + 'px');
             // Compute the effective offset as header height + desired gap so
             // content starts within DESIRED_CONTENT_GAP_PX below the header.
-            const effective = Math.max(0, height + DESIRED_CONTENT_GAP_PX);
+            // On mobile, keep a small gap below the header. On desktop, force 0.
+            const effective = mobile ? Math.max(0, height + DESIRED_CONTENT_GAP_PX) : 0;
 
             // Stabilize offset updates: if we've already applied an offset and
             // the new effective value differs by less than the threshold, skip
@@ -244,7 +268,7 @@ function measureHeaderOffset() {
             if (__lastAppliedOffset !== null && Math.abs(__lastAppliedOffset - effective) <= HEADER_OFFSET_CHANGE_THRESHOLD_PX) {
                 // still ensure content offsets are applied, but don't rewrite the CSS vars
                 if (LAYOUT_DEBUG) console.info('[layout.debug] measured offset change small, skipping update', { last: __lastAppliedOffset, measured: effective, threshold: HEADER_OFFSET_CHANGE_THRESHOLD_PX });
-                try { applyContentOffsets(); } catch {}
+                try { applyContentOffsets(); } catch { }
                 return;
             }
 
@@ -252,7 +276,7 @@ function measureHeaderOffset() {
             document.documentElement.style.setProperty('--app-shell-page-header-offset-desktop', effective + 'px');
             document.documentElement.style.setProperty('--app-shell-page-header-offset-mobile', effective + 'px');
             __lastAppliedOffset = effective;
-            if (LAYOUT_DEBUG) console.info('[layout.debug] applied header offset', { effective, height, computedTop, rectHeight: rect.height });
+            if (LAYOUT_DEBUG) console.info('[layout.debug] applied header offset', { effective, height, rectHeight: rect.height, mobile });
             // Mark layout as stable after we've applied a measured offset.
             // Tests can poll window.__nexacrm_layout_stable or listen for
             // a console message to detect readiness.
@@ -260,11 +284,11 @@ function measureHeaderOffset() {
                 __layoutStable = true;
                 try {
                     window.__nexacrm_layout_stable = true;
-                } catch (e) {}
-                try { console.info('[layout.ready] layout measurements stabilized'); } catch (e) {}
+                } catch (e) { }
+                try { console.info('[layout.ready] layout measurements stabilized'); } catch (e) { }
             }
             // Ensure content offsets (left margin / max-width) are applied after header measurement
-            try { applyContentOffsets(); } catch {}
+            try { applyContentOffsets(); } catch { }
         }, 17);
     }
     catch (e) {
@@ -281,10 +305,10 @@ function ensureHeaderObserver() {
         if (!header) return;
         if (__headerObserver) return;
         __headerObserver = new MutationObserver(() => {
-            try { measureHeaderOffset(); } catch {}
+            try { measureHeaderOffset(); } catch { }
         });
         __headerObserver.observe(header, { attributes: true, childList: true, subtree: true });
-    } catch {}
+    } catch { }
 }
 
 // Measure navigation rail width and apply inline offsets to the main content
@@ -333,7 +357,7 @@ function applyContentOffsets() {
 
         // If we successfully applied offsets, disconnect the observer (if any)
         if (__applyObserver) {
-            try { __applyObserver.disconnect(); } catch {}
+            try { __applyObserver.disconnect(); } catch { }
             __applyObserver = null;
         }
     }
@@ -346,17 +370,17 @@ function applyContentOffsets() {
     try {
         if (!__applyObserver && __applyRetries < 5) {
             __applyObserver = new MutationObserver(() => {
-                try { applyContentOffsets(); } catch {}
+                try { applyContentOffsets(); } catch { }
             });
             __applyObserver.observe(document.documentElement || document.body, { childList: true, subtree: true });
 
             // Stop observing after a short period to avoid keeping the observer alive
             window.setTimeout(() => {
-                try { __applyObserver && __applyObserver.disconnect(); } catch {}
+                try { __applyObserver && __applyObserver.disconnect(); } catch { }
                 __applyObserver = null;
             }, 2000);
         }
-    } catch {}
+    } catch { }
 }
 
 // Provide compatibility for components that still expect window-level helpers.
@@ -371,41 +395,42 @@ if (!window.layoutInterop) {
         clearRecentNavigation,
         focusGlobalSearch,
         measureHeaderOffset,
-            applyContentOffsets,
-            // expose a quick-read property that tests can use
-            isLayoutStable: () => Boolean(window.__nexacrm_layout_stable || __layoutStable)
+        applyContentOffsets,
+        // expose a quick-read property that tests can use
+        isLayoutStable: () => Boolean(window.__nexacrm_layout_stable || __layoutStable)
     };
 } else {
     // ensure measureHeaderOffset is available on the existing helper
     window.layoutInterop.measureHeaderOffset = measureHeaderOffset;
     // expose applyContentOffsets as well so callers (or console debugging) can force re-run
     window.layoutInterop.applyContentOffsets = applyContentOffsets;
-        window.layoutInterop.isLayoutStable = () => Boolean(window.__nexacrm_layout_stable || __layoutStable);
+    window.layoutInterop.isLayoutStable = () => Boolean(window.__nexacrm_layout_stable || __layoutStable);
 }
 
 // ensure we measure on page show and resize so offsets remain accurate
-window.addEventListener('pageshow', () => { try { measureHeaderOffset(); } catch {} });
-window.addEventListener('resize', () => { try { measureHeaderOffset(); } catch {} });
+window.addEventListener('pageshow', () => { try { measureHeaderOffset(); } catch { } });
+window.addEventListener('resize', () => { try { measureHeaderOffset(); } catch { } });
 // ensure we run an initial measurement and apply offsets once DOM is ready
 window.addEventListener('DOMContentLoaded', () => {
     try {
-        // set a safe default up-front so content doesn't appear under the header
-        const effectiveDefault = Math.max(0, DEFAULT_HEADER_HEIGHT_PX + DESIRED_CONTENT_GAP_PX);
+        // Set a safe default up-front: 0 on desktop (header hidden), mobile uses header height + gap
+        const mobile = isMobileLayout();
+        const effectiveDefault = mobile ? Math.max(0, DEFAULT_HEADER_HEIGHT_PX + DESIRED_CONTENT_GAP_PX) : 0;
         document.documentElement.style.setProperty('--app-shell-page-header-offset', effectiveDefault + 'px');
         document.documentElement.style.setProperty('--app-shell-page-header-offset-desktop', effectiveDefault + 'px');
         document.documentElement.style.setProperty('--app-shell-page-header-offset-mobile', effectiveDefault + 'px');
         // also expose a default header height so surface sizing remains predictable
-        document.documentElement.style.setProperty('--app-shell-page-header-height', DEFAULT_HEADER_HEIGHT_PX + 'px');
-            // If we only apply defaults (no measured header), consider layout stable
-            // after initial DOMContentLoaded to avoid tests hanging waiting for
-            // a measurement that will never occur on minimal pages.
-            try {
-                __layoutStable = true;
-                window.__nexacrm_layout_stable = true;
-            } catch (e) {}
+        document.documentElement.style.setProperty('--app-shell-page-header-height', (mobile ? DEFAULT_HEADER_HEIGHT_PX : 0) + 'px');
+        // If we only apply defaults (no measured header), consider layout stable
+        // after initial DOMContentLoaded to avoid tests hanging waiting for
+        // a measurement that will never occur on minimal pages.
+        try {
+            __layoutStable = true;
+            window.__nexacrm_layout_stable = true;
+        } catch (e) { }
         // run measurement and apply content offsets shortly after DOMContentLoaded
-        window.setTimeout(() => { try { measureHeaderOffset(); applyContentOffsets(); } catch {} }, 120);
-    } catch {}
+        window.setTimeout(() => { try { measureHeaderOffset(); applyContentOffsets(); } catch { } }, 120);
+    } catch { }
 });
 
 export default {

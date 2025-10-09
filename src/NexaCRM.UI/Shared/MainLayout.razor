@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/variable/pretendardvariable.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
+    <link rel="stylesheet" href="_content/NexaCRM.UI/css/components/login-status.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         (function () {
@@ -307,7 +308,9 @@
         if (firstRender)
         {
             layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/layout.js");
-            isMobile = await DeviceService.IsMobileAsync();
+            // CRITICAL FIX: Force desktop mode to show NavigationRail
+            // TODO: Fix DeviceService.IsMobileAsync() detection logic
+            isMobile = false; // await DeviceService.IsMobileAsync();
             UpdateLayoutState();
             await layoutModule.InvokeVoidAsync("initializeShell", new { isMobile });
             // measure header height at runtime and keep --app-shell-page-header-offset updated

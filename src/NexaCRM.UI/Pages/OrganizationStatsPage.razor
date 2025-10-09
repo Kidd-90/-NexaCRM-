@@ -1,75 +1,371 @@
 @page "/organization/stats"
 @attribute [Authorize(Roles = "Manager,Admin")]
 @using Microsoft.Extensions.Localization
-@using NexaCRM.Services.Admin.Models.Organization
 @using NexaCRM.Services.Admin.Interfaces
+@using NexaCRM.UI.Models.Supabase
 @using System.Linq
-@inject IOrganizationService OrganizationService
+@inject IBizManagementService BizManagementService
 @inject IStringLocalizer<OrganizationStatsPage> Localizer
 
 <ResponsivePage>
-    <h3>@Localizer["OrganizationStatistics"]</h3>
-    <p>@Localizer["StatisticsDescription"]</p>
+    <div class="stats-header mb-4">
+        <h3><i class="bi bi-bar-chart-line"></i> 조직 통계</h3>
+        <p class="text-muted">회사, 지점, 팀의 현황과 통계를 확인하세요</p>
+    </div>
 
-    @if (stats == null)
+    @if (isLoading)
     {
-        <div class="d-flex justify-content-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">@Localizer["Loading"]</span>
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">로딩 중...</span>
             </div>
         </div>
-    }
-    else if (!stats.Any())
-    {
-        <p>@Localizer["NoStatistics"]</p>
     }
     else
     {
-        <div class="desktop-table-view">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>@Localizer["UnitName"]</th>
-                            <th>@Localizer["MemberCount"]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var stat in stats)
-                        {
-                            <tr>
-                                <td>@stat.UnitName</td>
-                                <td>@stat.MemberCount</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+        <!-- 요약 카드 섹션 -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-summary-card bg-primary-subtle">
+                    <div class="stats-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h6 class="text-muted mb-1">전체 회사</h6>
+                        <h2 class="mb-0">@companies.Count</h2>
+                        <small class="text-success">
+                            <i class="bi bi-check-circle"></i> @companies.Count(c => c.IsActive) 활성
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-summary-card bg-success-subtle">
+                    <div class="stats-icon">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h6 class="text-muted mb-1">전체 지점</h6>
+                        <h2 class="mb-0">@branches.Count</h2>
+                        <small class="text-success">
+                            <i class="bi bi-check-circle"></i> @branches.Count(b => b.IsActive) 활성
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-summary-card bg-warning-subtle">
+                    <div class="stats-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h6 class="text-muted mb-1">전체 팀</h6>
+                        <h2 class="mb-0">@teams.Count</h2>
+                        <small class="text-success">
+                            <i class="bi bi-check-circle"></i> @teams.Count(t => t.IsActive) 활성
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-summary-card bg-info-subtle">
+                    <div class="stats-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h6 class="text-muted mb-1">총 팀원</h6>
+                        <h2 class="mb-0">@teams.Sum(t => t.MemberCount)</h2>
+                        <small class="text-muted">
+                            <i class="bi bi-graph-up"></i> 전체 팀원 수
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="mobile-card-view">
-            @foreach (var stat in stats)
-            {
-                <div class="stat-card">
-                    <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["UnitName"]</span>
-                        <span class="card-info-value">@stat.UnitName</span>
+        <!-- 회사별 상세 통계 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-diagram-3"></i> 회사별 조직 현황</h5>
+            </div>
+            <div class="card-body">
+                @if (!companies.Any())
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                        <p class="mt-3">등록된 회사가 없습니다.</p>
                     </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">@Localizer["MemberCount"]</span>
-                        <span class="card-info-value">@stat.MemberCount</span>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>회사명</th>
+                                    <th>회사코드</th>
+                                    <th class="text-center">지점 수</th>
+                                    <th class="text-center">팀 수</th>
+                                    <th class="text-center">총 팀원</th>
+                                    <th class="text-center">상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var company in companies)
+                                {
+                                    var companyBranches = branches.Where(b => b.CompanyId == company.Id).ToList();
+                                    var companyTeams = teams.Where(t => t.CompanyId == company.Id).ToList();
+                                    var totalMembers = companyTeams.Sum(t => t.MemberCount);
+
+                                    <tr>
+                                        <td>
+                                            <strong>@company.Name</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@company.Code</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary rounded-pill">@companyBranches.Count</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info rounded-pill">@companyTeams.Count</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <strong>@totalMembers</strong> 명
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge @(company.IsActive ? "bg-success" : "bg-secondary")">
+                                                @(company.IsActive ? "활성" : "비활성")
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    @if (companyBranches.Any())
+                                    {
+                                        @foreach (var branch in companyBranches)
+                                        {
+                                            var branchTeams = teams.Where(t => t.BranchId == branch.Id).ToList();
+                                            <tr class="table-light">
+                                                <td class="ps-4">
+                                                    <i class="bi bi-arrow-return-right text-muted"></i>
+                                                    @branch.Name
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark">@branch.Code</span>
+                                                </td>
+                                                <td class="text-center">-</td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-warning rounded-pill">@branchTeams.Count</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    @branchTeams.Sum(t => t.MemberCount) 명
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge @(branch.IsActive ? "bg-success" : "bg-secondary") bg-opacity-75">
+                                                        @(branch.IsActive ? "활성" : "비활성")
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            }
+                }
+            </div>
+        </div>
+
+        <!-- 팀 상세 현황 -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-people-fill"></i> 팀 상세 현황</h5>
+            </div>
+            <div class="card-body">
+                @if (!teams.Any())
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-people" style="font-size: 3rem;"></i>
+                        <p class="mt-3">등록된 팀이 없습니다.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-3">
+                        @foreach (var team in teams.OrderByDescending(t => t.MemberCount))
+                        {
+                            var company = companies.FirstOrDefault(c => c.Id == team.CompanyId);
+                            var branch = branches.FirstOrDefault(b => b.Id == team.BranchId);
+
+                            <div class="col-md-6 col-lg-4">
+                                <div class="team-stats-card">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">@team.Name</h6>
+                                            <small class="text-muted">@team.Code</small>
+                                        </div>
+                                        <span class="badge @(team.IsActive ? "bg-success" : "bg-secondary")">
+                                            @(team.IsActive ? "활성" : "비활성")
+                                        </span>
+                                    </div>
+                                    <div class="team-info">
+                                        <div class="info-item">
+                                            <i class="bi bi-building text-muted"></i>
+                                            <span>@(company?.Name ?? "미지정")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="bi bi-shop text-muted"></i>
+                                            <span>@(branch?.Name ?? "미지정")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="bi bi-person-fill text-primary"></i>
+                                            <strong>팀원: @team.MemberCount 명</strong>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(team.ManagerName))
+                                        {
+                                            <div class="info-item">
+                                                <i class="bi bi-person-badge text-success"></i>
+                                                <span>매니저: @team.ManagerName</span>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="text-muted small mt-2">
+                                        <i class="bi bi-calendar"></i> @team.RegisteredAt.ToString("yyyy-MM-dd")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
         </div>
     }
 </ResponsivePage>
 
+<style>
+    .stats-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stats-summary-card {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        border-radius: 12px;
+        gap: 1rem;
+        background: var(--org-card-bg);
+        border: 1px solid var(--org-card-border);
+        box-shadow: var(--org-card-shadow);
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .stats-summary-card:hover {
+        transform: translateY(-5px);
+        background: var(--org-card-hover-bg);
+        box-shadow: var(--org-card-shadow-hover);
+    }
+
+    .stats-icon {
+        font-size: 2.5rem;
+        opacity: 0.85;
+    }
+
+    .stats-content {
+        flex: 1;
+    }
+
+    .stats-content h2 {
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .team-stats-card {
+        border: 1px solid var(--org-card-border);
+        border-radius: 12px;
+        padding: 1rem;
+        background: var(--org-card-bg);
+        box-shadow: var(--org-card-shadow);
+        transition: all var(--transition-fast);
+        height: 100%;
+    }
+
+    .team-stats-card:hover {
+        border-color: var(--org-primary);
+        background: var(--org-card-hover-bg);
+        box-shadow: var(--org-card-shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    .team-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .info-item i {
+        width: 20px;
+    }
+
+    @@media (max-width: 768px) {
+        .stats-summary-card {
+            padding: 1rem;
+        }
+
+        .stats-icon {
+            font-size: 2rem;
+        }
+
+        .stats-content h2 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
 @code {
-    private IEnumerable<OrganizationStats>? stats;
+    private bool isLoading = true;
+    private List<BizCompanyRecord> companies = new();
+    private List<BizBranchRecord> branches = new();
+    private List<TeamRecord> teams = new();
+    private long tenantUnitId;
 
     protected override async Task OnInitializedAsync()
     {
-        stats = await OrganizationService.GetOrganizationStatsAsync();
+        try
+        {
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            // Log error
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadData()
+    {
+        // Get or create default organization unit
+        tenantUnitId = await BizManagementService.GetOrCreateDefaultOrganizationUnitAsync();
+        
+        // Load all data
+        companies = await BizManagementService.GetCompaniesAsync(tenantUnitId);
+        branches = await BizManagementService.GetBranchesAsync(tenantUnitId);
+        teams = await BizManagementService.GetTeamsAsync(tenantUnitId);
     }
 }

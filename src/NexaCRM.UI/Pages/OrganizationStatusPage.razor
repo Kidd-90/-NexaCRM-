@@ -1,0 +1,663 @@
+@page "/organization/status"
+@attribute [Authorize(Roles = "Manager,Admin")]
+@using NexaCRM.UI.Models.Supabase
+@using NexaCRM.Services.Admin.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IBizManagementService BizManagementService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<ResponsivePage>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="mb-1">
+                    <i class="bi bi-speedometer2"></i> 조직 현황 대시보드
+                </h3>
+                <p class="text-muted mb-0">회사 운영 현황을 한눈에 확인하세요</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn-modern btn-modern-secondary" @onclick="RefreshData">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>새로고침</span>
+                </button>
+                <button class="btn-modern btn-modern-primary" @onclick="ExportReport">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    <span>리포트 출력</span>
+                </button>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">로딩 중...</span>
+                </div>
+                <p class="text-muted mt-3">데이터를 불러오는 중...</p>
+            </div>
+        }
+        else if (userCompany == null)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> 소속 회사 정보를 찾을 수 없습니다.
+            </div>
+        }
+        else
+        {
+            <!-- Company Info Card -->
+            <div class="company-card mb-4">
+                <div class="company-header">
+                    <div class="d-flex align-items-center">
+                        <div class="company-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h4 class="mb-0 text-white">@userCompany.Name</h4>
+                            <p class="mb-0 text-white-50">
+                                <i class="bi bi-hash"></i> @userCompany.Code
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-white text-primary fs-6 px-3 py-2">
+                                @(userCompany.IsActive ? "운영 중" : "비활성")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-icon branches">
+                            <i class="bi bi-shop"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h2 class="metric-value mb-0">@branches.Count</h2>
+                            <p class="metric-label mb-0">지점</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-icon teams">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h2 class="metric-value mb-0">@teams.Count</h2>
+                            <p class="metric-label mb-0">팀</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-icon members">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h2 class="metric-value mb-0">@totalMembers</h2>
+                            <p class="metric-label mb-0">총 인원</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-icon managers">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h2 class="metric-value mb-0">@managerCount</h2>
+                            <p class="metric-label mb-0">매니저</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="bi bi-shop"></i> 지점별 현황
+                </h5>
+                <select class="form-select w-auto" @bind="statusFilter">
+                    <option value="all">전체 지점</option>
+                    <option value="active">활성 지점</option>
+                    <option value="inactive">비활성 지점</option>
+                </select>
+            </div>
+
+            <!-- Branch Status Cards -->
+            <div class="row g-3 mb-4">
+                @foreach (var branch in GetFilteredBranches())
+                {
+                    var branchTeams = teams.Where(t => t.BranchId == branch.Id).ToList();
+                    var branchMembers = branchTeams.Sum(t => t.MemberCount);
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="branch-status-card">
+                            <div class="branch-status-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="branch-avatar">
+                                        <i class="bi bi-shop"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">@branch.Name</h6>
+                                        <small class="text-muted">@branch.Code</small>
+                                    </div>
+                                    <span class="badge @(branch.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(branch.IsActive ? "활성" : "비활성")
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="branch-status-body">
+                                <div class="status-row">
+                                    <div class="status-item">
+                                        <i class="bi bi-people text-primary"></i>
+                                        <span>@branchTeams.Count 개 팀</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <i class="bi bi-person text-success"></i>
+                                        <span>@branchMembers 명</span>
+                                    </div>
+                                </div>
+                                @if (branchTeams.Any())
+                                {
+                                    <div class="teams-preview mt-2">
+                                        <small class="text-muted d-block mb-1">팀 목록:</small>
+                                        @foreach (var team in branchTeams.Take(3))
+                                        {
+                                            <span class="badge bg-light text-dark me-1 mb-1">
+                                                @team.Name (@team.MemberCount)
+                                            </span>
+                                        }
+                                        @if (branchTeams.Count > 3)
+                                        {
+                                            <span class="badge bg-light text-muted">+@(branchTeams.Count - 3) 더보기</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Recent Teams Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history"></i> 최근 등록된 팀
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (teams.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>팀명</th>
+                                        <th>소속 지점</th>
+                                        <th>매니저</th>
+                                        <th>인원</th>
+                                        <th>등록일</th>
+                                        <th>상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var team in teams.OrderByDescending(t => t.RegisteredAt).Take(5))
+                                    {
+                                        var teamBranch = branches.FirstOrDefault(b => b.Id == team.BranchId);
+                                        <tr>
+                                            <td>
+                                                <strong>@team.Name</strong>
+                                                <br />
+                                                <small class="text-muted">@team.Code</small>
+                                            </td>
+                                            <td>@(teamBranch?.Name ?? "-")</td>
+                                            <td>@(team.ManagerName ?? "-")</td>
+                                            <td>
+                                                <span class="badge bg-info">@team.MemberCount 명</span>
+                                            </td>
+                                            <td>@team.RegisteredAt.ToShortDateString()</td>
+                                            <td>
+                                                @if (team.IsActive)
+                                                {
+                                                    <span class="badge bg-success">활성</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">비활성</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">등록된 팀이 없습니다</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Distribution Charts -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bar-chart"></i> 지점별 팀 분포
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var branch in branches.OrderByDescending(b => teams.Count(t => t.BranchId == b.Id)))
+                            {
+                                var branchTeamCount = teams.Count(t => t.BranchId == branch.Id);
+                                var percentage = teams.Count > 0 ? (branchTeamCount * 100.0 / teams.Count) : 0;
+
+                                <div class="chart-item mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-medium">@branch.Name</span>
+                                        <span class="text-muted">@branchTeamCount 팀 (@percentage.ToString("F1")%)</span>
+                                    </div>
+                                    <div class="progress" style="height: 24px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: @percentage%"
+                                            aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                            @if (percentage > 15)
+                                            {
+                                                <span>@branchTeamCount</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!branches.Any())
+                            {
+                                <div class="text-center text-muted py-3">
+                                    <i class="bi bi-inbox"></i> 데이터 없음
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bar-chart"></i> 지점별 인원 분포
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var branch in branches.OrderByDescending(b => teams.Where(t => t.BranchId ==
+                                                    b.Id).Sum(t => t.MemberCount)))
+                            {
+                                var branchMemberCount = teams.Where(t => t.BranchId == branch.Id).Sum(t => t.MemberCount);
+                                var percentage = totalMembers > 0 ? (branchMemberCount * 100.0 / totalMembers) : 0;
+
+                                <div class="chart-item mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-medium">@branch.Name</span>
+                                        <span class="text-muted">@branchMemberCount 명 (@percentage.ToString("F1")%)</span>
+                                    </div>
+                                    <div class="progress" style="height: 24px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%"
+                                            aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                            @if (percentage > 15)
+                                            {
+                                                <span>@branchMemberCount</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!branches.Any())
+                            {
+                                <div class="text-center text-muted py-3">
+                                    <i class="bi bi-inbox"></i> 데이터 없음
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</ResponsivePage>
+
+<style>
+    /* Modern Button Styles - Gray Tone Balanced */
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-modern:active {
+        transform: translateY(0);
+    }
+
+    .btn-modern-primary {
+        background: var(--org-primary);
+        color: white;
+        border: 2px solid transparent;
+    }
+
+    .btn-modern-primary:hover {
+        background: var(--org-primary-hover);
+        box-shadow: 0 4px 12px rgba(33, 83, 200, 0.25);
+    }
+
+    .btn-modern-outline {
+        background: white;
+        color: var(--neutral-gray-600);
+        border: 2px solid var(--neutral-gray-300);
+    }
+
+    .btn-modern-outline:hover {
+        background: var(--neutral-gray-050);
+        border-color: var(--neutral-gray-600);
+        color: var(--neutral-black);
+    }
+
+    .btn-modern-secondary {
+        background: var(--neutral-gray-100);
+        color: var(--neutral-gray-800);
+        border: 2px solid transparent;
+    }
+
+    .btn-modern-secondary:hover {
+        background: var(--neutral-gray-200);
+        color: var(--neutral-black);
+    }
+
+    /* Company Card */
+    .company-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .company-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+    }
+
+    .company-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin-right: 1rem;
+    }
+
+    /* Metric Cards */
+    .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .metric-icon.branches {
+        background: var(--org-icon-branch);
+    }
+
+    .metric-icon.teams {
+        background: var(--org-icon-team);
+    }
+
+    .metric-icon.members {
+        background: var(--org-icon-member);
+    }
+
+    .metric-icon.managers {
+        background: var(--org-icon-manager);
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .metric-label {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    /* Branch Status Cards */
+    .branch-status-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .branch-status-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .branch-status-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--surface-muted);
+    }
+
+    .branch-avatar {
+        width: 48px;
+        height: 48px;
+        background: var(--org-icon-branch);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-right: 1rem;
+    }
+
+    .branch-status-body {
+        padding: 1.25rem;
+    }
+
+    .status-row {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .status-item i {
+        font-size: 1.25rem;
+    }
+
+    .teams-preview {
+        padding-top: 0.75rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    /* Chart Items */
+    .chart-item {
+        margin-bottom: 1rem;
+    }
+
+    .progress {
+        background-color: #e2e8f0;
+        border-radius: 8px;
+    }
+
+    .progress-bar {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Table Styles */
+    .table-hover tbody tr:hover {
+        background-color: #f7fafc;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .metric-value {
+            font-size: 1.5rem;
+        }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+        }
+
+        .company-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+        }
+
+        .status-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+@code {
+    private bool isLoading = true;
+    private string statusFilter = "all";
+    private BizCompanyRecord? userCompany;
+    private List<BizBranchRecord> branches = new();
+    private List<TeamRecord> teams = new();
+    private int totalMembers = 0;
+    private int managerCount = 0;
+    private long tenantUnitId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+
+            // Get tenant unit ID
+            tenantUnitId = await BizManagementService.GetOrCreateDefaultOrganizationUnitAsync();
+
+            // Get authenticated user's company ID
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var companyIdClaim = user.FindFirst("company_id");
+
+            if (companyIdClaim != null && long.TryParse(companyIdClaim.Value, out long userCompanyId))
+            {
+                // Get user's company
+                var companies = await BizManagementService.GetCompaniesAsync(tenantUnitId);
+                userCompany = companies.FirstOrDefault(c => c.Id == userCompanyId);
+
+                if (userCompany != null)
+                {
+                    // Get branches for user's company
+                    var allBranches = await BizManagementService.GetBranchesAsync(tenantUnitId);
+                    branches = allBranches.Where(b => b.CompanyId == userCompany.Id).ToList();
+
+                    // Get teams for user's branches
+                    var allTeams = await BizManagementService.GetTeamsAsync(tenantUnitId);
+                    var branchIds = branches.Select(b => b.Id).ToHashSet();
+                    teams = allTeams.Where(t => t.BranchId.HasValue && branchIds.Contains(t.BranchId.Value)).ToList();
+
+                    // Calculate statistics
+                    totalMembers = teams.Sum(t => t.MemberCount);
+                    managerCount = teams.Count(t => !string.IsNullOrEmpty(t.ManagerName));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading organization status: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private IEnumerable<BizBranchRecord> GetFilteredBranches()
+    {
+        return statusFilter switch
+        {
+            "active" => branches.Where(b => b.IsActive),
+            "inactive" => branches.Where(b => !b.IsActive),
+            _ => branches
+        };
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadData();
+    }
+
+    private void ExportReport()
+    {
+        // TODO: Implement report export functionality (PDF/Excel)
+        Console.WriteLine("Exporting organization status report...");
+    }
+}

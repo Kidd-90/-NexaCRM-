@@ -23,8 +23,21 @@
             {
                 <button class="btn btn-success" @onclick="ShowAddBranchModal"><i class="bi bi-building-add"></i> 지점 추가</button>
             }
+            @if (activeTab == Tab.Teams)
+            {
+                <button class="btn btn-success" @onclick="ShowAddTeamModal"><i class="bi bi-people-fill"></i> 팀 추가</button>
+            }
         </div>
     </header>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>오류:</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
 
     <div class="preview-banner" role="status" aria-live="polite">
         <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
@@ -34,6 +47,7 @@
     <nav class="tabs" role="tablist">
         <button class="tab @(activeTab==Tab.Companies?"active":null)" @onclick="(()=>SetTab(Tab.Companies))">회사 관리</button>
         <button class="tab @(activeTab==Tab.Branches?"active":null)" @onclick="(()=>SetTab(Tab.Branches))">지점 관리</button>
+        <button class="tab @(activeTab==Tab.Teams?"active":null)" @onclick="(()=>SetTab(Tab.Teams))">팀 관리</button>
         <button class="tab @(activeTab==Tab.Statistics?"active":null)" @onclick="(()=>SetTab(Tab.Statistics))">통계</button>
     </nav>
 
@@ -185,7 +199,7 @@
                                         <td><strong>@branch.Name</strong></td>
                                         <td>@branch.Phone</td>
                                         <td>@branch.Email</td>
-                                        <td>@branch.ManagerCuid</td>
+                                        <td>@GetManagerDisplayName(branch.ManagerCuid)</td>
                                         <td>
                                             <span class="badge @(branch.IsActive ? "bg-success" : "bg-secondary")">
                                                 @(branch.IsActive ? "활성" : "비활성")
@@ -208,6 +222,112 @@
                                 <tr>
                                     <td colspan="9" class="text-center text-muted py-4">
                                         등록된 지점이 없습니다.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Teams)
+    {
+        <section class="explore">
+            <aside class="filters">
+                <div class="filter-group">
+                    <label>회사</label>
+                    <select class="form-select" @bind="filterCompanyId" @bind:after="ApplyFilter">
+                        <option value="0">전체 회사</option>
+                        @foreach (var company in companies)
+                        {
+                            <option value="@company.Id">@company.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>지점</label>
+                    <select class="form-select" @bind="filterBranchId" @bind:after="ApplyFilter">
+                        <option value="0">전체 지점</option>
+                        @foreach (var branch in branches.Where(b => filterCompanyId == 0 || b.CompanyId == filterCompanyId))
+                        {
+                            <option value="@branch.Id">@branch.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>상태</label>
+                    <select class="form-select" @bind="filterActive" @bind:after="ApplyFilter">
+                        <option value="">전체</option>
+                        <option value="true">활성</option>
+                        <option value="false">비활성</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>검색</label>
+                    <input class="form-control" placeholder="팀명/코드" @bind="searchText" @bind:after="ApplyFilter" />
+                </div>
+            </aside>
+
+            <div class="grid">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>회사</th>
+                                <th>지점</th>
+                                <th>코드</th>
+                                <th>팀명</th>
+                                <th>매니저</th>
+                                <th>멤버수</th>
+                                <th>상태</th>
+                                <th>등록일</th>
+                                <th class="text-end">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (isLoading)
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                                        <span class="ms-2">데이터를 불러오는 중...</span>
+                                    </td>
+                                </tr>
+                            }
+                            else if (filteredTeams.Count > 0)
+                            {
+                                @foreach (var team in filteredTeams)
+                                {
+                                    <tr>
+                                        <td>@GetCompanyName(team.CompanyId ?? 0)</td>
+                                        <td>@GetBranchName(team.BranchId ?? 0)</td>
+                                        <td><span class="badge bg-success">@team.Code</span></td>
+                                        <td><strong>@team.Name</strong></td>
+                                        <td>@GetManagerDisplayName(team.ManagerCuid)</td>
+                                        <td>@team.MemberCount 명</td>
+                                        <td>
+                                            <span class="badge @(team.IsActive ? "bg-success" : "bg-secondary")">
+                                                @(team.IsActive ? "활성" : "비활성")
+                                            </span>
+                                        </td>
+                                        <td>@team.RegisteredAt.ToShortDateString()</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditTeam(team)" title="편집">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteTeam(team)" title="삭제">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        등록된 팀이 없습니다.
                                     </td>
                                 </tr>
                             }
@@ -251,6 +371,30 @@
                         <div class="card-body">
                             <h6 class="text-muted">활성 지점</h6>
                             <h3>@branches.Count(b => b.IsActive)</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">전체 팀</h6>
+                            <h3>@teams.Count</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">활성 팀</h6>
+                            <h3>@teams.Count(t => t.IsActive)</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">전체 멤버</h6>
+                            <h3>@teams.Sum(t => t.MemberCount)</h3>
                         </div>
                     </div>
                 </div>
@@ -359,6 +503,19 @@
                             <input type="text" class="form-control" @bind="currentBranch.Address" placeholder="서울시 강남구..." />
                         </div>
                         <div class="col-md-12">
+                            <label class="form-label">매니저</label>
+                            <select class="form-select" @bind="currentBranch.ManagerCuid">
+                                <option value="">매니저 선택 (선택사항)</option>
+                                @foreach (var user in users)
+                                {
+                                    var displayName = !string.IsNullOrEmpty(user.JobTitle) ? user.JobTitle : user.UserCuid;
+                                    var employeeInfo = !string.IsNullOrEmpty(user.EmployeeNumber) ? $" ({user.EmployeeNumber})" : "";
+                                    <option value="@user.UserCuid">@(displayName + employeeInfo)</option>
+                                }
+                            </select>
+                            <small class="text-muted">매니저를 선택하면 지점 관리 권한이 부여됩니다.</small>
+                        </div>
+                        <div class="col-md-12">
                             <label class="form-label">메모</label>
                             <textarea class="form-control" @bind="currentBranch.Memo" rows="3"></textarea>
                         </div>
@@ -379,32 +536,109 @@
     </div>
 }
 
+@* 팀 추가/편집 모달 *@
+@if (showTeamModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(isEditMode ? "팀 편집" : "팀 추가")</h5>
+                    <button type="button" class="btn-close" @onclick="CloseTeamModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">회사</label>
+                            <select class="form-select" @bind="currentTeam.CompanyId" @bind:after="OnTeamCompanyChanged">
+                                <option value="">회사 선택 (선택사항)</option>
+                                @foreach (var company in companies)
+                                {
+                                    <option value="@company.Id">@company.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">지점</label>
+                            <select class="form-select" @bind="currentTeam.BranchId">
+                                <option value="">지점 선택 (선택사항)</option>
+                                @foreach (var branch in branches.Where(b => currentTeam.CompanyId == null || b.CompanyId == currentTeam.CompanyId))
+                                {
+                                    <option value="@branch.Id">@branch.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">코드 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="currentTeam.Code" placeholder="TEAM001" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">팀명 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="currentTeam.Name" placeholder="영업1팀" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">매니저</label>
+                            <select class="form-select" @bind="currentTeam.ManagerCuid" @bind:after="OnTeamManagerChanged">
+                                <option value="">매니저 선택 (선택사항)</option>
+                                @foreach (var user in users)
+                                {
+                                    var displayName = !string.IsNullOrEmpty(user.JobTitle) ? user.JobTitle : user.UserCuid;
+                                    var employeeInfo = !string.IsNullOrEmpty(user.EmployeeNumber) ? $" ({user.EmployeeNumber})" : "";
+                                    <option value="@user.UserCuid">@(displayName + employeeInfo)</option>
+                                }
+                            </select>
+                            <small class="text-muted">매니저를 선택하면 팀 관리 권한이 부여됩니다.</small>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" @bind="currentTeam.IsActive" id="teamActive" />
+                                <label class="form-check-label" for="teamActive">활성화</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseTeamModal">취소</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveTeam">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
-    private enum Tab { Companies, Branches, Statistics }
+    private enum Tab { Companies, Branches, Teams, Statistics }
     private Tab activeTab = Tab.Companies;
     
     private List<BizCompanyRecord> companies = new();
     private List<BizBranchRecord> branches = new();
+    private List<TeamRecord> teams = new();
+    private List<UserDirectoryEntryRecord> users = new();
     
     private List<BizCompanyRecord> filteredCompanies = new();
     private List<BizBranchRecord> filteredBranches = new();
+    private List<TeamRecord> filteredTeams = new();
     
     private string filterActive = "";
     private long filterCompanyId = 0;
+    private long filterBranchId = 0;
     private string searchText = "";
     private bool isLoading = true;
     
     // Modal states
     private bool showCompanyModal = false;
     private bool showBranchModal = false;
+    private bool showTeamModal = false;
     private bool isEditMode = false;
     
     // Current editing items
     private BizCompanyRecord currentCompany = new();
     private BizBranchRecord currentBranch = new();
+    private TeamRecord currentTeam = new();
     
-    private long tenantUnitId = 1; // TODO: Get from authenticated user
+    private long tenantUnitId = 1; // Will be set from user's organization or default
     private Guid? currentUserId;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -420,12 +654,36 @@
                 {
                     currentUserId = userId;
                 }
+                
+                // Try to get tenant_unit_id from user claims
+                var tenantClaim = user.FindFirst("tenant_unit_id");
+                if (tenantClaim != null && long.TryParse(tenantClaim.Value, out var tenantId))
+                {
+                    tenantUnitId = tenantId;
+                }
+                else
+                {
+                    // Get or create default organization unit
+                    try
+                    {
+                        tenantUnitId = await BizService.GetOrCreateDefaultOrganizationUnitAsync();
+                        await JS.InvokeVoidAsync("console.info", $"Using tenant_unit_id={tenantUnitId}");
+                    }
+                    catch (Exception ex)
+                    {
+                        await JS.InvokeVoidAsync("console.error", "Failed to get organization unit:", ex.Message);
+                        errorMessage = "조직 단위를 찾을 수 없습니다. 관리자에게 문의하세요.";
+                        isLoading = false;
+                        return;
+                    }
+                }
             }
             
             await LoadData();
         }
         catch (Exception ex)
         {
+            errorMessage = $"데이터 로드 실패: {ex.Message}";
             await JS.InvokeVoidAsync("console.error", "Failed to load data:", ex.Message);
         }
         finally
@@ -444,10 +702,15 @@
         {
             await LoadBranches();
         }
+        else if (activeTab == Tab.Teams)
+        {
+            await LoadTeams();
+        }
         else if (activeTab == Tab.Statistics)
         {
             await LoadCompanies();
             await LoadBranches();
+            await LoadTeams();
         }
     }
 
@@ -482,6 +745,12 @@
                 companies = await BizService.GetCompaniesAsync(tenantUnitId);
             }
             
+            // Load users for manager selection
+            if (users.Count == 0)
+            {
+                await LoadUsers();
+            }
+            
             ApplyFilter();
         }
         catch (Exception ex)
@@ -494,10 +763,59 @@
         }
     }
 
+    private async Task LoadUsers()
+    {
+        try
+        {
+            users = await BizService.GetUsersAsync(tenantUnitId);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.warn", $"사용자 데이터 로드 실패: {ex.Message}");
+            // Don't fail the whole page if users can't be loaded
+            users = new List<UserDirectoryEntryRecord>();
+        }
+    }
+
     private async Task SetTab(Tab tab)
     {
         activeTab = tab;
         await LoadData();
+    }
+
+    private async Task LoadTeams()
+    {
+        try
+        {
+            isLoading = true;
+            teams = await BizService.GetTeamsAsync(tenantUnitId);
+            
+            // Load companies and branches for dropdown
+            if (companies.Count == 0)
+            {
+                companies = await BizService.GetCompaniesAsync(tenantUnitId);
+            }
+            if (branches.Count == 0)
+            {
+                branches = await BizService.GetBranchesAsync(tenantUnitId);
+            }
+            
+            // Load users for manager selection
+            if (users.Count == 0)
+            {
+                await LoadUsers();
+            }
+            
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"팀 데이터 로드 실패: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private void ApplyFilter()
@@ -535,11 +853,52 @@
             }
             return true;
         }).ToList();
+
+        filteredTeams = teams.Where(t =>
+        {
+            if (filterCompanyId > 0)
+            {
+                if (t.CompanyId != filterCompanyId) return false;
+            }
+            if (filterBranchId > 0)
+            {
+                if (t.BranchId != filterBranchId) return false;
+            }
+            if (!string.IsNullOrEmpty(filterActive))
+            {
+                var isActive = bool.Parse(filterActive);
+                if (t.IsActive != isActive) return false;
+            }
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                return t.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                       t.Code.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+            }
+            return true;
+        }).ToList();
     }
 
     private string GetCompanyName(long companyId)
     {
+        if (companyId == 0) return "-";
         return companies.FirstOrDefault(c => c.Id == companyId)?.Name ?? "알 수 없음";
+    }
+
+    private string GetBranchName(long branchId)
+    {
+        if (branchId == 0) return "-";
+        return branches.FirstOrDefault(b => b.Id == branchId)?.Name ?? "알 수 없음";
+    }
+
+    private string GetManagerDisplayName(string? managerCuid)
+    {
+        if (string.IsNullOrEmpty(managerCuid)) return "-";
+        var user = users.FirstOrDefault(u => u.UserCuid == managerCuid);
+        if (user == null) return managerCuid;
+        
+        var displayName = !string.IsNullOrEmpty(user.JobTitle) ? user.JobTitle : managerCuid;
+        var employeeInfo = !string.IsNullOrEmpty(user.EmployeeNumber) ? $" ({user.EmployeeNumber})" : "";
+        return displayName + employeeInfo;
     }
 
     // Company Modal Methods
@@ -607,7 +966,21 @@
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"저장 실패: {ex.Message}");
+            var errorMsg = ex.Message;
+            
+            // Parse foreign key constraint error
+            if (errorMsg.Contains("23503") && errorMsg.Contains("organization_units"))
+            {
+                errorMsg = $"조직 단위(tenant_unit_id={currentCompany.TenantUnitId})가 존재하지 않습니다. 데이터베이스 관리자에게 문의하세요.";
+                await JS.InvokeVoidAsync("console.error", "Missing organization_units record. Run: supabase/fix_organization_units.sql");
+            }
+            else if (errorMsg.Contains("23505")) // Unique constraint
+            {
+                errorMsg = "중복된 코드 또는 회사명입니다.";
+            }
+            
+            errorMessage = errorMsg;
+            await JS.InvokeVoidAsync("alert", $"저장 실패: {errorMsg}");
         }
     }
 
@@ -684,6 +1057,20 @@
                 return;
             }
 
+            // Update manager info if selected
+            if (!string.IsNullOrEmpty(currentBranch.ManagerCuid))
+            {
+                var user = users.FirstOrDefault(u => u.UserCuid == currentBranch.ManagerCuid);
+                if (user != null)
+                {
+                    currentBranch.ManagerId = user.UserId;
+                }
+            }
+            else
+            {
+                currentBranch.ManagerId = null;
+            }
+
             if (isEditMode)
             {
                 var success = await BizService.UpdateBranchAsync(currentBranch);
@@ -732,6 +1119,139 @@
     {
         showBranchModal = false;
         currentBranch = new();
+    }
+
+    // Team Modal Methods
+    private void ShowAddTeamModal()
+    {
+        isEditMode = false;
+        currentTeam = new TeamRecord
+        {
+            TenantUnitId = tenantUnitId,
+            IsActive = true,
+            MemberCount = 0
+        };
+        showTeamModal = true;
+    }
+
+    private void EditTeam(TeamRecord team)
+    {
+        isEditMode = true;
+        currentTeam = new TeamRecord
+        {
+            Id = team.Id,
+            TenantUnitId = team.TenantUnitId,
+            CompanyId = team.CompanyId,
+            BranchId = team.BranchId,
+            Code = team.Code,
+            Name = team.Name,
+            ManagerId = team.ManagerId,
+            ManagerCuid = team.ManagerCuid,
+            ManagerName = team.ManagerName,
+            MemberCount = team.MemberCount,
+            IsActive = team.IsActive,
+            RegisteredAt = team.RegisteredAt,
+            UpdatedAt = team.UpdatedAt
+        };
+        showTeamModal = true;
+    }
+
+    private async Task SaveTeam()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentTeam.Code) || string.IsNullOrWhiteSpace(currentTeam.Name))
+            {
+                await JS.InvokeVoidAsync("alert", "코드와 팀명은 필수 입력 항목입니다.");
+                return;
+            }
+
+            if (isEditMode)
+            {
+                var success = await BizService.UpdateTeamAsync(currentTeam);
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "팀 정보가 수정되었습니다.");
+                    await LoadTeams();
+                    CloseTeamModal();
+                }
+            }
+            else
+            {
+                var created = await BizService.CreateTeamAsync(currentTeam);
+                await JS.InvokeVoidAsync("alert", "새 팀이 추가되었습니다.");
+                await LoadTeams();
+                CloseTeamModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            var errorMsg = ex.Message;
+            
+            // Parse foreign key constraint error
+            if (errorMsg.Contains("23503") && errorMsg.Contains("organization_units"))
+            {
+                errorMsg = $"조직 단위(tenant_unit_id={currentTeam.TenantUnitId})가 존재하지 않습니다. 데이터베이스 관리자에게 문의하세요.";
+            }
+            else if (errorMsg.Contains("23505")) // Unique constraint
+            {
+                errorMsg = "중복된 코드입니다.";
+            }
+            
+            errorMessage = errorMsg;
+            await JS.InvokeVoidAsync("alert", $"저장 실패: {errorMsg}");
+        }
+    }
+
+    private async Task DeleteTeam(TeamRecord team)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"{team.Name}을(를) 삭제하시겠습니까?"))
+        {
+            try
+            {
+                var success = await BizService.DeleteTeamAsync(team.Id);
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "팀이 삭제되었습니다.");
+                    await LoadTeams();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("alert", $"삭제 실패: {ex.Message}");
+            }
+        }
+    }
+
+    private void CloseTeamModal()
+    {
+        showTeamModal = false;
+        currentTeam = new();
+    }
+
+    private void OnTeamCompanyChanged()
+    {
+        // Reset branch selection when company changes
+        currentTeam.BranchId = null;
+    }
+
+    private void OnTeamManagerChanged()
+    {
+        // Update manager info when selection changes
+        if (!string.IsNullOrEmpty(currentTeam.ManagerCuid))
+        {
+            var user = users.FirstOrDefault(u => u.UserCuid == currentTeam.ManagerCuid);
+            if (user != null)
+            {
+                currentTeam.ManagerId = user.UserId;
+                currentTeam.ManagerName = user.JobTitle ?? user.UserCuid;
+            }
+        }
+        else
+        {
+            currentTeam.ManagerId = null;
+            currentTeam.ManagerName = null;
+        }
     }
 
     // Utility Methods

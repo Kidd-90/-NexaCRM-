@@ -1,145 +1,719 @@
 @page "/organization/structure"
-@attribute [Authorize(Roles = "Manager,Admin")]
-@inject IOrganizationService OrganizationService
+@using NexaCRM.UI.Models.Supabase
+@using NexaCRM.Services.Admin.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IBizManagementService BizManagementService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <ResponsivePage>
-    <h3>Organization Structure</h3>
-    <p>Manage production companies, teams and members.</p>
-
-    @if (_nodes is null)
-    {
-        <p>Loading...</p>
-    }
-    else
-    {
-        <ul class="organization-tree list-unstyled">
-            @foreach (var node in _nodes)
-            {
-                <OrganizationTreeNode Node="node" AddChild="StartAdd" Edit="StartEdit" Delete="StartDelete" />
-            }
-        </ul>
-    }
-
-    @if (_showDialog)
-    {
-        <div class="modal show d-block" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">@_dialogTitle</h5>
-                        <button type="button" class="btn-close" @onclick="CloseDialog"></button>
-                    </div>
-                    <div class="modal-body">
-                        @if (_mode == DialogMode.Delete)
-                        {
-                            <p>Are you sure you want to delete '@_current?.Unit.Name'?</p>
-                        }
-                        else
-                        {
-                            <input class="form-control" @bind="_name" />
-                        }
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" @onclick="CloseDialog">Cancel</button>
-                        <button class="btn btn-primary" @onclick="ConfirmAsync">Confirm</button>
-                    </div>
+    <div class="container-fluid py-4">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <div>
+                    <h3 class="header-title">조직 구조</h3>
+                    <p class="header-subtitle">우리 회사의 조직도를 확인하세요</p>
                 </div>
             </div>
+            <div class="header-actions">
+                <button class="btn-modern btn-modern-outline" @onclick="ToggleView">
+                    <i class="bi bi-@(isTreeView ? "list-ul" : "diagram-2")"></i>
+                    <span>@(isTreeView ? "목록 보기" : "트리 보기")</span>
+                </button>
+                <button class="btn-modern btn-modern-primary" @onclick="ExportStructure">
+                    <i class="bi bi-download"></i>
+                    <span>내보내기</span>
+                </button>
+            </div>
         </div>
-        <div class="modal-backdrop fade show"></div>
-    }
+
+        @if (isLoading)
+        {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">로딩 중...</span>
+                </div>
+                <p class="text-muted mt-3">조직 구조를 불러오는 중...</p>
+            </div>
+        }
+        else if (userCompany == null)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> 소속 회사 정보를 찾을 수 없습니다.
+            </div>
+        }
+        else
+        {
+            @if (isTreeView)
+            {
+                <!-- Tree View -->
+                <div class="org-tree-container">
+                    <!-- Company Node -->
+                    <div class="org-node company-node">
+                        <div class="node-content">
+                            <div class="node-icon company">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <div class="node-info">
+                                <h5 class="node-title mb-0">@userCompany.Name</h5>
+                                <small class="text-muted">회사</small>
+                            </div>
+                            <div class="node-badge">
+                                <span class="badge bg-purple">@branches.Count 개 지점</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Connector -->
+                    @if (branches.Any())
+                    {
+                        <div class="tree-connector vertical"></div>
+                    }
+
+                    <!-- Branches Row -->
+                    @if (branches.Any())
+                    {
+                        <div class="branches-row">
+                            @foreach (var branch in branches)
+                            {
+                                var branchTeams = teams.Where(t => t.BranchId == branch.Id).ToList();
+                                <div class="branch-column">
+                                    <div class="tree-connector vertical-short"></div>
+                                    
+                                    <!-- Branch Node -->
+                                    <div class="org-node branch-node">
+                                        <div class="node-content">
+                                            <div class="node-icon branch">
+                                                <i class="bi bi-shop"></i>
+                                            </div>
+                                            <div class="node-info">
+                                                <h6 class="node-title mb-0">@branch.Name</h6>
+                                                <small class="text-muted">지점</small>
+                                            </div>
+                                            <div class="node-badge">
+                                                <span class="badge bg-pink">@branchTeams.Count 개 팀</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Teams under this branch -->
+                                    @if (branchTeams.Any())
+                                    {
+                                        <div class="tree-connector vertical"></div>
+                                        <div class="teams-column">
+                                            @foreach (var team in branchTeams)
+                                            {
+                                                <div class="team-item">
+                                                    <div class="tree-connector horizontal"></div>
+                                                    <div class="org-node team-node">
+                                                        <div class="node-content">
+                                                            <div class="node-icon team">
+                                                                <i class="bi bi-people"></i>
+                                                            </div>
+                                                            <div class="node-info">
+                                                                <h6 class="node-title mb-0">@team.Name</h6>
+                                                                <small class="text-muted">팀</small>
+                                                            </div>
+                                                            <div class="node-badge">
+                                                                <span class="badge bg-cyan">@team.MemberCount 명</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- List View -->
+                <div class="org-list-container">
+                    <!-- Company Header -->
+                    <div class="list-item company-item">
+                        <div class="d-flex align-items-center">
+                            <div class="list-icon company">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-0">@userCompany.Name</h5>
+                                <small class="text-muted">회사</small>
+                            </div>
+                            <span class="badge bg-purple">@branches.Count 개 지점</span>
+                        </div>
+                    </div>
+
+                    <!-- Branches Accordion -->
+                    <div class="accordion" id="branchesAccordion">
+                        @foreach (var (branch, index) in branches.Select((b, i) => (b, i)))
+                        {
+                            var branchTeams = teams.Where(t => t.BranchId == branch.Id).ToList();
+                            var collapseId = $"collapse-{index}";
+                            <div class="accordion-item branch-accordion">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button @(index == 0 ? "" : "collapsed")" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#@collapseId">
+                                        <div class="d-flex align-items-center w-100">
+                                            <div class="list-icon branch me-3">
+                                                <i class="bi bi-shop"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">@branch.Name</h6>
+                                                <small class="text-muted">지점</small>
+                                            </div>
+                                            <span class="badge bg-pink me-2">@branchTeams.Count 개 팀</span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="@collapseId" class="accordion-collapse collapse @(index == 0 ? "show" : "")" 
+                                     data-bs-parent="#branchesAccordion">
+                                    <div class="accordion-body">
+                                        @if (branchTeams.Any())
+                                        {
+                                            <div class="teams-list">
+                                                @foreach (var team in branchTeams)
+                                                {
+                                                    <div class="list-item team-item">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="list-icon team">
+                                                                <i class="bi bi-people"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0">@team.Name</h6>
+                                                                <small class="text-muted">팀 • 등록일: @team.RegisteredAt.ToShortDateString()</small>
+                                                            </div>
+                                                            <span class="badge bg-cyan">@team.MemberCount 명</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center text-muted py-3">
+                                                <i class="bi bi-inbox"></i> 등록된 팀이 없습니다
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (!branches.Any())
+                    {
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">등록된 지점이 없습니다</p>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
 </ResponsivePage>
 
+<style>
+    /* Modern Header Styles */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(33, 83, 200, 0.05) 0%, rgba(33, 83, 200, 0.02) 100%);
+        border-radius: 16px;
+        border: 1px solid rgba(33, 83, 200, 0.1);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-icon {
+        width: 56px;
+        height: 56px;
+        background: var(--org-gradient-primary);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+        box-shadow: 0 4px 12px rgba(33, 83, 200, 0.25);
+    }
+
+    .header-title {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    /* Modern Button Styles - Gray Tone Balanced */
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-modern:active {
+        transform: translateY(0);
+    }
+
+    .btn-modern-primary {
+        background: var(--org-primary);
+        color: white;
+        border: 2px solid transparent;
+    }
+
+    .btn-modern-primary:hover {
+        background: var(--org-primary-hover);
+        box-shadow: 0 4px 12px rgba(33, 83, 200, 0.25);
+    }
+
+    .btn-modern-outline {
+        background: white;
+        color: var(--neutral-gray-600);
+        border: 2px solid var(--neutral-gray-300);
+    }
+
+    .btn-modern-outline:hover {
+        background: var(--neutral-gray-050);
+        border-color: var(--neutral-gray-600);
+        color: var(--neutral-black);
+    }
+
+    .btn-modern-secondary {
+        background: var(--neutral-gray-100);
+        color: var(--neutral-gray-800);
+        border: 2px solid transparent;
+    }
+
+    .btn-modern-secondary:hover {
+        background: var(--neutral-gray-200);
+        color: var(--neutral-black);
+    }
+
+    /* Tree View Styles */
+    .org-tree-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .org-node {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        margin: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+    }
+
+    .org-node:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+        transform: translateY(-4px);
+        border-color: var(--org-primary);
+    }
+
+    .node-content {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem 1.75rem;
+        gap: 1.25rem;
+    }
+
+    .node-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+
+    .org-node:hover .node-icon {
+        transform: scale(1.1);
+    }
+
+    .node-icon.company {
+        background: var(--org-icon-company);
+    }
+
+    .node-icon.branch {
+        background: var(--org-icon-branch);
+    }
+
+    .node-icon.team {
+        background: var(--org-icon-team);
+    }
+
+    .node-info {
+        flex-grow: 1;
+    }
+
+    .node-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+    }
+
+    .node-badge .badge {
+        padding: 0.6rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
+
+    .bg-purple {
+        background: var(--org-badge-purple) !important;
+    }
+
+    .bg-pink {
+        background: var(--org-badge-pink) !important;
+    }
+
+    .bg-cyan {
+        background: var(--org-badge-cyan) !important;
+    }
+
+    /* Tree Connectors */
+    .tree-connector {
+        background: linear-gradient(135deg, rgba(33, 83, 200, 0.3) 0%, rgba(33, 83, 200, 0.15) 100%);
+        border-radius: 2px;
+    }
+
+    .tree-connector.vertical {
+        width: 4px;
+        height: 40px;
+        margin: 0 auto;
+    }
+
+    .tree-connector.vertical-short {
+        width: 4px;
+        height: 20px;
+        margin: 0 auto;
+    }
+
+    .tree-connector.horizontal {
+        width: 30px;
+        height: 4px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* Branches Layout */
+    .branches-row {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .branch-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .teams-column {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .team-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* List View Styles */
+    .org-list-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+    }
+
+    .list-item {
+        padding: 1.5rem 1.75rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .list-item:hover {
+        background: linear-gradient(135deg, rgba(33, 83, 200, 0.03) 0%, rgba(33, 83, 200, 0.01) 100%);
+        transform: translateX(4px);
+    }
+
+    .list-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+
+    .list-item:hover .list-icon {
+        transform: scale(1.1);
+    }
+
+    .list-icon.company {
+        background: var(--org-icon-company);
+    }
+
+    .list-icon.branch {
+        background: var(--org-icon-branch);
+    }
+
+    .list-icon.team {
+        background: var(--org-icon-team);
+    }
+
+    .company-item {
+        background: linear-gradient(135deg, rgba(33, 83, 200, 0.08) 0%, rgba(33, 83, 200, 0.04) 100%);
+        border-bottom: 3px solid var(--org-primary);
+        font-weight: 600;
+    }
+
+    .company-item h5 {
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: -0.02em;
+    }
+
+    .branch-accordion .accordion-button {
+        padding: 1.5rem 1.75rem;
+        background: white;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .branch-accordion .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(240, 147, 251, 0.12) 0%, rgba(245, 87, 108, 0.12) 100%);
+        color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(240, 147, 251, 0.15);
+    }
+
+    .branch-accordion .accordion-button:hover {
+        background: linear-gradient(135deg, rgba(240, 147, 251, 0.08) 0%, rgba(245, 87, 108, 0.08) 100%);
+    }
+
+    .teams-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.5rem;
+    }
+
+    .team-item {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 12px;
+        padding: 1.25rem;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        transition: all 0.3s ease;
+    }
+
+    .team-item:hover {
+        background: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateX(4px);
+    }
+
+    /* Loading State */
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3rem;
+    }
+
+    /* Empty State */
+    .text-center.text-muted i {
+        color: var(--text-tertiary);
+        opacity: 0.5;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .header-section {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            font-size: 1.5rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+        }
+
+        .header-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .branches-row {
+            flex-direction: column;
+        }
+
+        .org-tree-container {
+            padding: 1rem;
+        }
+
+        .node-content {
+            padding: 1rem 1.25rem;
+        }
+
+        .node-icon, .list-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 1.25rem;
+        }
+
+        .node-badge .badge {
+            padding: 0.5rem 0.875rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
 @code {
-    private List<OrganizationNode>? _nodes;
-    private bool _showDialog;
-    private DialogMode _mode;
-    private string _dialogTitle = string.Empty;
-    private string _name = string.Empty;
-    private OrganizationNode? _current;
+    private bool isLoading = true;
+    private bool isTreeView = true;
+    private BizCompanyRecord? userCompany;
+    private List<BizBranchRecord> branches = new();
+    private List<TeamRecord> teams = new();
+    private long tenantUnitId;
 
     protected override async Task OnInitializedAsync()
     {
-        var units = (await OrganizationService.GetOrganizationStructureAsync()).ToList();
-        var lookup = units.ToLookup(u => u.ParentId);
-        _nodes = BuildTree(null);
-
-        List<OrganizationNode> BuildTree(int? parentId) =>
-            lookup[parentId]
-                .Select(u => new OrganizationNode { Unit = u, Children = BuildTree(u.Id) })
-                .ToList();
-    }
-
-    private void StartAdd(OrganizationNode parent)
-    {
-        _mode = DialogMode.Create;
-        _current = parent;
-        _name = string.Empty;
-        _dialogTitle = "Add Unit";
-        _showDialog = true;
-    }
-
-    private void StartEdit(OrganizationNode node)
-    {
-        _mode = DialogMode.Edit;
-        _current = node;
-        _name = node.Unit.Name;
-        _dialogTitle = "Edit Unit";
-        _showDialog = true;
-    }
-
-    private void StartDelete(OrganizationNode node)
-    {
-        _mode = DialogMode.Delete;
-        _current = node;
-        _dialogTitle = "Delete Unit";
-        _showDialog = true;
-    }
-
-    private void CloseDialog() => _showDialog = false;
-
-    private async Task ConfirmAsync()
-    {
-        if (_current is null) return;
-
-        switch (_mode)
+        try
         {
-            case DialogMode.Create:
-                var newUnit = new OrganizationUnit(0, _name, _current.Unit.Id);
-                await OrganizationService.SaveOrganizationUnitAsync(newUnit);
-                var newNode = new OrganizationNode { Unit = newUnit };
-                _current.Children.Add(newNode);
-                _current.IsExpanded = true;
-                break;
-            case DialogMode.Edit:
-                var updated = _current.Unit with { Name = _name };
-                await OrganizationService.SaveOrganizationUnitAsync(updated);
-                _current.Unit = updated;
-                break;
-            case DialogMode.Delete:
-                await OrganizationService.DeleteOrganizationUnitAsync(_current.Unit.Id);
-                RemoveNode(_nodes!, _current);
-                break;
+            isLoading = true;
+
+            // Get tenant unit ID
+            var orgService = BizManagementService as dynamic;
+            if (orgService != null && orgService.GetType().GetMethod("GetOrCreateDefaultOrganizationUnitAsync") != null)
+            {
+                var orgUnit = await orgService.GetOrCreateDefaultOrganizationUnitAsync();
+                tenantUnitId = orgUnit.Id;
+            }
+
+            // Get authenticated user's company ID
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var companyIdClaim = user.FindFirst("company_id");
+
+            if (companyIdClaim != null && long.TryParse(companyIdClaim.Value, out long userCompanyId))
+            {
+                // Get user's company
+                var companies = await BizManagementService.GetCompaniesAsync(tenantUnitId);
+                userCompany = companies.FirstOrDefault(c => c.Id == userCompanyId);
+
+                if (userCompany != null)
+                {
+                    // Get branches for user's company
+                    var allBranches = await BizManagementService.GetBranchesAsync(tenantUnitId);
+                    branches = allBranches.Where(b => b.CompanyId == userCompany.Id).ToList();
+
+                    // Get teams for user's branches
+                    var allTeams = await BizManagementService.GetTeamsAsync(tenantUnitId);
+                    var branchIds = branches.Select(b => b.Id).ToHashSet();
+                    teams = allTeams.Where(t => t.BranchId.HasValue && branchIds.Contains(t.BranchId.Value)).ToList();
+                }
+            }
         }
-
-        _showDialog = false;
-    }
-
-    private void RemoveNode(List<OrganizationNode> list, OrganizationNode node)
-    {
-        if (list.Remove(node))
-            return;
-
-        foreach (var item in list)
+        catch (Exception ex)
         {
-            RemoveNode(item.Children, node);
+            Console.WriteLine($"Error loading organization structure: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
-    private enum DialogMode
+    private void ToggleView()
     {
-        Create,
-        Edit,
-        Delete
+        isTreeView = !isTreeView;
+    }
+
+    private void ExportStructure()
+    {
+        // TODO: Implement export functionality (JSON/PDF)
+        Console.WriteLine("Exporting organization structure...");
     }
 }

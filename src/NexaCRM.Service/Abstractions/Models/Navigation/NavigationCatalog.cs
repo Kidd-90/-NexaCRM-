@@ -72,13 +72,13 @@ public static class NavigationCatalog
 
     private static readonly NavigationLinkDefinition[] OrganizationLinks =
     {
-        new("OrganizationStructure", "bi bi-diagram-3", "organization/structure", Roles("Manager", "Admin"), Keywords("organization", "structure")),
-        new("BizManagement", "bi bi-building-gear", "organization/biz-management", Roles("Manager", "Admin"), Keywords("business", "franchise", "company", "branch")),
+        new("OrganizationStructure", "bi bi-diagram-3-fill", "organization/structure", Roles("Manager", "Admin"), Keywords("organization", "structure")),
+        new("BizManagement", "bi bi-building-fill-gear", "organization/biz-management", Roles("Manager", "Admin"), Keywords("business", "franchise", "company", "branch")),
         new("TeamManagement", "bi bi-people-fill", "organization/team-management", Roles("Manager", "Admin"), Keywords("team", "management")),
-        new("TeamMemberManagement", "bi bi-person-badge", "organization/team-members", Roles("Manager", "Admin"), Keywords("members")),
-        new("UserManagement", "bi bi-person-plus", "organization/user-management", Roles("Manager", "Admin"), Keywords("user")),
-        new("OrganizationStats", "bi bi-bar-chart", "organization/stats", Roles("Manager", "Admin"), Keywords("organization", "statistics")),
-        new("SystemAdmin", "bi bi-person-gear", "organization/system-admin", Roles("Admin", "Developer"), Keywords("admin", "system"))
+        new("TeamMemberManagement", "bi bi-person-vcard-fill", "organization/team-members", Roles("Manager", "Admin"), Keywords("members")),
+        new("UserManagement", "bi bi-person-fill-add", "organization/user-management", Roles("Manager", "Admin"), Keywords("user")),
+        new("OrganizationStats", "bi bi-bar-chart-fill", "organization/stats", Roles("Manager", "Admin"), Keywords("organization", "statistics")),
+        new("SystemAdmin", "bi bi-people-fill", "organization/system-admin", Roles("Manager", "Admin"), Keywords("admin", "employee", "staff"))
     };
 
     private static readonly NavigationLinkDefinition[] SystemLinks =
@@ -95,7 +95,7 @@ public static class NavigationCatalog
     new("Engagement", "bi bi-chat-left-text", Roles("Admin", "Sales", "Manager"), EngagementLinks),
         new("Insights", "bi bi-graph-up", Roles("Admin", "Manager", "Developer"), InsightsLinks),
         new("BasicSettings", "bi bi-sliders", Roles("Admin", "Sales", "Manager", "Developer"), SettingsLinks),
-        new("OrganizationManagement", "bi bi-people", Roles("Admin", "Manager", "Developer"), OrganizationLinks),
+        new("OrganizationManagement", "bi bi-building-fill", Roles("Admin", "Manager", "Developer"), OrganizationLinks),
         new("SystemInfo", "bi bi-cpu", Roles("Admin", "Developer"), SystemLinks)
     };
 

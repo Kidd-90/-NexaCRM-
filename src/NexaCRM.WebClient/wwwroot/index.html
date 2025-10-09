@@ -8,6 +8,7 @@
     <base href="/" />
     <link href="_content/NexaCRM.UI/css/app.css" rel="stylesheet" />
     <link href="_content/NexaCRM.UI/css/mobile.css" rel="stylesheet" />
+    <link href="_content/NexaCRM.UI/NexaCRM.UI.bundle.scp.css" rel="stylesheet" />
     <link href="NexaCRM.WebClient.styles.css" rel="stylesheet" />
 </head>
 
@@ -22,20 +23,20 @@
         <a class="dismiss">🗙</a>
     </div>
     <script>
-    (function(){
-        if (window.isDarkMode && window.isDarkMode._nexacrm_init) return;
+        (function () {
+            if (window.isDarkMode && window.isDarkMode._nexacrm_init) return;
 
-        window.isDarkMode = window.isDarkMode || function() {
-            const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('nexacrm-theme-preference') || 'light';
-            if (theme === 'dark') return true;
-            if (theme === 'auto') {
-                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            }
-            return false;
-        };
+            window.isDarkMode = window.isDarkMode || function () {
+                const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('nexacrm-theme-preference') || 'light';
+                if (theme === 'dark') return true;
+                if (theme === 'auto') {
+                    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+                return false;
+            };
 
-        try { window.isDarkMode._nexacrm_init = true; } catch (e) { }
-    })();
+            try { window.isDarkMode._nexacrm_init = true; } catch (e) { }
+        })();
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/NexaCRM.UI/js/auth-manager.js"></script>

@@ -8,10 +8,10 @@ namespace NexaCRM.UI.Models.Supabase;
 public sealed class TeamMemberRecord : BaseModel
 {
     [PrimaryKey("id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     [Column("team_id")]
-    public int TeamId { get; set; }
+    public long TeamId { get; set; }
 
     [Column("user_cuid")]
     public string UserCuid { get; set; } = string.Empty;

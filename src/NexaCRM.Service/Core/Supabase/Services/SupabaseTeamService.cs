@@ -123,7 +123,7 @@ public sealed class SupabaseTeamService : ITeamService
         }
     }
 
-    public async Task UpdateTeamStatusAsync(int teamId, bool isActive)
+    public async Task UpdateTeamStatusAsync(long teamId, bool isActive)
     {
         try
         {
@@ -152,7 +152,7 @@ public sealed class SupabaseTeamService : ITeamService
         }
     }
 
-    public async Task UpdateTeamMemberStatusAsync(int memberId, bool isActive)
+    public async Task UpdateTeamMemberStatusAsync(long memberId, bool isActive)
     {
         try
         {
@@ -181,7 +181,7 @@ public sealed class SupabaseTeamService : ITeamService
         }
     }
 
-    public async Task UpdateTeamMemberUploadPermissionAsync(int memberId, bool allow)
+    public async Task UpdateTeamMemberUploadPermissionAsync(long memberId, bool allow)
     {
         try
         {

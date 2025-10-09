@@ -1,65 +1,481 @@
 @page "/organization/system-admin"
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Manager,Admin")]
 @using System.Linq
 @using NexaCRM.Services.Admin.Interfaces
 @using NexaCRM.UI.Components.UI
-@using AgentModel = NexaCRM.Services.Admin.Models.Agent
-@inject IOrganizationService OrganizationService
+@using NexaCRM.UI.Models.Supabase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IBizManagementService BizManagementService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <ResponsivePage>
-    <h3>System Administration</h3>
-    <p>Configure global system administrators.</p>
-
-    <div class="admin-form">
-        <input @bind="newAdminId" placeholder="User ID" />
-        <button class="btn btn-primary" @onclick="AddAdmin">Add</button>
-    </div>
-
-    <div class="admin-table-container">
-        <table class="table admin-table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var admin in admins)
-                {
-                    <tr>
-                        <td>@admin.Id</td>
-                        <td>@admin.Name</td>
-                        <td>@admin.Email</td>
-                        <td>
-                            <button class="btn btn-link text-danger" @onclick="() => RemoveAdmin(admin.Id)">Remove</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <div class="admins-mobile-view">
-        @foreach (var admin in admins)
-        {
-            <div class="admin-card">
-                <div class="admin-info">
-                    <span class="admin-name">@admin.Name</span>
-                    <span class="admin-email">@admin.Email</span>
-                </div>
-                <button class="btn btn-link text-danger" @onclick="() => RemoveAdmin(admin.Id)">Remove</button>
+    <div class="container-fluid py-4">
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="mb-1">
+                    <i class="bi bi-people-fill"></i> 직원 관리
+                </h3>
+                <p class="text-muted mb-0">회사 직원 목록을 확인하고 관리하세요</p>
             </div>
+            <div class="d-flex gap-2">
+                <button class="btn-modern btn-modern-secondary" @onclick="RefreshData">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>새로고침</span>
+                </button>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">로딩 중...</span>
+                </div>
+                <p class="text-muted mt-3">직원 데이터를 불러오는 중...</p>
+            </div>
+        }
+        else if (userCompany == null)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> 소속 회사 정보를 찾을 수 없습니다.
+            </div>
+        }
+        else
+        {
+            <!-- Company Info Card -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="company-icon me-3">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-0">@userCompany.Name</h5>
+                            <p class="text-muted mb-0">총 직원: @employees.Count 명</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">상태</label>
+                            <select class="form-select" @bind="statusFilter">
+                                <option value="all">전체</option>
+                                <option value="active">재직</option>
+                                <option value="inactive">퇴사</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">지점</label>
+                            <select class="form-select" @bind="branchFilter">
+                                <option value="all">전체 지점</option>
+                                @foreach (var branch in branches)
+                                {
+                                    <option value="@branch.Id">@branch.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">팀</label>
+                            <select class="form-select" @bind="teamFilter">
+                                <option value="all">전체 팀</option>
+                                @foreach (var team in teams)
+                                {
+                                    <option value="@team.Id">@team.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">검색</label>
+                            <input type="text" class="form-control" placeholder="이름, 사번 검색" @bind="searchKeyword" @bind:event="oninput" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon active">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value mb-0">@GetFilteredEmployees().Count(e => e.Status == "active")</h3>
+                            <p class="stat-label mb-0">재직 중</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon inactive">
+                            <i class="bi bi-person-dash"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value mb-0">@GetFilteredEmployees().Count(e => e.Status != "active")</h3>
+                            <p class="stat-label mb-0">퇴사</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon branches">
+                            <i class="bi bi-shop"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value mb-0">@branches.Count</h3>
+                            <p class="stat-label mb-0">지점</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon teams">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value mb-0">@teams.Count</h3>
+                            <p class="stat-label mb-0">팀</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employees Table -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table"></i> 직원 목록
+                        <span class="badge bg-primary ms-2">@GetFilteredEmployees().Count() 명</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (GetFilteredEmployees().Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>사번</th>
+                                        <th>사용자 ID</th>
+                                        <th>직책</th>
+                                        <th>고용 형태</th>
+                                        <th>지점</th>
+                                        <th>팀</th>
+                                        <th>입사일</th>
+                                        <th>상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var employee in GetFilteredEmployees().OrderBy(e => e.EmployeeNumber))
+                                    {
+                                        var employeeBranch = branches.FirstOrDefault(b => b.Id == employee.BranchId);
+                                        var employeeTeam = teams.FirstOrDefault(t => t.Id == employee.TeamId);
+                                        
+                                        <tr>
+                                            <td>
+                                                <strong>@(employee.EmployeeNumber ?? "-")</strong>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="user-avatar me-2">
+                                                        <i class="bi bi-person-circle"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div>@employee.UserCuid</div>
+                                                        <small class="text-muted">@employee.UserId.ToString().Substring(0, 8)</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>@(employee.JobTitle ?? "-")</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(employee.EmploymentType))
+                                                {
+                                                    <span class="badge bg-info">@employee.EmploymentType</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </td>
+                                            <td>@(employeeBranch?.Name ?? "-")</td>
+                                            <td>@(employeeTeam?.Name ?? "-")</td>
+                                            <td>
+                                                @if (employee.HiredOn.HasValue)
+                                                {
+                                                    @employee.HiredOn.Value.ToShortDateString()
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (employee.Status == "active")
+                                                {
+                                                    <span class="badge bg-success">재직</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">퇴사</span>
+                                                    @if (employee.EndedOn.HasValue)
+                                                    {
+                                                        <br />
+                                                        <small class="text-muted">@employee.EndedOn.Value.ToShortDateString()</small>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">검색 조건에 맞는 직원이 없습니다</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            @if (GetFilteredEmployees().Any(e => !string.IsNullOrEmpty(e.Notes)))
+            {
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-sticky"></i> 직원 메모
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var employee in GetFilteredEmployees().Where(e => !string.IsNullOrEmpty(e.Notes)))
+                        {
+                            <div class="note-item mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="note-icon me-2">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">@employee.UserCuid (@(employee.EmployeeNumber ?? "사번 없음"))</h6>
+                                        <p class="text-muted mb-0">@employee.Notes</p>
+                                        <small class="text-muted">수정: @employee.UpdatedAt.ToShortDateString()</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         }
     </div>
 
     <ToastNotification @ref="toast" Title="@toastTitle" Message="@toastMessage" Type="@toastType" />
 </ResponsivePage>
 
+<style>
+    /* Modern Button Styles - Gray Tone Balanced */
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-modern:active {
+        transform: translateY(0);
+    }
+
+    .btn-modern-primary {
+        background: var(--org-primary);
+        color: white;
+        border: 2px solid transparent;
+    }
+
+    .btn-modern-primary:hover {
+        background: var(--org-primary-hover);
+        box-shadow: 0 4px 12px rgba(33, 83, 200, 0.25);
+    }
+
+    .btn-modern-outline {
+        background: white;
+        color: var(--neutral-gray-600);
+        border: 2px solid var(--neutral-gray-300);
+    }
+
+    .btn-modern-outline:hover {
+        background: var(--neutral-gray-050);
+        border-color: var(--neutral-gray-600);
+        color: var(--neutral-black);
+    }
+
+    .btn-modern-secondary {
+        background: var(--neutral-gray-100);
+        color: var(--neutral-gray-800);
+        border: 2px solid transparent;
+    }
+
+    .btn-modern-secondary:hover {
+        background: var(--neutral-gray-200);
+        color: var(--neutral-black);
+    }
+
+    /* Company Icon */
+    .company-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--org-icon-company);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--org-card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--org-card-shadow);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: var(--transition-fast);
+    }
+
+    .stat-card:hover {
+        background: var(--org-card-hover-bg);
+        box-shadow: var(--org-card-hover-shadow);
+        transform: translateY(-2px);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .stat-icon.active {
+        background: var(--org-icon-member);
+    }
+
+    .stat-icon.inactive {
+        background: var(--org-icon-inactive);
+    }
+
+    .stat-icon.branches {
+        background: var(--org-icon-branch);
+    }
+
+    .stat-icon.teams {
+        background: var(--org-icon-team);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* User Avatar */
+    .user-avatar {
+        font-size: 1.75rem;
+        color: var(--org-primary);
+    }
+
+    /* Table Styles */
+    .table-hover tbody tr:hover {
+        background-color: var(--surface-muted);
+        cursor: pointer;
+    }
+
+    /* Note Items */
+    .note-item {
+        background: var(--surface-muted);
+        border-radius: 8px;
+        padding: 1rem;
+        border-left: 4px solid var(--org-primary);
+    }
+
+    .note-icon {
+        font-size: 1.5rem;
+        color: var(--org-primary);
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .stat-value {
+            font-size: 1.5rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+        }
+
+        .company-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+        }
+
+        .table {
+            font-size: 0.85rem;
+        }
+
+        .user-avatar {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
 @code {
-    private List<AgentModel> admins = new();
-    private string? newAdminId;
+    private bool isLoading = true;
+    private BizCompanyRecord? userCompany;
+    private List<BizBranchRecord> branches = new();
+    private List<TeamRecord> teams = new();
+    private List<UserDirectoryEntryRecord> employees = new();
+    
+    private string statusFilter = "all";
+    private string branchFilter = "all";
+    private string teamFilter = "all";
+    private string searchKeyword = string.Empty;
+    
+    private long tenantUnitId;
+    
     private ToastNotification? toast;
     private string toastTitle = string.Empty;
     private string toastMessage = string.Empty;
@@ -67,36 +483,108 @@
 
     protected override async Task OnInitializedAsync()
     {
-        admins = (await OrganizationService.GetAdminsAsync()).ToList();
+        await LoadData();
     }
 
-    private async Task AddAdmin()
+    private async Task LoadData()
     {
-        if (string.IsNullOrWhiteSpace(newAdminId))
+        try
         {
-            return;
-        }
+            isLoading = true;
 
-        await OrganizationService.AddAdminAsync(newAdminId);
-        admins = (await OrganizationService.GetAdminsAsync()).ToList();
-        toastTitle = "Admin added";
-        toastMessage = $"User {newAdminId} added.";
-        toastType = ToastNotification.ToastType.Success;
-        if (toast is not null)
-        {
-            await toast.Show();
+            // Get tenant unit ID
+            tenantUnitId = await BizManagementService.GetOrCreateDefaultOrganizationUnitAsync();
+
+            // Get authenticated user's company ID
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var companyIdClaim = user.FindFirst("company_id");
+
+            if (companyIdClaim != null && long.TryParse(companyIdClaim.Value, out long userCompanyId))
+            {
+                // Get user's company
+                var companies = await BizManagementService.GetCompaniesAsync(tenantUnitId);
+                userCompany = companies.FirstOrDefault(c => c.Id == userCompanyId);
+
+                if (userCompany != null)
+                {
+                    // Get branches for user's company
+                    var allBranches = await BizManagementService.GetBranchesAsync(tenantUnitId);
+                    branches = allBranches.Where(b => b.CompanyId == userCompany.Id).ToList();
+
+                    // Get teams for user's branches
+                    var allTeams = await BizManagementService.GetTeamsAsync(tenantUnitId);
+                    var branchIds = branches.Select(b => b.Id).ToHashSet();
+                    teams = allTeams.Where(t => t.BranchId.HasValue && branchIds.Contains(t.BranchId.Value)).ToList();
+
+                    // Get all users and filter by company
+                    var allUsers = await BizManagementService.GetUsersAsync(tenantUnitId);
+                    employees = allUsers.Where(u => u.CompanyId == userCompany.Id).ToList();
+                }
+            }
         }
-        newAdminId = string.Empty;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading employee data: {ex.Message}");
+            toastTitle = "오류";
+            toastMessage = "직원 데이터를 불러오는 중 오류가 발생했습니다.";
+            toastType = ToastNotification.ToastType.Error;
+            if (toast != null)
+            {
+                await toast.Show();
+            }
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
-    private async Task RemoveAdmin(int userId)
+    private IEnumerable<UserDirectoryEntryRecord> GetFilteredEmployees()
     {
-        await OrganizationService.RemoveAdminAsync(userId.ToString());
-        admins = (await OrganizationService.GetAdminsAsync()).ToList();
-        toastTitle = "Admin removed";
-        toastMessage = $"User {userId} removed.";
+        var filtered = employees.AsEnumerable();
+
+        // Status filter
+        if (statusFilter != "all")
+        {
+            filtered = filtered.Where(e => statusFilter == "active" 
+                ? e.Status == "active" 
+                : e.Status != "active");
+        }
+
+        // Branch filter
+        if (branchFilter != "all" && long.TryParse(branchFilter, out long branchId))
+        {
+            filtered = filtered.Where(e => e.BranchId == branchId);
+        }
+
+        // Team filter
+        if (teamFilter != "all" && long.TryParse(teamFilter, out long teamId))
+        {
+            filtered = filtered.Where(e => e.TeamId == teamId);
+        }
+
+        // Search keyword
+        if (!string.IsNullOrWhiteSpace(searchKeyword))
+        {
+            var keyword = searchKeyword.ToLower();
+            filtered = filtered.Where(e => 
+                (e.UserCuid != null && e.UserCuid.ToLower().Contains(keyword)) ||
+                (e.EmployeeNumber != null && e.EmployeeNumber.ToLower().Contains(keyword)) ||
+                (e.JobTitle != null && e.JobTitle.ToLower().Contains(keyword))
+            );
+        }
+
+        return filtered;
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadData();
+        toastTitle = "새로고침 완료";
+        toastMessage = "직원 데이터를 다시 불러왔습니다.";
         toastType = ToastNotification.ToastType.Success;
-        if (toast is not null)
+        if (toast != null)
         {
             await toast.Show();
         }

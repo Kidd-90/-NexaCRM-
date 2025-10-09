@@ -141,7 +141,7 @@ public class MockTeamService : ITeamService
         return Task.FromResult(CloneMember(newMember));
     }
 
-    public Task UpdateTeamStatusAsync(int teamId, bool isActive)
+    public Task UpdateTeamStatusAsync(long teamId, bool isActive)
     {
         var team = _teams.FirstOrDefault(t => t.Id == teamId);
         if (team is not null)
@@ -152,7 +152,7 @@ public class MockTeamService : ITeamService
         return Task.CompletedTask;
     }
 
-    public Task UpdateTeamMemberStatusAsync(int memberId, bool isActive)
+    public Task UpdateTeamMemberStatusAsync(long memberId, bool isActive)
     {
         var member = _members.FirstOrDefault(m => m.Id == memberId);
         if (member is not null)
@@ -163,7 +163,7 @@ public class MockTeamService : ITeamService
         return Task.CompletedTask;
     }
 
-    public Task UpdateTeamMemberUploadPermissionAsync(int memberId, bool allow)
+    public Task UpdateTeamMemberUploadPermissionAsync(long memberId, bool allow)
     {
         var member = _members.FirstOrDefault(m => m.Id == memberId);
         if (member is not null)
@@ -199,7 +199,7 @@ public class MockTeamService : ITeamService
         RegisteredAt = source.RegisteredAt
     };
 
-    private int GenerateTeamId() => _teams.Count == 0 ? 1 : _teams.Max(t => t.Id) + 1;
+    private long GenerateTeamId() => _teams.Count == 0 ? 1 : _teams.Max(t => t.Id) + 1;
 
     private string GenerateTeamCode()
     {
@@ -207,7 +207,7 @@ public class MockTeamService : ITeamService
         return $"TM{next:0000}";
     }
 
-    private int GenerateMemberId() => _members.Count == 0 ? 1 : _members.Max(m => m.Id) + 1;
+    private long GenerateMemberId() => _members.Count == 0 ? 1 : _members.Max(m => m.Id) + 1;
 
     private string GenerateMemberCode()
     {

@@ -12,20 +12,23 @@
 
 @implements IDisposable
 
-<div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation" aria-label="@Localizer["MainNavigation"]" @onclick="HandleOutsideClick">
+<div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation"
+    aria-label="@Localizer["MainNavigation"]" @onclick="HandleOutsideClick">
     <div class="nav-rail__icons">
         <div class="nav-rail__main">
             <div class="nav-rail__accent" aria-hidden="true">
                 <span class="nav-rail__accent-icon">
                     <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                        <path d="M16 4v24M28 16H4M24.97 7.03 7.03 24.97M24.97 24.97 7.03 7.03" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M16 4v24M28 16H4M24.97 7.03 7.03 24.97M24.97 24.97 7.03 7.03" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </span>
                 <span class="nav-rail__accent-line"></span>
             </div>
             <div class="nav-rail__main-inner" role="tablist" aria-orientation="vertical">
                 <!-- Top logo button: links to home using the company mark -->
-                <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home" aria-label="Home">
+                <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home"
+                    aria-label="Home">
                     <img src="/_content/NexaCRM.UI/images/naf-logo.png" alt="NAF" class="rail-logo__image" />
                     <span class="visually-hidden">Home</span>
                 </NavLink>
@@ -34,14 +37,11 @@
                 {
                     NavigationGroupViewModel? group = groups[index];
                     var i = index; // capture loop variable to avoid closure capturing the mutated 'index'
-                <button type="button"
-                    class="rail-icon @(i == activeGroupIndex ? "active" : null)"
-                    role="tab"
-                    title="@group.DisplayName"
-                    aria-selected="@(i == activeGroupIndex)"
-                    @onclick="async () => await SetActive(i)">
-                        <i class="@group.IconCss" aria-hidden="true"></i>
-                    </button>
+                                   <button type="button" class="rail-icon @(i == activeGroupIndex ? "active" : null)" role="tab"
+                                       title="@group.DisplayName" aria-selected="@(i == activeGroupIndex)"
+                                       @onclick="async () => await SetActive(i)">
+                                       <i class="@group.IconCss" aria-hidden="true"></i>
+                                   </button>
                 }
             </div>
 
@@ -63,7 +63,8 @@
         </div>
     </div>
 
-    <div class="@($"nav-rail__panel{(panelVisible ? "" : " collapsed")}")" role="tabpanel" aria-hidden="@(panelVisible ? "false" : "true")">
+    <div class="@($"nav-rail__panel{(panelVisible ? "" : " collapsed")}")" role="tabpanel"
+        aria-hidden="@(panelVisible ? "false" : "true")">
         <!-- Top: user summary (avatar, name, email) -->
         <div class="panel-user">
             <div class="panel-user__avatar" aria-hidden="true">@userInitials</div>
@@ -74,15 +75,12 @@
                     <div class="panel-user__email">@userEmail</div>
                 }
             </div>
-            <button type="button" 
-                    class="panel-user__details-btn" 
-                    title="세부 내역"
-                    @onclick="ToggleUserDetails"
-                    @onclick:stopPropagation="true">
+            <button type="button" class="panel-user__details-btn" title="세부 내역" @onclick="ToggleUserDetails"
+                @onclick:stopPropagation="true">
                 <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
             </button>
         </div>
-        
+
         @if (showUserDetails)
         {
             <div class="panel-user-details" @onclick:stopPropagation="true">
@@ -104,36 +102,39 @@
                         <i class="bi bi-envelope" aria-hidden="true"></i>
                         <div class="panel-user-details__item-content">
                             <div class="panel-user-details__item-label">이메일</div>
-                            <div class="panel-user-details__item-value">@(!string.IsNullOrEmpty(userEmail) ? userEmail : "N/A")</div>
+                            <div class="panel-user-details__item-value">@(!string.IsNullOrEmpty(userEmail) ? userEmail :
+                                                            "N/A")</div>
                         </div>
                     </div>
                     <div class="panel-user-details__item">
                         <i class="bi bi-shield-check" aria-hidden="true"></i>
                         <div class="panel-user-details__item-content">
                             <div class="panel-user-details__item-label">역할</div>
-                            <div class="panel-user-details__item-value">@string.Join(", ", userRoles.Length > 0 ? userRoles : new[] { "User" })</div>
-                        </div>
-                    </div>
-                    <div class="panel-user-details__item">
-                        <i class="bi bi-calendar-check" aria-hidden="true"></i>
-                        <div class="panel-user-details__item-content">
-                            <div class="panel-user-details__item-label">마지막 로그인</div>
-                            <div class="panel-user-details__item-value">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</div>
-                        </div>
+                            <div class="panel-user-details__item-value">@string.Join(", ", userRoles.Length > 0 ? userRoles
+                                                            : new[] { "User" })</div>
                     </div>
                 </div>
-                <div class="panel-user-details__actions">
-                    <button type="button" class="panel-user-details__action-btn" @onclick="NavigateToProfile">
-                        <i class="bi bi-person-gear" aria-hidden="true"></i>
-                        <span>프로필 설정</span>
-                    </button>
-                    <button type="button" class="panel-user-details__action-btn panel-user-details__action-btn--danger" @onclick="HandleLogout">
-                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-                        <span>로그아웃</span>
-                    </button>
+                <div class="panel-user-details__item">
+                    <i class="bi bi-calendar-check" aria-hidden="true"></i>
+                    <div class="panel-user-details__item-content">
+                        <div class="panel-user-details__item-label">마지막 로그인</div>
+                        <div class="panel-user-details__item-value">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</div>
+                    </div>
                 </div>
             </div>
-        }
+            <div class="panel-user-details__actions">
+                <button type="button" class="panel-user-details__action-btn" @onclick="NavigateToProfile">
+                    <i class="bi bi-person-gear" aria-hidden="true"></i>
+                    <span>프로필 설정</span>
+                </button>
+                <button type="button" class="panel-user-details__action-btn panel-user-details__action-btn--danger"
+                    @onclick="HandleLogout">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    <span>로그아웃</span>
+                </button>
+            </div>
+        </div>
+                }
 
         @if (groups.Count == 0)
         {
@@ -204,7 +205,8 @@
         ["StatusAnnouncements"] = "NavigationSectionStatus",
         ["HistoryRecent"] = "NavigationSectionHistory"
     };
-    private static readonly HashSet<string> ManagerDashboardRoles = new(new[] { "Manager", "Admin", "Developer" }, StringComparer.OrdinalIgnoreCase);
+    private static readonly HashSet<string> ManagerDashboardRoles = new(new[] { "Manager", "Admin", "Developer" },
+    StringComparer.OrdinalIgnoreCase);
     private int activeGroupIndex;
     private bool panelVisible = true;
     private string[] userRoles = Array.Empty<string>();
@@ -247,7 +249,7 @@
                 }
                 else
                 {
-                    userInitials = (parts[0].Substring(0,1) + parts[^1].Substring(0,1)).ToUpperInvariant();
+                    userInitials = (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpperInvariant();
                 }
             }
         }
@@ -302,7 +304,8 @@
             }
 
             var sections = BuildSections(entries);
-            groups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass, sections));
+            groups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass,
+            sections));
         }
 
         if (groups.Count == 0)
@@ -322,7 +325,8 @@
         // BuildGroups: no runtime JS logging in production code.
     }
 
-    private IReadOnlyList<NavigationSectionViewModel> BuildSections(List<(NavigationLinkViewModel Link, string? SectionResourceKey)> entries)
+    private IReadOnlyList<NavigationSectionViewModel> BuildSections(List<(NavigationLinkViewModel Link, string?
+    SectionResourceKey)> entries)
     {
         var sections = new List<NavigationSectionViewModel>();
         List<NavigationLinkViewModel>? currentLinks = null;
@@ -330,7 +334,8 @@
 
         foreach (var entry in entries)
         {
-            if (currentLinks is null || !string.Equals(entry.SectionResourceKey, currentSectionKey, StringComparison.OrdinalIgnoreCase))
+            if (currentLinks is null || !string.Equals(entry.SectionResourceKey, currentSectionKey,
+            StringComparison.OrdinalIgnoreCase))
             {
                 currentSectionKey = entry.SectionResourceKey;
                 currentLinks = new List<NavigationLinkViewModel>();
@@ -444,7 +449,9 @@
         }
         catch (Exception ex)
         {
-            try { _ = JSRuntime.InvokeVoidAsync("console.error", "NavigationRail.SetActive.exception -> " + ex?.ToString()); } catch { }
+            try { _ = JSRuntime.InvokeVoidAsync("console.error", "NavigationRail.SetActive.exception -> " + ex?.ToString()); }
+            catch
+            { }
         }
     }
 
@@ -474,10 +481,10 @@
         try
         {
             showUserDetails = false;
-            
+
             // AuthenticationService를 통해 완전한 로그아웃 처리
             await AuthenticationService.LogoutAsync();
-            
+
             // 로그아웃 후 로그인 페이지로 리디렉션
             // LogoutAsync 내부에서 이미 처리되지만, 명시적으로 추가
             NavigationManager.NavigateTo("/login", forceLoad: true);
@@ -485,12 +492,12 @@
         catch (Exception ex)
         {
             // 로그아웃 실패 시에도 로그인 페이지로 이동
-            try 
-            { 
-                await JSRuntime.InvokeVoidAsync("console.error", "Logout error: " + ex?.ToString()); 
-            } 
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", "Logout error: " + ex?.ToString());
+            }
             catch { }
-            
+
             NavigationManager.NavigateTo("/login", forceLoad: true);
         }
     }
@@ -514,9 +521,11 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 
-    private sealed record NavigationGroupViewModel(string DisplayName, string IconCss, IReadOnlyList<NavigationSectionViewModel> Sections);
+    private sealed record NavigationGroupViewModel(string DisplayName, string IconCss,
+    IReadOnlyList<NavigationSectionViewModel> Sections);
 
-    private sealed record NavigationSectionViewModel(string? ResourceKey, string? Title, IReadOnlyList<NavigationLinkViewModel> Links);
+    private sealed record NavigationSectionViewModel(string? ResourceKey, string? Title,
+    IReadOnlyList<NavigationLinkViewModel> Links);
 
     private sealed record NavigationLinkViewModel(string Href, string DisplayName, string IconCss);
 }

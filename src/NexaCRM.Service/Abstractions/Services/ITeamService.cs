@@ -10,7 +10,7 @@ public interface ITeamService
     Task<IReadOnlyList<TeamMemberInfo>> GetTeamMembersAsync();
     Task<TeamInfo> CreateTeamAsync(TeamInfo team);
     Task<TeamMemberInfo> CreateTeamMemberAsync(TeamMemberInfo member);
-    Task UpdateTeamStatusAsync(int teamId, bool isActive);
-    Task UpdateTeamMemberStatusAsync(int memberId, bool isActive);
-    Task UpdateTeamMemberUploadPermissionAsync(int memberId, bool allow);
+    Task UpdateTeamStatusAsync(long teamId, bool isActive);
+    Task UpdateTeamMemberStatusAsync(long memberId, bool isActive);
+    Task UpdateTeamMemberUploadPermissionAsync(long memberId, bool allow);
 }

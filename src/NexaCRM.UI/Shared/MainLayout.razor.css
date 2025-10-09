@@ -13,17 +13,16 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     top: 0;
     left: 83px;
     min-width: calc(100% - 83px);
-    max-height: calc(100vh - 0.5 * var(--spacing-md));
+    height: calc(100vh - 0.5 * var(--spacing-md));
     right: 0;
-    bottom: 0;
     background: var(--surface-color, red);
     border: 1px solid var(--divider-color, #E5E7EB);
     border-radius: 1rem;
-    z-index: 0;
+    z-index: 1;
     pointer-events: none;
 }
 
-.app-shell__background > * {
+.app-shell__background>* {
     pointer-events: auto;
 }
 
@@ -34,8 +33,10 @@ html:not([data-theme="dark"]) .app-shell--desktop {
        overlap the fixed navigation rail. This value mirrors the default used
        in the app stylesheet but lives here as a defensive fallback. */
     --sidebar-width: min(90vw, 320px);
-    --app-shell-surface-padding-top: 0.5rem; /* reduced top padding to better align with nav rail */
-    --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem); /* consistent top spacing for rail + content */
+    --app-shell-surface-padding-top: 0.5rem;
+    /* reduced top padding to better align with nav rail */
+    --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem);
+    /* consistent top spacing for rail + content */
 }
 
 .app-shell__surface {
@@ -47,16 +48,20 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     padding-bottom: clamp(0.75rem, 1.5vw, 1rem);
     display: flex;
     flex-direction: column;
-      /* Make surface height equal to the fixed page header height + 5px so
+    /* Ensure the surface stays visible above main content even if they overlap */
+    position: relative;
+    z-index: 15;
+    /* Make surface height equal to the fixed page header height + 5px so
           the surface and header sizes match closely. This uses the
           --app-shell-page-header-height variable which is set at runtime by
           layout.js (falls back to 57px if not available). */
-      min-height: calc(var(--app-shell-page-header-height, 57px) + 5px);
+    min-height: calc(var(--app-shell-page-header-height, 57px) + 5px);
     gap: var(--spacing-lg);
     transition: margin-left var(--transition-normal);
 }
 
 @media (min-width: 768px) {
+
     /* We offset the main document using body.padding-left on desktop, avoid
        an additional margin on the surface to prevent double-offset/overflow. */
     .app-shell__surface {
@@ -65,7 +70,8 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 }
 
 .app-shell__header {
-    display: none; /* hidden by default; visible only on small/mobile viewports */
+    display: none;
+    /* hidden by default; visible only on small/mobile viewports */
 }
 
 /* Show header only on small screens (mobile) */
@@ -83,8 +89,8 @@ html:not([data-theme="dark"]) .app-shell--desktop {
         position: sticky;
         top: var(--spacing-md);
         z-index: 12;
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
     }
 }
 
@@ -228,23 +234,23 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     /* Keep the page header fixed to the viewport top so it does not move with
        page scrolling. We expose desktop/mobile offsets so content can always
        start below the fixed header across responsive breakpoints. */
-     /* Increase desktop offset so the fixed page header starts lower and
-         doesn't overlap page content. Tune this value if your header content
-         (title/actions) grows larger. */
-     --app-shell-page-header-offset-desktop: 2345px; /* increased header height + spacing */
-     --app-shell-page-header-offset-mobile: 96px;  /* stacked header on mobile is taller */
+    /* Desktop: page header is hidden by default, so offset should be minimal or 0 */
+    --app-shell-page-header-offset-desktop: 0px;
+    /* No header on desktop */
+    --app-shell-page-header-offset-mobile: 96px;
+    /* stacked header on mobile is taller */
     --app-shell-page-header-offset: var(--app-shell-page-header-offset-desktop);
 }
 
 .app-shell__page-header {
-     position: fixed;
-     /* nudge the fixed header a little lower from the viewport top so it
+    position: fixed;
+    /* nudge the fixed header a little lower from the viewport top so it
          visually clears other chrome and doesn't overlap content when
          computed offsets are small. */
-      /* anchor the page header to the very top of the viewport so content
+    /* anchor the page header to the very top of the viewport so content
           can reliably start immediately below it using the runtime offset
           variable. Use CSS variables for safe-area compatibility if needed. */
-      top: 0;
+    top: 0;
     /* Place the fixed page header immediately to the right of the fixed
        navigation rail. Using the raw --sidebar-width keeps the header box
        aligned with the rail; we provide internal padding to maintain the
@@ -263,22 +269,32 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 }
 
 .app-shell__content {
-    /* push content below the fixed header so it isn't hidden */
-    margin-top: var(--app-shell-page-header-offset) !important;
-    /* also provide a small padding-top for consistent spacing */
-    padding-top: var(--app-shell-content-top-gap);
+    /* Remove margin-top and padding-top to align with app-shell__background */
+    margin-top: 0 !important;
+    padding-top: 0;
     transition: margin-top 220ms ease, padding-top 220ms ease;
     /* 상하 스크롤 비활성화 */
     overflow-y: hidden;
     overflow-x: auto;
+    /* Ensure content stays below nav-rail__panel */
+    position: relative;
+    z-index: 5;
+    /* Match height with app-shell__background and nav-rail__panel exactly */
+    height: calc(100vh - 0.25 * var(--spacing-md));
+    max-height: calc(100vh - 0.25 * var(--spacing-md));
+    box-sizing: border-box;
+    /* Remove top padding to visually raise content; keep side/bottom padding */
+    padding: 0 1rem 1rem 1rem;
 }
 
 /* Stronger, higher-specificity rules to prevent the main content from
    overlapping the fixed navigation rail. We use the sibling (~) selector so
    these rules only apply when a fixed .nav-rail exists earlier in the DOM.
    They also handle the collapsed rail and explicit mobile shell state. */
-.nav-rail ~ .app-shell__content {
-    margin: 9px 9px 9px 241px !important;
+.nav-rail~.app-shell__content {
+    /* Eliminate any top gap; keep right/bottom margins and left offset */
+    margin: -4px 9px 9px 241px !important;
+    /* nudge up a bit more */
     width: calc(100% - 250px) !important;
     height: calc(100vh - 18px) !important;
     max-width: calc(100% - 250px) !important;
@@ -287,7 +303,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 
 /* When the rail is collapsed, use the narrower baseline width so the content
    stays close but doesn't overlap. */
-.nav-rail.collapsed ~ .app-shell__content {
+.nav-rail.collapsed~.app-shell__content {
     margin-left: 56px !important;
     max-width: calc(100% - 56px) !important;
 }
@@ -356,9 +372,16 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     border-radius: 1rem;
     background: var(--background-color);
     border: 1px solid var(--divider-color);
-    padding: clamp(0.75rem, 1.2vw, 1rem);
+    /* Keep top padding 0 while preserving responsive side/bottom gutters */
+    padding: 0 clamp(0.75rem, 1.2vw, 1rem) clamp(0.75rem, 1.2vw, 1rem);
     /* main surface shadow: more pronounced on right and bottom for subtle 3D lift */
-    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.06), 6px 18px 40px rgba(15,23,42,0.08);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.06), 6px 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+/* Prevent first child margins from creating perceived top gaps */
+.app-shell__content> :first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
 
 /* Prevent the fixed navigation rail from overlapping the main content by
