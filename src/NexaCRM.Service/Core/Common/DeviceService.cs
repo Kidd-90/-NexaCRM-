@@ -15,7 +15,14 @@ namespace NexaCRM.UI.Services
 
         public async Task<bool> IsMobileAsync()
         {
-            return await _jsRuntime.InvokeAsync<bool>("deviceInfo.isMobile");
+            try
+            {
+                return await _jsRuntime.InvokeAsync<bool>("deviceInterop.isMobile");
+            }
+            catch (JSException)
+            {
+                return false;
+            }
         }
     }
 }

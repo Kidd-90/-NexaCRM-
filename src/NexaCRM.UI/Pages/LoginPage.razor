@@ -16,7 +16,8 @@
 
 <div class="login-container mobile-login-container white-theme white-theme-gradient-light">
   <!-- 태블릿/데스크톱용 이미지 영역 -->
-  <div class="login-image-section" style="background-image: url('@GetCurrentImageUrl()')">
+  <div class="login-image-section">
+    <div @key="currentImageIndex" class="login-image-backdrop" style="background-image: url('@GetCurrentImageUrl()')"></div>
     <div class="login-image-content">
       <h1 class="login-image-title">Welcome to Nexa DB</h1>
       <p class="login-image-subtitle">Your powerful CRM solution</p>
@@ -297,9 +298,9 @@
     // 이미지 슬라이드쇼
     private string[] imageUrls = new[]
     {
-        "_content/NexaCRM.UI/images/split1.jpg",
-        "_content/NexaCRM.UI/images/split2.jpg",
-        "_content/NexaCRM.UI/images/split3.jpg"
+        "/_content/NexaCRM.UI/images/split1.jpg",
+        "/_content/NexaCRM.UI/images/split2.jpg",
+        "/_content/NexaCRM.UI/images/split3.jpg"
     };
     
     private int currentImageIndex = 0;

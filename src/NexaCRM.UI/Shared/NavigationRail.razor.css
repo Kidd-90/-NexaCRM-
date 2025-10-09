@@ -368,7 +368,7 @@
     top: 0 !important;
     left: 83px !important;
     width: calc(var(--sidebar-width, 320px) - 83px) !important;
-    height: calc(100vh - 0.5 * var(--spacing-md)) !important;
+    height: calc(100vh - var(--nav-rail-vertical-offset, 0.5 * var(--spacing-md))) !important;
     min-width: 0;
 
     /* Display & Visibility - CRITICAL */

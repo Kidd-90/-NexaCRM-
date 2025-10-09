@@ -13,7 +13,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     top: 0;
     left: 83px;
     min-width: calc(100% - 83px);
-    height: calc(100vh - 0.5 * var(--spacing-md));
+    height: calc(100vh - var(--nav-rail-vertical-offset));
     right: 0;
     background: var(--surface-color, red);
     border: 1px solid var(--divider-color, #E5E7EB);
@@ -24,19 +24,6 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 
 .app-shell__background>* {
     pointer-events: auto;
-}
-
-/* Global spacing overrides for shell alignment with the nav rail */
-:root {
-    /* Provide a safe default for sidebar width so fixed-position elements that
-       rely on this custom property never compute 'undefined' and accidentally
-       overlap the fixed navigation rail. This value mirrors the default used
-       in the app stylesheet but lives here as a defensive fallback. */
-    --sidebar-width: min(90vw, 320px);
-    --app-shell-surface-padding-top: 0.5rem;
-    /* reduced top padding to better align with nav rail */
-    --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem);
-    /* consistent top spacing for rail + content */
 }
 
 .app-shell__surface {
@@ -69,179 +56,6 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     }
 }
 
-.app-shell__header {
-    display: none;
-    /* hidden by default; visible only on small/mobile viewports */
-}
-
-/* Show header only on small screens (mobile) */
-@media (max-width: 767px) {
-    .app-shell__header {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-lg);
-        justify-content: space-between;
-        padding: var(--spacing-sm) clamp(0.5rem, 1vw, 0.75rem);
-        background: var(--surface-color);
-        border-radius: 1.5rem;
-        border: 1px solid var(--divider-color);
-        box-shadow: 0 24px 48px var(--shadow-light);
-        position: sticky;
-        top: var(--spacing-md);
-        z-index: 12;
-        -webkit-backdrop-filter: blur(18px);
-        backdrop-filter: blur(18px);
-    }
-}
-
-.app-shell__brand {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.app-shell__nav-toggle {
-    width: 2.75rem;
-    height: 2.75rem;
-    display: grid;
-    place-items: center;
-    border-radius: 0.9rem;
-    border: none;
-    background: var(--surface-muted);
-    color: var(--text-primary);
-    transition: background-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.app-shell__nav-toggle:hover {
-    transform: translateY(-1px);
-    background: var(--hover-overlay);
-}
-
-.app-shell__logo {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    text-decoration: none;
-    color: inherit;
-}
-
-.app-shell__logo-mark {
-    display: grid;
-    place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.9rem;
-    background: var(--favorite-surface);
-    color: var(--primary-color);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-}
-
-.app-shell__logo-text {
-    font-weight: 700;
-    letter-spacing: -0.01em;
-}
-
-.app-shell__actions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.app-shell__action {
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.1);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border-radius: 0.9rem;
-    width: 2.75rem;
-    height: 2.75rem;
-    display: grid;
-    place-items: center;
-    color: var(--text-secondary);
-    position: relative;
-    transition: all var(--transition-fast);
-    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
-}
-
-.app-shell__action:hover {
-    transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: var(--text-primary);
-    box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.2);
-}
-
-.app-shell__theme {
-    border-radius: 999px;
-    padding-inline: var(--spacing-sm);
-    width: auto;
-}
-
-.app-shell__badge {
-    position: absolute;
-    top: 0.35rem;
-    right: 0.35rem;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 999px;
-    background: var(--primary-color);
-    color: #fff;
-    font-size: 0.7rem;
-    display: grid;
-    place-items: center;
-}
-
-.app-shell__profile {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    transition: background-color var(--transition-fast);
-}
-
-.app-shell__profile:hover {
-    background: var(--hover-overlay);
-}
-
-.app-shell__avatar {
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    background: var(--surface-muted);
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.app-shell__page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-md) clamp(0.5rem, 1vw, 0.75rem);
-    border-radius: 1.5rem;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-:root {
-    /* Keep the page header fixed to the viewport top so it does not move with
-       page scrolling. We expose desktop/mobile offsets so content can always
-       start below the fixed header across responsive breakpoints. */
-    /* Desktop: page header is hidden by default, so offset should be minimal or 0 */
-    --app-shell-page-header-offset-desktop: 0px;
-    /* No header on desktop */
-    --app-shell-page-header-offset-mobile: 96px;
-    /* stacked header on mobile is taller */
-    --app-shell-page-header-offset: var(--app-shell-page-header-offset-desktop);
-}
-
 .app-shell__page-header {
     position: fixed;
     /* nudge the fixed header a little lower from the viewport top so it
@@ -269,8 +83,8 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 }
 
 .app-shell__content {
-    /* Remove margin-top and padding-top to align with app-shell__background */
-    margin-top: 0 !important;
+    /* Lift the content to start level with the fixed nav rail panel */
+    margin-top: var(--nav-rail-vertical-offset-negative) !important;
     padding-top: 0;
     transition: margin-top 220ms ease, padding-top 220ms ease;
     /* 상하 스크롤 비활성화 */
@@ -280,8 +94,8 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     position: relative;
     z-index: 5;
     /* Match height with app-shell__background and nav-rail__panel exactly */
-    height: calc(100vh - 0.25 * var(--spacing-md));
-    max-height: calc(100vh - 0.25 * var(--spacing-md));
+    height: calc(100vh - var(--nav-rail-vertical-offset));
+    max-height: calc(100vh - var(--nav-rail-vertical-offset));
     box-sizing: border-box;
     /* Remove top padding to visually raise content; keep side/bottom padding */
     padding: 0 1rem 1rem 1rem;
@@ -292,11 +106,13 @@ html:not([data-theme="dark"]) .app-shell--desktop {
    these rules only apply when a fixed .nav-rail exists earlier in the DOM.
    They also handle the collapsed rail and explicit mobile shell state. */
 .nav-rail~.app-shell__content {
-    /* Eliminate any top gap; keep right/bottom margins and left offset */
-    margin: -4px 9px 9px 241px !important;
-    /* nudge up a bit more */
+    /* Keep the same starting height as the fixed nav rail panel */
+    margin-top: var(--nav-rail-vertical-offset-negative) !important;
+    margin-right: 9px !important;
+    margin-bottom: 0 !important;
+    margin-left: 241px !important;
     width: calc(100% - 250px) !important;
-    height: calc(100vh - 18px) !important;
+    height: calc(100vh - var(--nav-rail-vertical-offset)) !important;
     max-width: calc(100% - 250px) !important;
     box-sizing: border-box;
 }
@@ -390,6 +206,7 @@ html:not([data-theme="dark"]) .app-shell--desktop {
    sidebar is removed/overlaid so we clear the offsets. */
 .app-shell__content {
     /* add a small visual gutter so the main surface doesn't touch the rail */
+    margin-top: var(--nav-rail-vertical-offset-negative) !important;
     margin-left: 240px !important;
     width: calc(100% - 240px) !important;
     max-width: calc(100% - 240px) !important;
@@ -401,50 +218,6 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     max-width: 100% !important;
 }
 
-.app-shell__mobile-favorites {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--spacing-sm) var(--spacing-md) calc(var(--spacing-md) + env(safe-area-inset-bottom));
-    background: var(--surface-color);
-    border-top: 1px solid var(--divider-color);
-    box-shadow: 0 -12px 24px rgba(15, 23, 42, 0.12);
-}
-
-.app-shell__favorites {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-    gap: var(--spacing-sm);
-}
-
-.app-shell__favorite {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    border: none;
-    background: var(--favorite-surface);
-    border-radius: 1rem;
-    padding: 0.6rem;
-    color: var(--favorite-text, var(--text-primary));
-}
-
-.app-shell__favorite-icon {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 999px;
-    background: var(--surface-color);
-    color: inherit;
-}
-
-.app-shell__favorite-label {
-    font-size: 0.75rem;
-}
-
 .app-shell--mobile .app-shell__surface {
     margin-left: 0;
     padding: var(--spacing-md);
@@ -453,24 +226,6 @@ html:not([data-theme="dark"]) .app-shell--desktop {
 @media (max-width: 1024px) {
     .app-shell__surface {
         margin-left: clamp(0px, var(--sidebar-width) * 0.1, 2rem);
-    }
-}
-
-@media (max-width: 768px) {
-    .app-shell__header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--spacing-md);
-    }
-
-    .app-shell__actions {
-        justify-content: flex-end;
-    }
-
-    .app-shell__page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-md);
     }
 }
 

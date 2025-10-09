@@ -5,15 +5,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/open-iconic@1.1.1/font/css/open-iconic-bootstrap.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/variable/pretendardvariable.css" />
-    <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
-    <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
+    <link rel="stylesheet" href="/_content/NexaCRM.UI/css/app.css" />
+    <link rel="stylesheet" href="/_content/NexaCRM.UI/css/mobile.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         (function () {
             if (window.__nexacrm_ui_scripts_loaded) return;
             window.__nexacrm_ui_scripts_loaded = true;
 
-            var base = '_content/NexaCRM.UI/js/';
+            var base = '/_content/NexaCRM.UI/js/';
             var files = [
                 'auth-manager.js',
                 'navigation.js',
@@ -26,7 +26,7 @@
 
             files.forEach(function (file) {
                 var rel = base + file;
-                var selector = 'script[src="' + rel + '"], script[src="/' + rel + '"]';
+                var selector = 'script[src="' + rel + '"], script[src="' + rel.replace(/^\//, '') + '"]';
                 if (document.querySelector(selector)) return;
                 var s = document.createElement('script');
                 s.src = rel;
