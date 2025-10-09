@@ -12,6 +12,9 @@
   <data name="BasicSettings" xml:space="preserve">
     <value>기본 설정</value>
   </data>
+  <data name="BizManagement" xml:space="preserve">
+    <value>비즈니스 관리</value>
+  </data>
   <data name="BulkSms" xml:space="preserve">
     <value>대량 문자</value>
   </data>

@@ -214,62 +214,62 @@ CREATE POLICY "Users can delete tasks they created"
 
 
 -- 8.a ORGANIZATION DIRECTORY RLS
-ALTER TABLE org_companies ENABLE ROW LEVEL SECURITY;
-ALTER TABLE org_branches ENABLE ROW LEVEL SECURITY;
-ALTER TABLE org_company_branch_lists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE biz_companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE biz_branches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE biz_company_branch_lists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE org_company_team_lists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE biz_company_team_lists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_directory_entries ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Approved users can view org companies"
-  ON org_companies FOR SELECT
+CREATE POLICY "Approved users can view biz companies"
+  ON biz_companies FOR SELECT
   USING (
     public.user_has_role('admin')
     OR EXISTS (
       SELECT 1 FROM organization_users
       WHERE organization_users.user_id = auth.uid()
-        AND organization_users.unit_id = org_companies.tenant_unit_id
+        AND organization_users.unit_id = biz_companies.tenant_unit_id
         AND organization_users.status = 'approved'
     )
   );
 
-CREATE POLICY "Admins manage org companies"
-  ON org_companies FOR ALL
+CREATE POLICY "Admins manage biz companies"
+  ON biz_companies FOR ALL
   USING (public.user_has_role('admin'))
   WITH CHECK (public.user_has_role('admin'));
 
-CREATE POLICY "Approved users can view org branches"
-  ON org_branches FOR SELECT
+CREATE POLICY "Approved users can view biz branches"
+  ON biz_branches FOR SELECT
   USING (
     public.user_has_role('admin')
     OR EXISTS (
       SELECT 1 FROM organization_users
       WHERE organization_users.user_id = auth.uid()
-        AND organization_users.unit_id = org_branches.tenant_unit_id
+        AND organization_users.unit_id = biz_branches.tenant_unit_id
         AND organization_users.status = 'approved'
     )
   );
 
-CREATE POLICY "Admins manage org branches"
-  ON org_branches FOR ALL
+CREATE POLICY "Admins manage biz branches"
+  ON biz_branches FOR ALL
   USING (public.user_has_role('admin'))
   WITH CHECK (public.user_has_role('admin'));
 
-CREATE POLICY "Approved users can view org company branch lists"
-  ON org_company_branch_lists FOR SELECT
+CREATE POLICY "Approved users can view biz company branch lists"
+  ON biz_company_branch_lists FOR SELECT
   USING (
     public.user_has_role('admin')
     OR EXISTS (
       SELECT 1 FROM organization_users
       WHERE organization_users.user_id = auth.uid()
-        AND organization_users.unit_id = org_company_branch_lists.tenant_unit_id
+        AND organization_users.unit_id = biz_company_branch_lists.tenant_unit_id
         AND organization_users.status = 'approved'
     )
   );
 
-CREATE POLICY "Admins manage org company branch lists"
-  ON org_company_branch_lists FOR ALL
+CREATE POLICY "Admins manage biz company branch lists"
+  ON biz_company_branch_lists FOR ALL
   USING (public.user_has_role('admin'))
   WITH CHECK (public.user_has_role('admin'));
 
@@ -311,19 +311,19 @@ CREATE POLICY "Admins manage team members"
   WITH CHECK (public.user_has_role('admin'));
 
 CREATE POLICY "Approved users can view company team lists"
-  ON org_company_team_lists FOR SELECT
+  ON biz_company_team_lists FOR SELECT
   USING (
     public.user_has_role('admin')
     OR EXISTS (
       SELECT 1 FROM organization_users
       WHERE organization_users.user_id = auth.uid()
-        AND organization_users.unit_id = org_company_team_lists.tenant_unit_id
+        AND organization_users.unit_id = biz_company_team_lists.tenant_unit_id
         AND organization_users.status = 'approved'
     )
   );
 
 CREATE POLICY "Admins manage company team lists"
-  ON org_company_team_lists FOR ALL
+  ON biz_company_team_lists FOR ALL
   USING (public.user_has_role('admin'))
   WITH CHECK (public.user_has_role('admin'));
 

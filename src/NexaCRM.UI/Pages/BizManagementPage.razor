@@ -1,0 +1,747 @@
+@page "/organization/biz-management"
+@attribute [Authorize(Roles = "Manager,Admin")]
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
+@using NexaCRM.Services.Admin.Interfaces
+@using NexaCRM.UI.Models.Supabase
+@using System.Security.Claims
+@inject IJSRuntime JS
+@inject IBizManagementService BizService
+@inject AuthenticationStateProvider AuthStateProvider
+@implements IDisposable
+
+<div class="advanced-db">
+    <header class="advanced-db__header">
+        <h1>비즈니스/프랜차이즈 관리</h1>
+        <div class="toolbar">
+            <button class="btn btn-light" @onclick="ExportData"><i class="bi bi-download"></i> 내보내기</button>
+            @if (activeTab == Tab.Companies)
+            {
+                <button class="btn btn-success" @onclick="ShowAddCompanyModal"><i class="bi bi-building-add"></i> 회사 추가</button>
+            }
+            @if (activeTab == Tab.Branches)
+            {
+                <button class="btn btn-success" @onclick="ShowAddBranchModal"><i class="bi bi-building-add"></i> 지점 추가</button>
+            }
+        </div>
+    </header>
+
+    <div class="preview-banner" role="status" aria-live="polite">
+        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+        <span>프랜차이즈 본사, 지점, 팀을 통합 관리합니다. 회사 및 지점 구조를 설정하고 팀을 배치할 수 있습니다.</span>
+    </div>
+
+    <nav class="tabs" role="tablist">
+        <button class="tab @(activeTab==Tab.Companies?"active":null)" @onclick="(()=>SetTab(Tab.Companies))">회사 관리</button>
+        <button class="tab @(activeTab==Tab.Branches?"active":null)" @onclick="(()=>SetTab(Tab.Branches))">지점 관리</button>
+        <button class="tab @(activeTab==Tab.Statistics?"active":null)" @onclick="(()=>SetTab(Tab.Statistics))">통계</button>
+    </nav>
+
+    @if (activeTab == Tab.Companies)
+    {
+        <section class="explore">
+            <aside class="filters">
+                <div class="filter-group">
+                    <label>상태</label>
+                    <select class="form-select" @bind="filterActive" @bind:after="ApplyFilter">
+                        <option value="">전체</option>
+                        <option value="true">활성</option>
+                        <option value="false">비활성</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>검색</label>
+                    <input class="form-control" placeholder="회사명/코드" @bind="searchText" @bind:after="ApplyFilter" />
+                </div>
+            </aside>
+
+            <div class="grid">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>코드</th>
+                                <th>회사명</th>
+                                <th>사업자번호</th>
+                                <th>연락처</th>
+                                <th>이메일</th>
+                                <th>상태</th>
+                                <th>등록일</th>
+                                <th class="text-end">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (isLoading)
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                                        <span class="ms-2">데이터를 불러오는 중...</span>
+                                    </td>
+                                </tr>
+                            }
+                            else if (filteredCompanies.Count > 0)
+                            {
+                                @foreach (var company in filteredCompanies)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-primary">@company.Code</span></td>
+                                        <td><strong>@company.Name</strong></td>
+                                        <td>@company.RegistrationNumber</td>
+                                        <td>@company.Phone</td>
+                                        <td>@company.Email</td>
+                                        <td>
+                                            <span class="badge @(company.IsActive ? "bg-success" : "bg-secondary")">
+                                                @(company.IsActive ? "활성" : "비활성")
+                                            </span>
+                                        </td>
+                                        <td>@company.CreatedAt.ToShortDateString()</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditCompany(company)" title="편집">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteCompany(company)" title="삭제">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        등록된 회사가 없습니다.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Branches)
+    {
+        <section class="explore">
+            <aside class="filters">
+                <div class="filter-group">
+                    <label>회사</label>
+                    <select class="form-select" @bind="filterCompanyId" @bind:after="ApplyFilter">
+                        <option value="0">전체 회사</option>
+                        @foreach (var company in companies)
+                        {
+                            <option value="@company.Id">@company.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>상태</label>
+                    <select class="form-select" @bind="filterActive" @bind:after="ApplyFilter">
+                        <option value="">전체</option>
+                        <option value="true">활성</option>
+                        <option value="false">비활성</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>검색</label>
+                    <input class="form-control" placeholder="지점명/코드" @bind="searchText" @bind:after="ApplyFilter" />
+                </div>
+            </aside>
+
+            <div class="grid">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>회사</th>
+                                <th>코드</th>
+                                <th>지점명</th>
+                                <th>연락처</th>
+                                <th>이메일</th>
+                                <th>매니저</th>
+                                <th>상태</th>
+                                <th>등록일</th>
+                                <th class="text-end">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (isLoading)
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                                        <span class="ms-2">데이터를 불러오는 중...</span>
+                                    </td>
+                                </tr>
+                            }
+                            else if (filteredBranches.Count > 0)
+                            {
+                                @foreach (var branch in filteredBranches)
+                                {
+                                    <tr>
+                                        <td>@GetCompanyName(branch.CompanyId)</td>
+                                        <td><span class="badge bg-info">@branch.Code</span></td>
+                                        <td><strong>@branch.Name</strong></td>
+                                        <td>@branch.Phone</td>
+                                        <td>@branch.Email</td>
+                                        <td>@branch.ManagerCuid</td>
+                                        <td>
+                                            <span class="badge @(branch.IsActive ? "bg-success" : "bg-secondary")">
+                                                @(branch.IsActive ? "활성" : "비활성")
+                                            </span>
+                                        </td>
+                                        <td>@branch.CreatedAt.ToShortDateString()</td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditBranch(branch)" title="편집">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteBranch(branch)" title="삭제">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">
+                                        등록된 지점이 없습니다.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    }
+    else if (activeTab == Tab.Statistics)
+    {
+        <section class="placeholder">
+            <h5>통계 대시보드</h5>
+            <div class="row g-3 mt-3">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">전체 회사</h6>
+                            <h3>@companies.Count</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">활성 회사</h6>
+                            <h3>@companies.Count(c => c.IsActive)</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">전체 지점</h6>
+                            <h3>@branches.Count</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">활성 지점</h6>
+                            <h3>@branches.Count(b => b.IsActive)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
+
+@* 회사 추가/편집 모달 *@
+@if (showCompanyModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(isEditMode ? "회사 편집" : "회사 추가")</h5>
+                    <button type="button" class="btn-close" @onclick="CloseCompanyModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">코드 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="currentCompany.Code" placeholder="HQ001" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">회사명 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="currentCompany.Name" placeholder="본사" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">사업자번호</label>
+                            <input type="text" class="form-control" @bind="currentCompany.RegistrationNumber" placeholder="123-45-67890" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">연락처</label>
+                            <input type="text" class="form-control" @bind="currentCompany.Phone" placeholder="02-1234-5678" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">이메일</label>
+                            <input type="email" class="form-control" @bind="currentCompany.Email" placeholder="company@example.com" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">주소</label>
+                            <input type="text" class="form-control" @bind="currentCompany.Address" placeholder="서울시 강남구..." />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">메모</label>
+                            <textarea class="form-control" @bind="currentCompany.Memo" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" @bind="currentCompany.IsActive" id="companyActive" />
+                                <label class="form-check-label" for="companyActive">활성화</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseCompanyModal">취소</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveCompany">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* 지점 추가/편집 모달 *@
+@if (showBranchModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(isEditMode ? "지점 편집" : "지점 추가")</h5>
+                    <button type="button" class="btn-close" @onclick="CloseBranchModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label">회사 <span class="text-danger">*</span></label>
+                            <select class="form-select" @bind="currentBranch.CompanyId">
+                                <option value="0">회사 선택</option>
+                                @foreach (var company in companies)
+                                {
+                                    <option value="@company.Id">@company.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">코드 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="currentBranch.Code" placeholder="BR001" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">지점명 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="currentBranch.Name" placeholder="강남지점" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">연락처</label>
+                            <input type="text" class="form-control" @bind="currentBranch.Phone" placeholder="02-1234-5678" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">이메일</label>
+                            <input type="email" class="form-control" @bind="currentBranch.Email" placeholder="branch@example.com" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">주소</label>
+                            <input type="text" class="form-control" @bind="currentBranch.Address" placeholder="서울시 강남구..." />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">메모</label>
+                            <textarea class="form-control" @bind="currentBranch.Memo" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" @bind="currentBranch.IsActive" id="branchActive" />
+                                <label class="form-check-label" for="branchActive">활성화</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseBranchModal">취소</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveBranch">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private enum Tab { Companies, Branches, Statistics }
+    private Tab activeTab = Tab.Companies;
+    
+    private List<BizCompanyRecord> companies = new();
+    private List<BizBranchRecord> branches = new();
+    
+    private List<BizCompanyRecord> filteredCompanies = new();
+    private List<BizBranchRecord> filteredBranches = new();
+    
+    private string filterActive = "";
+    private long filterCompanyId = 0;
+    private string searchText = "";
+    private bool isLoading = true;
+    
+    // Modal states
+    private bool showCompanyModal = false;
+    private bool showBranchModal = false;
+    private bool isEditMode = false;
+    
+    // Current editing items
+    private BizCompanyRecord currentCompany = new();
+    private BizBranchRecord currentBranch = new();
+    
+    private long tenantUnitId = 1; // TODO: Get from authenticated user
+    private Guid? currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    currentUserId = userId;
+                }
+            }
+            
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "Failed to load data:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadData()
+    {
+        if (activeTab == Tab.Companies)
+        {
+            await LoadCompanies();
+        }
+        else if (activeTab == Tab.Branches)
+        {
+            await LoadBranches();
+        }
+        else if (activeTab == Tab.Statistics)
+        {
+            await LoadCompanies();
+            await LoadBranches();
+        }
+    }
+
+    private async Task LoadCompanies()
+    {
+        try
+        {
+            isLoading = true;
+            companies = await BizService.GetCompaniesAsync(tenantUnitId);
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"회사 데이터 로드 실패: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadBranches()
+    {
+        try
+        {
+            isLoading = true;
+            branches = await BizService.GetBranchesAsync(tenantUnitId);
+            
+            // Load companies for dropdown
+            if (companies.Count == 0)
+            {
+                companies = await BizService.GetCompaniesAsync(tenantUnitId);
+            }
+            
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"지점 데이터 로드 실패: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SetTab(Tab tab)
+    {
+        activeTab = tab;
+        await LoadData();
+    }
+
+    private void ApplyFilter()
+    {
+        filteredCompanies = companies.Where(c =>
+        {
+            if (!string.IsNullOrEmpty(filterActive))
+            {
+                var isActive = bool.Parse(filterActive);
+                if (c.IsActive != isActive) return false;
+            }
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                return c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                       c.Code.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+            }
+            return true;
+        }).ToList();
+
+        filteredBranches = branches.Where(b =>
+        {
+            if (filterCompanyId > 0)
+            {
+                if (b.CompanyId != filterCompanyId) return false;
+            }
+            if (!string.IsNullOrEmpty(filterActive))
+            {
+                var isActive = bool.Parse(filterActive);
+                if (b.IsActive != isActive) return false;
+            }
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                return b.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                       b.Code.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+            }
+            return true;
+        }).ToList();
+    }
+
+    private string GetCompanyName(long companyId)
+    {
+        return companies.FirstOrDefault(c => c.Id == companyId)?.Name ?? "알 수 없음";
+    }
+
+    // Company Modal Methods
+    private void ShowAddCompanyModal()
+    {
+        isEditMode = false;
+        currentCompany = new BizCompanyRecord
+        {
+            TenantUnitId = tenantUnitId,
+            IsActive = true,
+            CreatedBy = currentUserId
+        };
+        showCompanyModal = true;
+    }
+
+    private void EditCompany(BizCompanyRecord company)
+    {
+        isEditMode = true;
+        currentCompany = new BizCompanyRecord
+        {
+            Id = company.Id,
+            TenantUnitId = company.TenantUnitId,
+            Code = company.Code,
+            Name = company.Name,
+            RegistrationNumber = company.RegistrationNumber,
+            Phone = company.Phone,
+            Email = company.Email,
+            Address = company.Address,
+            Memo = company.Memo,
+            IsActive = company.IsActive,
+            CreatedBy = company.CreatedBy,
+            CreatedAt = company.CreatedAt,
+            UpdatedAt = company.UpdatedAt
+        };
+        showCompanyModal = true;
+    }
+
+    private async Task SaveCompany()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentCompany.Code) || string.IsNullOrWhiteSpace(currentCompany.Name))
+            {
+                await JS.InvokeVoidAsync("alert", "코드와 회사명은 필수 입력 항목입니다.");
+                return;
+            }
+
+            if (isEditMode)
+            {
+                var success = await BizService.UpdateCompanyAsync(currentCompany);
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "회사 정보가 수정되었습니다.");
+                    await LoadCompanies();
+                    CloseCompanyModal();
+                }
+            }
+            else
+            {
+                var created = await BizService.CreateCompanyAsync(currentCompany);
+                await JS.InvokeVoidAsync("alert", "새 회사가 추가되었습니다.");
+                await LoadCompanies();
+                CloseCompanyModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"저장 실패: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteCompany(BizCompanyRecord company)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"{company.Name}을(를) 삭제하시겠습니까?"))
+        {
+            try
+            {
+                var success = await BizService.DeleteCompanyAsync(company.Id);
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "회사가 삭제되었습니다.");
+                    await LoadCompanies();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("alert", $"삭제 실패: {ex.Message}");
+            }
+        }
+    }
+
+    private void CloseCompanyModal()
+    {
+        showCompanyModal = false;
+        currentCompany = new();
+    }
+
+    // Branch Modal Methods
+    private void ShowAddBranchModal()
+    {
+        isEditMode = false;
+        currentBranch = new BizBranchRecord
+        {
+            TenantUnitId = tenantUnitId,
+            IsActive = true,
+            CreatedBy = currentUserId
+        };
+        showBranchModal = true;
+    }
+
+    private void EditBranch(BizBranchRecord branch)
+    {
+        isEditMode = true;
+        currentBranch = new BizBranchRecord
+        {
+            Id = branch.Id,
+            CompanyId = branch.CompanyId,
+            TenantUnitId = branch.TenantUnitId,
+            Code = branch.Code,
+            Name = branch.Name,
+            Phone = branch.Phone,
+            Email = branch.Email,
+            Address = branch.Address,
+            ManagerId = branch.ManagerId,
+            ManagerCuid = branch.ManagerCuid,
+            Memo = branch.Memo,
+            IsActive = branch.IsActive,
+            CreatedBy = branch.CreatedBy,
+            CreatedAt = branch.CreatedAt,
+            UpdatedAt = branch.UpdatedAt
+        };
+        showBranchModal = true;
+    }
+
+    private async Task SaveBranch()
+    {
+        try
+        {
+            if (currentBranch.CompanyId == 0 || string.IsNullOrWhiteSpace(currentBranch.Code) || string.IsNullOrWhiteSpace(currentBranch.Name))
+            {
+                await JS.InvokeVoidAsync("alert", "회사, 코드, 지점명은 필수 입력 항목입니다.");
+                return;
+            }
+
+            if (isEditMode)
+            {
+                var success = await BizService.UpdateBranchAsync(currentBranch);
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "지점 정보가 수정되었습니다.");
+                    await LoadBranches();
+                    CloseBranchModal();
+                }
+            }
+            else
+            {
+                var created = await BizService.CreateBranchAsync(currentBranch);
+                await JS.InvokeVoidAsync("alert", "새 지점이 추가되었습니다.");
+                await LoadBranches();
+                CloseBranchModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"저장 실패: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteBranch(BizBranchRecord branch)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"{branch.Name}을(를) 삭제하시겠습니까?"))
+        {
+            try
+            {
+                var success = await BizService.DeleteBranchAsync(branch.Id);
+                if (success)
+                {
+                    await JS.InvokeVoidAsync("alert", "지점이 삭제되었습니다.");
+                    await LoadBranches();
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("alert", $"삭제 실패: {ex.Message}");
+            }
+        }
+    }
+
+    private void CloseBranchModal()
+    {
+        showBranchModal = false;
+        currentBranch = new();
+    }
+
+    // Utility Methods
+    private async Task ExportData()
+    {
+        await JS.InvokeVoidAsync("alert", "데이터 내보내기 기능은 곧 제공될 예정입니다.");
+    }
+
+    public void Dispose()
+    {
+        // 리소스 정리
+    }
+}

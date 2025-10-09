@@ -73,6 +73,7 @@ public static class NavigationCatalog
     private static readonly NavigationLinkDefinition[] OrganizationLinks =
     {
         new("OrganizationStructure", "bi bi-diagram-3", "organization/structure", Roles("Manager", "Admin"), Keywords("organization", "structure")),
+        new("BizManagement", "bi bi-building-gear", "organization/biz-management", Roles("Manager", "Admin"), Keywords("business", "franchise", "company", "branch")),
         new("TeamManagement", "bi bi-people-fill", "organization/team-management", Roles("Manager", "Admin"), Keywords("team", "management")),
         new("TeamMemberManagement", "bi bi-person-badge", "organization/team-members", Roles("Manager", "Admin"), Keywords("members")),
         new("UserManagement", "bi bi-person-plus", "organization/user-management", Roles("Manager", "Admin"), Keywords("user")),

@@ -81,6 +81,8 @@ CREATE TRIGGER set_timestamp_role_definitions
 -- Seed the baseline roles leveraged throughout the CRM.
 INSERT INTO role_definitions (code, name, description)
 VALUES
+  ('Admin', 'Admin', 'Full access to all system features and settings.'),
+  ('User', 'User', 'Basic user role with standard access permissions.'),
   ('Manager', 'Manager', 'Manages teams, deals, and organizational settings.'),
   ('Sales', 'Sales', 'Handles sales pipeline activities and customer outreach.'),
   ('Develop', 'Developer', 'Maintains integrations, automations, and technical tooling.')
@@ -410,7 +412,7 @@ END $$;
 
 
 -- 8.a ORGANIZATION DIRECTORY TABLES
-CREATE TABLE org_companies (
+CREATE TABLE biz_companies (
   id BIGSERIAL PRIMARY KEY,
   tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
   code TEXT NOT NULL,
@@ -428,9 +430,9 @@ CREATE TABLE org_companies (
   UNIQUE (tenant_unit_id, name)
 );
 
-CREATE TABLE org_branches (
+CREATE TABLE biz_branches (
   id BIGSERIAL PRIMARY KEY,
-  company_id BIGINT NOT NULL REFERENCES org_companies(id) ON DELETE CASCADE,
+  company_id BIGINT NOT NULL REFERENCES biz_companies(id) ON DELETE CASCADE,
   tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
   code TEXT NOT NULL,
   name TEXT NOT NULL,
@@ -448,11 +450,11 @@ CREATE TABLE org_branches (
   UNIQUE (company_id, name)
 );
 
-CREATE TABLE org_company_branch_lists (
+CREATE TABLE biz_company_branch_lists (
   id BIGSERIAL PRIMARY KEY,
   tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
-  company_id BIGINT NOT NULL REFERENCES org_companies(id) ON DELETE CASCADE,
-  branch_id BIGINT NOT NULL REFERENCES org_branches(id) ON DELETE CASCADE,
+  company_id BIGINT NOT NULL REFERENCES biz_companies(id) ON DELETE CASCADE,
+  branch_id BIGINT NOT NULL REFERENCES biz_branches(id) ON DELETE CASCADE,
   branch_code TEXT NOT NULL,
   branch_name TEXT NOT NULL,
   manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -466,29 +468,29 @@ CREATE TABLE org_company_branch_lists (
   UNIQUE (company_id, branch_id)
 );
 
-CREATE TRIGGER set_timestamp_org_companies
-  BEFORE UPDATE ON org_companies
+CREATE TRIGGER set_timestamp_biz_companies
+  BEFORE UPDATE ON biz_companies
   FOR EACH ROW
   EXECUTE FUNCTION handle_updated_at();
 
-CREATE TRIGGER set_timestamp_org_branches
-  BEFORE UPDATE ON org_branches
+CREATE TRIGGER set_timestamp_biz_branches
+  BEFORE UPDATE ON biz_branches
   FOR EACH ROW
   EXECUTE FUNCTION handle_updated_at();
 
-CREATE TRIGGER set_timestamp_org_company_branch_lists
-  BEFORE UPDATE ON org_company_branch_lists
+CREATE TRIGGER set_timestamp_biz_company_branch_lists
+  BEFORE UPDATE ON biz_company_branch_lists
   FOR EACH ROW
   EXECUTE FUNCTION handle_updated_at();
 
-CREATE INDEX idx_org_companies_tenant_unit ON org_companies(tenant_unit_id);
-CREATE INDEX idx_org_branches_company ON org_branches(company_id);
-CREATE INDEX idx_org_branches_tenant_unit ON org_branches(tenant_unit_id);
-CREATE INDEX idx_org_branches_manager_cuid ON org_branches(manager_cuid);
-CREATE INDEX idx_org_company_branch_lists_tenant ON org_company_branch_lists(tenant_unit_id);
-CREATE INDEX idx_org_company_branch_lists_company ON org_company_branch_lists(company_id);
-CREATE INDEX idx_org_company_branch_lists_branch ON org_company_branch_lists(branch_id);
-CREATE INDEX idx_org_company_branch_lists_manager_cuid ON org_company_branch_lists(manager_cuid);
+CREATE INDEX idx_biz_companies_tenant_unit ON biz_companies(tenant_unit_id);
+CREATE INDEX idx_biz_branches_company ON biz_branches(company_id);
+CREATE INDEX idx_biz_branches_tenant_unit ON biz_branches(tenant_unit_id);
+CREATE INDEX idx_biz_branches_manager_cuid ON biz_branches(manager_cuid);
+CREATE INDEX idx_biz_company_branch_lists_tenant ON biz_company_branch_lists(tenant_unit_id);
+CREATE INDEX idx_biz_company_branch_lists_company ON biz_company_branch_lists(company_id);
+CREATE INDEX idx_biz_company_branch_lists_branch ON biz_company_branch_lists(branch_id);
+CREATE INDEX idx_biz_company_branch_lists_manager_cuid ON biz_company_branch_lists(manager_cuid);
 
 
 -- 9. TASKS TABLE
@@ -559,8 +561,8 @@ CREATE POLICY "Allow all access to delete agent_users"
 CREATE TABLE teams (
   id BIGSERIAL PRIMARY KEY,
   tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
-  company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
-  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
+  company_id BIGINT REFERENCES biz_companies(id) ON DELETE SET NULL,
+  branch_id BIGINT REFERENCES biz_branches(id) ON DELETE SET NULL,
   code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   manager_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -577,8 +579,8 @@ CREATE TABLE team_members (
   team_id BIGINT REFERENCES teams(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   user_cuid TEXT NOT NULL REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
-  company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
-  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
+  company_id BIGINT REFERENCES biz_companies(id) ON DELETE SET NULL,
+  branch_id BIGINT REFERENCES biz_branches(id) ON DELETE SET NULL,
   team_name TEXT,
   role TEXT NOT NULL,
   employee_code TEXT,
@@ -592,11 +594,11 @@ CREATE TABLE team_members (
   UNIQUE (team_id, user_cuid)
 );
 
-CREATE TABLE org_company_team_lists (
+CREATE TABLE biz_company_team_lists (
   id BIGSERIAL PRIMARY KEY,
   tenant_unit_id BIGINT NOT NULL REFERENCES organization_units(id) ON DELETE CASCADE,
-  company_id BIGINT NOT NULL REFERENCES org_companies(id) ON DELETE CASCADE,
-  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
+  company_id BIGINT NOT NULL REFERENCES biz_companies(id) ON DELETE CASCADE,
+  branch_id BIGINT REFERENCES biz_branches(id) ON DELETE SET NULL,
   team_id BIGINT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
   team_code TEXT NOT NULL,
   team_name TEXT NOT NULL,
@@ -617,8 +619,8 @@ CREATE TABLE user_directory_entries (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   user_cuid TEXT NOT NULL UNIQUE REFERENCES user_infos(user_cuid) ON DELETE CASCADE,
-  company_id BIGINT REFERENCES org_companies(id) ON DELETE SET NULL,
-  branch_id BIGINT REFERENCES org_branches(id) ON DELETE SET NULL,
+  company_id BIGINT REFERENCES biz_companies(id) ON DELETE SET NULL,
+  branch_id BIGINT REFERENCES biz_branches(id) ON DELETE SET NULL,
   team_id BIGINT REFERENCES teams(id) ON DELETE SET NULL,
   tenant_unit_id BIGINT REFERENCES organization_units(id) ON DELETE SET NULL,
   job_title TEXT,
@@ -644,8 +646,8 @@ CREATE TRIGGER set_timestamp_team_members
   FOR EACH ROW
   EXECUTE FUNCTION handle_updated_at();
 
-CREATE TRIGGER set_timestamp_org_company_team_lists
-  BEFORE UPDATE ON org_company_team_lists
+CREATE TRIGGER set_timestamp_biz_company_team_lists
+  BEFORE UPDATE ON biz_company_team_lists
   FOR EACH ROW
   EXECUTE FUNCTION handle_updated_at();
 
@@ -660,10 +662,10 @@ CREATE INDEX idx_teams_manager_cuid ON teams(manager_cuid);
 CREATE INDEX idx_team_members_user ON team_members(user_id);
 CREATE INDEX idx_team_members_user_cuid ON team_members(user_cuid);
 CREATE INDEX idx_team_members_company ON team_members(company_id);
-CREATE INDEX idx_org_company_team_lists_tenant ON org_company_team_lists(tenant_unit_id);
-CREATE INDEX idx_org_company_team_lists_company ON org_company_team_lists(company_id);
-CREATE INDEX idx_org_company_team_lists_branch ON org_company_team_lists(branch_id);
-CREATE INDEX idx_org_company_team_lists_manager_cuid ON org_company_team_lists(manager_cuid);
+CREATE INDEX idx_biz_company_team_lists_tenant ON biz_company_team_lists(tenant_unit_id);
+CREATE INDEX idx_biz_company_team_lists_company ON biz_company_team_lists(company_id);
+CREATE INDEX idx_biz_company_team_lists_branch ON biz_company_team_lists(branch_id);
+CREATE INDEX idx_biz_company_team_lists_manager_cuid ON biz_company_team_lists(manager_cuid);
 CREATE INDEX idx_user_directory_company ON user_directory_entries(company_id);
 CREATE INDEX idx_user_directory_tenant_unit ON user_directory_entries(tenant_unit_id);
 CREATE INDEX idx_user_directory_user_cuid ON user_directory_entries(user_cuid);

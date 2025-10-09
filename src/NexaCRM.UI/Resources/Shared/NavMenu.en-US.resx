@@ -12,6 +12,9 @@
   <data name="BasicSettings" xml:space="preserve">
     <value>Basic Settings</value>
   </data>
+  <data name="BizManagement" xml:space="preserve">
+    <value>Business Management</value>
+  </data>
   <data name="BulkSms" xml:space="preserve">
     <value>Bulk SMS</value>
   </data>

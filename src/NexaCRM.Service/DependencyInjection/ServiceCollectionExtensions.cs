@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INoticeService, NoticeService>();
         services.AddScoped<INotificationService, NotificationService>(); // Scoped: SupabaseClientProvider 사용
         services.AddScoped<IOrganizationService, OrganizationService>(); // Scoped: Supabase.Client 사용
+        services.AddScoped<IBizManagementService, BizManagementService>(); // Scoped: Supabase.Client 사용
         services.AddSingleton<IRolePermissionService, RolePermissionService>();
         services.AddSingleton<ISecurityService, SecurityService>();
         services.AddSingleton<ISettingsService, SettingsService>();
