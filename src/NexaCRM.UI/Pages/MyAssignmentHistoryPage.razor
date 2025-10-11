@@ -1,5 +1,4 @@
 @page "/db/distribution/my-history"
-@attribute [Authorize(Roles = "Sales")]
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -11,7 +10,7 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<DbStatus> StatusLocalizer
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 common-page-container">
     <h1 class="mb-4">내 분배 이력</h1>
     <p class="text-muted mb-4">과거에 내가 분배받았던 DB 전체 내역입니다.</p>
 

@@ -105,6 +105,7 @@
     [Parameter] public bool ShowLabels { get; set; } = true;
     [Parameter] public string CssClass { get; set; } = "";
     [Parameter] public EventCallback<string> OnActionCompleted { get; set; }
+    [Parameter] public EventCallback<(string Action, string? ContactId)> OnActionCompletedWithContact { get; set; }
 
     private bool showActionSheet;
     private string? pendingAction;
@@ -277,7 +278,15 @@
         actionAnnouncement = message;
         toastMessage = message;
         showToast = true;
+        
+        // Invoke both callbacks for backward compatibility
         await OnActionCompleted.InvokeAsync(actionKey);
+        
+        if (OnActionCompletedWithContact.HasDelegate)
+        {
+            await OnActionCompletedWithContact.InvokeAsync((actionKey, CustomerId));
+        }
+        
         StateHasChanged();
     }
 

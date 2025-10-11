@@ -6,6 +6,10 @@
     "@playwright/test": "^1.43.0"
   },
   "scripts": {
-    "test:e2e": "playwright test --config=tests/playwright.config.js"
+    "test:e2e": "playwright test --config=tests/playwright.config.js",
+    "mcp:chakra:build": "cd tools/chakra-mcp && npx tsc",
+    "mcp:chakra:start": "node tools/chakra-mcp/build/server.js",
+    "mcp:chakra:run": "npm run mcp:chakra:build && npm run mcp:chakra:start",
+    "mcp:rakit:start": "npx -y rakitui-ai"
   }
 }

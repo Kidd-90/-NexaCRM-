@@ -1,15 +1,15 @@
 @page "/db/customer/assigned-today"
-@attribute [Authorize(Roles = "Admin,Manager")]
 
 @using NexaCRM.Services.Admin.Models.Db
 @using NexaCRM.Services.Admin.Interfaces
 @using Microsoft.Extensions.Localization
 
 @inject IDbDataService DbDataService
+@inject NavigationManager NavigationManager
 @inject IStringLocalizer<DbStatus> StatusLocalizer
 
-<div class="container-fluid mt-4">
-    <h1 class="mb-4">오늘 분배된 DB</h1>
+<div class="container-fluid mt-4 common-page-container">
+    <h1 class="mb-4">오늘 배정된 DB</h1>
 
     @if (customers == null)
     {

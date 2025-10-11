@@ -1,0 +1,41 @@
+/* Common styles for all pages in app-shell__content */
+/* This ensures consistent layout, scroll behavior, and no header overlap across all pages */
+/* Unified container class for all pages - DB management, forms, dashboards, etc. */
+
+/* Common page container - applies to ALL pages */
+.app-shell__content > .common-page-container,
+.common-page-container {
+    padding-top: calc(var(--app-shell-page-header-offset, 67px) + 1rem) !important;
+    margin-top: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    height: calc(100vh - var(--app-shell-page-header-offset, 67px)) !important;
+    max-height: calc(100vh - var(--app-shell-page-header-offset, 67px)) !important;
+    padding-bottom: 2rem;
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling for webkit browsers (Chrome, Safari, Edge) */
+.common-page-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.common-page-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.common-page-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.common-page-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Custom scrollbar styling for Firefox */
+.common-page-container {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}

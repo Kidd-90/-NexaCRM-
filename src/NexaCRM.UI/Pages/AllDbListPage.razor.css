@@ -1,3 +1,5 @@
+/* AllDbListPage specific styles - common DB page styles are in db-pages-common.css */
+
 .all-db-list-page .table-hover tbody tr {
     transition: background-color 0.3s ease;
 }

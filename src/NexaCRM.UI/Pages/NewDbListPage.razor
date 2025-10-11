@@ -1,5 +1,4 @@
 @page "/db/customer/new"
-@attribute [Authorize(Roles = "Sales")]
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -9,7 +8,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 common-page-container">
     <h1 class="mb-4">신규 DB 목록</h1>
     <p class="text-muted mb-4">아직 한 번도 컨택하지 않았거나 '신규' 상태인 DB 목록입니다.</p>
 

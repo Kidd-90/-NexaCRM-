@@ -28,6 +28,13 @@ namespace NexaCRM.UI.Services.Mock
             return System.Threading.Tasks.Task.FromResult<IEnumerable<Contact>>(Contacts.ToList());
         }
 
+        public System.Threading.Tasks.Task<IEnumerable<Contact>> GetContactsByUserAsync(Guid userId)
+        {
+            // Mock implementation - returns all contacts
+            // In a real scenario, you would filter by userId
+            return System.Threading.Tasks.Task.FromResult<IEnumerable<Contact>>(Contacts.ToList());
+        }
+
         public System.Threading.Tasks.Task<Contact> CreateContactAsync(Contact contact, CancellationToken cancellationToken = default)
         {
             if (contact is null)

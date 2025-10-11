@@ -13,7 +13,10 @@ html:not([data-theme="dark"]) .app-shell--desktop {
     top: 0;
     left: 83px;
     min-width: calc(100% - 83px);
-    height: calc(100vh - var(--nav-rail-vertical-offset));
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    height: 100%;
     right: 0;
     background: var(--surface-color, red);
     border: 1px solid var(--divider-color, #E5E7EB);

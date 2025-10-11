@@ -1,5 +1,4 @@
 @page "/db/customer/my-list"
-@attribute [Authorize(Roles = "Admin,Manager,Sales")]
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -10,7 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<DbStatus> StatusLocalizer
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 common-page-container">
     <h1 class="mb-4">내 DB 목록</h1>
     <p class="text-muted mb-4">나에게 할당된 모든 고객 DB 목록입니다.</p>
 

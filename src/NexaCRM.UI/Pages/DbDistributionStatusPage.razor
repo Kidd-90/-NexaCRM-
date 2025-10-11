@@ -1,5 +1,4 @@
 @page "/db/distribution/status"
-@attribute [Authorize(Roles = "Manager")]
 
 @using NexaCRM.Services.Admin.Models.Db
 @using NexaCRM.Services.Admin.Interfaces
@@ -9,7 +8,7 @@
 @inject IStringLocalizer<DbDistributionStatusPage> Localizer
 @inject IStringLocalizer<DbStatus> StatusLocalizer
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 common-page-container">
     <h1 class="mb-4">@Localizer["Title"]</h1>
     <p class="text-muted mb-4">@Localizer["Subtitle"]</p>
 

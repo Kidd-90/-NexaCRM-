@@ -1,5 +1,4 @@
 @page "/organization/team-members"
-@attribute [Authorize(Roles = "Manager,Admin")]
 
 @using System
 @using System.ComponentModel.DataAnnotations
@@ -9,7 +8,7 @@
 
 @inject ITeamService TeamService
 
-<ResponsivePage>
+<ResponsivePage class="common-page-container">
     <div class="team-member-page">
         <div class="card shadow-sm page-header">
             <div>

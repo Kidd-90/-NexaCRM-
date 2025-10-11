@@ -1,5 +1,4 @@
 @page "/sales-calendar"
-@attribute [Authorize(Roles = "Sales,Manager")]
 @using Microsoft.Extensions.Localization
 @using NexaCRM.UI.Models
 @using NexaCRM.UI.Models.Enums
@@ -11,7 +10,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime JSRuntime
 
-<div class="sales-calendar-container">
+<div class="sales-calendar-container common-page-container">
     <div class="calendar-header">
         <div class="header-controls">
             <h1 class="calendar-title">
@@ -226,7 +225,8 @@
     private DateTime currentDate = DateTime.Today;
     private List<SalesAppointment> appointments = new();
     private List<Contact> contacts = new();
-    private string currentUserId = "user1"; // This should come from authentication
+    private string currentUserId = string.Empty;
+    private Guid currentUserGuid;
     
     private bool showAppointmentModal = false;
     private bool showDetailsModal = false;
@@ -241,13 +241,42 @@
     {
         try
         {
-            appointments = await SalesService.GetAppointmentsAsync(currentUserId);
-            contacts = (await ContactService.GetContactsAsync()).ToList();
+            // Get current authenticated user's ID
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out currentUserGuid))
+                {
+                    currentUserId = currentUserGuid.ToString();
+                    
+                    // Load appointments for current user
+                    appointments = await SalesService.GetAppointmentsAsync(currentUserId);
+                    
+                    // Load contacts assigned to current user
+                    contacts = (await ContactService.GetContactsByUserAsync(currentUserGuid)).ToList();
+                }
+                else
+                {
+                    // If user ID is not available, use empty data
+                    appointments = new List<SalesAppointment>();
+                    contacts = new List<Contact>();
+                }
+            }
+            else
+            {
+                appointments = new List<SalesAppointment>();
+                contacts = new List<Contact>();
+            }
         }
         catch (Exception ex)
         {
             // Handle error appropriately
             Console.WriteLine($"Error loading data: {ex.Message}");
+            appointments = new List<SalesAppointment>();
+            contacts = new List<Contact>();
         }
     }
 

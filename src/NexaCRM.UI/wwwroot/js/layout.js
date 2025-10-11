@@ -212,8 +212,8 @@ function measureHeaderOffset() {
             const headerComputed = header ? getComputedStyle(header) : null;
             const headerHidden = !header || headerComputed.display === 'none' || headerComputed.visibility === 'hidden';
             if (!header || headerHidden) {
-                // Apply 0 on desktop; only add default gap on mobile
-                const effectiveDefault = mobile ? Math.max(0, DEFAULT_HEADER_HEIGHT_PX + DESIRED_CONTENT_GAP_PX) : 0;
+                // Apply 67px on desktop and mobile; add default gap on mobile
+                const effectiveDefault = mobile ? Math.max(0, DEFAULT_HEADER_HEIGHT_PX + DESIRED_CONTENT_GAP_PX) : 67;
                 // If we've already applied an offset and the default wouldn't
                 // change it by more than the threshold, keep the existing value
                 if (__lastAppliedOffset !== null && Math.abs(__lastAppliedOffset - effectiveDefault) <= HEADER_OFFSET_CHANGE_THRESHOLD_PX) {
@@ -259,8 +259,8 @@ function measureHeaderOffset() {
             document.documentElement.style.setProperty('--app-shell-page-header-height', height + 'px');
             // Compute the effective offset as header height + desired gap so
             // content starts within DESIRED_CONTENT_GAP_PX below the header.
-            // On mobile, keep a small gap below the header. On desktop, force 0.
-            const effective = mobile ? Math.max(0, height + DESIRED_CONTENT_GAP_PX) : 0;
+            // On mobile, keep a small gap below the header. On desktop, use 67px.
+            const effective = mobile ? Math.max(0, height + DESIRED_CONTENT_GAP_PX) : 67;
 
             // Stabilize offset updates: if we've already applied an offset and
             // the new effective value differs by less than the threshold, skip

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexaCRM.UI.Models;
 using NexaCRM.UI.Models.Supabase;
 using NexaCRM.UI.Services.Interfaces;
+using PostgrestOperator = Supabase.Postgrest.Constants.Operator;
 using PostgrestOrdering = Supabase.Postgrest.Constants.Ordering;
 
 namespace NexaCRM.Service.Supabase;
@@ -42,6 +43,31 @@ public sealed class SupabaseContactService : IContactService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to load contacts from Supabase.");
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Contact>> GetContactsByUserAsync(Guid userId)
+    {
+        try
+        {
+            var client = await _clientProvider.GetClientAsync();
+            var response = await client.From<ContactRecord>()
+                .Filter(x => x.AssignedTo, PostgrestOperator.Equals, userId)
+                .Order(x => x.LastName, PostgrestOrdering.Ascending)
+                .Get();
+
+            var models = response.Models ?? new List<ContactRecord>();
+            if (models.Count == 0)
+            {
+                return new List<Contact>();
+            }
+
+            return models.Select(MapToContact).ToList()!;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load contacts for user {UserId} from Supabase.", userId);
             throw;
         }
     }

@@ -1,5 +1,4 @@
 @page "/sales-pipeline-page"
-@attribute [Authorize(Roles = "Sales,Manager")]
 @using Microsoft.Extensions.Localization
 @using System.Linq
 @inject IStringLocalizer<SalesPipelinePage> Localizer
@@ -9,71 +8,8 @@
 @inject NavigationManager NavigationManager
 @inject IGlobalActionService GlobalActionService
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">
+<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden common-page-container">
     <div class="layout-container flex h-full grow flex-col">
-    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-        <div class="flex items-center gap-8">
-        <div class="flex items-center gap-4 text-[#0e131b]">
-            <div class="size-4">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z"
-                fill="currentColor"
-                ></path>
-                <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"
-                fill="currentColor"
-                ></path>
-            </svg>
-            </div>
-            <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
-        </div>
-        <div class="flex items-center gap-9">
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/main-dashboard">@Localizer["Dashboard"]</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/contacts">@Localizer["Contacts"]</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/sales-pipeline-page">@Localizer["Deals"]</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/tasks">@Localizer["Tasks"]</a>
-            <a class="text-[#0e131b] text-sm font-medium leading-normal" href="/reports-page">@Localizer["Reports"]</a>
-        </div>
-        </div>
-        <div class="flex flex-1 justify-end gap-8">
-        <label class="flex flex-col min-w-40 !h-10 max-w-64">
-            <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-            <div
-                class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
-                data-icon="MagnifyingGlass"
-                data-size="24px"
-                data-weight="regular"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                    d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                ></path>
-                </svg>
-            </div>
-            <input
-                placeholder='@Localizer["Search"]'
-                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                @bind="DealSearchTerm"
-                @bind:event="oninput"
-            />
-            </div>
-        </label>
-        <button
-            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
-        >
-            <span class="truncate">@Localizer["New"]</span>
-        </button>
-        <div
-            class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-            style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
-        ></div>
-        </div>
-    </header>
     <div class="px-40 flex flex-1 justify-center py-5">
         <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
         <div class="flex flex-wrap justify-between gap-3 p-4">
@@ -238,14 +174,6 @@
         </div>
     </div>
     </div>
-    
-    <!-- Mobile Quick Actions Floating Button -->
-    <NexaCRM.UI.Components.UI.FloatingActionButton 
-        ShowCallAction="true" 
-        ShowEmailAction="true" 
-        ShowMeetingAction="true" 
-        ShowAddAction="true"
-        OnActionClicked="HandleFloatingAction" />
 </div>
 
 @code {

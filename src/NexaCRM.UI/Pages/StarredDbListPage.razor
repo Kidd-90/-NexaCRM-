@@ -1,5 +1,6 @@
 @page "/db/customer/starred"
-@attribute [Authorize(Roles = "Sales")]
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<DbStatus> StatusLocalizer
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -11,7 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<DbStatus> StatusLocalizer
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 common-page-container">
     <h1 class="mb-4">관심 DB 목록</h1>
     <p class="text-muted mb-4">중요 표시한 고객 DB 목록입니다.</p>
 

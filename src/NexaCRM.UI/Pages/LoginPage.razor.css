@@ -1,36 +1,64 @@
 .login-container {
-    --brand-gradient-start: var(--neutral-gray-800);
-    --brand-gradient-end: var(--neutral-black);
-    --surface-color: color-mix(in srgb, var(--neutral-white) 94%, transparent);
-    --surface-muted: color-mix(in srgb, var(--neutral-gray-100) 70%, var(--neutral-white) 30%);
-    --card-shadow: var(--shadow-soft-layer);
+    --brand-accent: var(--primary-color);
+    --brand-accent-dark: var(--primary-hover);
+    --brand-accent-soft: color-mix(in srgb, var(--primary-color) 40%, var(--surface-muted) 60%);
+    --brand-gradient-start: color-mix(in srgb, var(--primary-color) 82%, rgba(255, 255, 255, 0.08));
+    --brand-gradient-end: color-mix(in srgb, var(--primary-hover) 78%, rgba(15, 23, 42, 0.24));
+    --surface-elevated: color-mix(in srgb, var(--surface-color) 90%, color-mix(in srgb, var(--primary-color) 10%, transparent));
+    --surface-muted-elevated: color-mix(in srgb, var(--surface-muted) 80%, color-mix(in srgb, var(--primary-color) 6%, transparent));
+    --card-shadow: 0 24px 48px color-mix(in srgb, var(--primary-color) 14%, transparent), var(--shadow-soft-layer);
     --text-color: var(--text-primary);
-    --muted-color: var(--text-secondary);
-    --input-border: color-mix(in srgb, var(--neutral-gray-100) 62%, transparent);
-    --input-bg: color-mix(in srgb, var(--neutral-white) 92%, transparent);
-    --input-placeholder: color-mix(in srgb, var(--neutral-gray-300) 72%, var(--neutral-gray-100) 28%);
-    --input-focus-border: color-mix(in srgb, var(--neutral-gray-600) 68%, var(--neutral-gray-800) 32%);
-    --divider-color: color-mix(in srgb, var(--neutral-gray-100) 58%, transparent);
+    --muted-color: color-mix(in srgb, var(--text-secondary) 82%, color-mix(in srgb, var(--primary-color) 8%, transparent));
+    --input-border: color-mix(in srgb, var(--divider-color) 70%, color-mix(in srgb, var(--primary-color) 12%, transparent));
+    --input-bg: color-mix(in srgb, var(--surface-color) 88%, color-mix(in srgb, var(--primary-color) 8%, transparent));
+    --input-placeholder: color-mix(in srgb, var(--text-secondary) 65%, var(--surface-muted) 35%);
+    --input-focus-border: color-mix(in srgb, var(--primary-color) 70%, var(--primary-hover) 30%);
+    --divider-color-elevated: color-mix(in srgb, var(--divider-color) 70%, color-mix(in srgb, var(--primary-color) 10%, transparent));
     --focus-ring-color: var(--focus-ring);
-    --link-color: color-mix(in srgb, var(--neutral-gray-800) 80%, var(--neutral-black) 20%);
-    --button-gradient: var(--gradient-deep);
-    --button-gradient-hover: linear-gradient(160deg,
-            color-mix(in srgb, var(--neutral-gray-800) 92%, var(--neutral-black) 8%) 0%,
-            var(--neutral-black) 100%);
-    --button-shadow: var(--shadow-deep-layer);
+    --link-color: color-mix(in srgb, var(--primary-hover) 72%, var(--primary-color) 28%);
+    --button-gradient: linear-gradient(135deg,
+            color-mix(in srgb, var(--primary-color) 92%, transparent) 0%,
+            color-mix(in srgb, var(--primary-hover) 100%, transparent) 65%,
+            color-mix(in srgb, var(--primary-color) 65%, rgba(15, 23, 42, 0.55)) 100%);
+    --button-gradient-hover: linear-gradient(135deg,
+            color-mix(in srgb, var(--primary-color) 100%, transparent) 0%,
+            color-mix(in srgb, var(--primary-hover) 100%, transparent) 55%,
+            color-mix(in srgb, var(--primary-color) 80%, rgba(15, 23, 42, 0.45)) 100%);
+    --button-shadow: 0 28px 52px color-mix(in srgb, var(--primary-color) 24%, transparent);
+    --spinner-track-color: color-mix(in srgb, var(--primary-color) 24%, rgba(255, 255, 255, 0.35));
+    --spinner-color: color-mix(in srgb, var(--primary-color) 88%, rgba(255, 255, 255, 0.1));
     font-family: var(--font-family-sans);
     background: var(--app-background-gradient);
     color: var(--text-color);
     box-sizing: border-box;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
-    padding: clamp(16px, 4vh, 40px) 20px;
+    min-height: calc(100vh - clamp(150px, 20vh, 240px));
+    height: auto;
+    padding: clamp(32px, 6vh, 58px) clamp(16px, 3.2vw, 40px);
+    max-width: min(1220px, 86vw);
+    margin: clamp(52px, 7vh, 96px) auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    align-content: center;
     overflow: hidden;
+    position: relative;
+    isolation: isolate;
+}
+
+.login-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(120% 120% at 18% 15%, color-mix(in srgb, var(--primary-color) 18%, transparent) 0%, color-mix(in srgb, var(--primary-color) 6%, transparent) 38%, transparent 72%),
+        linear-gradient(160deg, color-mix(in srgb, var(--primary-color) 12%, transparent) 0%, transparent 55%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.login-container > * {
+    position: relative;
+    z-index: 1;
 }
 
 .mobile-login-container {
@@ -48,29 +76,30 @@
 /* 데스크톱/태블릿에서는 컨텐츠에 맞게 높이 조절 */
 @media (min-width: 769px) {
     .login-container {
-        height: 100vh;
-        min-height: 100vh;
-        padding: clamp(24px, 4vh, 48px);
+        min-height: calc(100vh - clamp(200px, 26vh, 300px));
         display: grid;
-        grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.2fr);
-        gap: clamp(18px, 2.5vw, 32px);
-        max-width: min(1720px, 96vw);
+        grid-template-columns: minmax(0, 74%) minmax(360px, 560px);
+        gap: clamp(10px, 1.5vw, 22px);
+        max-width: min(1200px, 82vw);
         margin: 0 auto;
-        align-items: center;
+        align-items: stretch;
+        justify-items: stretch;
+        justify-content: flex-start;
     }
     
     /* 왼쪽 이미지 영역 */
     .login-image-section {
         display: flex;
-        height: 100%;
         position: relative;
         overflow: hidden;
         align-items: center;
-        justify-content: center;
-        padding: clamp(3.5rem, 6.5vw, 5rem);
+        justify-content: flex-start;
+        padding: clamp(3.9rem, 5.8vw, 6rem) clamp(2.4rem, 4vw, 3.4rem);
         border-top-left-radius: 1.75rem;
         border-bottom-left-radius: 1.75rem;
-        box-shadow: 0 40px 80px rgba(15, 23, 42, 0.28);
+        box-shadow: 0 36px 74px color-mix(in srgb, var(--primary-color) 16%, rgba(15, 23, 42, 0.28));
+        width: 100%;
+        max-width: min(1320px, 84vw);
     }
 
     .login-image-backdrop {
@@ -80,6 +109,7 @@
         background-position: center;
         background-repeat: no-repeat;
         opacity: 1;
+        filter: saturate(1.05) contrast(1.12) brightness(1.05);
         animation: loginImageFade 0.7s ease forwards;
         transform-origin: center;
         z-index: 0;
@@ -95,7 +125,10 @@
         right: 0;
         bottom: 0;
         z-index: 1;
-        background: linear-gradient(160deg, rgba(8, 12, 31, 0.65) 0%, rgba(8, 12, 31, 0.2) 100%);
+        background: linear-gradient(160deg,
+                color-mix(in srgb, var(--primary-color) 10%, rgba(8, 12, 31, 0.45)) 0%,
+                color-mix(in srgb, var(--primary-hover) 8%, rgba(11, 17, 32, 0.22)) 55%,
+                color-mix(in srgb, var(--primary-color) 6%, rgba(15, 19, 36, 0.1)) 100%);
     }
     
     .login-image-content {
@@ -159,7 +192,7 @@
     /* 오른쪽 로그인 폼 영역 */
     .mobile-login-card {
         width: 100%;
-        max-width: 700px;
+        max-width: 660px;
         height: 100%;
         border-radius: 2rem;
         display: flex;
@@ -169,23 +202,25 @@
         position: relative;
         z-index: 2;
         overflow: hidden;
-        margin-left: clamp(-120px, -9vw, -72px);
-        box-shadow: 0 40px 84px rgba(15, 23, 42, 0.24);
+        margin-left: clamp(-260px, -18vw, -160px);
+        align-self: center;
+        justify-self: center;
+        box-shadow: var(--card-shadow);
     }
 }
 
 .mobile-login-card {
     width: 100%;
-    max-width: 380px;
-    background: var(--surface-color);
+    max-width: 680px;
+    background: var(--surface-elevated);
     color: var(--text-color);
     border-radius: 1.5rem;
-    border: 1px solid var(--frosted-border);
+    border: 1px solid var(--divider-color-elevated);
     box-shadow: var(--card-shadow);
-    padding: 36px 28px 40px;
+    padding: clamp(2.75rem, 4.5vw, 3.5rem) clamp(2.25rem, 4vw, 3.25rem);
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 32px;
     overflow: hidden;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -318,7 +353,7 @@
 .remember-checkbox {
     width: 20px;
     height: 20px;
-    accent-color: var(--neutral-gray-800);
+    accent-color: var(--primary-color);
     border-radius: 6px;
 }
 
@@ -340,14 +375,15 @@
     width: 100%;
     border: none;
     border-radius: 24px;
-    padding: 16px;
+    padding: 18px 16px;
     font-size: 1.05rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
     color: var(--neutral-white);
     background: var(--button-gradient);
     box-shadow: var(--button-shadow);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease;
 }
 
 .login-button:hover:not(:disabled),
@@ -355,11 +391,12 @@
     transform: translateY(-2px);
     box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
     background: var(--button-gradient-hover);
+    filter: brightness(1.05);
 }
 
 .login-button:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px var(--focus-ring-color);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-accent) 22%, transparent), var(--button-shadow);
 }
 
 .login-button:disabled {
@@ -373,12 +410,24 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
+    color: var(--neutral-white);
 }
 
 .loading-spinner svg {
-    width: 20px;
-    height: 20px;
-    color: currentColor;
+    width: 22px;
+    height: 22px;
+    color: var(--spinner-color);
+    filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.28));
+}
+
+.loading-spinner svg circle {
+    stroke: var(--spinner-track-color);
+    opacity: 1;
+}
+
+.loading-spinner svg path {
+    fill: var(--spinner-color);
+    opacity: 1;
 }
 
 .login-helper-links {
@@ -405,7 +454,7 @@
     width: 4px;
     height: 4px;
     border-radius: 999px;
-    background: var(--divider-color);
+    background: var(--divider-color-elevated);
 }
 
 .login-divider {
@@ -424,7 +473,7 @@
     content: "";
     flex: 1 1;
     height: 1px;
-    background: var(--divider-color);
+    background: var(--divider-color-elevated);
 }
 
 .social-login-grid {
@@ -441,9 +490,9 @@
     align-items: center;
     gap: 12px;
     border-radius: 22px;
-    border: 1px solid var(--frosted-border);
+    border: 1px solid color-mix(in srgb, var(--divider-color-elevated) 85%, transparent);
     padding: 16px 12px;
-    background: var(--surface-muted);
+    background: var(--surface-muted-elevated);
     box-shadow: var(--shadow-soft-layer);
     color: var(--muted-color);
     font-weight: 600;

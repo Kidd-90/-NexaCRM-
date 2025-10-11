@@ -1,11 +1,10 @@
 @page "/support/faq"
-@attribute [Authorize(Roles = "Sales,Manager,Admin")]
 @using NexaCRM.Services.Admin.Models.CustomerCenter
 @using NexaCRM.Services.Admin.Interfaces
 @using System.Linq
 @inject IFaqService FaqService
 
-<ResponsivePage>
+<ResponsivePage class="common-page-container">
     <h3>FAQ Management</h3>
 
     <div class="faq-filter">

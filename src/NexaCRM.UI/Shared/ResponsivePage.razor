@@ -1,5 +1,5 @@
 @using Microsoft.AspNetCore.Components
-<div class="responsive-page" data-layout="@LayoutMode">
+<div class="responsive-page @CssClass" data-layout="@LayoutMode" @attributes="AdditionalAttributes">
     <div class="responsive-page__inner" id="@ElementId" role="@Role">
         @ChildContent
     </div>
@@ -17,4 +17,17 @@
 
     [Parameter]
     public string? Role { get; set; }
+
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string? class_attribute
+    {
+        get => AdditionalAttributes?.ContainsKey("class") == true
+            ? AdditionalAttributes["class"]?.ToString()
+            : null;
+    }
 }
