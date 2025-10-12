@@ -1,0 +1,41 @@
+@page "/"
+@using NexaCRM.Pages.DesignSystem
+
+<PageTitle>Workspace overview</PageTitle>
+
+<section class="space-y-10">
+    <header class="space-y-2">
+        <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            Welcome to NexaCRM Server
+        </h1>
+        <p class="max-w-3xl text-base text-slate-600 dark:text-slate-300">
+            This host now relies on the shared <code class="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-sm dark:bg-slate-700 dark:text-slate-100">NexaCRM.Pages</code>
+            library. The layout, authentication helpers, and Tailwind design tokens are all delivered from that reusable package.
+        </p>
+    </header>
+
+    <article class="grid gap-8 md:grid-cols-2">
+        <section class="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
+            <header class="space-y-1">
+                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Palette — Light mode</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300">Roles from the modern neutral + royal blue scheme.</p>
+            </header>
+            <PaletteRoleList Roles="DesignSystemBlueprintProvider.Blueprint.BrandIdentity.ColorPalette.Light.Roles" />
+        </section>
+        <section class="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
+            <header class="space-y-1">
+                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Palette — Dark mode</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300">Parity roles for dark surfaces and typography.</p>
+            </header>
+            <PaletteRoleList Roles="DesignSystemBlueprintProvider.Blueprint.BrandIdentity.ColorPalette.Dark.Roles" />
+        </section>
+    </article>
+
+    <section class="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-6 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+        <p>
+            Need to explore the design blueprint in more detail? Check the documentation bundled with the library or navigate to the
+            <a class="font-medium text-blue-600 underline-offset-4 hover:underline dark:text-blue-400" href="https://design.local" rel="noreferrer" target="_blank">design reference</a>
+            to view component usage samples.
+        </p>
+    </section>
+</section>

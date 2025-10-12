@@ -1,0 +1,150 @@
+:host {
+    display: contents;
+}
+
+.themed-body {
+    background-color: var(--nexa-bg, #F8F9FA);
+    color: var(--nexa-text, #212529);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.themed-primary-bg {
+    background-color: var(--nexa-bg, #F8F9FA);
+}
+
+.themed-surface-card {
+    background-color: var(--nexa-surface, #F1F3F5);
+}
+
+.themed-text-primary {
+    color: var(--nexa-text, #212529);
+}
+
+.themed-text-secondary {
+    color: var(--nexa-text-muted, #495057);
+}
+
+.themed-text-muted {
+    color: var(--nexa-text-muted, #495057);
+    color: color-mix(in srgb, var(--nexa-text-muted, #495057) 65%, var(--nexa-bg, #F8F9FA) 35%);
+}
+
+.themed-accent-text {
+    color: var(--nexa-accent, #4C6EF5);
+}
+
+.themed-accent-link {
+    color: var(--nexa-accent, #4C6EF5);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.themed-accent-link:hover,
+.themed-accent-link:focus-visible {
+    color: var(--nexa-accent-hover, #364FC7);
+}
+
+.btn-primary {
+    background-color: var(--nexa-accent, #4C6EF5);
+    color: var(--nexa-bg, #F8F9FA);
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus-visible:not(:disabled) {
+    background-color: var(--nexa-accent-hover, #364FC7);
+    transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+    background-color: var(--nexa-text-muted, #495057);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.social-btn {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.social-btn:hover,
+.social-btn:focus-visible {
+    transform: translateY(-1px);
+}
+
+.form-input {
+    background-color: var(--nexa-surface, #F1F3F5);
+    border: 1px solid var(--nexa-border, #DEE2E6);
+    color: var(--nexa-text, #212529);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.form-input:focus-visible {
+    border-color: var(--nexa-accent, #4C6EF5);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--nexa-accent, #4C6EF5) 25%, transparent);
+    outline: none;
+}
+
+.form-checkbox {
+    border: 1px solid var(--nexa-border, #DEE2E6);
+    accent-color: var(--nexa-accent, #4C6EF5);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-checkbox:focus-visible {
+    border-color: var(--nexa-accent, #4C6EF5);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--nexa-accent, #4C6EF5) 30%, transparent);
+    outline: none;
+}
+
+.validation-message {
+    color: var(--nexa-error, #FA5252);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.status-message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.status-success {
+    background-color: color-mix(in srgb, var(--nexa-success, #12B886) 12%, transparent);
+    color: var(--nexa-success, #12B886);
+    border-color: color-mix(in srgb, var(--nexa-success, #12B886) 35%, transparent);
+}
+
+.status-error {
+    background-color: color-mix(in srgb, var(--nexa-error, #FA5252) 12%, transparent);
+    color: var(--nexa-error, #FA5252);
+    border-color: color-mix(in srgb, var(--nexa-error, #FA5252) 35%, transparent);
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
