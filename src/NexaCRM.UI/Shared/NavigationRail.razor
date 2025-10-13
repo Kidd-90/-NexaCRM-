@@ -1,4 +1,3 @@
-@using System.Collections.Generic
 @using System.Linq
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -198,7 +197,6 @@
 
 @code {
     private readonly List<NavigationGroupViewModel> groups = new();
-    private readonly Dictionary<string, int> linkGroupIndexMap = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Dictionary<string, string?> LinkSectionMap = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Dashboard"] = null,
@@ -226,7 +224,6 @@
         await base.OnInitializedAsync();
         await LoadRolesAsync();
         BuildGroups();
-        SyncActiveGroupWithCurrentUri(NavigationManager.Uri);
         await LoadUserSummaryAsync();
     }
 
@@ -278,7 +275,6 @@
     private void BuildGroups()
     {
         groups.Clear();
-        linkGroupIndexMap.Clear();
         var roleSet = new HashSet<string>(userRoles ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
 
         foreach (NavigationGroupDefinition group in NavigationCatalog.Groups)
@@ -308,20 +304,8 @@
             }
 
             var sections = BuildSections(entries);
-            groups.Add(new NavigationGroupViewModel(
-                Localizer[group.ResourceKey]?.Value ?? group.ResourceKey,
-                group.IconCssClass,
-                sections));
-
-            var groupIndex = groups.Count - 1;
-            foreach (var entry in entries)
-            {
-                var normalizedHref = NormalizeHref(entry.Link.Href);
-                if (!linkGroupIndexMap.ContainsKey(normalizedHref))
-                {
-                    linkGroupIndexMap[normalizedHref] = groupIndex;
-                }
-            }
+            groups.Add(new NavigationGroupViewModel(Localizer[group.ResourceKey]?.Value ?? group.ResourceKey, group.IconCssClass,
+            sections));
         }
 
         if (groups.Count == 0)
@@ -330,11 +314,7 @@
             return;
         }
 
-        if (!TrySetActiveFromHref(NavigationManager.ToBaseRelativePath(NavigationManager.Uri)))
-        {
-            activeGroupIndex = 0;
-        }
-
+        activeGroupIndex = 0;
         panelVisible = true;
 
         // Emit a lightweight console log from C# so we can see at runtime whether
@@ -526,11 +506,8 @@
 
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
     {
-        SyncActiveGroupWithCurrentUri(e.Location);
-
         // Fire-and-forget the JS call to close the menu; don't block the UI thread.
         _ = JSRuntime.InvokeVoidAsync("layoutInterop.toggleMenu", true);
-        _ = InvokeAsync(StateHasChanged);
     }
 
     protected override void OnInitialized()
@@ -542,81 +519,6 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
-    }
-
-    private void SyncActiveGroupWithCurrentUri(string? uri)
-    {
-        if (groups.Count == 0)
-        {
-            return;
-        }
-
-        var relative = NavigationManager.ToBaseRelativePath(uri ?? NavigationManager.Uri);
-        relative = StripQueryAndFragment(relative);
-
-        if (TrySetActiveFromHref(relative))
-        {
-            return;
-        }
-
-        var fallback = NavigationCatalog.FindByUri(relative);
-        if (fallback is null)
-        {
-            return;
-        }
-
-        TrySetActiveFromHref(fallback.Href);
-    }
-
-    private bool TrySetActiveFromHref(string? href)
-    {
-        var normalized = NormalizeHref(href);
-        if (!linkGroupIndexMap.TryGetValue(normalized, out var index))
-        {
-            return false;
-        }
-
-        if (activeGroupIndex != index)
-        {
-            activeGroupIndex = index;
-        }
-
-        panelVisible = true;
-        return true;
-    }
-
-    private static string StripQueryAndFragment(string? value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        var length = value.Length;
-        var queryIndex = value.IndexOf('?');
-        if (queryIndex >= 0)
-        {
-            length = Math.Min(length, queryIndex);
-        }
-
-        var fragmentIndex = value.IndexOf('#');
-        if (fragmentIndex >= 0)
-        {
-            length = Math.Min(length, fragmentIndex);
-        }
-
-        return length < value.Length ? value[..length] : value;
-    }
-
-    private static string NormalizeHref(string? href)
-    {
-        if (string.IsNullOrWhiteSpace(href))
-        {
-            return string.Empty;
-        }
-
-        var trimmed = StripQueryAndFragment(href).Trim();
-        return trimmed.Trim('/').ToLowerInvariant();
     }
 
     private sealed record NavigationGroupViewModel(string DisplayName, string IconCss,
