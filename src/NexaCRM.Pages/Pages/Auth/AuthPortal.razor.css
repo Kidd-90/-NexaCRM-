@@ -3,31 +3,11 @@
 }
 
 .themed-body {
-    background-color: var(--nexa-bg, #F8F9FA);
-    color: var(--nexa-text, #212529);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    --primary-bg: var(--nexa-bg, #F8F9FA);
 }
 
-.themed-primary-bg {
-    background-color: var(--nexa-bg, #F8F9FA);
-}
-
-.themed-surface-card {
-    background-color: var(--nexa-surface, #F1F3F5);
-}
-
-.themed-text-primary {
-    color: var(--nexa-text, #212529);
-}
-
-.themed-text-secondary {
-    color: var(--nexa-text-muted, #495057);
-}
-
-.themed-text-muted {
-    color: var(--nexa-text-muted, #495057);
-    color: color-mix(in srgb, var(--nexa-text-muted, #495057) 65%, var(--nexa-bg, #F8F9FA) 35%);
+:global(html[data-theme='dark']) .themed-body {
+    --primary-bg: var(--nexa-bg, #121417);
 }
 
 .themed-accent-text {

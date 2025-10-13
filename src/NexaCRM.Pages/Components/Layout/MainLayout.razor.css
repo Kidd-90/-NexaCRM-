@@ -1,0 +1,27 @@
+:host {
+    display: contents;
+}
+
+.secondary-nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    color: var(--nexa-text-muted, #495057);
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.secondary-nav-link:hover,
+.secondary-nav-link:focus-visible {
+    background-color: color-mix(in srgb, var(--accent-primary) 14%, transparent);
+    color: var(--nexa-text, #212529);
+    transform: translateX(2px);
+}
+
+.secondary-nav-link.active {
+    background-color: var(--accent-primary);
+    color: #ffffff;
+    box-shadow: 0 10px 25px -15px color-mix(in srgb, var(--accent-primary) 75%, black);
+}

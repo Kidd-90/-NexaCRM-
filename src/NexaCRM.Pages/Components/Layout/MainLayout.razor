@@ -1,104 +1,130 @@
 @namespace NexaCRM.Pages.Components.Layout
 @inherits LayoutComponentBase
 @implements IAsyncDisposable
+@using System
+@using System.Collections.Generic
 @using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 
-<div class="nexa-app-shell">
-    <aside class="nexa-app-shell__sidebar @(mobileNavOpen ? "is-open" : string.Empty)">
-        <div class="nexa-app-shell__brand">
-            <span class="nexa-app-shell__logo">NC</span>
-            <span class="nexa-app-shell__title">NexaCRM</span>
-        </div>
-        <nav class="nexa-app-shell__nav" aria-label="Primary navigation">
-            @foreach (var link in NavigationLinks)
-            {
-                <a class="nexa-app-shell__nav-link @(IsActive(link.Href) ? "is-active" : string.Empty)"
-                   href="@(!string.IsNullOrEmpty(link.Href) ? link.Href : "#")"
-                   @onclick="() => HandleNavigationAsync(link.Href)">
-                    <span aria-hidden="true" class="nexa-app-shell__nav-icon">@link.Icon</span>
-                    <span class="nexa-app-shell__nav-text">@link.Title</span>
-                </a>
-            }
-        </nav>
-    </aside>
+<div class="themed-body flex h-screen w-full overflow-hidden">
+    <!-- Primary Icon Navigation -->
+    <PrimaryNavRail Sections="PrimaryNavOrder"
+                    ActiveSection="activePrimaryNav"
+                    Navigation="PrimaryNavigation"
+                    OnSectionSelected="HandlePrimaryNavSelection" />
 
-    <div class="nexa-app-shell__content">
-        <header class="nexa-app-shell__header">
-            <div class="nexa-app-shell__header-leading">
-                <button class="nexa-app-shell__menu-toggle" type="button" aria-label="Toggle navigation" @onclick="ToggleMobileNav">
-                    <span class="nexa-app-shell__hamburger"></span>
+    <!-- Secondary Detail Navigation -->
+    <SecondaryNavPanel IsOpen="isDetailNavOpen"
+                       ActiveSection="activePrimaryNav"
+                       ActiveSectionLabel="ActivePrimaryNavLabel"
+                       Navigation="PrimaryNavigation" />
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="themed-surface-card flex-shrink-0 h-16 border-b border-[var(--border-color)] flex items-center justify-between px-6">
+            <div class="flex items-center space-x-4">
+                <button type="button" @onclick="ToggleDetailNav" class="p-2 rounded-full hover:bg-[var(--primary-bg)]" aria-label="Toggle detail navigation">
+                    <svg class="w-6 h-6 themed-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <div class="nexa-app-shell__breadcrumbs">
-                    <span class="nexa-app-shell__breadcrumbs-label">Workspace</span>
-                    <span class="nexa-app-shell__breadcrumbs-value">@CurrentPageTitle</span>
+                <div class="themed-text-secondary text-sm">
+                    <span class="font-semibold themed-text-primary">@ActivePrimaryNavLabel</span> / @ActiveSecondaryNavLabel
                 </div>
             </div>
-            <div class="nexa-app-shell__header-actions">
-                <button class="nexa-app-shell__theme-toggle" type="button" @onclick="ToggleThemeAsync" aria-label="Toggle theme">
+            <div class="flex items-center space-x-5">
+                <button type="button" class="p-2 rounded-full hover:bg-[var(--primary-bg)] relative" aria-label="Notifications">
+                    <svg class="w-6 h-6 themed-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-[var(--surface-bg)]" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="p-2 rounded-full hover:bg-[var(--primary-bg)]" @onclick="ToggleThemeAsync" aria-label="Toggle theme">
                     @if (isDarkMode)
                     {
-                        <span>🌙</span>
+                        <span role="img" aria-hidden="true">🌞</span>
                     }
                     else
                     {
-                        <span>🌞</span>
+                        <span role="img" aria-hidden="true">🌙</span>
                     }
                 </button>
-                <button class="nexa-app-shell__primary" type="button">New record</button>
+                <div class="flex items-center space-x-3">
+                    <img class="h-9 w-9 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=U" alt="User profile" />
+                    <div>
+                        <div class="text-sm font-semibold themed-text-primary">Jane Doe</div>
+                        <div class="text-xs themed-text-muted">Stellar Inc.</div>
+                    </div>
+                </div>
             </div>
         </header>
 
-        <main class="nexa-app-shell__main">
+        <!-- Page Body -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-8">
             @Body
         </main>
     </div>
-
-    @if (mobileNavOpen)
-    {
-        <button class="nexa-app-shell__overlay" type="button" aria-label="Close navigation" @onclick="CloseMobileNav"></button>
-    }
 </div>
 
 @code {
-    private IJSObjectReference? _layoutModule;
-    private bool mobileNavOpen;
-    private bool isDarkMode;
-
-    private static readonly NavigationLink[] NavigationLinks =
+    private static readonly IReadOnlyList<PrimaryNavSection> PrimaryNavOrder = new[]
     {
-        new("Overview", "🏠", "/"),
-        new("Contacts", "👥", null),
-        new("Analytics", "📊", null)
+        PrimaryNavSection.Dashboard,
+        PrimaryNavSection.Deals,
+        PrimaryNavSection.Leads,
+        PrimaryNavSection.Settings
     };
 
-    private string CurrentPageTitle
+    private static readonly IReadOnlyDictionary<PrimaryNavSection, PrimaryNavConfig> PrimaryNavigation = new Dictionary<PrimaryNavSection, PrimaryNavConfig>
     {
-        get
-        {
-            var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
-            if (string.IsNullOrEmpty(relative))
+        [PrimaryNavSection.Dashboard] = new(
+            "Dashboard",
+            new[]
             {
-                return "Overview";
-            }
-
-            foreach (var link in NavigationLinks)
+                new SecondaryNavLink("Overview", "/", NavLinkMatch.All),
+                new SecondaryNavLink("Reports", "/reports", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Analytics", "/analytics", NavLinkMatch.Prefix)
+            }),
+        [PrimaryNavSection.Deals] = new(
+            "Deals",
+            new[]
             {
-                if (string.IsNullOrEmpty(link.Href))
-                {
-                    continue;
-                }
+                new SecondaryNavLink("Pipeline", "/deals", NavLinkMatch.Prefix),
+                new SecondaryNavLink("List View", "/deals/list", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Forecast", "/deals/forecast", NavLinkMatch.Prefix)
+            }),
+        [PrimaryNavSection.Leads] = new(
+            "Leads",
+            new[]
+            {
+                new SecondaryNavLink("Inbox", "/leads", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Sources", "/leads/sources", NavLinkMatch.Prefix)
+            }),
+        [PrimaryNavSection.Settings] = new(
+            "Settings",
+            new[]
+            {
+                new SecondaryNavLink("Profile", "/settings/profile", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Billing", "/settings/billing", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Integrations", "/settings/integrations", NavLinkMatch.Prefix)
+            })
+    };
 
-                if (string.Equals(Navigation.ToBaseRelativePath(link.Href), relative, StringComparison.OrdinalIgnoreCase))
-                {
-                    return link.Title;
-                }
-            }
+    private IJSObjectReference? _layoutModule;
+    private bool isDetailNavOpen = true;
+    private bool isDarkMode;
+    private PrimaryNavSection activePrimaryNav = PrimaryNavSection.Dashboard;
+    private string activeSecondaryNavTitle = PrimaryNavigation[PrimaryNavSection.Dashboard].Links[0].Title;
 
-            return "Workspace";
-        }
+    private string ActivePrimaryNavLabel => PrimaryNavigation.TryGetValue(activePrimaryNav, out var config) ? config.Label : activePrimaryNav.ToString();
+
+    private string ActiveSecondaryNavLabel => activeSecondaryNavTitle;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Navigation.LocationChanged += OnLocationChanged;
+        UpdateActiveNavFromUri();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -114,57 +140,33 @@
         StateHasChanged();
     }
 
-    private bool IsActive(string? href)
+    private void ToggleDetailNav()
     {
-        if (string.IsNullOrEmpty(href))
-        {
-            return false;
-        }
+        isDetailNavOpen = !isDetailNavOpen;
+    }
 
-        try
+    private void HandlePrimaryNavSelection(PrimaryNavSection nav)
+    {
+        SetActivePrimaryNav(nav);
+
+        if (PrimaryNavigation.TryGetValue(nav, out var config) && config.Links.Count > 0)
         {
-            var current = Navigation.ToBaseRelativePath(Navigation.Uri);
-            
-            // href가 상대 경로인 경우 절대 URI로 변환
-            var targetUri = href.StartsWith('/') 
-                ? Navigation.ToAbsoluteUri(href).ToString() 
-                : href;
-            
-            var target = Navigation.ToBaseRelativePath(targetUri);
-            return string.Equals(current, target, StringComparison.OrdinalIgnoreCase);
-        }
-        catch (ArgumentException)
-        {
-            // URI 변환 실패 시 false 반환
-            return false;
+            activeSecondaryNavTitle = config.Links[0].Title;
+            var destination = config.Links[0].Href;
+            if (!string.IsNullOrWhiteSpace(destination))
+            {
+                Navigation.NavigateTo(destination);
+            }
         }
     }
 
-    private async Task HandleNavigationAsync(string? href)
+    private void SetActivePrimaryNav(PrimaryNavSection nav)
     {
-        if (string.IsNullOrWhiteSpace(href))
+        activePrimaryNav = nav;
+        if (!isDetailNavOpen)
         {
-            return;
+            isDetailNavOpen = true;
         }
-
-        CloseMobileNav();
-        if (href.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-        {
-            await JSRuntime.InvokeVoidAsync("open", href, "_blank");
-            return;
-        }
-
-        Navigation.NavigateTo(href);
-    }
-
-    private void ToggleMobileNav()
-    {
-        mobileNavOpen = !mobileNavOpen;
-    }
-
-    private void CloseMobileNav()
-    {
-        mobileNavOpen = false;
     }
 
     private async Task ToggleThemeAsync()
@@ -178,20 +180,94 @@
         StateHasChanged();
     }
 
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateActiveNavFromUri();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateActiveNavFromUri()
+    {
+        var current = NormalizeRelativePath(Navigation.Uri);
+
+        foreach (var pair in PrimaryNavigation)
+        {
+            foreach (var link in pair.Value.Links)
+            {
+                if (string.IsNullOrWhiteSpace(link.Href))
+                {
+                    continue;
+                }
+
+                var linkRelative = NormalizeRelativePath(link.Href);
+                var isMatch = link.Match switch
+                {
+                    NavLinkMatch.All => string.Equals(current, linkRelative, StringComparison.OrdinalIgnoreCase),
+                    NavLinkMatch.Prefix => current.StartsWith(linkRelative, StringComparison.OrdinalIgnoreCase),
+                    _ => false
+                };
+
+                if (!isMatch)
+                {
+                    continue;
+                }
+
+                activePrimaryNav = pair.Key;
+                activeSecondaryNavTitle = link.Title;
+                return;
+            }
+        }
+
+        if (PrimaryNavigation.TryGetValue(PrimaryNavSection.Dashboard, out var fallback) && fallback.Links.Count > 0)
+        {
+            activePrimaryNav = PrimaryNavSection.Dashboard;
+            activeSecondaryNavTitle = fallback.Links[0].Title;
+        }
+    }
+
+    private string NormalizeRelativePath(string uri)
+    {
+        string absoluteUriString;
+        if (Uri.TryCreate(uri, UriKind.Absolute, out var absoluteUri))
+        {
+            absoluteUriString = absoluteUri.ToString();
+        }
+        else
+        {
+            absoluteUriString = Navigation.ToAbsoluteUri(uri).ToString();
+        }
+
+        var relative = Navigation.ToBaseRelativePath(absoluteUriString);
+        var questionIndex = relative.IndexOf('?', StringComparison.Ordinal);
+        if (questionIndex >= 0)
+        {
+            relative = relative[..questionIndex];
+        }
+
+        var hashIndex = relative.IndexOf('#');
+        if (hashIndex >= 0)
+        {
+            relative = relative[..hashIndex];
+        }
+
+        return relative.Trim('/');
+    }
+
     public async ValueTask DisposeAsync()
     {
+        Navigation.LocationChanged -= OnLocationChanged;
+
         if (_layoutModule is not null)
         {
             try
             {
                 await _layoutModule.DisposeAsync();
             }
-            catch
+            catch (JSDisconnectedException)
             {
-                // ignored
+                // The JS runtime is no longer available; safe to ignore during disposal.
             }
         }
     }
 
-    private sealed record NavigationLink(string Title, string Icon, string? Href);
 }

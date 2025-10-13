@@ -1,0 +1,62 @@
+@namespace NexaCRM.Pages.Components.Layout
+@using System
+@using Microsoft.AspNetCore.Components
+
+<div class="flex-shrink-0 bg-[#1E2124] text-gray-300 flex flex-col items-center w-16 py-4 space-y-2">
+    <a href="/" class="mb-4" aria-label="NexaCRM home">
+        <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </a>
+
+    @foreach (var section in Sections)
+    {
+        <button type="button"
+                @onclick="() => OnSectionSelected.InvokeAsync(section)"
+                class="@GetButtonClass(section)"
+                aria-label="@GetAriaLabel(section)">
+            @RenderIcon(section)
+        </button>
+    }
+</div>
+
+@code {
+    private const string BaseButtonClass = "p-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1E2124] focus:ring-[var(--accent-primary)]";
+
+    [Parameter]
+    public IReadOnlyList<PrimaryNavSection> Sections { get; set; } = Array.Empty<PrimaryNavSection>();
+
+    [Parameter]
+    public PrimaryNavSection ActiveSection { get; set; }
+
+    [Parameter]
+    public EventCallback<PrimaryNavSection> OnSectionSelected { get; set; }
+
+    [Parameter]
+    public IReadOnlyDictionary<PrimaryNavSection, PrimaryNavConfig> Navigation { get; set; } = new Dictionary<PrimaryNavSection, PrimaryNavConfig>();
+
+    private string GetButtonClass(PrimaryNavSection section)
+    {
+        return section == ActiveSection
+            ? $"{BaseButtonClass} bg-[var(--accent-primary)] text-white"
+            : $"{BaseButtonClass} hover:bg-gray-700";
+    }
+
+    private string GetAriaLabel(PrimaryNavSection section)
+    {
+        return Navigation.TryGetValue(section, out var config)
+            ? config.Label
+            : section.ToString();
+    }
+
+    private RenderFragment RenderIcon(PrimaryNavSection section) => section switch
+    {
+        PrimaryNavSection.Dashboard => builder => builder.AddMarkupContent(0, "<svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 10v11h6V10H3zm10-7v18h6V3h-6zM5 21a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5z\"></path></svg>"),
+        PrimaryNavSection.Deals => builder => builder.AddMarkupContent(0, "<svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v-1m0 0c-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2-1.343-2-3-2m0 8c1.11 0 2.08-.402 2.599-1M12 8V7m0 10v-1m-6 0a9 9 0 1112 0a9 9 0 01-12 0z\"></path></svg>"),
+        PrimaryNavSection.Leads => builder => builder.AddMarkupContent(0, "<svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z\"></path></svg>"),
+        PrimaryNavSection.Settings => builder => builder.AddMarkupContent(0, "<svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z\"></path><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"></path></svg>"),
+        _ => builder => builder.AddContent(0, string.Empty)
+    };
+}
