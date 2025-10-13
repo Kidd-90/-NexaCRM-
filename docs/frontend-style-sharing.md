@@ -8,6 +8,7 @@
 - `wwwroot/css/app.css`: 데스크톱·다크 모드 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
 - `wwwroot/css/mobile.css`: 모바일 네비게이션, 반응형 브레이크포인트, 터치 상호작용에 특화된 보조 규칙 제공.
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
+- `https://tweakcn.com/live-preview.min.js`: TweakCN 라이브 프리뷰 스니펫. 디자인 팀이 [TweakCN 테마 편집기](https://tweakcn.com/editor/theme?p=custom)와 실시간으로 스타일을 연동할 때 사용합니다.
 
 ## Typography Tokens
 - `app.css` 상단에서 `Pretendard Variable` 가변 글꼴을 `@font-face`로 선언하고, `--font-family-sans`, `--font-family-heading`, `--font-family-mono` 등
