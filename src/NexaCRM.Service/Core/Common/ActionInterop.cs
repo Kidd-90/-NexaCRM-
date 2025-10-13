@@ -15,8 +15,8 @@ public sealed class ActionInterop : IAsyncDisposable
             throw new ArgumentNullException(nameof(jsRuntime));
         }
 
-    // use the served static content path for the UI library so the module resolves at runtime
-    _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/NexaCRM.UI/js/actions.js").AsTask());
+        // use the shared pages library static asset path so the module resolves in both hosts
+        _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/actions.js").AsTask());
     }
 
     public async Task VibrateAsync(int duration)
