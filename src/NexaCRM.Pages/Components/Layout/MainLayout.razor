@@ -121,9 +121,23 @@
             return false;
         }
 
-        var current = Navigation.ToBaseRelativePath(Navigation.Uri);
-        var target = Navigation.ToBaseRelativePath(href);
-        return string.Equals(current, target, StringComparison.OrdinalIgnoreCase);
+        try
+        {
+            var current = Navigation.ToBaseRelativePath(Navigation.Uri);
+            
+            // href가 상대 경로인 경우 절대 URI로 변환
+            var targetUri = href.StartsWith('/') 
+                ? Navigation.ToAbsoluteUri(href).ToString() 
+                : href;
+            
+            var target = Navigation.ToBaseRelativePath(targetUri);
+            return string.Equals(current, target, StringComparison.OrdinalIgnoreCase);
+        }
+        catch (ArgumentException)
+        {
+            // URI 변환 실패 시 false 반환
+            return false;
+        }
     }
 
     private async Task HandleNavigationAsync(string? href)
