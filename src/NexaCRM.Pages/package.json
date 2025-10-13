@@ -1,0 +1,22 @@
+{
+  "name": "nexacrm.pages",
+  "version": "1.0.0",
+  "description": "Tailwind CSS build pipeline for NexaCRM Razor pages.",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/output.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i ./wwwroot/css/tailwind.css -o ./wwwroot/css/output.css --watch"
+  },
+  "keywords": [
+    "nexacrm",
+    "tailwind",
+    "razor"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
