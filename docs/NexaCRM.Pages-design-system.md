@@ -19,6 +19,22 @@ To encourage reuse, the following Razor components are available under `Componen
 | `PaletteRoleList` | Visualizes the light/dark palette roles with swatch, hex, and usage copy. | Communicate theming tokens to designers, AI prompts, or admin tools. |
 | `TypographySample` | Displays a type scale entry using the configured size/line-height. | Present typography tokens or style guides in admin tooling. |
 | `PrincipleList` | Lists guiding principles with accent markers. | Summaries of philosophy, tone, or experience goals. |
+| `PageTemplate` | Provides a consistent page hero, optional metadata rail, leading visual slot, and configurable body surface. | Wrap feature pages inside `MainLayout` so headlines, meta copy, and actions align with workspace styling while keeping accessibility attributes and layout density consistent. |
+
+## Feature Pages
+- `Pages/Db/DbAdvancedManagement.razor`
+  - Uses `PageTemplate` to preserve the shared hero layout while recreating the Db Admin experience with Tailwind-driven surface styling.
+  - Ports the advanced DB management interactions (filters, tabbed workflows, dedupe modal, distribution settings) from `NexaCRM.UI` so both projects stay functionally aligned.
+  - Scoped stylesheet mirrors the neutral palette by mapping Bootstrap-era utility classes to token-aware equivalents (`--border-color`, `--accent-primary`).
+- `Pages/Db/AllDbListPage.razor`
+  - Centralises global DB filtering, date quick-picks, and responsive table/card layouts powered by the shared `DbCustomerListPageBase` loader.
+  - Tailwind utility classes replace Bootstrap cards, ensuring the desktop filter grid and mobile stack respect the shared surface tokens.
+- `Pages/Db/MyDbListPage.razor`, `Pages/Db/NewDbListPage.razor`, `Pages/Db/NewlyAssignedDbPage.razor`, `Pages/Db/StarredDbListPage.razor`
+  - Extend the agent-aware base to resolve mock identities and reuse the responsive table/card split for personal queues.
+  - Provide consistent refresh affordances and navigation to `/contacts/{contactId}` while swapping the descriptive copy per scenario.
+- `Pages/Db/TodaysAssignedDbPage.razor`, `Pages/Db/UnassignedDbListPage.razor`, `Pages/Db/TeamDbStatusPage.razor`, `Pages/Db/DbDistributionStatusPage.razor`
+  - Cover operational dashboards (today's assignments, unassigned pool, team status, distribution status) with shared loading/error UX and theme-aligned action buttons.
+  - `DbDistributionStatusPage` adds status summaries with `DbStatusCss` palette helpers plus recall/redistribute affordances wired to `IDbDataService`.
 
 ## Layout & Authentication Helpers
 - `Components/Layout/MainLayout.razor`
