@@ -1,0 +1,433 @@
+@page "/db/customer/all"
+@attribute [Authorize(Roles = "Admin,Manager")]
+@using System.Globalization
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using NexaCRM.Pages.Components.Shared
+@using NexaCRM.Pages.Pages.Db.Shared
+@using NexaCRM.Services.Admin.Models.Db
+
+@inherits DbCustomerListPageBase
+
+@inject IStringLocalizer<DbStatus> StatusLocalizer
+
+<PageTemplate PageTitle="전체 DB 목록"
+              PageDescription="고객 DB를 조건에 맞춰 탐색하고 담당자 배정 및 현황을 확인합니다."
+              BodyCssClass="space-y-6"
+              DisableCardSurface="true">
+    <LeadingVisual>
+        <span class="text-3xl" aria-hidden="true">📚</span>
+    </LeadingVisual>
+
+    <HeaderActions>
+        <div class="flex flex-wrap items-center gap-2">
+            <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] px-4 py-2 text-sm font-medium shadow-sm transition hover:bg-[var(--primary-bg)] disabled:opacity-60"
+                    @onclick="RefreshAsync"
+                    disabled="@IsLoading">
+                <span aria-hidden="true">🔄</span>
+                새로고침
+            </button>
+            <button type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-[var(--border-color)] px-4 py-2 text-sm font-medium text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10"
+                    @onclick="ClearFilters">
+                <span aria-hidden="true">♻️</span>
+                필터 초기화
+            </button>
+        </div>
+    </HeaderActions>
+
+    @if (IsLoading)
+    {
+        <div class="themed-surface-card border border-[var(--border-color)] rounded-xl p-10 text-center text-sm themed-text-secondary">
+            데이터를 불러오는 중입니다...
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-600">
+            @ErrorMessage
+        </div>
+    }
+    else
+    {
+        <section class="hidden space-y-6 lg:block">
+            <div class="themed-surface-card border border-[var(--border-color)] rounded-xl p-6 shadow-sm">
+                <div class="flex flex-wrap items-end gap-6">
+                    <div class="flex min-w-[16rem] flex-1 flex-col gap-2">
+                        <label class="text-sm font-semibold uppercase tracking-wide text-[var(--text-muted)]">상세 검색</label>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select class="w-44 rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                                    value="@selectedSearchField"
+                                    @onchange="OnSearchFieldChanged">
+                                <option value="@DefaultSearchField">이름</option>
+                                <option value="ContactNumber">연락처</option>
+                                <option value="AssignedTo">담당자</option>
+                                <option value="Assigner">전달자</option>
+                            </select>
+                            <input type="text"
+                                   class="flex-1 rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                                   placeholder="검색어 입력"
+                                   value="@searchTerm"
+                                   @oninput="OnFilterInput" />
+                        </div>
+                    </div>
+                    <div class="flex min-w-[14rem] flex-col gap-2">
+                        <label class="text-sm font-semibold uppercase tracking-wide text-[var(--text-muted)]">DB 그룹</label>
+                        <select class="rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                                value="@selectedGroup"
+                                @onchange="OnGroupFilterChanged">
+                            <option value="">전체</option>
+                            @foreach (var group in groupOptions)
+                            {
+                                <option value="@group">@group</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="flex min-w-[18rem] flex-1 flex-col gap-2">
+                        <label class="text-sm font-semibold uppercase tracking-wide text-[var(--text-muted)]">조회 기간</label>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <input type="date"
+                                   class="w-40 rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                                   value="@GetDateInputValue(filterStartDate)"
+                                   @onchange="OnStartDateChanged" />
+                            <span class="text-sm font-semibold text-[var(--text-muted)]">~</span>
+                            <input type="date"
+                                   class="w-40 rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                                   value="@GetDateInputValue(filterEndDate)"
+                                   @onchange="OnEndDateChanged" />
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("Today")" @onclick="() => SetQuickRange("Today")">오늘</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("7Days")" @onclick="() => SetQuickRange("7Days")">7일</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("1Month")" @onclick="() => SetQuickRange("1Month")">1개월</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("3Months")" @onclick="() => SetQuickRange("3Months")">3개월</button>
+                        </div>
+                    </div>
+                    <div class="flex min-w-[10rem] flex-col gap-2">
+                        <span class="text-sm font-semibold uppercase tracking-wide text-transparent">검색</span>
+                        <button type="button" class="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[color-mix(in srgb,var(--accent-primary) 90%,white 10%)]" @onclick="ApplyFilters">조회</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="rounded-full border border-[var(--border-color)] bg-[var(--surface-bg)] px-4 py-2 text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                    TOTAL
+                    <span class="ml-2 text-base font-bold text-[var(--accent-primary)]">@totalCount</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lg:hidden">
+            <div class="themed-surface-card border border-[var(--border-color)] rounded-xl p-4 shadow-sm">
+                <div class="space-y-3">
+                    <input type="text" class="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" placeholder="검색어 입력" value="@searchTerm" @oninput="OnFilterInput" />
+                    <select class="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value="@selectedGroup" @onchange="OnGroupFilterChanged">
+                        <option value="">전체 그룹</option>
+                        @foreach (var group in groupOptions)
+                        {
+                            <option value="@group">@group</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="themed-surface-card border border-[var(--border-color)] rounded-xl shadow-sm">
+            <div class="hidden overflow-x-auto md:block">
+                <table class="min-w-full divide-y divide-[var(--border-color)] text-left text-sm">
+                    <thead class="bg-[var(--surface-bg-muted)] text-xs uppercase tracking-wide themed-text-secondary">
+                        <tr>
+                            <th class="px-6 py-3">고객명</th>
+                            <th class="px-6 py-3">연락처</th>
+                            <th class="px-6 py-3">그룹</th>
+                            <th class="px-6 py-3">담당자</th>
+                            <th class="px-6 py-3">분배일</th>
+                            <th class="px-6 py-3">상태</th>
+                            <th class="px-6 py-3">최종 컨택</th>
+                            <th class="px-6 py-3">관심</th>
+                            <th class="px-6 py-3">전달자</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--border-color)]">
+                        @if (filteredCustomers.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="9" class="px-6 py-10 text-center text-sm themed-text-secondary">조건에 맞는 DB가 없습니다.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var customer in filteredCustomers)
+                            {
+                                <tr class="cursor-pointer transition hover:bg-[var(--primary-bg)]/40" @onclick="() => NavigateToContact(customer.ContactId)">
+                                    <td class="px-6 py-4 font-medium">@customer.CustomerName</td>
+                                    <td class="px-6 py-4">@customer.ContactNumber</td>
+                                    <td class="px-6 py-4">@customer.Group</td>
+                                    <td class="px-6 py-4">@customer.AssignedTo</td>
+                                    <td class="px-6 py-4">@customer.AssignedDate.ToShortDateString()</td>
+                                    <td class="px-6 py-4 @DbStatusCss.GetStatusTextClass(customer.Status)">@StatusLocalizer[customer.Status.ToString()]</td>
+                                    <td class="px-6 py-4">@customer.LastContactDate.ToShortDateString()</td>
+                                    <td class="px-6 py-4 text-lg">@(customer.IsStarred ? "★" : string.Empty)</td>
+                                    <td class="px-6 py-4">@customer.Assigner</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="space-y-4 border-t border-[var(--border-color)] p-4 md:hidden">
+                @if (filteredCustomers.Count == 0)
+                {
+                    <div class="rounded-xl border border-dashed border-[var(--border-color)] bg-[var(--surface-bg)] p-6 text-center text-sm themed-text-secondary">
+                        조건에 맞는 DB가 없습니다.
+                    </div>
+                }
+                else
+                {
+                    @foreach (var customer in filteredCustomers)
+                    {
+                        <article class="rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] p-4 shadow-sm" @onclick="() => NavigateToContact(customer.ContactId)">
+                            <header class="mb-3 flex items-center justify-between">
+                                <h3 class="text-base font-semibold themed-text-primary">@customer.CustomerName</h3>
+                                @if (customer.IsStarred)
+                                {
+                                    <span class="text-lg text-amber-400">★</span>
+                                }
+                            </header>
+                            <dl class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <dt class="text-[var(--text-muted)]">연락처</dt>
+                                    <dd>@customer.ContactNumber</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="text-[var(--text-muted)]">그룹</dt>
+                                    <dd>@customer.Group</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="text-[var(--text-muted)]">담당자</dt>
+                                    <dd>@customer.AssignedTo</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="text-[var(--text-muted)]">상태</dt>
+                                    <dd class="@DbStatusCss.GetStatusTextClass(customer.Status)">@StatusLocalizer[customer.Status.ToString()]</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="text-[var(--text-muted)]">최종 컨택</dt>
+                                    <dd>@customer.LastContactDate.ToShortDateString()</dd>
+                                </div>
+                            </dl>
+                        </article>
+                    }
+                }
+            </div>
+        </section>
+    }
+</PageTemplate>
+
+@code {
+    private const string DefaultSearchField = "CustomerName";
+
+    private List<DbCustomer> filteredCustomers = new();
+    private IEnumerable<string> groupOptions = Array.Empty<string>();
+    private string searchTerm = string.Empty;
+    private string selectedGroup = string.Empty;
+    private string selectedSearchField = DefaultSearchField;
+    private DateTime? filterStartDate;
+    private DateTime? filterEndDate;
+    private string activeQuickRange = string.Empty;
+    private int totalCount;
+
+    protected override Task<IEnumerable<DbCustomer>> FetchCustomersAsync()
+        => DbDataService.GetAllDbListAsync();
+
+    protected override Task OnDataLoadedAsync(IReadOnlyList<DbCustomer> customers)
+    {
+        groupOptions = customers
+            .Select(c => c.Group)
+            .Where(group => !string.IsNullOrWhiteSpace(group))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(group => group);
+
+        FilterCustomers();
+        return Task.CompletedTask;
+    }
+
+    private void OnFilterInput(ChangeEventArgs args)
+    {
+        searchTerm = args.Value?.ToString() ?? string.Empty;
+        FilterCustomers();
+    }
+
+    private void OnGroupFilterChanged(ChangeEventArgs args)
+    {
+        selectedGroup = args.Value?.ToString() ?? string.Empty;
+        FilterCustomers();
+    }
+
+    private void OnSearchFieldChanged(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString();
+        selectedSearchField = string.IsNullOrWhiteSpace(value) ? DefaultSearchField : value;
+        FilterCustomers();
+    }
+
+    private void ApplyFilters() => FilterCustomers();
+
+    private void OnStartDateChanged(ChangeEventArgs args)
+    {
+        filterStartDate = ParseDate(args.Value?.ToString());
+        ClearQuickRangeSelection();
+        EnsureValidDateRange();
+        FilterCustomers();
+    }
+
+    private void OnEndDateChanged(ChangeEventArgs args)
+    {
+        filterEndDate = ParseDate(args.Value?.ToString());
+        ClearQuickRangeSelection();
+        EnsureValidDateRange();
+        FilterCustomers();
+    }
+
+    private void SetQuickRange(string rangeKey)
+    {
+        var today = DateTime.Today;
+        activeQuickRange = rangeKey;
+
+        switch (rangeKey)
+        {
+            case "Today":
+                filterStartDate = today;
+                filterEndDate = today;
+                break;
+            case "7Days":
+                filterStartDate = today.AddDays(-6);
+                filterEndDate = today;
+                break;
+            case "1Month":
+                filterStartDate = today.AddMonths(-1);
+                filterEndDate = today;
+                break;
+            case "3Months":
+                filterStartDate = today.AddMonths(-3);
+                filterEndDate = today;
+                break;
+            default:
+                filterStartDate = null;
+                filterEndDate = null;
+                activeQuickRange = string.Empty;
+                break;
+        }
+
+        EnsureValidDateRange();
+        FilterCustomers();
+    }
+
+    private void ClearFilters()
+    {
+        searchTerm = string.Empty;
+        selectedGroup = string.Empty;
+        selectedSearchField = DefaultSearchField;
+        filterStartDate = null;
+        filterEndDate = null;
+        activeQuickRange = string.Empty;
+        FilterCustomers();
+    }
+
+    private void FilterCustomers()
+    {
+        if (Customers.Count == 0)
+        {
+            filteredCustomers = new List<DbCustomer>();
+            totalCount = 0;
+            return;
+        }
+
+        filteredCustomers = Customers
+            .Where(MatchesSearchTerm)
+            .Where(MatchesGroup)
+            .Where(MatchesDateRange)
+            .OrderByDescending(c => c.AssignedDate)
+            .ToList();
+
+        totalCount = filteredCustomers.Count;
+    }
+
+    private bool MatchesSearchTerm(DbCustomer customer)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return true;
+        }
+
+        var term = searchTerm.Trim();
+
+        return selectedSearchField switch
+        {
+            "ContactNumber" => Contains(customer.ContactNumber, term),
+            "AssignedTo" => Contains(customer.AssignedTo, term),
+            "Assigner" => Contains(customer.Assigner, term),
+            _ => Contains(customer.CustomerName, term)
+        };
+    }
+
+    private bool MatchesGroup(DbCustomer customer)
+        => string.IsNullOrWhiteSpace(selectedGroup) || string.Equals(customer.Group, selectedGroup, StringComparison.OrdinalIgnoreCase);
+
+    private bool MatchesDateRange(DbCustomer customer)
+    {
+        if (!filterStartDate.HasValue && !filterEndDate.HasValue)
+        {
+            return true;
+        }
+
+        var start = filterStartDate?.Date ?? DateTime.MinValue;
+        var end = filterEndDate?.Date ?? DateTime.MaxValue;
+        var assignedDate = customer.AssignedDate.Date;
+
+        return assignedDate >= start && assignedDate <= end;
+    }
+
+    private static bool Contains(string? source, string term)
+        => !string.IsNullOrEmpty(source) && source.Contains(term, StringComparison.OrdinalIgnoreCase);
+
+    private void EnsureValidDateRange()
+    {
+        if (filterStartDate.HasValue)
+        {
+            filterStartDate = filterStartDate.Value.Date;
+        }
+
+        if (filterEndDate.HasValue)
+        {
+            filterEndDate = filterEndDate.Value.Date;
+        }
+
+        if (filterStartDate.HasValue && filterEndDate.HasValue && filterStartDate > filterEndDate)
+        {
+            filterEndDate = filterStartDate;
+        }
+    }
+
+    private void ClearQuickRangeSelection() => activeQuickRange = string.Empty;
+
+    private string GetQuickFilterClass(string rangeKey) => activeQuickRange == rangeKey
+        ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+        : "text-[var(--text-muted)] hover:bg-[var(--primary-bg)]";
+
+    private static string GetDateInputValue(DateTime? value)
+        => value.HasValue ? value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : string.Empty;
+
+    private static DateTime? ParseDate(string? value)
+        => DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
+            ? parsed
+            : null;
+
+    private void NavigateToContact(int contactId)
+    {
+        NavigationManager.NavigateTo($"/contacts/{contactId}");
+    }
+}

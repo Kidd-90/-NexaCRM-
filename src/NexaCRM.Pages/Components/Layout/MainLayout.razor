@@ -99,7 +99,17 @@
             new[]
             {
                 new SecondaryNavLink("Inbox", "/leads", NavLinkMatch.Prefix),
-                new SecondaryNavLink("Sources", "/leads/sources", NavLinkMatch.Prefix)
+                new SecondaryNavLink("Sources", "/leads/sources", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Advanced DB", "/db/advanced", NavLinkMatch.Prefix),
+                new SecondaryNavLink("All DB", "/db/customer/all", NavLinkMatch.Prefix),
+                new SecondaryNavLink("My DB", "/db/customer/my-list", NavLinkMatch.Prefix),
+                new SecondaryNavLink("New DB", "/db/customer/new", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Newly Assigned", "/db/distribution/newly-assigned", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Starred DB", "/db/customer/starred", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Assigned Today", "/db/customer/assigned-today", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Unassigned", "/db/distribution/unassigned", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Team Status", "/db/customer/team-status", NavLinkMatch.Prefix),
+                new SecondaryNavLink("Distribution Status", "/db/distribution/status", NavLinkMatch.Prefix)
             }),
         [PrimaryNavSection.Settings] = new(
             "Settings",
