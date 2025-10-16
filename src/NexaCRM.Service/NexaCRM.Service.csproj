@@ -34,6 +34,7 @@
     <Compile Include="Core/**/*.cs" />
     <Compile Include="DependencyInjection/*.cs" />
     <Compile Include="InMemory/*.cs" />
+    <Compile Include="Models/**/*.cs" />
   </ItemGroup>
 
 </Project>

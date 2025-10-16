@@ -1,3 +1,4 @@
+@using NexaCRM.Pages.Components.Layout
 @namespace NexaCRM.Pages.Components.Layout
 @inherits LayoutComponentBase
 @implements IAsyncDisposable
@@ -12,23 +13,23 @@
 
 <div class="themed-body flex h-screen w-full overflow-hidden">
     <!-- Primary Icon Navigation -->
-    <PrimaryNavRail Sections="PrimaryNavOrder"
+     <PrimaryNavRail Sections="PrimaryNavOrder"
                     ActiveSection="activePrimaryNav"
                     Navigation="PrimaryNavigation"
-                    OnSectionSelected="HandlePrimaryNavSelection" />
+                    OnSectionSelected="HandlePrimaryNavSelection" /> 
 
     <!-- Secondary Detail Navigation -->
-    <SecondaryNavPanel IsOpen="isDetailNavOpen"
+     <SecondaryNavPanel IsOpen="isDetailNavOpen"
                        ActiveSection="activePrimaryNav"
                        ActiveSectionLabel="ActivePrimaryNavLabel"
-                       Navigation="PrimaryNavigation" />
+                       Navigation="PrimaryNavigation" /> 
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
         <header class="themed-surface-card flex-shrink-0 h-16 border-b border-[var(--border-color)] flex items-center justify-between px-6">
             <div class="flex items-center space-x-4">
-                <button type="button" @onclick="ToggleDetailNav" class="p-2 rounded-full hover:bg-[var(--primary-bg)]" aria-label="Toggle detail navigation">
+                <button id="js-detail-nav-btn" type="button" class="p-2 rounded-full hover:bg-[var(--primary-bg)]" aria-label="Toggle detail navigation">
                     <svg class="w-6 h-6 themed-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
                 <div class="themed-text-secondary text-sm">
@@ -40,7 +41,7 @@
                     <svg class="w-6 h-6 themed-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                     <span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-[var(--surface-bg)]" aria-hidden="true"></span>
                 </button>
-                <button type="button" class="p-2 rounded-full hover:bg-[var(--primary-bg)]" @onclick="ToggleThemeAsync" aria-label="Toggle theme">
+                <button id="js-theme-btn" type="button" class="p-2 rounded-full hover:bg-[var(--primary-bg)]" aria-label="Toggle theme">
                     @if (isDarkMode)
                     {
                         <span role="img" aria-hidden="true">🌞</span>
@@ -50,6 +51,7 @@
                         <span role="img" aria-hidden="true">🌙</span>
                     }
                 </button>
+
                 <div class="flex items-center space-x-3">
                     <img class="h-9 w-9 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=U" alt="User profile" />
                     <div>
@@ -82,7 +84,7 @@
             "Dashboard",
             new[]
             {
-                new SecondaryNavLink("Overview", "/", NavLinkMatch.All),
+                new SecondaryNavLink("Overview", "/dashboard", NavLinkMatch.All),
                 new SecondaryNavLink("Reports", "/reports", NavLinkMatch.Prefix),
                 new SecondaryNavLink("Analytics", "/analytics", NavLinkMatch.Prefix)
             }),
@@ -147,31 +149,30 @@
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            return;
-        }
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         try
+    //         {
+    //             _layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/layout.js");
+    //             await _layoutModule.InvokeVoidAsync("initializeShell");
+    //             isDarkMode = await _layoutModule.InvokeAsync<bool>("isDarkMode");
+    //             await _layoutModule.InvokeVoidAsync("attachMainLayoutJsHandlers");
+    //             StateHasChanged();
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             Console.WriteLine($"Error initializing layout module or attaching JS handlers: {ex.Message}");
+    //         }
+    //     }
+    // }
 
-        try
-        {
-            _layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/layout.js");
-            await _layoutModule.InvokeVoidAsync("initializeShell");
-            isDarkMode = await _layoutModule.InvokeAsync<bool>("isDarkMode");
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            // JS 모듈 로드 실패 시 기본 테마 유지
-            Console.WriteLine($"Error initializing layout module: {ex.Message}");
-        }
-    }
-
-    private void ToggleDetailNav()
-    {
-        isDetailNavOpen = !isDetailNavOpen;
-    }
+    // JS에서 직접 처리하도록 변경
+    //private void ToggleDetailNav()
+    //{
+    //    isDetailNavOpen = !isDetailNavOpen;
+    //}
 
     private void HandlePrimaryNavSelection(PrimaryNavSection nav)
     {
@@ -197,15 +198,30 @@
         }
     }
 
-    private async Task ToggleThemeAsync()
+    // JS에서 직접 처리하도록 변경
+    //private async Task ToggleThemeAsync()
+    //{
+    //    if (_layoutModule is null)
+    //    {
+    //        _layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/layout.js");
+    //    }
+    //    isDarkMode = await _layoutModule.InvokeAsync<bool>("toggleTheme");
+    //    StateHasChanged();
+    //}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_layoutModule is null)
+        if (firstRender)
         {
-            _layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/layout.js");
+            try
+            {
+                var module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/layout.js");
+                await module.InvokeVoidAsync("attachMainLayoutJsHandlers");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error attaching JS handlers: {ex.Message}");
+            }
         }
-
-        isDarkMode = await _layoutModule.InvokeAsync<bool>("toggleTheme");
-        StateHasChanged();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

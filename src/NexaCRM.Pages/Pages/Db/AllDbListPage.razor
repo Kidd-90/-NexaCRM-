@@ -37,6 +37,7 @@
         </div>
     </HeaderActions>
 
+    <ChildContent>
     @if (IsLoading)
     {
         <div class="themed-surface-card border border-[var(--border-color)] rounded-xl p-10 text-center text-sm themed-text-secondary">
@@ -98,10 +99,10 @@
                                    @onchange="OnEndDateChanged" />
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("Today")" @onclick="() => SetQuickRange("Today")">오늘</button>
-                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("7Days")" @onclick="() => SetQuickRange("7Days")">7일</button>
-                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("1Month")" @onclick="() => SetQuickRange("1Month")">1개월</button>
-                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("3Months")" @onclick="() => SetQuickRange("3Months")">3개월</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("Today")" @onclick="@(() => SetQuickRange("Today"))">오늘</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("7Days")" @onclick="@(() => SetQuickRange("7Days"))">7일</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("1Month")" @onclick="@(() => SetQuickRange("1Month"))">1개월</button>
+                            <button type="button" class="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold transition @GetQuickFilterClass("3Months")" @onclick="@(() => SetQuickRange("3Months"))">3개월</button>
                         </div>
                     </div>
                     <div class="flex min-w-[10rem] flex-col gap-2">
@@ -225,6 +226,7 @@
             </div>
         </section>
     }
+    </ChildContent>
 </PageTemplate>
 
 @code {
@@ -249,7 +251,8 @@
             .Select(c => c.Group)
             .Where(group => !string.IsNullOrWhiteSpace(group))
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(group => group);
+            .OrderBy(group => group)
+            .Cast<string>();
 
         FilterCustomers();
         return Task.CompletedTask;

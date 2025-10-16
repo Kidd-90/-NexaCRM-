@@ -273,17 +273,17 @@
 
     private static string ResolveTargetUrl(ClaimsPrincipal user)
     {
-        if (user.IsInRole("Manager"))
+        @* if (user.IsInRole("Manager"))
         {
             return "/sales-manager-dashboard";
         }
 
         if (user.IsInRole("Sales"))
         {
-            return "/main-dashboard";
-        }
+            return "/dashboard";
+        } *@
 
-        return "/main-dashboard";
+    return "/dashboard";
     }
 
     private RenderFragment LoginForm => @<section>

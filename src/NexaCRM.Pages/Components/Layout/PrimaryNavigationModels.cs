@@ -11,6 +11,7 @@ public sealed record SecondaryNavLink(string Title, string Href, NavLinkMatch Ma
 public enum PrimaryNavSection
 {
     Dashboard,
+    Customers,
     Deals,
     Leads,
     Settings
