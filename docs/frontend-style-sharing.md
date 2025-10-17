@@ -7,10 +7,12 @@
 ### Desktop-first shell
 - 2025년 2월 이후 UI 셸은 데스크톱 전용 플렉스 레이아웃으로 단순화되었습니다.
 - 모바일 전용 규칙과 오버레이는 제거되었으며, `app.css`가 헤더·내비게이션·콘텐츠 패널을 모두 포함합니다.
-- 커스텀 반응형 처리가 필요하다면 각 페이지 전용 scoped CSS에서 선택적으로 정의하세요.
+- 공통으로 반복되는 반응형 패턴(예: 대시보드 사이드바, 카드 그리드)은 `ui/patterns.css`에서 중앙 집중 관리합니다.
+- 개별 페이지에서만 필요한 미세 조정은 해당 페이지의 `.razor.css` 파일(Blazor scoped CSS)에만 남겨 둡니다.
 
 ## Included Assets
 - `wwwroot/css/app.css`: 데스크톱 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
+- `wwwroot/css/ui/index.css`: 토큰(`foundations.css`), 유틸리티(`utilities.css`), 컴포넌트(`components.css`), 레이아웃(`layout.css`), 패턴(`patterns.css`) 계층을 순서대로 불러오는 엔트리 포인트.
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 - `https://tweakcn.com/live-preview.min.js`: TweakCN 라이브 프리뷰 스니펫. 디자인 팀이 [TweakCN 테마 편집기](https://tweakcn.com/editor/theme?p=custom)와 실시간으로 스타일을 연동할 때 사용합니다.
 
@@ -75,7 +77,12 @@
    ```
 2. WebAssembly 호스트(`wwwroot/index.html`)에서도 동일 경로를 사용하면 초기 로딩 스피너까지 일관된 스타일을 유지할 수 있습니다.
 3. 공통 스크립트가 필요하면 `<script src="_content/NexaCRM.UI/js/<file-name>.js"></script>` 형태로 포함해 두 애플리케이션에서 동일한 UX 동작을 제공합니다.
-4. 새로운 공통 스타일이나 스크립트는 `NexaCRM.UI/wwwroot/` 아래에 추가하고, 두 애플리케이션에서 `_content/NexaCRM.UI/...` 경로로 참조하세요.
+4. 새로운 공통 스타일이나 스크립트는 `NexaCRM.UI/wwwroot/` 아래에 추가하고, 두 애플리케이션에서 `_content/NexaCRM.UI/...` 경로로 참조하세요. 반복해서 등장하는 반응형 보조 스타일은 `wwwroot/css/ui/patterns.css`에 배치하고, 페이지 고유 규칙은 해당 `.razor.css` 파일에만 유지합니다.
+
+## Page-scoped CSS Guidelines
+- 페이지 전용 `.razor.css` 파일에는 **그 페이지에서만 사용되는 선택자**와 레이아웃 미세 조정만 남깁니다.
+- 여러 페이지에서 재사용되는 패턴(대시보드 카드 간격, 사이드바 숨김, 테이블 스크롤 처리 등)은 `ui/patterns.css`로 이동해 재사용성을 높이고 유지보수 범위를 축소합니다.
+- 공통 패턴에 맞추기 어렵거나 실험적인 디자인은 `@layer page { ... }` 블록을 활용해 범위를 명확히 하고, 필요 시 `patterns.css`로 승격합니다.
 
 ## Server Host Integration Checklist
 - `src/NexaCRM.WebServer/Pages/_Host.cshtml` 파일에서 WebClient와 동일한 `_content/NexaCRM.UI` CSS, JS 번들을 참조해 서버 렌더링과 WebAssembly 클라이언트 간 스타일 일관성을 확보합니다.
