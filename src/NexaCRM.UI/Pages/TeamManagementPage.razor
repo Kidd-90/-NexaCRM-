@@ -10,7 +10,7 @@
 
 <ResponsivePage class="common-page-container">
     <div class="team-management-page">
-        <div class="card shadow-sm page-header">
+        <div class="card page-header">
             <div>
                 <h2 class="mb-1">팀 관리</h2>
                 <p class="text-muted mb-0">조직의 팀 구성과 운영 현황을 한눈에 확인하고 관리할 수 있습니다.</p>
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="card shadow-sm filter-card">
+        <div class="card filter-card">
             <EditForm Model="_teamFilter" OnValidSubmit="ApplyFilter">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4 col-sm-6">
@@ -57,10 +57,10 @@
 
         @if (_showTeamForm)
         {
-            <div class="card shadow-sm new-team-card">
+            <div class="card new-team-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>새 팀 등록</strong>
-                    <button class="btn btn-link text-decoration-none" @onclick="ToggleTeamForm">
+                    <button class="btn btn-link" @onclick="ToggleTeamForm">
                         <i class="bi bi-x-lg"></i>
                     </button>
                 </div>
@@ -105,7 +105,7 @@
             </div>
         }
 
-        <div class="card shadow-sm table-card">
+        <div class="card table-card">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">

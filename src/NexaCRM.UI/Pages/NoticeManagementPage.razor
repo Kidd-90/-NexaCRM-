@@ -42,7 +42,7 @@
             @foreach (var option in FilterOptions)
             {
                 <button type="button"
-                        class="notice-chip @(IsSelected(option.Category) ? "notice-chip--active" : string.Empty)"
+                        class="notice-chip @(IsSelected(option.Category) ?"notice-chip--active" : string.Empty)"
                         @onclick="() => SetCategoryFilter(option.Category)">
                     @option.Label
                 </button>
@@ -77,7 +77,7 @@
                     @foreach (var notice in PagedNotices)
                     {
                         <button type="button"
-                                class="notice-list-item @(selectedNotice?.Id == notice.Id ? "is-active" : string.Empty)"
+                                class="notice-list-item @(selectedNotice?.Id == notice.Id ?"is-active" : string.Empty)"
                                 @onclick="() => SelectNotice(notice)">
                             <div class="notice-list-item__meta">
                                 <span class="notice-chip notice-chip--category @GetCategoryClass(notice.Category)">
@@ -112,7 +112,7 @@
                         @for (var pageNumber = 1; pageNumber <= TotalPages; pageNumber++)
                         {
                             <button type="button"
-                                    class="notice-page-button @(currentPage == pageNumber ? "notice-page-button--active" : string.Empty)"
+                                    class="notice-page-button @(currentPage == pageNumber ?"notice-page-button--active" : string.Empty)"
                                     @onclick="() => GoToPage(pageNumber)">
                                 @pageNumber
                             </button>

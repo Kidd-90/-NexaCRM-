@@ -8,26 +8,26 @@
 @inject NavigationManager NavigationManager
 @inject IGlobalActionService GlobalActionService
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden common-page-container">
-    <div class="layout-container flex h-full grow flex-col">
-    <div class="px-40 flex flex-1 justify-center py-5">
-        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-        <div class="flex flex-wrap justify-between gap-3 p-4">
-            <div class="flex min-w-72 flex-col gap-3">
-            <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["SalesPipeline"]</p>
-            <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ManageSalesProcess"]</p>
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden common-page-container">
+    <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+    <div class="px-5 d-flex flex-grow-1 justify-content-center py-5">
+        <div class="layout-content-container d-flex flex-column ui-max-w-960 flex-grow-1">
+        <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+            <div class="d-flex ui-min-w-18rem flex-column gap-3">
+            <p class="text-ink fs-1 fw-bold lh-sm">@Localizer["SalesPipeline"]</p>
+            <p class="text-ink-muted small fw-normal lh-base">@Localizer["ManageSalesProcess"]</p>
             </div>
             <button
-            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
+            class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base"
             >
             <span class="truncate">@Localizer["AddDeal"]</span>
             </button>
         </div>
         <div class="px-4 py-3">
-            <label class="flex flex-col min-w-40 h-12 w-full">
-            <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+            <label class="d-flex flex-column ui-min-w-10rem ui-input-height-lg w-100">
+            <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                 <div
-                class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                 data-icon="MagnifyingGlass"
                 data-size="24px"
                 data-weight="regular"
@@ -40,14 +40,14 @@
                 </div>
                 <input
                 placeholder='@Localizer["SearchDeals"]'
-                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                 @bind="DealSearchTerm"
                 @bind:event="oninput"
                 />
             </div>
             </label>
         </div>
-        <div class="flex gap-3 p-3 flex-wrap pr-4 pipeline-filter-row">
+        <div class="d-flex gap-3 p-3 flex-wrap pr-4 pipeline-filter-row">
             <div class="pipeline-filter-control">
                 <span class="pipeline-filter-label">@Localizer["Owner"]</span>
                 <div class="pipeline-filter-select-wrapper">
@@ -94,7 +94,7 @@
         }
         else
         {
-            <div class="filter-summary @(HasActiveFilters ? "filter-summary--active" : string.Empty)" aria-live="polite">
+            <div class="filter-summary @(HasActiveFilters ?"filter-summary--active" : string.Empty)" aria-live="polite">
                 <div class="filter-summary__meta">
                     <span class="filter-summary__count">@string.Format(Localizer["DealsFound"], FilteredDealCount)</span>
                     @if (HasActiveFilters)
@@ -115,15 +115,15 @@
                 }
             </div>
         }
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["PipelineStages"]</h2>
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["PipelineStages"]</h2>
         <div class="px-4 py-3 container">
-            <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
-            <table class="flex-1 pipeline-table">
+            <div class="d-flex overflow-hidden rounded-3 border border-soft bg-surface-soft">
+            <table class="flex-grow-1 pipeline-table">
                 <thead>
-                <tr class="bg-slate-50">
-                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Stage"]</th>
-                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Deals"]</th>
-                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Amount"]</th>
+                <tr class="bg-surface-soft">
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Stage"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Deals"]</th>
+                    <th class="pipeline-table__header table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Amount"]</th>
                 </tr>
                 </thead>
                 <tbody class="pipeline-table__body">
@@ -131,18 +131,18 @@
                     {
                         @foreach (var placeholderIndex in Enumerable.Range(0, 4))
                         {
-                            <tr class="pipeline-row pipeline-row--skeleton border-t border-t-[#d0d9e7]">
-                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                            <tr class="pipeline-row pipeline-row--skeleton border-top border-soft">
+                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                                     @if (placeholderIndex == 0)
                                     {
                                         <span class="visually-hidden">@Localizer["Loading..."]</span>
                                     }
                                     <span class="skeleton skeleton--text skeleton--stage"></span>
                                 </td>
-                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                                     <span class="skeleton skeleton--text skeleton--count"></span>
                                 </td>
-                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                                     <span class="skeleton skeleton--text skeleton--amount"></span>
                                 </td>
                             </tr>
@@ -151,19 +151,19 @@
                     else if (groupedDeals.Length == 0)
                     {
                         <tr>
-                            <td colspan="3" class="text-center text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["NoDealsMatch"]</td>
+                            <td colspan="3" class="text-center text-ink-muted small fw-normal lh-base">@Localizer["NoDealsMatch"]</td>
                         </tr>
                     }
                     else
                     {
                         @foreach (var stage in groupedDeals)
                         {
-                            <tr class="pipeline-row pipeline-row--data border-t border-t-[#d0d9e7]">
-                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                            <tr class="pipeline-row pipeline-row--data border-top border-soft">
+                                <td class="pipeline-table__cell pipeline-table__cell--stage table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                                 @stage.Key
                                 </td>
-                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Count()</td>
-                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@stage.Sum(d => d.Amount).ToString("C")</td>
+                                <td class="pipeline-table__cell pipeline-table__cell--deals table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@stage.Count()</td>
+                                <td class="pipeline-table__cell pipeline-table__cell--amount table-95fef262-a922-4bfe-a4c4-b7dc2d92c3ad-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@stage.Sum(d => d.Amount).ToString("C")</td>
                             </tr>
                         }
                     }

@@ -87,7 +87,7 @@
         </div>
 
         <!-- 회사별 상세 통계 -->
-        <div class="card shadow-sm mb-4">
+        <div class="card mb-4">
             <div class="card-header bg-white">
                 <h5 class="mb-0"><i class="bi bi-diagram-3"></i> 회사별 조직 현황</h5>
             </div>
@@ -137,7 +137,7 @@
                                             <strong>@totalMembers</strong> 명
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge @(company.IsActive ? "bg-success" : "bg-secondary")">
+                                            <span class="badge @(company.IsActive ?"bg-success" : "bg-secondary")">
                                                 @(company.IsActive ? "활성" : "비활성")
                                             </span>
                                         </td>
@@ -164,7 +164,7 @@
                                                     @branchTeams.Sum(t => t.MemberCount) 명
                                                 </td>
                                                 <td class="text-center">
-                                                    <span class="badge @(branch.IsActive ? "bg-success" : "bg-secondary") bg-opacity-75">
+                                                    <span class="badge @(branch.IsActive ?"bg-success" : "bg-secondary") bg-opacity-75">
                                                         @(branch.IsActive ? "활성" : "비활성")
                                                     </span>
                                                 </td>
@@ -180,7 +180,7 @@
         </div>
 
         <!-- 팀 상세 현황 -->
-        <div class="card shadow-sm">
+        <div class="card">
             <div class="card-header bg-white">
                 <h5 class="mb-0"><i class="bi bi-people-fill"></i> 팀 상세 현황</h5>
             </div>
@@ -207,7 +207,7 @@
                                             <h6 class="mb-1">@team.Name</h6>
                                             <small class="text-muted">@team.Code</small>
                                         </div>
-                                        <span class="badge @(team.IsActive ? "bg-success" : "bg-secondary")">
+                                        <span class="badge @(team.IsActive ?"bg-success" : "bg-secondary")">
                                             @(team.IsActive ? "활성" : "비활성")
                                         </span>
                                     </div>

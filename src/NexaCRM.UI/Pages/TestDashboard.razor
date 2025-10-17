@@ -9,7 +9,7 @@
 @inject IGlobalActionService GlobalActionService
 @implements IDisposable
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" data-page="main-dashboard">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden" data-page="main-dashboard">
     <!-- Mobile Header Bar -->
     <div class="mobile-header">
         <div class="mobile-header-content">
@@ -42,7 +42,7 @@
         </div>
         
         <!-- Mobile Search Bar (collapsed by default) -->
-        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ? "expanded" : "collapsed")">
+        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ?"expanded" : "collapsed")">
             <div class="mobile-search-input">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
@@ -89,7 +89,7 @@
     </div>
 
     <!-- Mobile Notifications Panel (collapsed by default) -->
-    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ? "expanded" : "collapsed")">
+    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ?"expanded" : "collapsed")">
         <div class="mobile-notifications-header">
             <h3>@Localizer["Notifications"]</h3>
             <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
@@ -136,62 +136,62 @@
     </div>
 
     <!-- Dashboard Content -->
-    <div class="layout-container flex h-full grow flex-col">
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5 dashboard-container">
-            <div class="layout-content-container flex flex-col max-w-[960px] flex-1 dashboard-main-content">
-                <div class="flex flex-wrap justify-between gap-3 p-4">
-                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72 dashboard-welcome">Welcome back, Sales User!</p>
+    <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <div class="gap-1 px-4 d-flex flex-grow-1 justify-content-center py-5 dashboard-container">
+            <div class="layout-content-container d-flex flex-column ui-max-w-960 flex-grow-1 dashboard-main-content">
+                <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+                    <p class="text-ink fs-1 fw-bold lh-sm ui-min-w-18rem dashboard-welcome">Welcome back, Sales User!</p>
                 </div>
                 
-                <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["DashboardOverview"]</h2>
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid">
-                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => NavigateToPage("/sales-pipeline"))">
-                        <div class="text-[#0e131b]" data-icon="Funnel" data-size="24px" data-weight="regular">
+                <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["DashboardOverview"]</h2>
+                <div class="d-grid ui-grid-autofit gap-3 p-4 dashboard-grid">
+                    <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" @onclick="@(() => NavigateToPage("/sales-pipeline"))">
+                        <div class="text-ink" data-icon="Funnel" data-size="24px" data-weight="regular">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPipeline"]</h2>
+                        <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["SalesPipeline"]</h2>
                     </button>
-                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => NavigateToPage("/reports"))">
-                        <div class="text-[#0e131b]" data-icon="Target" data-size="24px" data-weight="regular">
+                    <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" @onclick="@(() => NavigateToPage("/reports"))">
+                        <div class="text-ink" data-icon="Target" data-size="24px" data-weight="regular">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["QuarterlyPerformance"]</h2>
+                        <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["QuarterlyPerformance"]</h2>
                     </button>
-                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => NavigateToPage("/tasks-page"))">
-                        <div class="text-[#0e131b]" data-icon="ListBullets" data-size="24px" data-weight="regular">
+                    <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" @onclick="@(() => NavigateToPage("/tasks-page"))">
+                        <div class="text-ink" data-icon="ListBullets" data-size="24px" data-weight="regular">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Tasks"]</h2>
+                        <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["Tasks"]</h2>
                     </button>
-                    <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" @onclick="@(() => ScrollToSection("recent-activity"))">
-                        <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
+                    <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" @onclick="@(() => ScrollToSection("recent-activity"))">
+                        <div class="text-ink" data-icon="Users" data-size="24px" data-weight="regular">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["RecentActivity"]</h2>
+                        <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["RecentActivity"]</h2>
                     </button>
                 </div>
                 
-                <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" id="recent-activity">@Localizer["RecentActivity"]</h2>
-                <div class="grid grid-cols-[40px_1fr] gap-x-2 px-4">
-                    <div class="flex flex-col items-center gap-1 pt-3">
-                        <div class="text-[#0e131b]" data-icon="UserPlus" data-size="24px" data-weight="regular">
+                <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5" id="recent-activity">@Localizer["RecentActivity"]</h2>
+                <div class="d-grid ui-grid-40-1fr gx-2 px-4">
+                    <div class="d-flex flex-column align-items-center gap-1 pt-3">
+                        <div class="text-ink" data-icon="UserPlus" data-size="24px" data-weight="regular">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                 <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z"></path>
                             </svg>
                         </div>
-                        <div class="w-[1.5px] bg-[#d0d9e7] h-2 grow"></div>
+                        <div class="ui-width-1-5 bg-surface-soft h-2 flex-grow-1"></div>
                     </div>
-                    <div class="flex flex-1 flex-col py-3">
-                        <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["NewLead"]</p>
-                        <p class="text-[#4d6a99] text-base font-normal leading-normal">2024-07-10</p>
+                    <div class="d-flex flex-grow-1 flex-column py-3">
+                        <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["NewLead"]</p>
+                        <p class="text-ink-muted fs-5 fw-normal lh-base">2024-07-10</p>
                     </div>
                 </div>
             </div>

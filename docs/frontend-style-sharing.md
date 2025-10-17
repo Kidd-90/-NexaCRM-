@@ -4,9 +4,13 @@
 - 공통 디자인 토큰과 스타일 자산은 **Razor Class Library**인 `NexaCRM.UI` 프로젝트에서 관리합니다.
 - `NexaCRM.WebClient`와 `NexaCRM.WebServer` 모두 `NexaCRM.UI`를 참조하고, `_content/NexaCRM.UI/...` 정적 자산 경로를 통해 동일한 CSS를 로드합니다.
 
+### Desktop-first shell
+- 2025년 2월 이후 UI 셸은 데스크톱 전용 플렉스 레이아웃으로 단순화되었습니다.
+- 모바일 전용 규칙과 오버레이는 제거되었으며, `app.css`가 헤더·내비게이션·콘텐츠 패널을 모두 포함합니다.
+- 커스텀 반응형 처리가 필요하다면 각 페이지 전용 scoped CSS에서 선택적으로 정의하세요.
+
 ## Included Assets
-- `wwwroot/css/app.css`: 데스크톱·다크 모드 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
-- `wwwroot/css/mobile.css`: 모바일 네비게이션, 반응형 브레이크포인트, 터치 상호작용에 특화된 보조 규칙 제공.
+- `wwwroot/css/app.css`: 데스크톱 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 - `https://tweakcn.com/live-preview.min.js`: TweakCN 라이브 프리뷰 스니펫. 디자인 팀이 [TweakCN 테마 편집기](https://tweakcn.com/editor/theme?p=custom)와 실시간으로 스타일을 연동할 때 사용합니다.
 
@@ -65,8 +69,8 @@
 1. Razor 컴포넌트 또는 레이아웃에서 다음과 같이 정적 자산을 참조합니다.
    ```html
    <HeadContent>
-       <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
-       <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
+      <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
+      <link rel="stylesheet" href="_content/NexaCRM.UI/css/ui/index.css" />
    </HeadContent>
    ```
 2. WebAssembly 호스트(`wwwroot/index.html`)에서도 동일 경로를 사용하면 초기 로딩 스피너까지 일관된 스타일을 유지할 수 있습니다.

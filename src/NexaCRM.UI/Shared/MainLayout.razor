@@ -1,19 +1,15 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 @using System.Globalization
+@using System.Linq
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
-@using NexaCRM.UI.Models.Navigation
-@using NexaCRM.UI.Services.Interfaces
-@inject IDeviceService DeviceService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IUserFavoritesService UserFavoritesService
 @inject INotificationFeedService NotificationFeed
-@inject INavigationStateService NavigationStateService
 
 <HeadContent>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
@@ -21,12 +17,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/variable/pretendardvariable.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/app.css" />
-    <link rel="stylesheet" href="_content/NexaCRM.UI/css/mobile.css" />
+    <link rel="stylesheet" href="_content/NexaCRM.UI/css/ui/index.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/components/login-status.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         (function () {
-            // idempotent loader: only load the UI helper scripts once across hosts
             if (window.__nexacrm_ui_scripts_loaded) return;
             window.__nexacrm_ui_scripts_loaded = true;
 
@@ -36,7 +30,6 @@
                 'navigation.js',
                 'culture.js',
                 'theme-manager.js',
-                'device.js',
                 'interactions.js',
                 'client-console-forwarder.js',
                 'csv-export.js',
@@ -56,114 +49,64 @@
     </script>
 </HeadContent>
 
-<div class="page app-shell @(isMobile ? "app-shell--mobile" : "app-shell--desktop")">
-    @if (isMobile)
-    {
-        <div class="sidebar collapse">
-            <NavMenu Favorites="favoriteShortcuts" RecentLinks="recentLinks" OnNavigate="HandleNavigationAsync" />
-        </div>
-        <div class="mobile-overlay"></div>
-    }
-    else
-    {
-        <NavigationRail />
-    }
+<div class="page desktop-shell">
+    <NavigationRail />
 
-    <div class="app-shell__background">
-        <div class="app-shell__surface">
-            <header class="app-shell__header">
-                <div class="app-shell__brand">
-                    <button type="button" class="app-shell__nav-toggle" @onclick="ToggleNavMenu" aria-label="Toggle navigation">
-                        <i class="bi bi-list" aria-hidden="true"></i>
-                    </button>
-                    <a class="app-shell__logo" href="/">
-                        <span class="app-shell__logo-mark">NC</span>
-                        <span class="app-shell__logo-text">NexaCRM</span>
-                    </a>
+    <div class="desktop-shell__main">
+        <header class="desktop-shell__header">
+            <div class="desktop-shell__meta">
+                <div class="desktop-shell__page-icon" aria-hidden="true">
+                    <i class="@headerActionIcon"></i>
                 </div>
+                <div class="desktop-shell__titles">
+                    @if (isDetailPage && !string.IsNullOrEmpty(parentPageTitle))
+                    {
+                        <button type="button" class="desktop-shell__parent" @onclick="NavigateBack">
+                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                            <span>@parentPageTitle</span>
+                        </button>
+                    }
+                    <h1 class="desktop-shell__title">@currentPageTitle</h1>
+                </div>
+            </div>
 
+            <div class="desktop-shell__search">
                 <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
+            </div>
 
-                <div class="app-shell__actions">
-                    <button type="button" class="app-shell__theme theme-toggle-button" data-theme-toggle aria-label="Switch theme">
-                        <span class="theme-light-icon">🌞</span>
-                        <span class="theme-dark-icon">🌙</span>
-                    </button>
-                    <button class="app-shell__action" title="Notifications" @onclick="OnNotificationsClick">
-                        <i class="bi bi-bell" aria-hidden="true"></i>
-                        @if (unreadNotificationsCount > 0)
-                        {
-                            <span class="app-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
-                        }
-                    </button>
-                    <AuthorizeView>
-                        <Authorized>
-                            <button class="app-shell__profile" @onclick="GoToProfile" title="Open profile settings">
-                                <span class="app-shell__avatar">@userInitials</span>
-                                <span class="app-shell__profile-name">@userDisplayName</span>
-                            </button>
-                        </Authorized>
-                        <NotAuthorized>
-                            <button class="app-shell__profile" @onclick="GoToProfile" title="Sign in">
-                                <span class="app-shell__avatar"><i class="bi bi-person" aria-hidden="true"></i></span>
-                                <span class="app-shell__profile-name">@userDisplayName</span>
-                            </button>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </div>
-            </header>
-
-            <section class="app-shell__page-header">
-                <div class="app-shell__page-meta">
-                </div>
-                <!-- Add quick search within the page header for faster navigation -->
-                <div class="app-shell__page-search">
-                    <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
-                </div>
-
-                <div class="app-shell__page-actions">
-                    @if (!isMobile)
+            <div class="desktop-shell__actions">
+                <button type="button" class="desktop-shell__action theme-toggle-button" data-theme-toggle aria-label="Switch theme">
+                    <span class="theme-light-icon">🌞</span>
+                    <span class="theme-dark-icon">🌙</span>
+                </button>
+                <button class="desktop-shell__action" title="Notifications" @onclick="OnNotificationsClick">
+                    <i class="bi bi-bell" aria-hidden="true"></i>
+                    @if (unreadNotificationsCount > 0)
                     {
-                        <button class="app-shell__action" title="Notifications" @onclick="OnNotificationsClick">
-                            <i class="bi bi-bell" aria-hidden="true"></i>
-                            @if (unreadNotificationsCount > 0)
-                            {
-                                <span class="app-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
-                            }
-                        </button>
+                        <span class="desktop-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
                     }
-                    else
-                    {
-                        <button class="app-shell__action" title="@headerActionLabel">
-                            <i class="@headerActionIcon" aria-hidden="true"></i>
+                </button>
+                <AuthorizeView>
+                    <Authorized>
+                        <button class="desktop-shell__profile" @onclick="GoToProfile" title="Open profile settings">
+                            <span class="desktop-shell__avatar">@userInitials</span>
+                            <span class="desktop-shell__profile-name">@userDisplayName</span>
                         </button>
-                    }
-                </div>
-            </section>
+                    </Authorized>
+                    <NotAuthorized>
+                        <button class="desktop-shell__profile" @onclick="GoToProfile" title="Sign in">
+                            <span class="desktop-shell__avatar"><i class="bi bi-person" aria-hidden="true"></i></span>
+                            <span class="desktop-shell__profile-name">@userDisplayName</span>
+                        </button>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </header>
 
-        </div>
-
-        <article class="content app-shell__content">
+        <main class="desktop-shell__content">
             @Body
-        </article>
+        </main>
     </div>
-
-    @if (isMobile && favoriteShortcuts.Count > 0)
-    {
-        <footer class="app-shell__mobile-favorites">
-            <nav class="app-shell__favorites" aria-label="Favourite shortcuts">
-                @foreach (var shortcut in favoriteShortcuts)
-                {
-                    <button @key="shortcut.Id" class="app-shell__favorite" style="@BuildFavoriteStyle(shortcut)" title="@shortcut.Label" @onclick="() => NavigateToFavorite(shortcut)">
-                        <span class="app-shell__favorite-icon">
-                            <i class="@shortcut.IconCssClass" aria-hidden="true"></i>
-                        </span>
-                        <span class="app-shell__favorite-label">@shortcut.Label</span>
-                    </button>
-                }
-            </nav>
-        </footer>
-    }
 
     <AuthorizeView>
         <Authorized>
@@ -173,9 +116,9 @@
             </div>
         </Authorized>
     </AuthorizeView>
-
-    <GlobalActionHost />
 </div>
+
+<GlobalActionHost />
 
 @code {
     private static readonly string[] DetailRoutePrefixes =
@@ -256,26 +199,20 @@
         ["email-template-builder"] = "bi bi-envelope-open"
     };
 
-    private bool isMobile;
     private bool isDetailPage;
-    private bool isHomePage;
     private string currentPageTitle = "Home";
     private string headerActionIcon = "bi bi-grid-3x3-gap";
-    private string headerActionLabel = "Page actions";
-    private int unreadNotificationsCount = 0;
+    private int unreadNotificationsCount;
     private string userDisplayName = "Guest";
     private string userInitials = "G";
     private string? parentPagePath;
     private string? parentPageTitle;
-    private IReadOnlyList<UserFavoriteShortcut> favoriteShortcuts = Array.Empty<UserFavoriteShortcut>();
-    private IReadOnlyList<NavigationHistoryEntry> recentLinks = Array.Empty<NavigationHistoryEntry>();
     private IJSObjectReference? layoutModule;
 
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += OnLocationChanged;
         NotificationFeed.UnreadCountChanged += OnUnreadChanged;
-        NavigationStateService.RecentLinksChanged += OnRecentLinksChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -292,15 +229,6 @@
             UpdateUserInfo(new ClaimsPrincipal(new ClaimsIdentity()));
         }
 
-        try
-        {
-            favoriteShortcuts = await UserFavoritesService.GetFavoritesAsync();
-        }
-        catch
-        {
-            favoriteShortcuts = Array.Empty<UserFavoriteShortcut>();
-        }
-
         UpdateLayoutState();
     }
 
@@ -309,48 +237,10 @@
         if (firstRender)
         {
             layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/layout.js");
-
-            isMobile = await DeviceService.IsMobileAsync();
-
-            UpdateLayoutState();
-            await layoutModule.InvokeVoidAsync("initializeShell", new { isMobile });
-            // measure header height at runtime and keep --app-shell-page-header-offset updated
-            try
-            {
-                await layoutModule.InvokeVoidAsync("measureHeaderOffset");
-                // Ensure inline content offsets are applied (compatibility for older layout.js)
-                try { await layoutModule.InvokeVoidAsync("applyContentOffsets"); } catch { }
-            }
-            catch (JSException)
-            {
-                // older layout.js may not expose measureHeaderOffset; ignore
-            }
-            await NavigationStateService.InitializeAsync();
-            recentLinks = NavigationStateService.RecentLinks;
+            await layoutModule.InvokeVoidAsync("initializeShell");
             await UpdateUnreadNotificationsAsync();
-            await TrackCurrentPageAsync();
-            if (isMobile)
-            {
-                await layoutModule.InvokeVoidAsync("syncMobileLayout");
-            }
             await layoutModule.InvokeVoidAsync("refreshThemeToggle");
             StateHasChanged();
-        }
-        else if (isMobile && layoutModule is not null)
-        {
-            await layoutModule.InvokeVoidAsync("syncMobileLayout");
-        }
-    }
-
-    private async Task ToggleNavMenu()
-    {
-        if (layoutModule is not null)
-        {
-            await layoutModule.InvokeVoidAsync("toggleMenu");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("layoutInterop.toggleMenu");
         }
     }
 
@@ -359,7 +249,7 @@
         NavigationManager.NavigateTo("profile-settings-page");
     }
 
-    private async Task NavigateBack()
+    private void NavigateBack()
     {
         if (!string.IsNullOrWhiteSpace(parentPagePath))
         {
@@ -367,35 +257,11 @@
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("history.back");
+            _ = JSRuntime.InvokeVoidAsync("history.back");
         }
     }
 
-    private void NavigateToFavorite(UserFavoriteShortcut shortcut)
-    {
-        if (shortcut is null || !shortcut.HasTarget)
-        {
-            return;
-        }
-
-        NavigationManager.NavigateTo(shortcut.TargetUri);
-    }
-
-    private async Task HandleNavigationAsync()
-    {
-        if (layoutModule is not null)
-        {
-            await layoutModule.InvokeVoidAsync("refreshThemeToggle");
-        }
-    }
-
-    private async Task HandleSearchNavigate()
-    {
-        if (layoutModule is not null)
-        {
-            await layoutModule.InvokeVoidAsync("toggleMenu", true);
-        }
-    }
+    private Task HandleSearchNavigate() => Task.CompletedTask;
 
     private void UpdateLayoutState()
     {
@@ -439,13 +305,8 @@
             parentPageTitle = ResolvePageTitle(basePath, false);
         }
 
-        isHomePage = string.IsNullOrEmpty(normalized) ||
-                     string.Equals(normalized, "main-dashboard", StringComparison.OrdinalIgnoreCase) ||
-                     string.Equals(normalized, "sales-manager-dashboard", StringComparison.OrdinalIgnoreCase);
-
         currentPageTitle = ResolvePageTitle(normalized, isDetailPage);
         headerActionIcon = ResolveHeaderActionIcon(normalized);
-        headerActionLabel = string.Format(CultureInfo.CurrentCulture, "{0} actions", currentPageTitle);
     }
 
     private static string NormalizePath(string? relativePath)
@@ -568,27 +429,6 @@
         }
     }
 
-    private async void OnRecentLinksChanged(object? sender, EventArgs e)
-    {
-        recentLinks = NavigationStateService.RecentLinks;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task TrackCurrentPageAsync()
-    {
-        try
-        {
-            var relative = NormalizePath(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-            var entry = NavigationHistoryEntry.Create(relative, currentPageTitle, headerActionIcon);
-            await NavigationStateService.TrackAsync(entry);
-            recentLinks = NavigationStateService.RecentLinks;
-        }
-        catch
-        {
-            recentLinks = NavigationStateService.RecentLinks;
-        }
-    }
-
     private void UpdateUserInfo(ClaimsPrincipal user)
     {
         if (user?.Identity?.IsAuthenticated == true)
@@ -619,16 +459,11 @@
         try
         {
             UpdateLayoutState();
-            await TrackCurrentPageAsync();
+            await UpdateUnreadNotificationsAsync();
             await InvokeAsync(StateHasChanged);
             if (layoutModule is not null)
             {
-                await layoutModule.InvokeVoidAsync("toggleMenu", true);
                 await layoutModule.InvokeVoidAsync("refreshThemeToggle");
-                if (isMobile)
-                {
-                    await layoutModule.InvokeVoidAsync("syncMobileLayout");
-                }
             }
         }
         catch (Exception ex)
@@ -637,91 +472,9 @@
         }
     }
 
-    private string BuildFavoriteStyle(UserFavoriteShortcut shortcut)
-    {
-        if (shortcut is null)
-        {
-            return string.Empty;
-        }
-
-        var baseColor = ParseColor(shortcut.BackgroundColor) ?? DefaultFavoriteColor;
-        var lighter = baseColor.Lighten(0.65);
-        var darker = baseColor.Darken(0.1);
-
-        return $"--favorite-bg: {baseColor.ToRgba(0.2)}; --favorite-border: {lighter.ToRgba(0.35)}; --favorite-text: {darker.ToRgba()};";
-    }
-
-    private static RgbColor? ParseColor(string? color)
-    {
-        if (string.IsNullOrWhiteSpace(color))
-        {
-            return null;
-        }
-
-        var trimmed = color.Trim();
-        if (trimmed.StartsWith('#'))
-        {
-            if (trimmed.Length == 7 && int.TryParse(trimmed.AsSpan(1, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r) &&
-                int.TryParse(trimmed.AsSpan(3, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g) &&
-                int.TryParse(trimmed.AsSpan(5, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
-            {
-                return new RgbColor(r, g, b);
-            }
-        }
-
-        if (trimmed.StartsWith("rgb", StringComparison.OrdinalIgnoreCase))
-        {
-            var start = trimmed.IndexOf('(');
-            var end = trimmed.IndexOf(')');
-            if (start > -1 && end > start)
-            {
-                var segments = trimmed.Substring(start + 1, end - start - 1)
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-                if (segments.Length >= 3 &&
-                    double.TryParse(segments[0], NumberStyles.Number, CultureInfo.InvariantCulture, out var r) &&
-                    double.TryParse(segments[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var g) &&
-                    double.TryParse(segments[2], NumberStyles.Number, CultureInfo.InvariantCulture, out var b))
-                {
-                    return new RgbColor(r, g, b);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static readonly RgbColor DefaultFavoriteColor = new(33, 83, 200);
-
-    private readonly record struct RgbColor(double R, double G, double B)
-    {
-        private static readonly RgbColor White = new(255, 255, 255);
-        private static readonly RgbColor Black = new(0, 0, 0);
-
-        public RgbColor Lighten(double amount) => Blend(White, amount);
-        public RgbColor Darken(double amount) => Blend(Black, amount);
-
-        public RgbColor Blend(RgbColor target, double amount)
-        {
-            var t = Math.Clamp(amount, 0d, 1d);
-            return new RgbColor(
-                R + ((target.R - R) * t),
-                G + ((target.G - G) * t),
-                B + ((target.B - B) * t));
-        }
-
-        public string ToRgba(double alpha = 1d)
-        {
-            var clampedAlpha = Math.Clamp(alpha, 0d, 1d);
-            return FormattableString.Invariant(
-                $"rgba({Math.Clamp((int)Math.Round(R), 0, 255)}, {Math.Clamp((int)Math.Round(G), 0, 255)}, {Math.Clamp((int)Math.Round(B), 0, 255)}, {clampedAlpha:0.##})");
-        }
-    }
-
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
         NotificationFeed.UnreadCountChanged -= OnUnreadChanged;
-        NavigationStateService.RecentLinksChanged -= OnRecentLinksChanged;
     }
 }

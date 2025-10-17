@@ -42,11 +42,6 @@
     display: none !important;
 }
 
-/* No mobile overlay needed */
-.mobile-overlay {
-    display: none !important;
-}
-
 /* Login-specific theme toggle positioning */
 .login-theme-toggle {
     position: fixed;

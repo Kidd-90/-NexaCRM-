@@ -6,154 +6,154 @@
 @inject IStringLocalizer<NotificationSettingsPage> Localizer
 @inject INotificationService NotificationService
 
-<div class="relative flex size-full h-screen flex-col bg-slate-50 group/design-root overflow-hidden"
+<div class="position-relative d-flex h-screen flex-column bg-surface-soft overflow-hidden"
       style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(77,106,153)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e')"
     >
-      <div class="layout-container flex h-full grow flex-col overflow-hidden">
-        <div class="px-4 md:px-40 flex flex-1 justify-center py-5 overflow-y-auto">
-          <div class="layout-content-container flex flex-col max-w-[960px] w-full">
-            <div class="flex flex-wrap justify-between gap-3 p-2 sm:p-4">
-              <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-2xl md:text-[32px] font-bold leading-tight">@Localizer["NotificationSettings"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["NotificationSettingsDescription"]</p>
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column overflow-hidden">
+        <div class="px-4 d-flex flex-grow-1 justify-content-center py-5 overflow-y-auto">
+          <div class="layout-content-container d-flex flex-column ui-max-w-960 w-100">
+            <div class="d-flex flex-wrap justify-content-between gap-3 p-2">
+              <div class="d-flex ui-min-w-18rem flex-column gap-3">
+                <p class="text-ink fs-2 fw-bold lh-sm">@Localizer["NotificationSettings"]</p>
+                <p class="text-ink-muted small fw-normal lh-base">@Localizer["NotificationSettingsDescription"]</p>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["NewLeads"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewLeadCreated"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["NewLeadCreatedDescription"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-2 pb-2 pt-4">@Localizer["NewLeads"]</h3>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["NewLeadCreated"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["NewLeadCreatedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.NewLeadCreated" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.NewLeadCreated" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["LeadStatusUpdated"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["LeadStatusUpdatedDescription"]</p>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["LeadStatusUpdated"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["LeadStatusUpdatedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.LeadStatusUpdated" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.LeadStatusUpdated" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["DealUpdates"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["DealStageChanged"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["DealStageChangedDescription"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-2 pb-2 pt-4">@Localizer["DealUpdates"]</h3>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["DealStageChanged"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["DealStageChangedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.DealStageChanged" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.DealStageChanged" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["DealValueUpdated"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["DealValueUpdatedDescription"]</p>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["DealValueUpdated"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["DealValueUpdatedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.DealValueUpdated" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.DealValueUpdated" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["TaskAssignments"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewTaskAssigned"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["NewTaskAssignedDescription"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-2 pb-2 pt-4">@Localizer["TaskAssignments"]</h3>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["NewTaskAssigned"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["NewTaskAssignedDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.NewTaskAssigned" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.NewTaskAssigned" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["TaskDueDateReminder"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["TaskDueDateReminderDescription"]</p>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["TaskDueDateReminder"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["TaskDueDateReminderDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.TaskDueDateReminder" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.TaskDueDateReminder" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["NotificationChannels"]</h3>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["EmailNotifications"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["EmailNotificationsDescription"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-2 pb-2 pt-4">@Localizer["NotificationChannels"]</h3>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["EmailNotifications"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["EmailNotificationsDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.EmailNotifications" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.EmailNotifications" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["InAppNotifications"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["InAppNotificationsDescription"]</p>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["InAppNotifications"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["InAppNotificationsDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.InAppNotifications" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.InAppNotifications" />
                 </label>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-2 sm:px-4 min-h-[72px] py-2 justify-between">
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["PushNotifications"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["PushNotificationsDescription"]</p>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-2 ui-min-h-72 py-2 justify-content-between">
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["PushNotifications"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["PushNotificationsDescription"]</p>
               </div>
               <div class="shrink-0">
                 <label
-                  class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#e7ecf3] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-[#2a74ea]"
+                  class="position-relative d-flex ui-height-31 ui-width-51 align-items-center rounded-pill border-0 bg-accent-soft p-0.5"
                 >
-                  <div class="h-full w-[27px] rounded-full bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
-                  <input type="checkbox" class="invisible absolute" @bind="settings.PushNotifications" />
+                  <div class="h-100 ui-width-27 rounded-pill bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px, rgba(0, 0, 0, 0.06) 0px 3px 1px;"></div>
+                  <input type="checkbox" class="invisible position-absolute" @bind="settings.PushNotifications" />
                 </label>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["NotificationFrequency"]</h3>
-            <div class="flex max-w-full md:max-w-[480px] flex-wrap items-end gap-4 px-2 sm:px-4 py-3">
-              <label class="flex flex-col min-w-0 flex-1">
-                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["Frequency"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-2 pb-2 pt-4">@Localizer["NotificationFrequency"]</h3>
+            <div class="d-flex w-100 flex-wrap align-items-end gap-4 px-2 py-3">
+              <label class="d-flex flex-column min-w-0 flex-grow-1">
+                <p class="text-ink fs-5 fw-semibold lh-base pb-2">@Localizer["Frequency"]</p>
                 <select
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 bg-[image:--select-button-svg] placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
+                  class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border border-soft bg-surface-soft ui-input-height-lg p-3 fs-5 fw-normal lh-base"
                 >
                   <option value="one"></option>
                   <option value="two">two</option>
@@ -161,12 +161,12 @@
                 </select>
               </label>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-2 pt-4">@Localizer["SnoozeOptions"]</h3>
-            <div class="flex max-w-full md:max-w-[480px] flex-wrap items-end gap-4 px-2 sm:px-4 py-3">
-              <label class="flex flex-col min-w-0 flex-1">
-                <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["SnoozeDuration"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-2 pb-2 pt-4">@Localizer["SnoozeOptions"]</h3>
+            <div class="d-flex w-100 flex-wrap align-items-end gap-4 px-2 py-3">
+              <label class="d-flex flex-column min-w-0 flex-grow-1">
+                <p class="text-ink fs-5 fw-semibold lh-base pb-2">@Localizer["SnoozeDuration"]</p>
                 <select
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 bg-[image:--select-button-svg] placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
+                  class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border border-soft bg-surface-soft ui-input-height-lg p-3 fs-5 fw-normal lh-base"
                 >
                   <option value="one"></option>
                   <option value="two">two</option>
@@ -174,9 +174,9 @@
                 </select>
               </label>
             </div>
-            <div class="flex px-2 sm:px-4 py-3 justify-end">
+            <div class="d-flex px-2 py-3 justify-content-end">
               <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em] disabled:opacity-50 disabled:cursor-not-allowed"
+                class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height px-4 bg-primary text-white small fw-bold lh-base"
                 @onclick="SaveSettings"
                 disabled="@(isLoading || isSaving)"
               >
@@ -193,21 +193,21 @@
             
             @if (isLoading)
             {
-              <div class="px-2 sm:px-4 py-2 text-blue-600 text-sm">
+              <div class="px-2 py-2 text-primary small">
                 ⏳ 설정을 불러오는 중...
               </div>
             }
             
             @if (!string.IsNullOrEmpty(statusMessage))
             {
-              <div class="px-2 sm:px-4 py-2 text-green-600 text-sm font-medium">
+              <div class="px-2 py-2 text-success small fw-semibold">
                 ✅ @statusMessage
               </div>
             }
             
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-              <div class="px-2 sm:px-4 py-2 text-red-600 text-sm font-medium">
+              <div class="px-2 py-2 text-red-600 small fw-semibold">
                 ❌ @errorMessage
               </div>
             }

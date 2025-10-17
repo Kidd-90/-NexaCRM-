@@ -1,0 +1,232 @@
+/*!
+ * NexaCRM UI Utilities
+ * Reusable single-purpose helpers layered on top of the design foundations.
+ */
+.bg-surface-soft {
+    background: color-mix(in srgb, var(--surface-muted) 92%, transparent);
+}
+
+.bg-accent-soft {
+    background: #e7ecf3;
+}
+
+.text-ink {
+    color: #0e131b;
+}
+
+.text-ink-muted {
+    color: #4d6a99;
+}
+
+.border-soft {
+    border-color: #d0d9e7 !important;
+}
+
+.ui-input-height {
+    min-height: 2.75rem;
+    height: 2.75rem;
+}
+
+.ui-input-height-lg {
+    min-height: 3.5rem;
+    height: 3.5rem;
+}
+
+.ui-input-height-sm {
+    min-height: 2.25rem;
+    height: 2.25rem;
+}
+
+.ui-aspect-square {
+    aspect-ratio: 1 / 1;
+}
+
+.ui-hero-title {
+    font-size: clamp(2rem, 1.75rem + 1vw, 2.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.5rem;
+}
+
+.ui-muted-text {
+    color: var(--text-secondary);
+}
+
+.overflow-x-hidden {
+    overflow-x: hidden !important;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ui-scrollable-x {
+    overflow-x: auto;
+}
+
+.ui-nowrap {
+    white-space: nowrap;
+}
+
+.ui-min-h-700 {
+    min-height: 700px;
+}
+
+.ui-min-h-180 {
+    min-height: 180px;
+}
+
+.ui-min-h-150 {
+    min-height: 150px;
+}
+
+.ui-min-h-120 {
+    min-height: 120px;
+}
+
+.ui-min-h-72 {
+    min-height: 72px;
+}
+
+.ui-max-w-960 {
+    max-width: 960px;
+}
+
+.ui-max-w-512 {
+    max-width: 512px;
+}
+
+.ui-max-w-480 {
+    max-width: 480px;
+}
+
+.ui-max-w-256 {
+    max-width: 256px;
+}
+
+.ui-max-w-200 {
+    max-width: 200px;
+}
+
+.ui-max-w-120 {
+    max-width: 120px;
+}
+
+.ui-min-w-18rem {
+    min-width: 18rem;
+}
+
+.ui-min-w-10rem {
+    min-width: 10rem;
+}
+
+.ui-min-w-8rem {
+    min-width: 8rem;
+}
+
+.ui-min-w-158 {
+    min-width: 158px;
+}
+
+.ui-min-w-150 {
+    min-width: 150px;
+}
+
+.ui-min-w-140 {
+    min-width: 140px;
+}
+
+.ui-min-w-120 {
+    min-width: 120px;
+}
+
+.ui-min-w-100 {
+    min-width: 100px;
+}
+
+.ui-min-w-84px {
+    min-width: 84px;
+}
+
+.ui-min-w-80 {
+    min-width: 80px;
+}
+
+.ui-min-w-60 {
+    min-width: 60px;
+}
+
+.ui-width-80 {
+    width: 20rem;
+}
+
+.ui-width-60 {
+    width: 15rem;
+}
+
+.ui-width-512 {
+    width: 512px;
+}
+
+.ui-width-400 {
+    width: 400px;
+}
+
+.ui-width-88 {
+    width: 88px;
+}
+
+.ui-width-51 {
+    width: 51px;
+}
+
+.ui-width-32p {
+    width: 32%;
+}
+
+.ui-width-27 {
+    width: 27px;
+}
+
+.ui-width-1-5 {
+    width: 1.5px;
+}
+
+.ui-height-60 {
+    height: 60px;
+}
+
+.ui-height-40 {
+    height: 40px;
+    min-height: 40px;
+}
+
+.ui-height-31 {
+    height: 31px;
+}
+
+.ui-size-4 {
+    width: 1rem;
+    height: 1rem;
+}
+
+.ui-size-8 {
+    width: 2rem;
+    height: 2rem;
+}
+
+.ui-size-10 {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.ui-size-12 {
+    width: 3rem;
+    height: 3rem;
+}

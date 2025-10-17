@@ -19,11 +19,11 @@
             </h1>
             
             <div class="view-controls">
-                <button class="btn btn-outline-primary @(currentView == CalendarView.Day ? "active" : "")" 
+                <button class="btn btn-outline-primary @(currentView == CalendarView.Day ?"active" : "")" 
                         @onclick="() => SetView(CalendarView.Day)">@Localizer["Day"]</button>
-                <button class="btn btn-outline-primary @(currentView == CalendarView.Week ? "active" : "")" 
+                <button class="btn btn-outline-primary @(currentView == CalendarView.Week ?"active" : "")" 
                         @onclick="() => SetView(CalendarView.Week)">@Localizer["Week"]</button>
-                <button class="btn btn-outline-primary @(currentView == CalendarView.Month ? "active" : "")" 
+                <button class="btn btn-outline-primary @(currentView == CalendarView.Month ?"active" : "")" 
                         @onclick="() => SetView(CalendarView.Month)">@Localizer["Month"]</button>
             </div>
 
@@ -59,7 +59,7 @@
                     {
                         @foreach (var day in week)
                         {
-                            <div class="day-cell @(day.Date.Date == DateTime.Today ? "today" : "") @(day.Date.Month != currentDate.Month ? "other-month" : "")"
+                            <div class="day-cell @(day.Date.Date == DateTime.Today ?"today" : "") @(day.Date.Month != currentDate.Month ? "other-month" : "")"
                                  @onclick="() => SelectDate(day.Date)">
                                 <div class="day-number">@day.Date.Day</div>
                                 <div class="day-appointments">
@@ -85,7 +85,7 @@
                 <div class="week-header">
                     @foreach (var day in GetWeekDays())
                     {
-                        <div class="week-day-header @(day.Date == DateTime.Today ? "today" : "")">
+                        <div class="week-day-header @(day.Date == DateTime.Today ?"today" : "")">
                             <div class="day-name">@day.DayOfWeek.ToString().Substring(0, 3)</div>
                             <div class="day-number">@day.Day</div>
                         </div>

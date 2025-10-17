@@ -69,7 +69,7 @@
                 </div>
             </aside>
 
-            <div class="grid">
+            <div class="d-grid">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
@@ -105,7 +105,7 @@
                                         <td>@company.Phone</td>
                                         <td>@company.Email</td>
                                         <td>
-                                            <span class="badge @(company.IsActive ? "bg-success" : "bg-secondary")">
+                                            <span class="badge @(company.IsActive ?"bg-success" : "bg-secondary")">
                                                 @(company.IsActive ? "활성" : "비활성")
                                             </span>
                                         </td>
@@ -163,7 +163,7 @@
                 </div>
             </aside>
 
-            <div class="grid">
+            <div class="d-grid">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
@@ -201,7 +201,7 @@
                                         <td>@branch.Email</td>
                                         <td>@GetManagerDisplayName(branch.ManagerCuid)</td>
                                         <td>
-                                            <span class="badge @(branch.IsActive ? "bg-success" : "bg-secondary")">
+                                            <span class="badge @(branch.IsActive ?"bg-success" : "bg-secondary")">
                                                 @(branch.IsActive ? "활성" : "비활성")
                                             </span>
                                         </td>
@@ -269,7 +269,7 @@
                 </div>
             </aside>
 
-            <div class="grid">
+            <div class="d-grid">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
@@ -307,7 +307,7 @@
                                         <td>@GetManagerDisplayName(team.ManagerCuid)</td>
                                         <td>@team.MemberCount 명</td>
                                         <td>
-                                            <span class="badge @(team.IsActive ? "bg-success" : "bg-secondary")">
+                                            <span class="badge @(team.IsActive ?"bg-success" : "bg-secondary")">
                                                 @(team.IsActive ? "활성" : "비활성")
                                             </span>
                                         </td>

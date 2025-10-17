@@ -10,7 +10,7 @@
 
 <ResponsivePage class="common-page-container">
     <div class="team-member-page">
-        <div class="card shadow-sm page-header">
+        <div class="card page-header">
             <div>
                 <h2 class="mb-1">팀원 관리</h2>
                 <p class="text-muted mb-0">팀원 계정과 권한을 손쉽게 조회하고 설정할 수 있습니다.</p>
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="card shadow-sm filter-card">
+        <div class="card filter-card">
             <EditForm Model="_memberFilter" OnValidSubmit="ApplyMemberFilter">
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-3 col-md-4">
@@ -43,7 +43,7 @@
                         <div class="d-flex gap-2 flex-wrap">
                             @foreach (var preset in _periodPresets)
                             {
-                                <button type="button" class="btn btn-outline-secondary btn-sm @(IsPeriodSelected(preset.Value) ? "active" : null)" @onclick="() => SetPeriod(preset.Value)">
+                                <button type="button" class="btn btn-outline-secondary btn-sm @(IsPeriodSelected(preset.Value) ?"active" : null)" @onclick="() => SetPeriod(preset.Value)">
                                     @preset.Label
                                 </button>
                             }
@@ -65,10 +65,10 @@
 
         @if (_showMemberForm)
         {
-            <div class="card shadow-sm new-member-card">
+            <div class="card new-member-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>새 팀원 등록</strong>
-                    <button class="btn btn-link text-decoration-none" @onclick="ToggleMemberForm">
+                    <button class="btn btn-link" @onclick="ToggleMemberForm">
                         <i class="bi bi-x-lg"></i>
                     </button>
                 </div>
@@ -130,7 +130,7 @@
             </div>
         }
 
-        <div class="card shadow-sm table-card">
+        <div class="card table-card">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
