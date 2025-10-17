@@ -6,12 +6,12 @@
 
 ## Tailwind CSS 의존도
 1. **런타임 주입 제거**
-   - `NexaCRM.UI`의 메인/로그인 레이아웃은 Tailwind CDN 스크립트를 제거하고, 부트스트랩 기반 번들(`ui/index.css`) 하나만 로드하도록 단순화했습니다. 번들은 `@import`로 기초 토큰(`foundations.css`), 단일 책임 유틸리티(`utilities.css`), 컴포넌트 패턴(`components.css`), 레이아웃 그리드(`layout.css`)를 순서대로 합쳐 Tailwind 시절 마크업을 안정적으로 치환합니다.【F:src/NexaCRM.UI/Shared/MainLayout.razor†L14-L50】【F:src/NexaCRM.UI/Shared/LoginLayout.razor†L3-L35】【F:src/NexaCRM.UI/wwwroot/css/ui/index.css†L1-L8】【F:src/NexaCRM.UI/wwwroot/css/ui/foundations.css†L1-L20】【F:src/NexaCRM.UI/wwwroot/css/ui/utilities.css†L1-L122】【F:src/NexaCRM.UI/wwwroot/css/ui/components.css†L1-L129】【F:src/NexaCRM.UI/wwwroot/css/ui/layout.css†L1-L32】
+   - `NexaCRM.UI`의 메인/로그인 레이아웃은 Tailwind CDN 스크립트를 제거하고, 부트스트랩 기반 번들(`ui/index.css`) 하나만 로드하도록 단순화했습니다. 번들은 `@import`로 기초 토큰(`foundations.css`), 단일 책임 유틸리티(`utilities.css`), 컴포넌트 패턴(`components.css`), 레이아웃 그리드(`layout.css`), 공용 반응형 패턴(`patterns.css`)을 순서대로 합쳐 Tailwind 시절 마크업을 안정적으로 치환합니다.【F:src/NexaCRM.UI/Shared/MainLayout.razor†L14-L50】【F:src/NexaCRM.UI/Shared/LoginLayout.razor†L3-L35】【F:src/NexaCRM.UI/wwwroot/css/ui/index.css†L1-L9】【F:src/NexaCRM.UI/wwwroot/css/ui/foundations.css†L1-L20】【F:src/NexaCRM.UI/wwwroot/css/ui/utilities.css†L1-L122】【F:src/NexaCRM.UI/wwwroot/css/ui/components.css†L1-L129】【F:src/NexaCRM.UI/wwwroot/css/ui/layout.css†L1-L32】【F:src/NexaCRM.UI/wwwroot/css/ui/patterns.css†L1-L63】
 2. **빌드 파이프라인**
    - `NexaCRM.Pages` 프로젝트는 여전히 Tailwind 4.x CLI를 devDependency로 포함하며, `npm run build:css` 스크립트가 Pages 전용 유틸리티 번들을 생성합니다.【F:src/NexaCRM.Pages/package.json†L1-L22】
    - Tailwind 입력 파일(`wwwroot/css/tailwind.css`)은 기본 유틸리티 import 및 커스텀 컴포넌트(`.naf-button`) 정의를 포함해 Pages UI를 구성합니다.【F:src/NexaCRM.Pages/wwwroot/css/tailwind.css†L1-L13】
 3. **보조 스타일 계층**
-   - `NexaCRM.UI/wwwroot/css/app.css`는 전역 토큰과 부트스트랩 오버라이드를 제공하고, `ui/utilities.css`는 `ui-min-h-*`, `ui-width-*` 등의 단일 속성 헬퍼를, `ui/components.css`는 카드·툴바·배지 같은 반복 컴포넌트를, `ui/layout.css`는 통계 그리드/패널 배치를 담당합니다.【F:src/NexaCRM.UI/wwwroot/css/app.css†L1-L120】【F:src/NexaCRM.UI/wwwroot/css/ui/utilities.css†L1-L122】【F:src/NexaCRM.UI/wwwroot/css/ui/components.css†L1-L129】【F:src/NexaCRM.UI/wwwroot/css/ui/layout.css†L1-L32】
+   - `NexaCRM.UI/wwwroot/css/app.css`는 전역 토큰과 부트스트랩 오버라이드를 제공하고, `ui/utilities.css`는 `ui-min-h-*`, `ui-width-*` 등의 단일 속성 헬퍼를, `ui/components.css`는 카드·툴바·배지 같은 반복 컴포넌트를, `ui/layout.css`는 통계 그리드/패널 배치를, `ui/patterns.css`는 대시보드 사이드바/카드 그리드 등 페이지 전반에 공통으로 필요한 반응형 패턴을 담당합니다.【F:src/NexaCRM.UI/wwwroot/css/app.css†L1-L120】【F:src/NexaCRM.UI/wwwroot/css/ui/utilities.css†L1-L122】【F:src/NexaCRM.UI/wwwroot/css/ui/components.css†L1-L129】【F:src/NexaCRM.UI/wwwroot/css/ui/layout.css†L1-L32】【F:src/NexaCRM.UI/wwwroot/css/ui/patterns.css†L1-L63】
 
 > **결론**: UI Razor Class Library는 Tailwind CDN 없이 부트스트랩과 정적 유틸리티 번들만으로 동작합니다. Pages 프로젝트는 여전히 Tailwind 빌드 파이프라인을 사용하므로, 전사 통합을 위해서는 추가 전환 계획이 필요합니다.
 
