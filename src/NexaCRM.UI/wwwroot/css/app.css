@@ -1105,30 +1105,6 @@ a:hover,
     display: none;
 }
 
-/* 메뉴 오버레이 - 모든 화면에서 작동 */
-.mobile-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55));
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    z-index: 1090;
-    /* Below the header but above main content */
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    opacity: 0;
-    left: var(--sidebar-width, 0);
-}
-
-/* JavaScript will handle the overlay visibility instead of :has() for better browser support */
-.mobile-overlay.show {
-    display: block;
-    pointer-events: auto;
-    opacity: 1;
-}
-
 /* 태블릿 환경 (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
     .sidebar .nav-link {
@@ -1297,10 +1273,6 @@ a:hover,
 
     .desktop-layout .nav-drawer__footer {
         padding-top: clamp(1.25rem, 3vw, 2rem);
-    }
-
-    .desktop-layout .mobile-overlay {
-        display: none !important;
     }
 
     .desktop-layout main {
@@ -2091,32 +2063,6 @@ html {
     100% {
         width: 0;
         margin-left: 100%;
-    }
-}
-
-/* Enhanced mobile touch feedback */
-@media (max-width: 767px) {
-    .touch-feedback:active {
-        background-color: var(--active-overlay);
-        transform: scale(0.97);
-        transition-duration: var(--transition-fast);
-    }
-
-    /* Ensure all interactive elements have adequate touch targets */
-    button,
-    .btn,
-    a,
-    input,
-    select,
-    textarea {
-        min-height: var(--touch-target-min);
-        min-width: var(--touch-target-min);
-        padding: var(--spacing-sm) var(--spacing-md);
-    }
-
-    /* Enhanced mobile navigation animations */
-    .mobile-menu-slide {
-        transition: transform var(--transition-normal) cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 }
 

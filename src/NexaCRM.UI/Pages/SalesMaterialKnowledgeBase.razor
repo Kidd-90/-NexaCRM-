@@ -2,12 +2,12 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SalesMaterialKnowledgeBase> Localizer
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">
-      <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-          <div class="flex items-center gap-8">
-            <div class="flex items-center gap-4 text-[#0e131b]">
-              <div class="size-4">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden">
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <header class="d-flex align-items-center justify-content-between text-nowrap border-bottom border border-soft px-4 py-3">
+          <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center gap-4 text-ink">
+              <div class="ui-size-4">
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"
@@ -15,22 +15,22 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesHub"]</h2>
+              <h2 class="text-ink fs-4 fw-bold lh-sm">@Localizer["SalesHub"]</h2>
             </div>
-            <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Home"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Contacts"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Deals"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Tasks"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Documents"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
+            <div class="d-flex align-items-center gap-4">
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Home"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Contacts"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Deals"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Tasks"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Documents"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Reports"]</a>
             </div>
           </div>
-          <div class="flex flex-1 justify-end gap-8">
-            <label class="flex flex-col min-w-40 !h-10 max-w-64">
-              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+          <div class="d-flex flex-grow-1 justify-content-end gap-4">
+            <label class="d-none d-md-flex flex-column ui-min-w-10rem ui-height-40 ui-max-w-256">
+              <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                 <div
-                  class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                  class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                   data-icon="MagnifyingGlass"
                   data-size="24px"
                   data-weight="regular"
@@ -43,15 +43,15 @@
                 </div>
                 <input
                   placeholder='@Localizer["Search"]'
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                   value=""
                 />
               </div>
             </label>
             <button
-              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+              class="d-flex ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height bg-accent-soft text-ink gap-2 small fw-bold lh-base min-w-0 px-3"
             >
-              <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
+              <div class="text-ink" data-icon="Bell" data-size="20px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
@@ -60,87 +60,87 @@
               </div>
             </button>
             <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              class="ui-aspect-square rounded-pill ui-size-10"
               style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
             ></div>
           </div>
         </header>
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-80">
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Categories"]</h2>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
+        <div class="gap-1 px-4 d-flex flex-grow-1 justify-content-center py-5">
+          <div class="layout-content-container d-flex flex-column ui-width-80">
+            <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["Categories"]</h2>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["ProductInformation"]</p>
+              <p class="text-ink fs-5 fw-normal lh-base flex-grow-1 truncate">@Localizer["ProductInformation"]</p>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["SalesCollateral"]</p>
+              <p class="text-ink fs-5 fw-normal lh-base flex-grow-1 truncate">@Localizer["SalesCollateral"]</p>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["BestPractices"]</p>
+              <p class="text-ink fs-5 fw-normal lh-base flex-grow-1 truncate">@Localizer["BestPractices"]</p>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["FAQs"]</p>
+              <p class="text-ink fs-5 fw-normal lh-base flex-grow-1 truncate">@Localizer["FAQs"]</p>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["CaseStudies"]</p>
+              <p class="text-ink fs-5 fw-normal lh-base flex-grow-1 truncate">@Localizer["CaseStudies"]</p>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-14">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-10" data-icon="Folder" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-10" data-icon="Folder" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"
                   ></path>
                 </svg>
               </div>
-              <p class="text-[#0e131b] text-base font-normal leading-normal flex-1 truncate">@Localizer["CompetitiveAnalysis"]</p>
+              <p class="text-ink fs-5 fw-normal lh-base flex-grow-1 truncate">@Localizer["CompetitiveAnalysis"]</p>
             </div>
           </div>
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["KnowledgeBase"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["FindResources"]</p>
+          <div class="layout-content-container d-flex flex-column ui-max-w-960 flex-grow-1">
+            <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+              <div class="d-flex ui-min-w-18rem flex-column gap-3">
+                <p class="text-ink fs-1 fw-bold lh-sm">@Localizer["KnowledgeBase"]</p>
+                <p class="text-ink-muted small fw-normal lh-base">@Localizer["FindResources"]</p>
               </div>
             </div>
             <div class="px-4 py-3">
-              <label class="flex flex-col min-w-40 h-12 w-full">
-                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+              <label class="d-flex flex-column ui-min-w-10rem ui-input-height-lg w-100">
+                <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                   <div
-                    class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                    class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                     data-icon="MagnifyingGlass"
                     data-size="24px"
                     data-weight="regular"
@@ -153,90 +153,90 @@
                   </div>
                   <input
                     placeholder='@Localizer["SearchArticles"]'
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                     value=""
                   />
                 </div>
               </label>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["FeaturedResources"]</h2>
+            <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["FeaturedResources"]</h2>
             <div class="p-4">
-              <div class="flex items-stretch justify-between gap-4 rounded-lg">
-                <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ProductInformation"]</p>
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["UnderstandingProductSuite"]</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ComprehensiveGuide"]</p>
+              <div class="d-flex align-items-stretch justify-content-between gap-4 rounded-3">
+                <div class="d-flex flex-column gap-1 flex-grow-1">
+                  <p class="text-ink-muted small fw-normal lh-base">@Localizer["ProductInformation"]</p>
+                  <p class="text-ink fs-5 fw-bold lh-sm">@Localizer["UnderstandingProductSuite"]</p>
+                  <p class="text-ink-muted small fw-normal lh-base">@Localizer["ComprehensiveGuide"]</p>
                 </div>
                 <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
+                  class="w-100 aspect-video rounded-3 flex-grow-1"
                   style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
                 ></div>
               </div>
             </div>
             <div class="p-4">
-              <div class="flex items-stretch justify-between gap-4 rounded-lg">
-                <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["SalesCollateral"]</p>
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPresentationTemplate"]</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["DownloadCustomizable"]</p>
+              <div class="d-flex align-items-stretch justify-content-between gap-4 rounded-3">
+                <div class="d-flex flex-column gap-1 flex-grow-1">
+                  <p class="text-ink-muted small fw-normal lh-base">@Localizer["SalesCollateral"]</p>
+                  <p class="text-ink fs-5 fw-bold lh-sm">@Localizer["SalesPresentationTemplate"]</p>
+                  <p class="text-ink-muted small fw-normal lh-base">@Localizer["DownloadCustomizable"]</p>
                 </div>
                 <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
+                  class="w-100 aspect-video rounded-3 flex-grow-1"
                   style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
                 ></div>
               </div>
             </div>
             <div class="p-4">
-              <div class="flex items-stretch justify-between gap-4 rounded-lg">
-                <div class="flex flex-col gap-1 flex-[2_2_0px]">
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["BestPractices"]</p>
-                  <p class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["EffectiveSalesTechniques"]</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["LearnProven"]</p>
+              <div class="d-flex align-items-stretch justify-content-between gap-4 rounded-3">
+                <div class="d-flex flex-column gap-1 flex-grow-1">
+                  <p class="text-ink-muted small fw-normal lh-base">@Localizer["BestPractices"]</p>
+                  <p class="text-ink fs-5 fw-bold lh-sm">@Localizer["EffectiveSalesTechniques"]</p>
+                  <p class="text-ink-muted small fw-normal lh-base">@Localizer["LearnProven"]</p>
                 </div>
                 <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1"
+                  class="w-100 aspect-video rounded-3 flex-grow-1"
                   style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
                 ></div>
               </div>
             </div>
-            <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["RecentUpdates"]</h2>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-12" data-icon="File" data-size="24px" data-weight="regular">
+            <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["RecentUpdates"]</h2>
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72 py-2">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-12" data-icon="File" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"
                   ></path>
                 </svg>
               </div>
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["NewProductFeature"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["Updated2Days"]</p>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["NewProductFeature"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["Updated2Days"]</p>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-12" data-icon="File" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72 py-2">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-12" data-icon="File" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"
                   ></path>
                 </svg>
               </div>
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["CompetitiveAnalysisX"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["Updated1Week"]</p>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["CompetitiveAnalysisX"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["Updated1Week"]</p>
               </div>
             </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
-              <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-12" data-icon="File" data-size="24px" data-weight="regular">
+            <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72 py-2">
+              <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-12" data-icon="File" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"
                   ></path>
                 </svg>
               </div>
-              <div class="flex flex-col justify-center">
-                <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["SalesPlaybookQ3"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["Updated2Weeks"]</p>
+              <div class="d-flex flex-column justify-content-center">
+                <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["SalesPlaybookQ3"]</p>
+                <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["Updated2Weeks"]</p>
               </div>
             </div>
           </div>

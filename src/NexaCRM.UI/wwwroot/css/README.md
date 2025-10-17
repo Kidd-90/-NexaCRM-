@@ -7,7 +7,6 @@ NexaCRM.UI/
 ├── wwwroot/
 │   └── css/
 │       ├── app.css                          # 🌐 전역 디자인 시스템
-│       ├── mobile.css                       # 📱 모바일 최적화
 │       ├── loading.css                      # ⏳ 로딩 애니메이션
 │       └── components/                      # 🧩 재사용 가능한 컴포넌트 스타일
 │           ├── table-responsive.css         # 📊 반응형 테이블/카드
@@ -32,11 +31,6 @@ NexaCRM.UI/
 **제외 내용**:
 - ❌ 컴포넌트별 특화 스타일
 - ❌ 페이지별 특화 스타일
-
-### **mobile.css** - 모바일 최적화
-- 터치 인터랙션
-- 모바일 전용 레이아웃
-- 반응형 조정
 
 ### **components/table-responsive.css** - 반응형 테이블
 **사용 컴포넌트**:
@@ -142,7 +136,6 @@ wwwroot/css/components/my-component.css
 publish/wwwroot/_content/NexaCRM.UI/
 ├── css/
 │   ├── app.css
-│   ├── mobile.css
 │   └── loading.css
 ├── NexaCRM.UI.bundle.scp.css  ← 모든 scoped CSS 번들
 └── ...

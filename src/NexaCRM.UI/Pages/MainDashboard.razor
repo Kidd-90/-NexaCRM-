@@ -17,7 +17,7 @@
 
 <a href="#mainDashboardContent" class="dashboard-skip-link">@Localizer["SkipToMainContent"]</a>
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden common-page-container" data-page="main-dashboard">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden common-page-container" data-page="main-dashboard">
     <!-- Mobile Header Bar -->
     <div class="mobile-header mobile-header--active">
         <div class="mobile-header-content">
@@ -52,7 +52,7 @@
         </div>
         
         <!-- Mobile Search Bar (collapsed by default) -->
-        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ? "expanded" : "collapsed")">
+        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ?"expanded" : "collapsed")">
             <div class="mobile-search-input">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
@@ -110,7 +110,7 @@
     </div>
 
     <!-- Mobile Notifications Panel (collapsed by default) -->
-    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ? "expanded" : "collapsed")">
+    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ?"expanded" : "collapsed")">
         <div class="mobile-notifications-header">
             <h3>@Localizer["Notifications"]</h3>
             <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
@@ -128,7 +128,7 @@
             {
                 @foreach (var notification in mobileNotifications)
                 {
-                    <div class="notification-item @(notification.IsRead ? string.Empty : "notification-item--unread")">
+                    <div class="notification-item @(notification.IsRead ? string.Empty"notification-item--unread")">
                         <div class="notification-icon">
                             <i class="@ResolveNotificationIcon(notification)" aria-hidden="true"></i>
                         </div>
@@ -146,21 +146,21 @@
         </div>
     </div>
 
-    <div class="layout-container flex h-full grow flex-col">
+    <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
         <div class="dashboard-container">
         <main id="mainDashboardContent" class="dashboard-main-content" tabindex="-1">
-        <div class="flex flex-wrap justify-between gap-3 p-4">
+        <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
             <AuthorizeView>
                 <Authorized>
-                    <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72 dashboard-welcome">@Localizer["WelcomeBack", @context.User.Identity?.Name ?? ""]</p>
+                    <p class="text-ink fs-1 fw-bold lh-sm ui-min-w-18rem dashboard-welcome">@Localizer["WelcomeBack", @context.User.Identity?.Name ?? ""]</p>
                 </Authorized>
             </AuthorizeView>
         </div>
         <div class="px-4 py-3">
-            <label class="flex flex-col min-w-40 h-12 w-full">
-            <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+            <label class="d-flex flex-column ui-min-w-10rem ui-input-height-lg w-100">
+            <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                 <div
-                class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                 data-icon="MagnifyingGlass"
                 data-size="24px"
                 data-weight="regular"
@@ -173,145 +173,145 @@
                 </div>
                 <input
                 placeholder='@Localizer["Search"]'
-                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                 value=""
                 />
             </div>
             </label>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 dashboard-section-title">@Localizer["DashboardOverview"]</h2>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 dashboard-grid">
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/sales-pipeline">
-            <div class="text-[#0e131b]" data-icon="Funnel" data-size="24px" data-weight="regular">
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["DashboardOverview"]</h2>
+        <div class="d-grid ui-grid-autofit gap-3 p-4 dashboard-grid">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/sales-pipeline">
+            <div class="text-ink" data-icon="Funnel" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"
                 ></path>
                 </svg>
             </div>
-            <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["SalesPipeline"]</h2>
+            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["SalesPipeline"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/reports">
-            <div class="text-[#0e131b]" data-icon="Target" data-size="24px" data-weight="regular">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/reports">
+            <div class="text-ink" data-icon="Target" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"
                 ></path>
                 </svg>
             </div>
-            <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["QuarterlyPerformance"]</h2>
+            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["QuarterlyPerformance"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="/tasks-page">
-            <div class="text-[#0e131b]" data-icon="ListBullets" data-size="24px" data-weight="regular">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/tasks-page">
+            <div class="text-ink" data-icon="ListBullets" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"
                 ></path>
                 </svg>
             </div>
-            <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["Tasks"]</h2>
+            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["Tasks"]</h2>
             </button>
-            <button class="flex flex-1 gap-3 rounded-lg border border-[#d0d9e7] bg-slate-50 p-4 items-center dashboard-card" data-route="#recent-activity">
-            <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="#recent-activity">
+            <div class="text-ink" data-icon="Users" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
                 ></path>
                 </svg>
             </div>
-            <h2 class="text-[#0e131b] text-base font-bold leading-tight">@Localizer["RecentActivity"]</h2>
+            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["RecentActivity"]</h2>
             </button>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 dashboard-section-title">@Localizer["SalesPipelineSummary"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6 dashboard-section-content">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6 dashboard-stat-card">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["DealsByStage"]</p>
-            <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3 dashboard-chart-grid">
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Prospecting"]</p>
-                <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 60%;"></div></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Qualification"]</p>
-                <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 90%;"></div></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Proposal"]</p>
-                <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 30%;"></div></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Negotiation"]</p>
-                <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 40%;"></div></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["ClosedWon"]</p>
-                <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 90%;"></div></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["ClosedLost"]</p>
-                <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 80%;"></div></div>
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["SalesPipelineSummary"]</h2>
+        <div class="d-flex flex-wrap gap-4 px-4 py-4 dashboard-section-content">
+            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card">
+            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["DealsByStage"]</p>
+            <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3 dashboard-chart-grid">
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Prospecting"]</p>
+                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 60%;"></div></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Qualification"]</p>
+                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 90%;"></div></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Proposal"]</p>
+                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 30%;"></div></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Negotiation"]</p>
+                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 40%;"></div></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["ClosedWon"]</p>
+                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 90%;"></div></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["ClosedLost"]</p>
+                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 80%;"></div></div>
             </div>
             </div>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 dashboard-section-title">@Localizer["QuarterlyPerformance"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6 dashboard-section-content">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6 dashboard-stat-card">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["RevenueByQuarter"]</p>
-            <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3 dashboard-chart-grid">
-                <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Q1"]</p>
-                <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 90%;"></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Q2"]</p>
-                <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Q3"]</p>
-                <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 30%;"></div>
-                <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Q4"]</p>
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["QuarterlyPerformance"]</h2>
+        <div class="d-flex flex-wrap gap-4 px-4 py-4 dashboard-section-content">
+            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card">
+            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["RevenueByQuarter"]</p>
+            <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3 dashboard-chart-grid">
+                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 70%;"></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q1"]</p>
+                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 90%;"></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q2"]</p>
+                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 70%;"></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q3"]</p>
+                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 30%;"></div>
+                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q4"]</p>
             </div>
             </div>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["Tasks"]</h2>
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["Tasks"]</h2>
         <div class="px-4 py-3 container">
-            <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50 dashboard-table-container">
-            <table class="flex-1">
+            <div class="d-flex overflow-hidden rounded-3 border border-soft bg-surface-soft dashboard-table-container">
+            <table class="flex-grow-1">
                 <thead>
-                <tr class="bg-slate-50">
-                    <th class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Task"]</th>
-                    <th class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                <tr class="bg-surface-soft">
+                    <th class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Task"]</th>
+                    <th class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                     @Localizer["DueDate"]
                     </th>
-                    <th class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">@Localizer["Priority"]</th>
+                    <th class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 px-4 py-3 text-start text-ink ui-width-60 small fw-semibold lh-base">@Localizer["Priority"]</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                <tr class="border-top border-soft">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                     @Localizer["FollowUp"]
                     </td>
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                     2024-07-15
                     </td>
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                     <button
-                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
+                        class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100 priority-button"
                     >
                         <span class="truncate priority-label">@Localizer["High"]</span>
                     </button>
                     </td>
                 </tr>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                <tr class="border-top border-soft">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                     @Localizer["PreparePresentation"]
                     </td>
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                     2024-07-20
                     </td>
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                     <button
-                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
+                        class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100 priority-button"
                     >
                         <span class="truncate priority-label">@Localizer["Medium"]</span>
                     </button>
                     </td>
                 </tr>
-                <tr class="border-t border-t-[#d0d9e7]">
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                <tr class="border-top border-soft">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                     @Localizer["ReviewCampaign"]
                     </td>
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                     2024-07-25
                     </td>
-                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                    <td class="table-b8380c11-022e-424e-acc3-69900c40b013-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                     <button
-                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full priority-button"
+                        class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100 priority-button"
                     >
                         <span class="truncate priority-label">@Localizer["Low"]</span>
                     </button>
@@ -321,40 +321,40 @@
             </table>
             </div>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5" id="recent-activity">@Localizer["RecentActivity"]</h2>
-        <div class="grid grid-cols-[40px_1fr] gap-x-2 px-4">
-            <div class="flex flex-col items-center gap-1 pt-3">
-            <div class="text-[#0e131b]" data-icon="UserPlus" data-size="24px" data-weight="regular">
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5" id="recent-activity">@Localizer["RecentActivity"]</h2>
+        <div class="d-grid ui-grid-40-1fr gx-2 px-4">
+            <div class="d-flex flex-column align-items-center gap-1 pt-3">
+            <div class="text-ink" data-icon="UserPlus" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Zm-57.87,58.85a8,8,0,0,1-12.26,10.3C165.75,181.19,138.09,168,108,168s-57.75,13.19-77.87,37.15a8,8,0,0,1-12.25-10.3c14.94-17.78,33.52-30.41,54.17-37.17a68,68,0,1,1,71.9,0C164.6,164.44,183.18,177.07,198.13,194.85ZM108,152a52,52,0,1,0-52-52A52.06,52.06,0,0,0,108,152Z"
                 ></path>
                 </svg>
             </div>
-            <div class="w-[1.5px] bg-[#d0d9e7] h-2 grow"></div>
+            <div class="ui-width-1-5 bg-surface-soft h-2 flex-grow-1"></div>
             </div>
-            <div class="flex flex-1 flex-col py-3">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["NewLead"]</p>
-            <p class="text-[#4d6a99] text-base font-normal leading-normal">2024-07-10</p>
+            <div class="d-flex flex-grow-1 flex-column py-3">
+            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["NewLead"]</p>
+            <p class="text-ink-muted fs-5 fw-normal lh-base">2024-07-10</p>
             </div>
-            <div class="flex flex-col items-center gap-1">
-            <div class="w-[1.5px] bg-[#d0d9e7] h-2"></div>
-            <div class="text-[#0e131b]" data-icon="Phone" data-size="24px" data-weight="regular">
+            <div class="d-flex flex-column align-items-center gap-1">
+            <div class="ui-width-1-5 bg-surface-soft h-2"></div>
+            <div class="text-ink" data-icon="Phone" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"
                 ></path>
                 </svg>
             </div>
-            <div class="w-[1.5px] bg-[#d0d9e7] h-2 grow"></div>
+            <div class="ui-width-1-5 bg-surface-soft h-2 flex-grow-1"></div>
             </div>
-            <div class="flex flex-1 flex-col py-3">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["SalesCall"]</p>
-            <p class="text-[#4d6a99] text-base font-normal leading-normal">2024-07-12</p>
+            <div class="d-flex flex-grow-1 flex-column py-3">
+            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["SalesCall"]</p>
+            <p class="text-ink-muted fs-5 fw-normal lh-base">2024-07-12</p>
             </div>
-            <div class="flex flex-col items-center gap-1 pb-3">
-            <div class="w-[1.5px] bg-[#d0d9e7] h-2"></div>
-            <div class="text-[#0e131b]" data-icon="CheckCircle" data-size="24px" data-weight="regular">
+            <div class="d-flex flex-column align-items-center gap-1 pb-3">
+            <div class="ui-width-1-5 bg-surface-soft h-2"></div>
+            <div class="text-ink" data-icon="CheckCircle" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
                     d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
@@ -362,31 +362,31 @@
                 </svg>
             </div>
             </div>
-            <div class="flex flex-1 flex-col py-3">
-            <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["ClosedDeal"]</p>
-            <p class="text-[#4d6a99] text-base font-normal leading-normal">2024-07-14</p>
+            <div class="d-flex flex-grow-1 flex-column py-3">
+            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["ClosedDeal"]</p>
+            <p class="text-ink-muted fs-5 fw-normal lh-base">2024-07-14</p>
             </div>
         </div>
-        <h2 class="text-[#0e131b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">@Localizer["LeadSourceAnalytics"]</h2>
-        <div class="flex flex-wrap gap-4 px-4 py-6">
-            <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["LeadsBySource"]</p>
-                <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3">
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Website"]</p>
-                    <div class="h-full flex-1">
-                        <div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 100%;"></div>
+        <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["LeadSourceAnalytics"]</h2>
+        <div class="d-flex flex-wrap gap-4 px-4 py-4">
+            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["LeadsBySource"]</p>
+                <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3">
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Website"]</p>
+                    <div class="h-100 flex-grow-1">
+                        <div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 100%;"></div>
                     </div>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Referral"]</p>
-                    <div class="h-full flex-1">
-                        <div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 60%;"></div>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Referral"]</p>
+                    <div class="h-100 flex-grow-1">
+                        <div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 60%;"></div>
                     </div>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["SocialMedia"]</p>
-                    <div class="h-full flex-1">
-                        <div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 30%;"></div>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["SocialMedia"]</p>
+                    <div class="h-100 flex-grow-1">
+                        <div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 30%;"></div>
                     </div>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["EmailCampaign"]</p>
-                    <div class="h-full flex-1">
-                        <div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 60%;"></div>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["EmailCampaign"]</p>
+                    <div class="h-100 flex-grow-1">
+                        <div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 60%;"></div>
                     </div>
                 </div>
             </div>

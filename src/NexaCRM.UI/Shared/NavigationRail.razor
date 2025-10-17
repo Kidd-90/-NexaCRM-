@@ -10,7 +10,6 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
 @using NexaCRM.UI.Models.Navigation
 
-@implements IDisposable
 
 <div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation"
     aria-label="@Localizer["MainNavigation"]" @onclick="HandleOutsideClick">
@@ -500,25 +499,6 @@
 
             NavigationManager.NavigateTo("/login", forceLoad: true);
         }
-    }
-
-    // ...existing code...
-
-    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
-    {
-        // Fire-and-forget the JS call to close the menu; don't block the UI thread.
-        _ = JSRuntime.InvokeVoidAsync("layoutInterop.toggleMenu", true);
-    }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 
     private sealed record NavigationGroupViewModel(string DisplayName, string IconCss,

@@ -28,7 +28,7 @@
       @for (int i = 0; i < imageUrls.Length; i++)
       {
         var index = i;
-        <button class="indicator-dot @(currentImageIndex == index ? "active" : "")" 
+        <button class="indicator-dot @(currentImageIndex == index ?"active" : "")" 
                 @onclick="() => SetImage(index)"
                 aria-label="@($"이미지 {index + 1}")"></button>
       }

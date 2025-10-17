@@ -6,12 +6,12 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IRolePermissionService RolePermissionService
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">
-      <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-4 sm:px-6 md:px-10 py-3">
-          <div class="flex items-center gap-4 sm:gap-8">
-            <div class="flex items-center gap-4 text-[#0e131b]">
-              <div class="size-4">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden">
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <header class="d-flex align-items-center justify-content-between text-nowrap border-bottom border border-soft px-4 py-3">
+          <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center gap-4 text-ink">
+              <div class="ui-size-4">
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M13.8261 30.5736C16.7203 29.8826 20.2244 29.4783 24 29.4783C27.7756 29.4783 31.2797 29.8826 34.1739 30.5736C36.9144 31.2278 39.9967 32.7669 41.3563 33.8352L24.8486 7.36089C24.4571 6.73303 23.5429 6.73303 23.1514 7.36089L6.64374 33.8352C8.00331 32.7669 11.0856 31.2278 13.8261 30.5736Z"
@@ -25,27 +25,27 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-sm sm:text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["Connectly"]</h2>
+              <h2 class="text-ink small fw-bold lh-sm">@Localizer["Connectly"]</h2>
             </div>
-            <div class="flex items-center gap-2 sm:gap-4 lg:gap-9 overflow-x-auto hidden md:flex">
-              <a class="text-[#0e131b] text-xs sm:text-sm font-medium leading-normal whitespace-nowrap" href="#">@Localizer["Dashboard"]</a>
-              <a class="text-[#0e131b] text-xs sm:text-sm font-medium leading-normal whitespace-nowrap" href="#">@Localizer["Contacts"]</a>
-              <a class="text-[#0e131b] text-xs sm:text-sm font-medium leading-normal whitespace-nowrap" href="#">@Localizer["Companies"]</a>
-              <a class="text-[#0e131b] text-xs sm:text-sm font-medium leading-normal whitespace-nowrap" href="#">@Localizer["Deals"]</a>
-              <a class="text-[#0e131b] text-xs sm:text-sm font-medium leading-normal whitespace-nowrap" href="#">@Localizer["Marketing"]</a>
-              <a class="text-[#0e131b] text-xs sm:text-sm font-medium leading-normal whitespace-nowrap" href="#">@Localizer["Reports"]</a>
+            <div class="d-none d-md-flex align-items-center gap-2 overflow-x-auto">
+              <a class="text-ink small fw-semibold lh-base text-nowrap" href="#">@Localizer["Dashboard"]</a>
+              <a class="text-ink small fw-semibold lh-base text-nowrap" href="#">@Localizer["Contacts"]</a>
+              <a class="text-ink small fw-semibold lh-base text-nowrap" href="#">@Localizer["Companies"]</a>
+              <a class="text-ink small fw-semibold lh-base text-nowrap" href="#">@Localizer["Deals"]</a>
+              <a class="text-ink small fw-semibold lh-base text-nowrap" href="#">@Localizer["Marketing"]</a>
+              <a class="text-ink small fw-semibold lh-base text-nowrap" href="#">@Localizer["Reports"]</a>
             </div>
           </div>
-          <div class="flex flex-1 justify-end gap-2 sm:gap-4 lg:gap-8">
-            <label class="hidden sm:flex flex-col min-w-32 sm:min-w-40 !h-10 max-w-64">
-              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+          <div class="d-flex flex-grow-1 justify-content-end gap-2">
+            <label class="d-none d-md-flex flex-column ui-min-w-8rem ui-height-40 ui-max-w-256">
+              <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                 <div
-                  class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-2 sm:pl-4 rounded-l-lg border-r-0"
+                  class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-2 rounded-start-3 border-end-0"
                   data-icon="MagnifyingGlass"
                   data-size="24px"
                   data-weight="regular"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" class="sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 256 256">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" class="" fill="currentColor" viewBox="0 0 256 256">
                     <path
                       d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
                     ></path>
@@ -53,16 +53,16 @@
                 </div>
                 <input
                   placeholder='@Localizer["Search"]'
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-2 sm:px-4 rounded-l-none border-l-0 pl-2 text-sm sm:text-base font-normal leading-normal"
+                  class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-2 rounded-start-0 border-start-0 pl-2 small fw-normal lh-base"
                   value=""
                 />
               </div>
             </label>
             <button
-              class="flex max-w-[120px] sm:max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2 sm:px-2.5"
+              class="d-flex ui-max-w-120 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height bg-accent-soft text-ink gap-2 small fw-bold lh-base min-w-0 px-2"
             >
-              <div class="text-[#0e131b]" data-icon="Question" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" class="sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 256 256">
+              <div class="text-ink" data-icon="Question" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" class="" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
                   ></path>
@@ -70,71 +70,71 @@
               </div>
             </button>
             <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10"
+              class="ui-aspect-square rounded-pill ui-size-8"
               style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
             ></div>
           </div>
         </header>
-        <div class="gap-1 px-4 sm:px-6 flex flex-1 justify-center py-5 dashboard-container">
-          <div class="layout-content-container flex flex-col w-full sm:w-80 dashboard-sidebar hidden lg:flex">
-            <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
-              <div class="flex flex-col gap-4">
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
-                    <div class="text-[#0e131b]" data-icon="ListBullets" data-size="24px" data-weight="fill">
+        <div class="gap-1 px-4 d-flex flex-grow-1 justify-content-center py-5 dashboard-container">
+          <div class="layout-content-container d-flex flex-column w-100 dashboard-sidebar d-none d-md-flex">
+            <div class="d-flex h-100 ui-min-h-700 flex-column justify-content-between bg-surface-soft p-4">
+              <div class="d-flex flex-column gap-4">
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3 bg-accent-soft">
+                    <div class="text-ink" data-icon="ListBullets" data-size="24px" data-weight="fill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M56,128a16,16,0,1,1-16-16A16,16,0,0,1,56,128ZM40,48A16,16,0,1,0,56,64,16,16,0,0,0,40,48Zm0,128a16,16,0,1,0,16,16A16,16,0,0,0,40,176Zm176-64H88a8,8,0,0,0-8,8v16a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V120A8,8,0,0,0,216,112Zm0-64H88a8,8,0,0,0-8,8V72a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V56A8,8,0,0,0,216,48Zm0,128H88a8,8,0,0,0-8,8v16a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V184A8,8,0,0,0,216,176Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["AllSegments"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["AllSegments"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="UsersThree" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["StaticLists"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["StaticLists"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="UsersThree" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["DynamicLists"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["DynamicLists"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="UsersThree" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["PropertyBasedLists"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["PropertyBasedLists"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="UsersThree" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="UsersThree" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["EngagementBasedLists"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["EngagementBasedLists"]</p>
                   </div>
                 </div>
               </div>
               <RoleBasedComponent RequiredPermission="createcustomer" ShowAccessDeniedMessage="false">
                 <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                  class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height px-4 bg-primary text-white small fw-bold lh-base"
                 >
                   <span class="truncate">@Localizer["CreateList"]</span>
                 </button>
@@ -143,25 +143,25 @@
               <!-- Show message for Sales users explaining the restriction -->
               <AuthorizeView Roles="Sales">
                 <Authorized>
-                  <div class="text-sm text-gray-600 italic px-4 py-2">
+                  <div class="small text-secondary italic px-4 py-2">
                     ℹ️ 영업 담당자는 기존 고객 목록을 보고 관리할 수 있지만, 새로운 목록을 생성할 수는 없습니다.
                   </div>
                 </Authorized>
               </AuthorizeView>
             </div>
           </div>
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["CustomerSegments"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["CustomerSegmentsDescription"]</p>
+          <div class="layout-content-container d-flex flex-column ui-max-w-960 flex-grow-1">
+            <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+              <div class="d-flex ui-min-w-18rem flex-column gap-3">
+                <p class="text-ink fs-1 fw-bold lh-sm">@Localizer["CustomerSegments"]</p>
+                <p class="text-ink-muted small fw-normal lh-base">@Localizer["CustomerSegmentsDescription"]</p>
               </div>
             </div>
             <div class="px-4 py-3">
-              <label class="flex flex-col min-w-40 h-12 w-full">
-                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+              <label class="d-flex flex-column ui-min-w-10rem ui-input-height-lg w-100">
+                <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                   <div
-                    class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                    class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                     data-icon="MagnifyingGlass"
                     data-size="24px"
                     data-weight="regular"
@@ -174,111 +174,111 @@
                   </div>
                   <input
                     placeholder='@Localizer["SearchSegments"]'
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                     value=""
                   />
                 </div>
               </label>
             </div>
             <div class="px-4 py-3 container">
-              <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
-                <table class="flex-1">
+              <div class="d-flex overflow-hidden rounded-3 border border-soft bg-surface-soft">
+                <table class="flex-grow-1">
                   <thead>
-                    <tr class="bg-slate-50">
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                    <tr class="bg-surface-soft">
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                         @Localizer["SegmentName"]
                       </th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Type"]</th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Type"]</th>
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                         @Localizer["Criteria"]
                       </th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Size"]</th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Size"]</th>
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                         @Localizer["CreatedAt"]
                       </th>
-                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 px-4 py-3 text-left text-[#0e131b] w-60 text-[#4d6a99] text-sm font-medium leading-normal">
+                      <th class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 px-4 py-3 text-start text-ink ui-width-60 text-ink-muted small fw-semibold lh-base">
                         @Localizer["Actions"]
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["HighValueCustomers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Dynamic"]</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["PurchaseHistory"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">500</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">500</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-01-15
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 ui-min-h-72 px-4 py-2 ui-width-60 text-ink-muted small fw-bold lh-base">
                         @Localizer["View"]
                       </td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["ActiveUsers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Dynamic"]</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["LastLogin"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">1200</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">1200</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-02-20
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 ui-min-h-72 px-4 py-2 ui-width-60 text-ink-muted small fw-bold lh-base">
                         @Localizer["View"]
                       </td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["NewLeads"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Static"]</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Static"]</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["LeadSource"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">300</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">300</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-03-10
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 ui-min-h-72 px-4 py-2 ui-width-60 text-ink-muted small fw-bold lh-base">
                         @Localizer["View"]
                       </td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["InactiveCustomers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Dynamic"]</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["LastPurchase"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">800</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">800</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-04-05
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 ui-min-h-72 px-4 py-2 ui-width-60 text-ink-muted small fw-bold lh-base">
                         @Localizer["View"]
                       </td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["LoyalCustomers"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Dynamic"]</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Dynamic"]</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-360 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["RepeatPurchases"]
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">250</td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">250</td>
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-05-12
                       </td>
-                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 h-[72px] px-4 py-2 w-60 text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">
+                      <td class="table-8c706e97-b4c9-4119-aba8-0b6e72186853-column-720 ui-min-h-72 px-4 py-2 ui-width-60 text-ink-muted small fw-bold lh-base">
                         @Localizer["View"]
                       </td>
                     </tr>

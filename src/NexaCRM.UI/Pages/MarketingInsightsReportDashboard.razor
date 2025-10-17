@@ -2,12 +2,12 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<MarketingInsightsReportDashboard> Localizer
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">
-      <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-10 py-3">
-          <div class="flex items-center gap-8">
-            <div class="flex items-center gap-4 text-[#0e131b]">
-              <div class="size-4">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden">
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <header class="d-flex align-items-center justify-content-between text-nowrap border-bottom border border-soft px-4 py-3">
+          <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center gap-4 text-ink">
+              <div class="ui-size-4">
                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     fill-rule="evenodd"
@@ -23,21 +23,21 @@
                   ></path>
                 </svg>
               </div>
-              <h2 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
+              <h2 class="text-ink fs-4 fw-bold lh-sm">@Localizer["SalesPro"]</h2>
             </div>
-            <div class="flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Sales"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Marketing"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Service"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Analytics"]</a>
+            <div class="d-flex align-items-center gap-4">
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Dashboard"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Sales"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Marketing"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Service"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Analytics"]</a>
             </div>
           </div>
-          <div class="flex flex-1 justify-end gap-8">
-            <label class="flex flex-col min-w-40 !h-10 max-w-64">
-              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+          <div class="d-flex flex-grow-1 justify-content-end gap-4">
+            <label class="d-none d-md-flex flex-column ui-min-w-10rem ui-height-40 ui-max-w-256">
+              <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                 <div
-                  class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                  class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                   data-icon="MagnifyingGlass"
                   data-size="24px"
                   data-weight="regular"
@@ -50,15 +50,15 @@
                 </div>
                 <input
                   placeholder='@Localizer["Search"]'
-                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                   value=""
                 />
               </div>
             </label>
             <button
-              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#e7ecf3] text-[#0e131b] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+              class="d-flex ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height bg-accent-soft text-ink gap-2 small fw-bold lh-base min-w-0 px-3"
             >
-              <div class="text-[#0e131b]" data-icon="Bell" data-size="20px" data-weight="regular">
+              <div class="text-ink" data-icon="Bell" data-size="20px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
@@ -67,29 +67,29 @@
               </div>
             </button>
             <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              class="ui-aspect-square rounded-pill ui-size-10"
               style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
             ></div>
           </div>
         </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight">@Localizer["MarketingDashboard"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["MarketingDashboardDescription"]</p>
+        <div class="px-5 d-flex flex-grow-1 justify-content-center py-5">
+          <div class="layout-content-container d-flex flex-column ui-max-w-960 flex-grow-1">
+            <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+              <div class="d-flex ui-min-w-18rem flex-column gap-3">
+                <p class="text-ink fs-1 fw-bold lh-sm">@Localizer["MarketingDashboard"]</p>
+                <p class="text-ink-muted small fw-normal lh-base">@Localizer["MarketingDashboardDescription"]</p>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["CampaignPerformance"]</h3>
-            <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CampaignPerformanceOverTime"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+15%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastQuarter"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusFivePercent"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-4 pb-2 pt-4">@Localizer["CampaignPerformance"]</h3>
+            <div class="d-flex flex-wrap gap-4 px-4 py-4">
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["CampaignPerformanceOverTime"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+15%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastQuarter"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusFivePercent"]</p>
                 </div>
-                <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+                <div class="d-flex ui-min-h-180 flex-grow-1 flex-column gap-4 py-4">
                   <svg width="100%" height="148" viewBox="-3 0 478 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                     <path
                       d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z"
@@ -108,84 +108,84 @@
                       </linearGradient>
                     </defs>
                   </svg>
-                  <div class="flex justify-around">
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jan"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Feb"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Mar"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Apr"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["May"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jun"]</p>
+                  <div class="d-flex justify-content-around">
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Jan"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Feb"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Mar"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Apr"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["May"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Jun"]</p>
                   </div>
                 </div>
               </div>
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CampaignROI"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+8%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastQuarter"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusThreePercent"]</p>
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["CampaignROI"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+8%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastQuarter"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusThreePercent"]</p>
                 </div>
-                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 60%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignA"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 50%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignB"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 40%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignC"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 100%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignD"]</p>
-                </div>
-              </div>
-            </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["LeadGeneration"]</h3>
-            <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["LeadsGeneratedBySource"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+20%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastMonth"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusEightPercent"]</p>
-                </div>
-                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 0%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["SourceA"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 90%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["SourceB"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 80%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["SourceC"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 70%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["SourceD"]</p>
-                </div>
-              </div>
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["LeadConversionRates"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+12%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastMonth"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusFourPercent"]</p>
-                </div>
-                <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3">
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignA"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 70%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignB"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 100%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignC"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 100%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignD"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 10%;"></div></div>
+                <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3">
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 60%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignA"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 50%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignB"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 40%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignC"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 100%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignD"]</p>
                 </div>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["WebsiteTraffic"]</h3>
-            <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["WebsiteTrafficTrends"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+10%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastSixMonths"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusThreePercent"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-4 pb-2 pt-4">@Localizer["LeadGeneration"]</h3>
+            <div class="d-flex flex-wrap gap-4 px-4 py-4">
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["LeadsGeneratedBySource"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+20%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastMonth"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusEightPercent"]</p>
                 </div>
-                <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+                <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3">
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 0%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["SourceA"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 90%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["SourceB"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 80%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["SourceC"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 70%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["SourceD"]</p>
+                </div>
+              </div>
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["LeadConversionRates"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+12%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastMonth"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusFourPercent"]</p>
+                </div>
+                <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3">
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignA"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 70%;"></div></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignB"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 100%;"></div></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignC"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 100%;"></div></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignD"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 10%;"></div></div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-4 pb-2 pt-4">@Localizer["WebsiteTraffic"]</h3>
+            <div class="d-flex flex-wrap gap-4 px-4 py-4">
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["WebsiteTrafficTrends"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+10%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastSixMonths"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusThreePercent"]</p>
+                </div>
+                <div class="d-flex ui-min-h-180 flex-grow-1 flex-column gap-4 py-4">
                   <svg width="100%" height="148" viewBox="-3 0 478 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                     <path
                       d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z"
@@ -204,67 +204,67 @@
                       </linearGradient>
                     </defs>
                   </svg>
-                  <div class="flex justify-around">
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jan"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Feb"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Mar"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Apr"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["May"]</p>
-                    <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Jun"]</p>
+                  <div class="d-flex justify-content-around">
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Jan"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Feb"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Mar"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Apr"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["May"]</p>
+                    <p class="text-ink-muted small fw-bold lh-base">@Localizer["Jun"]</p>
                   </div>
                 </div>
               </div>
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["TrafficByDevice"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+5%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastMonth"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusTwoPercent"]</p>
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["TrafficByDevice"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+5%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastMonth"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusTwoPercent"]</p>
                 </div>
-                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 40%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Desktop"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 10%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Mobile"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 90%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Tablet"]</p>
+                <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3">
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 40%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["Desktop"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 10%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["Mobile"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 90%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["Tablet"]</p>
                 </div>
               </div>
             </div>
-            <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["CustomerEngagement"]</h3>
-            <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["EngagementByChannel"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+18%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastQuarter"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusSevenPercent"]</p>
+            <h3 class="text-ink fs-4 fw-bold lh-sm px-4 pb-2 pt-4">@Localizer["CustomerEngagement"]</h3>
+            <div class="d-flex flex-wrap gap-4 px-4 py-4">
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["EngagementByChannel"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+18%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastQuarter"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusSevenPercent"]</p>
                 </div>
-                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 10%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Email"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 40%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["SocialMedia"]</p>
-                  <div class="border-[#4d6a99] bg-[#e7ecf3] border-t-2 w-full" style="height: 40%;"></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["Direct"]</p>
+                <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3">
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 10%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["Email"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 40%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["SocialMedia"]</p>
+                  <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 40%;"></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["Direct"]</p>
                 </div>
               </div>
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#d0d9e7] p-6">
-                <p class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["CustomerSatisfaction"]</p>
-                <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight truncate">+10%</p>
-                <div class="flex gap-1">
-                  <p class="text-[#4d6a99] text-base font-normal leading-normal">@Localizer["LastQuarter"]</p>
-                  <p class="text-[#07883b] text-base font-medium leading-normal">@Localizer["PlusThreePercent"]</p>
+              <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+                <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["CustomerSatisfaction"]</p>
+                <p class="text-ink fs-1 fw-bold lh-sm truncate">+10%</p>
+                <div class="d-flex gap-1">
+                  <p class="text-ink-muted fs-5 fw-normal lh-base">@Localizer["LastQuarter"]</p>
+                  <p class="text-success fs-5 fw-semibold lh-base">@Localizer["PlusThreePercent"]</p>
                 </div>
-                <div class="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3">
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignA"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 10%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignB"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 10%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignC"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 0%;"></div></div>
-                  <p class="text-[#4d6a99] text-[13px] font-bold leading-normal tracking-[0.015em]">@Localizer["CampaignD"]</p>
-                  <div class="h-full flex-1"><div class="border-[#4d6a99] bg-[#e7ecf3] border-r-2 h-full" style="width: 20%;"></div></div>
+                <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3">
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignA"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 10%;"></div></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignB"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 10%;"></div></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignC"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 0%;"></div></div>
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["CampaignD"]</p>
+                  <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 20%;"></div></div>
                 </div>
               </div>
             </div>

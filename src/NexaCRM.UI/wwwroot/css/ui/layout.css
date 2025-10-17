@@ -1,0 +1,39 @@
+/*!
+ * NexaCRM UI Layout Patterns
+ * Grid and structural helpers for dashboard surfaces and detail panes.
+ */
+.ui-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.ui-grid-autofit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+    gap: 1.5rem;
+}
+
+.ui-grid-40-1fr {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0.5rem;
+}
+
+.ui-grid-auto-1fr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+}
+
+.ui-grid-flow-col {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 1.5rem;
+}
+
+.ui-grid-rows {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 1rem;
+}

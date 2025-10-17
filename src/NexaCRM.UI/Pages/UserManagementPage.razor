@@ -12,7 +12,7 @@
 
 <ResponsivePage>
     <div class="user-management-page common-page-container">
-        <div class="card shadow-sm page-header">
+        <div class="card page-header">
             <div class="page-title">
                 <h2 class="mb-2">사용자 관리</h2>
                 <p class="text-muted mb-0">관리자는 가입된 회원 정보를 확인하고 최종 승인까지 처리할 수 있습니다.</p>
@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <div class="card shadow-sm filter-card">
+        <div class="card filter-card">
             <EditForm Model="_filter" OnValidSubmit="ApplyFilter">
                 <div class="row g-3 align-items-end">
                     <div class="col-xl-4 col-lg-5 col-md-6">
@@ -66,7 +66,7 @@
 
         @if (PendingCount > 0)
         {
-            <div class="card shadow-sm pending-card">
+            <div class="card pending-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>승인 대기 사용자</strong>
                     <span class="text-muted small">최근 가입 순</span>
@@ -92,7 +92,7 @@
             </div>
         }
 
-        <div class="card shadow-sm table-card">
+        <div class="card table-card">
             @if (_isLoading)
             {
                 <div class="table-placeholder text-center text-muted">데이터를 불러오는 중입니다...</div>

@@ -2,105 +2,105 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<MarketingCampaignManagementInterface> Localizer
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">
-      <div class="layout-container flex h-full grow flex-col">
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-80">
-            <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
-              <div class="flex flex-col gap-4">
-                <h1 class="text-[#0e131b] text-base font-medium leading-normal">@Localizer["AcmeCo"]</h1>
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="House" data-size="24px" data-weight="regular">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden">
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <div class="gap-1 px-4 d-flex flex-grow-1 justify-content-center py-5">
+          <div class="layout-content-container d-flex flex-column ui-width-80">
+            <div class="d-flex h-100 ui-min-h-700 flex-column justify-content-between bg-surface-soft p-4">
+              <div class="d-flex flex-column gap-4">
+                <h1 class="text-ink fs-5 fw-semibold lh-base">@Localizer["AcmeCo"]</h1>
+                <div class="d-flex flex-column gap-2">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="House" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Home"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["Home"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="Users" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="Users" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Contacts"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["Contacts"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="Buildings" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="Buildings" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M240,208H224V96a16,16,0,0,0-16-16H144V32a16,16,0,0,0-24.88-13.32L39.12,72A16,16,0,0,0,32,85.34V208H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM208,96V208H144V96ZM48,85.34,128,32V208H48ZM112,112v16a8,8,0,0,1-16,0V112a8,8,0,1,1,16,0Zm-32,0v16a8,8,0,0,1-16,0V112a8,8,0,1,1,16,0Zm0,56v16a8,8,0,0,1-16,0V168a8,8,0,0,1,16,0Zm32,0v16a8,8,0,0,1-16,0V168a8,8,0,0,1,16,0Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Accounts"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["Accounts"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Deals"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["Deals"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#e7ecf3]">
-                    <div class="text-[#0e131b]" data-icon="Megaphone" data-size="24px" data-weight="fill">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3 bg-accent-soft">
+                    <div class="text-ink" data-icon="Megaphone" data-size="24px" data-weight="fill">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M192,72H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48,48,0,0,0,192,72ZM171,207.89l0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Campaigns"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["Campaigns"]</p>
                   </div>
-                  <div class="flex items-center gap-3 px-3 py-2">
-                    <div class="text-[#0e131b]" data-icon="PresentationChart" data-size="24px" data-weight="regular">
+                  <div class="d-flex align-items-center gap-3 px-3 py-2">
+                    <div class="text-ink" data-icon="PresentationChart" data-size="24px" data-weight="regular">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                         <path
                           d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"
                         ></path>
                       </svg>
                     </div>
-                    <p class="text-[#0e131b] text-sm font-medium leading-normal">@Localizer["Reports"]</p>
+                    <p class="text-ink small fw-semibold lh-base">@Localizer["Reports"]</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <p class="text-[#0e131b] tracking-light text-[32px] font-bold leading-tight min-w-72">@Localizer["Campaigns"]</p>
+          <div class="layout-content-container d-flex flex-column ui-max-w-960 flex-grow-1">
+            <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+              <p class="text-ink fs-1 fw-bold lh-sm ui-min-w-18rem">@Localizer["Campaigns"]</p>
               <button
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal"
+                class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base"
               >
                 <span class="truncate">@Localizer["NewCampaign"]</span>
               </button>
             </div>
             <div class="pb-3">
-              <div class="flex border-b border-[#d0d9e7] px-4 gap-8">
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#2a74ea] text-[#0e131b] pb-[13px] pt-4" href="#">
-                  <p class="text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["ActiveCampaigns"]</p>
+              <div class="d-flex border-bottom border border-soft px-4 gap-4">
+                <a class="d-flex flex-column align-items-center justify-content-center border-bottom border-3 border-primary text-ink pb-3 pt-4" href="#">
+                  <p class="text-ink small fw-bold lh-base">@Localizer["ActiveCampaigns"]</p>
                 </a>
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["PastCampaigns"]</p>
+                <a class="d-flex flex-column align-items-center justify-content-center border-bottom border-3 border-transparent text-ink-muted pb-3 pt-4" href="#">
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["PastCampaigns"]</p>
                 </a>
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4d6a99] pb-[13px] pt-4" href="#">
-                  <p class="text-[#4d6a99] text-sm font-bold leading-normal tracking-[0.015em]">@Localizer["Drafts"]</p>
+                <a class="d-flex flex-column align-items-center justify-content-center border-bottom border-3 border-transparent text-ink-muted pb-3 pt-4" href="#">
+                  <p class="text-ink-muted small fw-bold lh-base">@Localizer["Drafts"]</p>
                 </a>
               </div>
             </div>
             <div class="px-4 py-3">
-              <label class="flex flex-col min-w-40 h-12 w-full">
-                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+              <label class="d-flex flex-column ui-min-w-10rem ui-input-height-lg w-100">
+                <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                   <div
-                    class="text-[#4d6a99] flex border-none bg-[#e7ecf3] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                    class="text-ink-muted d-flex border-0 bg-accent-soft align-items-center justify-content-center pl-4 rounded-start-3 border-end-0"
                     data-icon="MagnifyingGlass"
                     data-size="24px"
                     data-weight="regular"
@@ -113,141 +113,141 @@
                   </div>
                   <input
                     placeholder='@Localizer["SearchCampaigns"]'
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border-none bg-[#e7ecf3] focus:border-none h-full placeholder:text-[#4d6a99] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border-0 bg-accent-soft h-100 px-4 rounded-start-0 border-start-0 pl-2 fs-5 fw-normal lh-base"
                     value=""
                   />
                 </div>
               </label>
             </div>
             <div class="px-4 py-3 container">
-              <div class="flex overflow-hidden rounded-lg border border-[#d0d9e7] bg-slate-50">
-                <table class="flex-1">
+              <div class="d-flex overflow-hidden rounded-3 border border-soft bg-surface-soft">
+                <table class="flex-grow-1">
                   <thead>
-                    <tr class="bg-slate-50">
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                    <tr class="bg-surface-soft">
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                         @Localizer["CampaignName"]
                       </th>
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Type"]</th>
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 px-4 py-3 text-left text-[#0e131b] w-60 text-sm font-medium leading-normal">@Localizer["Status"]</th>
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Type"]</th>
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 px-4 py-3 text-start text-ink ui-width-60 small fw-semibold lh-base">@Localizer["Status"]</th>
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                         @Localizer["StartDate"]
                       </th>
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">
                         @Localizer["EndDate"]
                       </th>
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["Budget"]</th>
-                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 px-4 py-3 text-left text-[#0e131b] w-[400px] text-sm font-medium leading-normal">@Localizer["ROI"]</th>
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["Budget"]</th>
+                      <th class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 px-4 py-3 text-start text-ink ui-width-400 small fw-semibold lh-base">@Localizer["ROI"]</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["SummerSale"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Email"]</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Email"]</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                         <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                          class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100"
                         >
                           <span class="truncate">@Localizer["Active"]</span>
                         </button>
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-07-01
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-07-31
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$5,000</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">15%</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">$5,000</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">15%</td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["ProductLaunch"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["SocialMedia"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                         <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                          class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100"
                         >
                           <span class="truncate">@Localizer["Scheduled"]</span>
                         </button>
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-08-15
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-09-15
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$10,000</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">22%</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">$10,000</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">22%</td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["HolidayPromotion"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Ads"]</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Ads"]</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                         <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                          class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100"
                         >
                           <span class="truncate">@Localizer["Completed"]</span>
                         </button>
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-12-01
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2023-12-31
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$8,000</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">28%</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">$8,000</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">28%</td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["SpringCollection"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["Email"]</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">@Localizer["Email"]</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                         <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                          class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100"
                         >
                           <span class="truncate">@Localizer["Active"]</span>
                         </button>
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2024-03-01
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2024-03-31
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$6,000</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">18%</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">$6,000</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">18%</td>
                     </tr>
-                    <tr class="border-t border-t-[#d0d9e7]">
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e131b] text-sm font-normal leading-normal">
+                    <tr class="border-top border-soft">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-120 ui-min-h-72 px-4 py-2 ui-width-400 text-ink small fw-normal lh-base">
                         @Localizer["AnniversaryEvent"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-240 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         @Localizer["SocialMedia"]
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-360 ui-min-h-72 px-4 py-2 ui-width-60 small fw-normal lh-base">
                         <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-medium leading-normal w-full"
+                          class="d-flex ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height-sm px-4 bg-accent-soft text-ink small fw-semibold lh-base w-100"
                         >
                           <span class="truncate">@Localizer["Scheduled"]</span>
                         </button>
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-480 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2024-05-01
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-600 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">
                         2024-05-31
                       </td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">$12,000</td>
-                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 h-[72px] px-4 py-2 w-[400px] text-[#4d6a99] text-sm font-normal leading-normal">25%</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-720 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">$12,000</td>
+                      <td class="table-0373b817-e540-417d-8e5e-f72c3c241345-column-840 ui-min-h-72 px-4 py-2 ui-width-400 text-ink-muted small fw-normal lh-base">25%</td>
                     </tr>
                   </tbody>
                 </table>

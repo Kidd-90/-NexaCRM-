@@ -6,11 +6,11 @@
 @inject IStringLocalizer<ProfileSettingsPage> Localizer
 @inject ISettingsService SettingsService
 
-<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden">
-      <div class="layout-container flex h-full grow flex-col">
-        <header class="profile-header flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] px-4 sm:px-6 md:px-10 py-3">
-          <div class="flex items-center gap-4 text-[#0e131b]">
-            <div class="size-4">
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden">
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <header class="profile-header d-flex align-items-center justify-content-between text-nowrap border-bottom border border-soft px-4 py-3">
+          <div class="d-flex align-items-center gap-4 text-ink">
+            <div class="ui-size-4">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   fill-rule="evenodd"
@@ -26,31 +26,31 @@
                 ></path>
               </svg>
             </div>
-            <h2 class="text-[#0e131b] text-sm sm:text-lg font-bold leading-tight tracking-[-0.015em]">@Localizer["SalesPro"]</h2>
+            <h2 class="text-ink small fw-bold lh-sm">@Localizer["SalesPro"]</h2>
           </div>
-          <div class="flex flex-1 justify-end gap-4 sm:gap-8">
-            <div class="hidden md:flex items-center gap-9">
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Dashboard"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Contacts"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Deals"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Tasks"]</a>
-              <a class="text-[#0e131b] text-sm font-medium leading-normal" href="#">@Localizer["Reports"]</a>
+          <div class="d-flex flex-grow-1 justify-content-end gap-4">
+            <div class="d-none d-md-flex align-items-center gap-4">
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Dashboard"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Contacts"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Deals"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Tasks"]</a>
+              <a class="text-ink small fw-semibold lh-base" href="#">@Localizer["Reports"]</a>
             </div>
-            <button class="profile-mobile-menu-button md:hidden" @onclick="ToggleMobileMenu">
-              <svg class="w-6 h-6 text-[#0e131b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="profile-mobile-menu-button" @onclick="ToggleMobileMenu">
+              <svg class="w-6 h-6 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
               </svg>
             </button>
             <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10"
+              class="ui-aspect-square rounded-pill ui-size-8"
               style='background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);'
             ></div>
           </div>
         </header>
         <!-- Mobile Navigation Overlay -->
-        <div class="profile-mobile-nav-overlay @(isMobileMenuOpen ? "active" : "")" @onclick="CloseMobileMenu"></div>
+        <div class="profile-mobile-nav-overlay @(isMobileMenuOpen ?"active" : "")" @onclick="CloseMobileMenu"></div>
         <!-- Mobile Navigation Menu -->
-        <nav class="profile-mobile-nav-menu @(isMobileMenuOpen ? "active" : "")">
+        <nav class="profile-mobile-nav-menu @(isMobileMenuOpen ?"active" : "")">
           <button class="profile-mobile-nav-close" @onclick="CloseMobileMenu">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -64,78 +64,78 @@
             <li><a class="profile-mobile-nav-link" href="#" @onclick="CloseMobileMenu">@Localizer["Reports"]</a></li>
           </ul>
         </nav>
-        <div class="px-4 sm:px-6 md:px-12 lg:px-40 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col w-full max-w-full md:w-[512px] md:max-w-[960px] py-5 flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <div class="flex w-full sm:min-w-72 flex-col gap-3">
-                <p class="text-[#0e131b] tracking-light text-2xl sm:text-3xl md:text-[32px] font-bold leading-tight">@Localizer["ProfileSettings"]</p>
-                <p class="text-[#4d6a99] text-sm font-normal leading-normal">@Localizer["ProfileSettingsDescription"]</p>
+        <div class="px-4 d-flex flex-grow-1 justify-content-center py-5">
+          <div class="layout-content-container d-flex flex-column w-100 py-5 flex-grow-1">
+            <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+              <div class="d-flex w-100 flex-column gap-3">
+                <p class="text-ink fs-2 fw-bold lh-sm">@Localizer["ProfileSettings"]</p>
+                <p class="text-ink-muted small fw-normal lh-base">@Localizer["ProfileSettingsDescription"]</p>
               </div>
             </div>
             <EditForm EditContext="@editContext" OnValidSubmit="SaveChanges">
               <DataAnnotationsValidator />
-              <div class="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                <label class="flex flex-col min-w-40 flex-1">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["FullName"]</p>
+              <div class="d-flex w-100 ui-max-w-480 flex-wrap align-items-end gap-4 px-4 py-3">
+                <label class="d-flex flex-column ui-min-w-10rem flex-grow-1">
+                  <p class="text-ink fs-5 fw-semibold lh-base pb-2">@Localizer["FullName"]</p>
                   <InputText
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border border-soft bg-surface-soft ui-input-height-lg p-3 fs-5 fw-normal lh-base"
                     @bind-Value="userProfile.FullName"
                   />
                 </label>
               </div>
-              <div class="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                <label class="flex flex-col min-w-40 flex-1">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["Email"]</p>
+              <div class="d-flex w-100 ui-max-w-480 flex-wrap align-items-end gap-4 px-4 py-3">
+                <label class="d-flex flex-column ui-min-w-10rem flex-grow-1">
+                  <p class="text-ink fs-5 fw-semibold lh-base pb-2">@Localizer["Email"]</p>
                   <InputText
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border border-soft bg-surface-soft ui-input-height-lg p-3 fs-5 fw-normal lh-base"
                     @bind-Value="userProfile.Email"
                   />
                 </label>
               </div>
-              <div class="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                <label class="flex flex-col min-w-40 flex-1">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["PhoneNumber"]</p>
+              <div class="d-flex w-100 ui-max-w-480 flex-wrap align-items-end gap-4 px-4 py-3">
+                <label class="d-flex flex-column ui-min-w-10rem flex-grow-1">
+                  <p class="text-ink fs-5 fw-semibold lh-base pb-2">@Localizer["PhoneNumber"]</p>
                   <InputText
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border border-soft bg-surface-soft ui-input-height-lg p-3 fs-5 fw-normal lh-base"
                     @bind-Value="userProfile.PhoneNumber"
                   />
                 </label>
               </div>
-              <div class="flex w-full max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                <label class="flex flex-col min-w-40 flex-1">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal pb-2">@Localizer["ProfilePicture"]</p>
+              <div class="d-flex w-100 ui-max-w-480 flex-wrap align-items-end gap-4 px-4 py-3">
+                <label class="d-flex flex-column ui-min-w-10rem flex-grow-1">
+                  <p class="text-ink fs-5 fw-semibold lh-base pb-2">@Localizer["ProfilePicture"]</p>
                   <InputText
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e131b] focus:outline-0 focus:ring-0 border border-[#d0d9e7] bg-slate-50 focus:border-[#d0d9e7] h-14 placeholder:text-[#4d6a99] p-[15px] text-base font-normal leading-normal"
+                    class="form-input d-flex w-100 min-w-0 flex-grow-1 overflow-hidden rounded-3 text-ink border border-soft bg-surface-soft ui-input-height-lg p-3 fs-5 fw-normal lh-base"
                     @bind-Value="userProfile.ProfilePicture"
                   />
                 </label>
               </div>
-              <div class="flex px-4 py-3 justify-start">
+              <div class="d-flex px-4 py-3 justify-content-start">
                 <button
                   type="button"
-                  class="flex w-full sm:w-auto min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7ecf3] text-[#0e131b] text-sm font-bold leading-normal tracking-[0.015em]"
+                  class="d-flex w-100 ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height px-4 bg-accent-soft text-ink small fw-bold lh-base"
                 >
                   <span class="truncate">@Localizer["ChangePassword"]</span>
                 </button>
               </div>
-              <h3 class="text-[#0e131b] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">@Localizer["LinkedAccounts"]</h3>
-              <div class="flex items-center gap-4 bg-slate-50 px-4 min-h-[72px] py-2">
-                <div class="text-[#0e131b] flex items-center justify-center rounded-lg bg-[#e7ecf3] shrink-0 size-12" data-icon="Globe" data-size="24px" data-weight="regular">
+              <h3 class="text-ink fs-4 fw-bold lh-sm px-4 pb-2 pt-4">@Localizer["LinkedAccounts"]</h3>
+              <div class="d-flex align-items-center gap-4 bg-surface-soft px-4 ui-min-h-72 py-2">
+                <div class="text-ink d-flex align-items-center justify-content-center rounded-3 bg-accent-soft shrink-0 ui-size-12" data-icon="Globe" data-size="24px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                     <path
                       d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM101.63,168h52.74C149,186.34,140,202.87,128,215.89,116,202.87,107,186.34,101.63,168ZM98,152a145.72,145.72,0,0,1,0-48h60a145.72,145.72,0,0,1,0,48ZM40,128a87.61,87.61,0,0,1,3.33-24H81.79a161.79,161.79,0,0,0,0,48H43.33A87.61,87.61,0,0,1,40,128ZM154.37,88H101.63C107,69.66,116,53.13,128,40.11,140,53.13,149,69.66,154.37,88Zm19.84,16h38.46a88.15,88.15,0,0,1,0,48H174.21a161.79,161.79,0,0,0,0-48Zm32.16-16H170.94a142.39,142.39,0,0,0-20.26-45A88.37,88.37,0,0,1,206.37,88ZM105.32,43A142.39,142.39,0,0,0,85.06,88H49.63A88.37,88.37,0,0,1,105.32,43ZM49.63,168H85.06a142.39,142.39,0,0,0,20.26,45A88.37,88.37,0,0,1,49.63,168Zm101.05,45a142.39,142.39,0,0,0,20.26-45h35.43A88.37,88.37,0,0,1,150.68,213Z"
                     ></path>
                   </svg>
                 </div>
-                <div class="flex flex-col justify-center">
-                  <p class="text-[#0e131b] text-base font-medium leading-normal line-clamp-1">@Localizer["SocialMedia"]</p>
-                  <p class="text-[#4d6a99] text-sm font-normal leading-normal line-clamp-2">@Localizer["SocialMediaDescription"]</p>
+                <div class="d-flex flex-column justify-content-center">
+                  <p class="text-ink fs-5 fw-semibold lh-base line-clamp-1">@Localizer["SocialMedia"]</p>
+                  <p class="text-ink-muted small fw-normal lh-base line-clamp-2">@Localizer["SocialMediaDescription"]</p>
                 </div>
               </div>
-              <div class="flex px-4 py-3 justify-end">
+              <div class="d-flex px-4 py-3 justify-content-end">
                 <button
                   type="submit"
-                  class="flex w-full sm:w-auto min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#2a74ea] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                  class="d-flex w-100 ui-min-w-84px ui-max-w-480 align-items-center justify-content-center overflow-hidden rounded-3 ui-input-height px-4 bg-primary text-white small fw-bold lh-base"
                 >
                   <span class="truncate">@Localizer["SaveChanges"]</span>
                 </button>

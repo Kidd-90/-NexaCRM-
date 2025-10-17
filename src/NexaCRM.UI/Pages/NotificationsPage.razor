@@ -57,7 +57,7 @@
             {
                 var n = items[i];
                 var anim = justReadIndices.Contains(i) ? "mark-read-anim" : null;
-                <li class="notif-item @(n.IsRead ? "read" : "unread") @anim">
+                <li class="notif-item @(n.IsRead ?"read" : "unread") @anim">
                     <div class="icon type-@n.Type.ToString().ToLower()"></div>
                     <div class="body">
                         <div class="title">@n.Title</div>

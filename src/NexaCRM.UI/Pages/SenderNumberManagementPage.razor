@@ -9,7 +9,7 @@
 
     @if (!string.IsNullOrEmpty(statusMessage))
     {
-        <div class="alert @(isError ? "alert-danger" : "alert-success")" role="alert">
+        <div class="alert @(isError ?"alert-danger" : "alert-success")" role="alert">
             @statusMessage
         </div>
     }
