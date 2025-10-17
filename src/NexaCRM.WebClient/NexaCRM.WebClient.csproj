@@ -39,6 +39,5 @@
     <ItemGroup>
         <ProjectReference Include="..\NexaCRM.Service\NexaCRM.Service.csproj" />
         <ProjectReference Include="..\NexaCRM.UI\NexaCRM.UI.csproj" />
-        <ProjectReference Include="..\NexaCRM.Pages\NexaCRM.Pages.csproj" />
     </ItemGroup>
 </Project>

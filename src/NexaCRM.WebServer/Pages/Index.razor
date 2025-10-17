@@ -1,5 +1,4 @@
 @page "/home"
-@using NexaCRM.Pages.DesignSystem
 @inject NavigationManager Navigation
 
 <PageTitle>Workspace overview</PageTitle>
@@ -7,36 +6,42 @@
 <section class="space-y-10">
     <header class="space-y-2">
         <h1 class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-            Welcome to NexaCRM Server
+            NexaCRM Server host
         </h1>
         <p class="max-w-3xl text-base text-slate-600 dark:text-slate-300">
-            This host now relies on the shared <code class="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-sm dark:bg-slate-700 dark:text-slate-100">NexaCRM.Pages</code>
-            library. The layout, authentication helpers, and Tailwind design tokens are all delivered from that reusable package.
+            The server project now loads UI assets and components directly from the <code class="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-sm dark:bg-slate-700 dark:text-slate-100">NexaCRM.UI</code>
+            Razor class library. Navigation, layouts, and shared resources are sourced from that package to keep the experience identical across hosts.
         </p>
     </header>
 
     <article class="grid gap-8 md:grid-cols-2">
         <section class="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
             <header class="space-y-1">
-                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Palette — Light mode</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-300">Roles from the modern neutral + royal blue scheme.</p>
+                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Unified layout</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300">
+                    Components such as <code class="font-mono text-sm">MainLayout</code>, <code class="font-mono text-sm">NavMenu</code>, and <code class="font-mono text-sm">LoadingScreen</code> are shared from the UI library and consumed by this host.
+                </p>
             </header>
-            <PaletteRoleList Roles="DesignSystemBlueprintProvider.Blueprint.BrandIdentity.ColorPalette.LightMode.Roles" />
+            <div class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <p>UI scripts, culture resources, and scoped CSS come from the shared package so both Server and WebAssembly clients stay in sync.</p>
+                <p>The router is configured to pick up Razor components from <code class="font-mono text-sm">NexaCRM.UI</code> automatically.</p>
+            </div>
         </section>
         <section class="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
             <header class="space-y-1">
-                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Palette — Dark mode</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-300">Parity roles for dark surfaces and typography.</p>
+                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Supabase ready</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300">Authentication and data services are wired through shared service abstractions.</p>
             </header>
-            <PaletteRoleList Roles="DesignSystemBlueprintProvider.Blueprint.BrandIdentity.ColorPalette.DarkMode.Roles" />
+            <div class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <p>The injected services remain identical regardless of host, so features such as notifications, task tracking, and analytics behave consistently.</p>
+                <p>Use this server host to validate Blazor Server specific behaviour while keeping a single source of UI truth.</p>
+            </div>
         </section>
     </article>
 
     <section class="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-6 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
         <p>
-            Need to explore the design blueprint in more detail? Check the documentation bundled with the library or navigate to the
-            <a class="font-medium text-blue-600 underline-offset-4 hover:underline dark:text-blue-400" href="https://design.local" rel="noreferrer" target="_blank">design reference</a>
-            to view component usage samples.
+            Looking for the full application shell? Navigate to <a class="font-medium text-blue-600 underline-offset-4 hover:underline dark:text-blue-400" href="/login">/login</a> to view the NexaCRM experience rendered with components sourced directly from <strong>NexaCRM.UI</strong>.
         </p>
     </section>
 </section>
