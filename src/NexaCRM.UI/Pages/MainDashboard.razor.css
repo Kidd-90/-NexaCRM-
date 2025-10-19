@@ -34,6 +34,20 @@
     outline-offset: 3px;
 }
 
+.welcome-card {
+    background-color: var(--surface-200, #FFFFFF);
+    border-radius: var(--radius-lg, 24px);
+    box-shadow: var(--shadow-100, 0 8px 24px rgba(21, 33, 65, 0.06));
+    padding: var(--space-lg, 40px);
+}
+
+.welcome-card__title {
+    font-size: var(--h1-size, 44px);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
 .dashboard-container {
     width: min(100%, var(--dashboard-shell-max-mobile));
     margin: 0 auto;
@@ -629,4 +643,3 @@
         color: #ffffff;
     }
 }
-

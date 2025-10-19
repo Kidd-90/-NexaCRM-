@@ -83,5 +83,8 @@ dkms.conf
 **/[Bb]in/
 **/[Oo]bj/
 
+#무시 폴더
+/node_modules/*
+node_modules/*
 
 .fake

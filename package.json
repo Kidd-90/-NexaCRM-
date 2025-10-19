@@ -3,13 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@playwright/test": "^1.43.0"
+    "@playwright/test": "^1.43.0",
+    "browser-sync": "^2.27.14",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^8.2.0",
+    "@storybook/addon-essentials": "^8.2.6",
+    "@storybook/addon-interactions": "^8.2.6",
+    "@storybook/addon-links": "^8.2.6",
+    "@storybook/blocks": "^8.2.6",
+    "@storybook/html-webpack5": "^8.2.6",
+    "@storybook/test": "^8.2.6",
+    "filepond": "^4.32.9",
+    "filepond-plugin-image-preview": "^4.6.12",
+    "http-server": "^14.1.1",
+    "mammoth": "^1.11.0",
+    "pdfjs-dist": "^4.10.38",
+    "storybook": "^8.2.6",
+    "typescript": "^5.0.0"
   },
   "scripts": {
-    "test:e2e": "playwright test --config=tests/playwright.config.js",
-    "mcp:chakra:build": "cd tools/chakra-mcp && npx tsc",
+    "preview:serve": "npx http-server tools/preview-demo -p 9000 -c-1",
+    "dev:watch:css": "npx chokidar \"src/NexaCRM.UI/wwwroot/css/**/*\" -c \"cp -R src/NexaCRM.UI/wwwroot/css/* src/NexaCRM.WebServer/wwwroot/css/\" || node ./scripts/watch-copy-css.js",
+    "dev:browsersync": "browser-sync start --proxy \"http://localhost:5000\" --files \"src/NexaCRM.UI/wwwroot/css/**/*.css, src/NexaCRM.WebServer/wwwroot/css/**/*.css\" --no-notify --no-ui --reload-delay 100",
+    "dev:dotnet": "dotnet watch run --project src/NexaCRM.WebServer/NexaCRM.WebServer.csproj",
+    "dev": "concurrently -k \"npm:dev:dotnet\" \"npm:dev:watch:css\" \"npm:dev:browsersync\"",
+    "test:e2e": "playwright test --config=tests/playwright.config.js",    
+    "mcp:chakra:install": "cd tools/chakra-mcp && npm install",
+    "mcp:chakra:build": "npx tsc --project tools/chakra-mcp/tsconfig.json",
     "mcp:chakra:start": "node tools/chakra-mcp/build/server.js",
-    "mcp:chakra:run": "npm run mcp:chakra:build && npm run mcp:chakra:start",
-    "mcp:rakit:start": "npx -y rakitui-ai"
+    "mcp:chakra:run": "npm run mcp:chakra:install && npm run mcp:chakra:build && npm run mcp:chakra:start",
+    "mcp:rakit:start": "npx -y rakitui-ai",
+    "mcp:all": "concurrently \"npm:mcp:chakra:run\" \"npm:mcp:rakit:start\" \"npm:storybook\"",
+    "storybook": "npx storybook dev -p 6006"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3"
   }
 }

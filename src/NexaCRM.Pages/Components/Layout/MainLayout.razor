@@ -124,6 +124,8 @@
     };
 
     private IJSObjectReference? _layoutModule;
+    private IJSObjectReference? _pullRefreshModule;
+    private DotNetObjectReference<MainLayout>? _dotNetRef;
     private bool isDetailNavOpen = true;
     private bool isDarkMode;
     private PrimaryNavSection activePrimaryNav = PrimaryNavSection.Dashboard;
@@ -216,10 +218,55 @@
             {
                 var module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/layout.js");
                 await module.InvokeVoidAsync("attachMainLayoutJsHandlers");
+                // Attach pull-to-refresh interop so JS can call into .NET and .NET can notify JS when complete
+                try
+                {
+                    _pullRefreshModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.Pages/js/pull-refresh-interop.js");
+                    _dotNetRef = DotNetObjectReference.Create(this);
+                    await _pullRefreshModule.InvokeVoidAsync("attach", _dotNetRef);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error initializing pull-refresh interop: {ex.Message}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error attaching JS handlers: {ex.Message}");
+            }
+        }
+    }
+
+    [JSInvokable]
+    public async Task HandlePullToRefresh()
+    {
+        // This is called from JS when the user triggers the pull-to-refresh gesture.
+        // Default behavior: allow app to perform any necessary refresh work here.
+        // For now we simulate a short refresh and then notify JS the refresh completed.
+        try
+        {
+            Console.WriteLine("[NexaCRM] HandlePullToRefresh invoked from JS");
+            // Place any app-specific refresh logic here. For example, re-query services,
+            // refresh caches, or notify child components via an injected service or event.
+            // Keep this quick and non-blocking where possible.
+            await Task.Delay(400); // simulate brief work; replace with real refresh logic if available.
+
+            if (_pullRefreshModule is not null)
+            {
+                await _pullRefreshModule.InvokeVoidAsync("dispatchComplete");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling pull-to-refresh: {ex.Message}");
+            // Ensure JS gets a completion signal even on error so UI resets
+            if (_pullRefreshModule is not null)
+            {
+                try
+                {
+                    await _pullRefreshModule.InvokeVoidAsync("dispatchComplete");
+                }
+                catch { /* swallow */ }
             }
         }
     }
@@ -350,6 +397,22 @@
                 // The JS runtime is no longer available; safe to ignore during disposal.
             }
         }
+
+        if (_pullRefreshModule is not null)
+        {
+            try
+            {
+                await _pullRefreshModule.InvokeVoidAsync("detach");
+                await _pullRefreshModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // ignore
+            }
+            catch (Exception) { }
+        }
+
+        _dotNetRef?.Dispose();
     }
 
 }

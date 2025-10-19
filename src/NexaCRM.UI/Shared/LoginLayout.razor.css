@@ -1,16 +1,22 @@
-/* Login-specific layout styles - no navigation elements */
-.page {
+.login-page, .desktop-shell {
     min-height: 100vh;
     width: 100%;
     margin-left: 0;
-    overflow: hidden;
+    /* allow shadows and image overflow to be visible on login routes */
+    overflow: visible;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-.page > main {
+/* If a page-level wrapper (.page) is present (eg. login/anonymous routes),
+   ensure any desktop-shell left padding (reserved for NavigationRail) is
+   overridden so the page takes the full viewport width.
+   This avoids a persistent empty left column when the rail isn't rendered. */
+
+
+.login-page > main {
     height: 100vh;
-    height: 100dvh;
+    height: 100dvh; 
     min-height: 100vh;
     min-height: 100dvh;
     display: flex;
@@ -26,10 +32,23 @@
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
-    overflow: hidden;
+    /* allow children (cards, image backdrops) to overflow so shadows aren't clipped */
+    overflow: visible;
     display: flex;
     align-items: stretch;
     justify-content: center;
+}
+
+/* Prevent page-level vertical scrolling on the login page so the UI
+   appears as a fixed, centered panel without top/bottom scrollbars. This
+   keeps the brand-section and card fully visible and avoids body-scroll
+   jumps on mobile browsers. */
+.login-page,
+.login-page > main,
+.content {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow-y: hidden !important;
 }
 
 /* Hide any floating menu toggle on login page */
@@ -40,6 +59,103 @@
 /* Hide sidebar completely */
 .sidebar {
     display: none !important;
+}
+
+/* Responsive rules for mobile-specific login card utility class
+   Usage: add `mobile-login-card` to the login card wrapper to enable these
+   responsive behaviors that make the form more comfortable on phones. */
+.content :global(.mobile-login-card) {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0.5rem !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+    .content :global(.mobile-login-card) {
+        padding: 0.75rem !important;
+        margin: 0.5rem !important;
+        border-radius: 12px !important;
+        /* Fixed mobile form width requested by user */
+        width: 382px !important;
+        max-width: 92vw !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    /* Ensure the brand section inside the mobile card remains visible
+       even when the card content scrolls: make it non-shrinking and sticky
+       at the top of the card. Also make sure the card can show overflow. */
+    .content :global(.mobile-login-card) {
+        overflow: visible !important;
+    }
+
+    .content :global(.mobile-login-card .brand-section) {
+        flex: 0 0 auto !important;
+        position: sticky !important;
+          /* ensure brand-section is pushed down enough to be visible on mobile
+              (user requested a large top offset) */
+          top: 100px !important;
+          margin-top: 100px !important;
+        z-index: 60 !important;
+        background: transparent !important;
+        margin-bottom: 0.25rem !important;
+        padding-top: 0 !important;
+    }
+
+    /* Reduce logo size and vertical gap on small screens so the brand
+       section occupies less vertical space. */
+    .content :global(.mobile-login-card .brand-section) .brand-logo {
+        font-size: 28px !important;
+        letter-spacing: 0.14em !important;
+    }
+
+    .content :global(.mobile-login-card .brand-section) {
+        gap: 6px !important;
+    }
+
+    /* Make primary buttons fill the available width on mobile */
+    .content :global(.mobile-login-card .login-button),
+    .content :global(.mobile-login-card .social-login-btn) {
+        width: 100% !important;
+        display: block !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .content :global(.mobile-login-card) {
+        padding: 0.5rem !important;
+        margin: 0.5rem auto !important;
+        border-radius: 10px !important;
+        /* Fixed mobile form width requested by user (382px). Keep a safe
+           max-width fallback so very narrow devices won't overflow. */
+        width: 382px !important;
+        max-width: 92vw !important;
+    }
+
+    .content :global(.mobile-login-card .login-button) {
+        padding: 0.9rem 1rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+/* Make sure brand-section inside the mobile card is visible on small
+   viewports: allow the card to show overflow (for visual elements) while
+   keeping the page itself non-scrollable. */
+@media (max-width: 768px) {
+    .content :global(.mobile-login-card) {
+        overflow: visible !important;
+        /* constrain card height so it fits within the viewport without
+           creating a body scroll; content inside can flow naturally. */
+        max-height: calc(100dvh - 1.5rem) !important;
+    }
+}
+
+/* Keep social login labels on one line so phrases like "네이버로 시작하기" don't
+   break across lines; prefer keeping words together in Korean. */
+.content :global(.social-login-btn) {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
 }
 
 /* Login-specific theme toggle positioning */
@@ -66,6 +182,11 @@
     user-select: none;
     -webkit-backdrop-filter: blur(10px); /* Safari 지원 */
     backdrop-filter: blur(10px); /* 블러 효과 추가 */
+    overflow: hidden; /* Ripple 효과가 버튼 밖으로 나가지 않도록 설정 */
+    padding: 0; /* Ensure only the defined width/height are used */
+    margin: 0;
+    box-sizing: border-box; /* prevent visual overflow */
+    pointer-events: auto; /* only this element and its children accept pointer events */
 }
 
 .login-theme-toggle:hover {
@@ -86,6 +207,46 @@
 .login-theme-toggle .theme-light-icon,
 .login-theme-toggle .theme-dark-icon {
     transition: all var(--transition-fast, 0.15s ease);
+}
+
+/* Prevent any pseudo elements or accidental global selectors from creating
+   a larger clickable/visual area around the toggle. */
+.login-theme-toggle::before,
+.login-theme-toggle::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Disable any ripple/ink effects from various UI libraries inside the theme toggle.
+   This covers material/vuetify/other class names and also stops any CSS animation. */
+.login-theme-toggle .ripple,
+.login-theme-toggle .ripple-effect,
+.login-theme-toggle .ripple-ink,
+.login-theme-toggle .ink,
+.login-theme-toggle .v-ripple__container,
+.login-theme-toggle .v-ripple__animate,
+.login-theme-toggle .ripple-container,
+.login-theme-toggle .mat-ripple-element {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    animation: none !important;
+    transition: none !important;
+    background: transparent !important;
+}
+
+/* Ensure children remain interactive while anything outside the button
+   can still receive pointer events (no invisible overlay). */
+.login-theme-toggle * {
+    pointer-events: auto;
+}
+
+/* User-request: hide the login theme toggle entirely (no visual, no interaction) */
+.login-theme-toggle {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 /* Theme icon visibility - default to light theme (show dark icon) */
@@ -141,11 +302,141 @@ body[data-theme="dark"] .login-theme-toggle .theme-light-icon {
     }
 }
 
+/* Ensure toggle does not overlap the login card header on small phones
+   (handles cases like widths <= 574px where the card is near the top). */
+@media (max-width: 574px) {
+    .login-theme-toggle {
+        /* move slightly inward and lower z-index so the card header stays visible */
+        top: calc(env(safe-area-inset-top) + 0.6rem);
+        right: auto;
+        left: 0.5rem; /* move to left side on small screens to avoid overlapping centered card */
+        width: 36px;
+        height: 36px;
+        z-index: 1001 !important; /* below the card visually */
+        box-shadow: none !important;
+        transform: none !important;
+        /* Let most pointer events pass through to underlying elements (the login card).
+           Only icon elements inside the toggle will accept pointer events (see below). */
+        pointer-events: none !important;
+    }
+
+    /* ensure the login card sits above the toggle so its top border is not hidden */
+    .content :global(.login-card) {
+        position: relative;
+        z-index: 1002 !important;
+    }
+
+    /* Make only the visible icon inside the toggle interactive so clicks on the
+       rest of the toggle pass through to the login form beneath. */
+    /* Disable pointer events for all descendants, then re-enable only the
+       actual icon elements so we don't alter their layout/size. This avoids
+       visual distortion on different icon implementations (SVG, font-icons). */
+    .login-theme-toggle * {
+        pointer-events: none !important;
+    }
+
+    .login-theme-toggle .theme-light-icon,
+    .login-theme-toggle .theme-dark-icon {
+        pointer-events: auto !important; /* only the icon accepts clicks */
+        /* don't override display/size here to preserve original visuals */
+    }
+}
+
+/* Extra small screens: avoid hover/scale effects and lower stacking context so toggle
+   doesn't block other controls (phones in compact UI). */
+@media (max-width: 360px) {
+    .login-theme-toggle {
+        width: 36px;
+        height: 36px;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        box-shadow: none !important;
+        z-index: 1001 !important; /* lower than overlays but above normal content */
+        transition: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        touch-action: manipulation;
+        transform-origin: center center;
+    }
+
+    .login-theme-toggle:hover,
+    .login-theme-toggle:active {
+        transform: none !important;
+        background-color: var(--surface-color) !important;
+        box-shadow: none !important;
+    }
+
+    /* Prevent the toggle from intercepting pointer-events outside its bounds */
+    .login-theme-toggle {
+        padding: 0 !important;
+        /* Same pointer-event passthrough strategy on very small screens */
+        pointer-events: none !important;
+    }
+
+    .login-theme-toggle .theme-light-icon,
+    .login-theme-toggle .theme-dark-icon {
+        pointer-events: auto !important;
+        /* keep native icon shape/size; only pointer-events is required */
+    }
+}
+
 /* Login page uses the same CSS variables as the main app for consistency */
-.page {
+.login-page {
     background-color: var(--background-color);
     color: var(--text-primary);
     transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* iOS-like button styling for primary and social buttons */
+.content :global(.login-button),
+.content :global(.social-login-btn) {
+    -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: inline-block;
+    width: auto;
+    min-width: 140px;
+    padding: 0.9rem 1.25rem;
+    border-radius: 14px;
+    border: none !important;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0)) , linear-gradient(180deg, var(--button-start, #ffffff), var(--button-end, #f2f2f2));
+    color: var(--button-text, #1c1c1e) !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: transform 160ms cubic-bezier(.3,.8,.25,1), box-shadow 160ms ease, opacity 160ms ease;
+    text-align: center;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.content :global(.login-button:active),
+.content :global(.social-login-btn:active) {
+    transform: translateY(1px) scale(0.998);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12) ;
+    opacity: 0.98;
+}
+
+/* Primary look variant for .login-button */
+.content :global(.login-button.primary) {
+    background: linear-gradient(180deg, #ffffff, #e9eef6);
+    color: #0b1220 !important;
+}
+
+/* Social buttons: light background with subtle border and icon spacing */
+.content :global(.social-login-btn) {
+    background: var(--surface-color, #ffffff) !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+    color: var(--text-secondary, #6b7280) !important;
+    min-width: 120px;
+}
+
+@media (max-width: 768px) {
+    .content :global(.login-button),
+    .content :global(.social-login-btn) {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
 }
 
 /* Dark mode button styling - uses main app variables */
@@ -257,7 +548,6 @@ body[data-theme="dark"] .login-theme-toggle .theme-light-icon {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        min-height: calc(100vh - 4rem) !important;
         padding: 1rem !important;
     }
 }

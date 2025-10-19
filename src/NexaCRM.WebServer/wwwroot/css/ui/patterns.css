@@ -1,0 +1,86 @@
+/*!
+ * Shared page-level pattern helpers
+ * Provides responsive behavior for recurring dashboard layouts used across the UI.
+ */
+@layer patterns {
+    :root {
+        --dashboard-stack-gap: 1rem;
+        --dashboard-card-min-height: 60px;
+        --dashboard-sidebar-width: 280px;
+    }
+
+    @media (max-width: 48rem) {
+        .dashboard-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--dashboard-stack-gap);
+            padding-inline: clamp(0.5rem, 4vw, 1rem);
+        }
+
+        .dashboard-sidebar {
+            display: none !important;
+        }
+
+        .dashboard-main-content {
+            max-width: 100% !important;
+            padding-inline: 0 !important;
+        }
+
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: clamp(0.75rem, 2.5vw, 1.25rem);
+            padding-inline: clamp(0.75rem, 4vw, 1.5rem) !important;
+        }
+
+        .dashboard-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-inline: calc(-1 * clamp(0.75rem, 4vw, 1.5rem));
+            padding-inline: clamp(0.75rem, 4vw, 1.5rem);
+        }
+
+        .dashboard-grid {
+            grid-template-columns: 1fr !important;
+            gap: clamp(0.75rem, 2.5vw, 1.5rem) !important;
+            padding-inline: clamp(0.75rem, 4vw, 1.25rem) !important;
+        }
+
+        .dashboard-card {
+            padding: clamp(0.75rem, 3vw, 1rem) !important;
+            min-height: var(--dashboard-card-min-height);
+        }
+
+        .dashboard-button {
+            min-height: var(--touch-target-min, 44px);
+            padding-block: 0.75rem;
+            padding-inline: clamp(0.75rem, 4vw, 1.25rem);
+        }
+    }
+
+    @media (min-width: 48rem) and (max-width: 64rem) {
+        .dashboard-sidebar {
+            max-width: var(--dashboard-sidebar-width) !important;
+            width: var(--dashboard-sidebar-width) !important;
+        }
+
+        .dashboard-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: clamp(1rem, 3vw, 1.5rem) !important;
+        }
+    }
+
+    @media (max-width: 30rem) {
+        .dashboard-container {
+            padding-inline: clamp(0.5rem, 6vw, 0.75rem);
+        }
+
+        .dashboard-header {
+            padding-inline: clamp(0.65rem, 6vw, 1rem) !important;
+        }
+
+        .dashboard-card {
+            padding: clamp(0.65rem, 5vw, 0.85rem) !important;
+        }
+    }
+}

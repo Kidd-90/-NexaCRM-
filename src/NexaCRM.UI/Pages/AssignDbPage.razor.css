@@ -1,7 +1,5 @@
 .page-container {
     animation: fadeIn 0.3s ease-in;
-    /* add subtle horizontal margins so content doesn't touch edges */
-    margin-inline: clamp(0.5rem, 2vw, 1rem);
 }
 
 .btn-assign {

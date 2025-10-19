@@ -2,6 +2,30 @@ const noop = () => {};
 let fabOutsideHandlerRegistered = false;
 let mobileDashboardInitialized = false;
 
+function safelyDetach(node) {
+    if (!node) {
+        return;
+    }
+
+    const parent = node.parentNode;
+    if (parent && typeof parent.removeChild === 'function') {
+        try {
+            parent.removeChild(node);
+            return;
+        } catch (err) {
+            console.warn('Failed to detach node via parent.removeChild', err);
+        }
+    }
+
+    if (typeof node.remove === 'function') {
+        try {
+            node.remove();
+        } catch (err) {
+            console.warn('Failed to detach node via node.remove()', err);
+        }
+    }
+}
+
 function ensureNavigator() {
     if (typeof navigator === 'undefined') {
         return {};
@@ -69,9 +93,7 @@ export async function copyText(value) {
         document.body.appendChild(textarea);
         textarea.select();
         const succeeded = document.execCommand('copy');
-        if (textarea && textarea.parentNode) {
-            textarea.parentNode.removeChild(textarea);
-        }
+        safelyDetach(textarea);
         return succeeded;
     } catch (err) {
         console.warn('Fallback clipboard copy failed', err);
@@ -92,9 +114,7 @@ export function triggerDownload(base64Data, fileName, contentType) {
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
-    if (link && link.parentNode) {
-        link.parentNode.removeChild(link);
-    }
+    safelyDetach(link);
 }
 
 export function smoothScrollToId(elementId) {
@@ -170,9 +190,9 @@ export function setupMobileDashboard() {
     }
 
     try {
-        const mobileHeader = document.querySelector('.mobile-header');
+        const mobileHeader = document.querySelector('[data-mobile-header]');
         if (mobileHeader instanceof HTMLElement) {
-            mobileHeader.classList.add('mobile-header--active');
+            mobileHeader.setAttribute('data-active', 'true');
         }
 
         const handleBackdropClick = (event) => {

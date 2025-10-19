@@ -50,17 +50,19 @@ html[data-theme='dark'] #nexacrm-initial-loader .loader-ring {
         padding: 1.5rem;
     }
 
+    #nexacrm-initial-loader .loader-ring {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3rem;
+        margin-bottom: 1rem;
+    }
+
     #nexacrm-initial-loader .loader-message {
-        font-size: 0.95rem;
-        text-align: center;
+        font-size: 0.875rem;
     }
 }
 
 @keyframes nexacrm-loader-spin {
-    from {
-        transform: rotate(0deg);
-    }
-
     to {
         transform: rotate(360deg);
     }

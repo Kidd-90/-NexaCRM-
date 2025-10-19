@@ -1,9 +1,11 @@
 @using System.Linq
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 @using NexaCRM.UI.Services.Interfaces
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject Microsoft.Extensions.Logging.ILogger<NavigationRail> Logger
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IRolePermissionService RolePermissionService
 @inject IAuthenticationService AuthenticationService
@@ -11,188 +13,191 @@
 @using NexaCRM.UI.Models.Navigation
 
 
-<div class="@($"nav-rail{(panelVisible ? "" : " collapsed")}")" role="navigation"
-    aria-label="@Localizer["MainNavigation"]" @onclick="HandleOutsideClick">
+<aside class="nav-rail-shell @(panelVisible ? "" : "collapsed")" role="navigation"
+       aria-label="@Localizer["MainNavigation"]" @onclick="HandleOutsideClick">
     <div class="nav-rail__icons">
-        <div class="nav-rail__main">
-            <div class="nav-rail__accent" aria-hidden="true">
-                <span class="nav-rail__accent-icon">
-                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                        <path d="M16 4v24M28 16H4M24.97 7.03 7.03 24.97M24.97 24.97 7.03 7.03" stroke="currentColor"
-                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </span>
-                <span class="nav-rail__accent-line"></span>
-            </div>
-            <div class="nav-rail__main-inner" role="tablist" aria-orientation="vertical">
-                <!-- Top logo button: links to home using the company mark -->
-                <NavLink class="rail-icon rail-logo" href="/" Match="NavLinkMatch.Prefix" title="Home"
-                    aria-label="Home">
-                    <img src="/_content/NexaCRM.UI/images/naf-logo.png" alt="NAF" class="rail-logo__image" />
-                    <span class="visually-hidden">Home</span>
-                </NavLink>
-
-                @for (var index = 0; index < groups.Count; index++)
-                {
-                    NavigationGroupViewModel? group = groups[index];
-                    var i = index; // capture loop variable to avoid closure capturing the mutated 'index'
-                                   <button type="button" class="rail-icon @(i == activeGroupIndex ? "active" : null)" role="tab"
-                                       title="@group.DisplayName" aria-selected="@(i == activeGroupIndex)"
-                                       @onclick="async () => await SetActive(i)">
-                                       <i class="@group.IconCss" aria-hidden="true"></i>
-                                   </button>
-                }
+        <div class="rail-spine">
+            <div class="rail-spine__segment rail-spine__segment--head">
+                <button type="button" class="rail-spine__spark" title="Quick palette" aria-label="Quick palette"
+                        @onclick:stopPropagation="true">
+                    <i class="bi bi-stars" aria-hidden="true"></i>
+                </button>
             </div>
 
-            <div class="nav-rail__badge" aria-hidden="true">
-                <span class="nav-rail__badge-line"></span>
-                <span class="nav-rail__badge-text">REAGLE 2025&nbsp;·&nbsp;NAV</span>
+            <div class="rail-spine__segment rail-spine__segment--body">
+                <div class="rail-spine__stack" role="tablist" aria-orientation="vertical">
+                    @for (var index = 0; index < groups.Count; index++)
+                    {
+                        var group = groups[index];
+                        var isActive = index == activeGroupIndex;
+                        <button type="button"
+                                class="rail-spine__icon @(isActive ? "is-active" : null)"
+                                title="@group.DisplayName" aria-label="@group.DisplayName"
+                                aria-selected="@isActive"
+                                @onclick="async () => await SetActive(index)"
+                                @onclick:stopPropagation="true">
+                            <i class="@group.IconCss" aria-hidden="true"></i>
+                        </button>
+                    }
+                </div>
             </div>
         </div>
 
-        <!-- Bottom area: notifications, help, settings + profile/login -->
-        <div class="nav-rail__bottom">
-            <div class="nav-rail__badge nav-rail__badge--footer" aria-hidden="true">
-                <span class="nav-rail__badge-text">REAGLE 2025&nbsp;·&nbsp;NAV</span>
-            </div>
-            <span class="nav-rail__bottom-divider" aria-hidden="true"></span>
-            <button type="button" class="rail-icon rail-icon--inverse" role="tab" title="설정">
-                <i class="bi bi-gear" aria-hidden="true"></i>
-            </button>
-        </div>
-    </div>
-
-    <div class="@($"nav-rail__panel{(panelVisible ? "" : " collapsed")}")" role="tabpanel"
-        aria-hidden="@(panelVisible ? "false" : "true")">
-        <!-- Top: user summary (avatar, name, email) -->
-        <div class="panel-user">
-            <div class="panel-user__avatar" aria-hidden="true">@userInitials</div>
-            <div class="panel-user__info">
-                <div class="panel-user__name">@userDisplayName</div>
-                @if (!string.IsNullOrEmpty(userEmail))
-                {
-                    <div class="panel-user__email">@userEmail</div>
-                }
-            </div>
-            <button type="button" class="panel-user__details-btn" title="세부 내역" @onclick="ToggleUserDetails"
-                @onclick:stopPropagation="true">
-                <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
-            </button>
-        </div>
-
-        @if (showUserDetails)
-        {
-            <div class="panel-user-details" @onclick:stopPropagation="true">
-                <div class="panel-user-details__header">
-                    <span>사용자 정보</span>
-                    <button type="button" class="panel-user-details__close" @onclick="ToggleUserDetails">
-                        <i class="bi bi-x" aria-hidden="true"></i>
+        <div class="rail-footer">
+            <div class="rail-spine__segment rail-spine__segment--tail">
+                <div class="rail-spine__settings-shell">
+                    <button type="button" class="rail-spine__settings" title="설정" aria-label="설정"
+                            @onclick:stopPropagation="true">
+                        <i class="bi bi-gear" aria-hidden="true"></i>
                     </button>
                 </div>
-                <div class="panel-user-details__list">
-                    <div class="panel-user-details__item">
-                        <i class="bi bi-person" aria-hidden="true"></i>
-                        <div class="panel-user-details__item-content">
-                            <div class="panel-user-details__item-label">이름</div>
-                            <div class="panel-user-details__item-value">@userDisplayName</div>
-                        </div>
-                    </div>
-                    <div class="panel-user-details__item">
-                        <i class="bi bi-envelope" aria-hidden="true"></i>
-                        <div class="panel-user-details__item-content">
-                            <div class="panel-user-details__item-label">이메일</div>
-                            <div class="panel-user-details__item-value">@(!string.IsNullOrEmpty(userEmail) ? userEmail :
-                                                            "N/A")</div>
-                        </div>
-                    </div>
-                    <div class="panel-user-details__item">
-                        <i class="bi bi-shield-check" aria-hidden="true"></i>
-                        <div class="panel-user-details__item-content">
-                            <div class="panel-user-details__item-label">역할</div>
-                            <div class="panel-user-details__item-value">@string.Join(", ", userRoles.Length > 0 ? userRoles
-                                                            : new[] { "User" })</div>
-                    </div>
-                </div>
-                <div class="panel-user-details__item">
-                    <i class="bi bi-calendar-check" aria-hidden="true"></i>
-                    <div class="panel-user-details__item-content">
-                        <div class="panel-user-details__item-label">마지막 로그인</div>
-                        <div class="panel-user-details__item-value">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</div>
-                    </div>
-                </div>
             </div>
-            <div class="panel-user-details__actions">
-                <button type="button" class="panel-user-details__action-btn" @onclick="NavigateToProfile">
-                    <i class="bi bi-person-gear" aria-hidden="true"></i>
-                    <span>프로필 설정</span>
-                </button>
-                <button type="button" class="panel-user-details__action-btn panel-user-details__action-btn--danger"
-                    @onclick="HandleLogout">
-                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-                    <span>로그아웃</span>
-                </button>
-            </div>
+
         </div>
-                }
+    </div>
 
-        @if (groups.Count == 0)
-        {
-            <div class="panel-header">
-                <div class="panel-title">@Localizer["MenuBrandTitle"]</div>
-            </div>
-            <p class="text-muted">@Localizer["Favorites"]</p>
-        }
-        else
-        {
-            NavigationGroupViewModel? group = groups[activeGroupIndex];
-            <div class="panel-title panel-title--section">
-                <div class="panel-title panel-title--sectiond">@group.DisplayName</div>
-            </div>
-
-            @foreach (var navSection in group.Sections)
-            {
-                if (navSection.Links.Count == 0)
-                {
-                    continue;
-                }
-
-                <div class="panel-section" role="group" aria-label="@(navSection.Title ?? group.DisplayName)">
-                    @if (!string.IsNullOrEmpty(navSection.Title))
+    <div class="nav-rail-panel" role="tabpanel"
+         aria-hidden="@(panelVisible ? "false" : "true")">
+        <div class="panel-content">
+            <!-- Top: user summary (avatar, name, email) -->
+            <header class="panel-user">
+                <div class="panel-user__avatar" aria-hidden="true">@userInitials</div>
+                <div class="panel-user__info">
+                    <div class="panel-user__name">@userDisplayName</div>
+                    @if (!string.IsNullOrEmpty(userEmail))
                     {
-                        if (navSection.ResourceKey is "NavigationSectionStatus" or "NavigationSectionHistory")
-                        {
-                            <div class="divider-soft" aria-hidden="true"></div>
-                        }
-
-                        <div class="panel-title panel-title--section">
-                            @navSection.Title
-                        </div>
+                        <div class="panel-user__email">@userEmail</div>
                     }
+                </div>
+                <button type="button" class="panel-user__details-btn" title="세부 내역" @onclick="ToggleUserDetails"
+                        @onclick:stopPropagation="true">
+                    <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+                </button>
+            </header>
 
-                    <nav class="panel-list">
-                        @foreach (NavigationLinkViewModel link in navSection.Links)
-                        {
-                            <NavLink class="nav-link rail-panel-item" href="@link.Href">
-                                <span class="rail-panel-item__icon">
-                                    <i class="@link.IconCss" aria-hidden="true"></i>
-                                </span>
-                                <span class="rail-panel-item__label">@link.DisplayName</span>
-                            </NavLink>
-                        }
-                    </nav>
+            @if (showUserDetails)
+            {
+                <div class="panel-user-details" @onclick:stopPropagation="true">
+                    <div class="panel-user-details__header">
+                        <span>사용자 정보</span>
+                        <button type="button" class="panel-user-details__close" @onclick="ToggleUserDetails">
+                            <i class="bi bi-x" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="panel-user-details__list">
+                        <div class="panel-user-details__item">
+                            <i class="bi bi-person" aria-hidden="true"></i>
+                            <div class="panel-user-details__item-content">
+                                <div class="panel-user-details__item-label">이름</div>
+                                <div class="panel-user-details__item-value">@userDisplayName</div>
+                            </div>
+                        </div>
+                        <div class="panel-user-details__item">
+                            <i class="bi bi-envelope" aria-hidden="true"></i>
+                            <div class="panel-user-details__item-content">
+                                <div class="panel-user-details__item-label">이메일</div>
+                                <div class="panel-user-details__item-value">@(!string.IsNullOrEmpty(userEmail) ? userEmail : "N/A")</div>
+                            </div>
+                        </div>
+                        <div class="panel-user-details__item">
+                            <i class="bi bi-shield-check" aria-hidden="true"></i>
+                            <div class="panel-user-details__item-content">
+                                <div class="panel-user-details__item-label">역할</div>
+                                <div class="panel-user-details__item-value">@string.Join(", ", userRoles.Length > 0 ? userRoles : new[] { "User" })</div>
+                            </div>
+                        </div>
+                        <div class="panel-user-details__item">
+                            <i class="bi bi-calendar-check" aria-hidden="true"></i>
+                            <div class="panel-user-details__item-content">
+                                <div class="panel-user-details__item-label">마지막 로그인</div>
+                                <div class="panel-user-details__item-value">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-user-details__actions">
+                        <button type="button" class="panel-user-details__action-btn" @onclick="NavigateToProfile">
+                            <i class="bi bi-person-gear" aria-hidden="true"></i>
+                            <span>프로필 설정</span>
+                        </button>
+                        <button type="button" class="panel-user-details__action-btn panel-user-details__action-btn--danger" @onclick="HandleLogout">
+                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                            <span>로그아웃</span>
+                        </button>
+                    </div>
                 </div>
             }
-        }
 
-        <!-- Bottom: per-page injected area -->
-        @if (PanelFooter != null)
-        {
-            <div class="panel-footer">
-                @PanelFooter
-            </div>
-        }
+            @if (groups.Count == 0)
+            {
+                <section class="panel-track panel-track--top" aria-hidden="true">
+                    <div class="panel-track__inner">
+                        <span class="panel-track__label">@Localizer["MenuBrandTitle"]</span>
+                    </div>
+                </section>
+
+                <div class="panel-empty">
+                    <div class="panel-empty__title">@Localizer["MenuBrandTitle"]</div>
+                    <p class="panel-empty__subtitle">@Localizer["Favorites"]</p>
+                </div>
+            }
+            else
+            {
+                NavigationGroupViewModel? group = groups[activeGroupIndex];
+
+                <section class="panel-track panel-track--top" aria-hidden="true">
+                    <div class="panel-track__inner">
+                        <span class="panel-track__label">@group.DisplayName</span>
+                    </div>
+                </section>
+
+                @foreach (var navSection in group.Sections)
+                {
+                    if (navSection.Links.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    <section class="panel-card" role="group" aria-label="@(navSection.Title ?? group.DisplayName)">
+                        @if (!string.IsNullOrEmpty(navSection.Title))
+                        {
+                            <header class="panel-card__header">@navSection.Title</header>
+                        }
+
+                        <nav class="panel-card__menu">
+                                    @foreach (NavigationLinkViewModel link in navSection.Links)
+                                    {
+                                        var anchorActive = IsLinkActive(link.Href) ? "panel-card__item--active" : string.Empty;
+                                        <a class="panel-card__item @anchorActive" href="@link.Href"
+                                           @onclick="() => OnPanelItemClick(link.Href)" @onclick:preventDefault="true">
+                                            <span class="panel-card__icon">
+                                                <i class="@link.IconCss" aria-hidden="true"></i>
+                                            </span>
+                                            <span class="panel-card__label">@link.DisplayName</span>
+                                            <span class="panel-card__chevron" aria-hidden="true">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </span>
+                                        </a>
+                                    }
+                        </nav>
+                    </section>
+                }
+            }
+
+            <section class="panel-track panel-track--bottom" aria-hidden="true">
+                <div class="panel-track__inner">
+                    <span class="panel-track__label">@Localizer["Documents"]</span>
+                </div>
+            </section>
+
+            @if (PanelFooter != null)
+            {
+                <div class="panel-footer-injected">
+                    @PanelFooter
+                </div>
+            }
+        </div>
     </div>
-</div>
+</aside>
 
 @code {
     private readonly List<NavigationGroupViewModel> groups = new();
@@ -429,19 +434,26 @@
 
         try
         {
-            // When a user clicks an already-active group, keep the panel shown
-            // instead of toggling it closed. This avoids accidental closing when
-            // users click the same icon twice. To hide the panel deliberately,
-            // the UI should provide a dedicated control (not the group icon).
+            // Log entry for diagnostics
+            try { _ = JSRuntime.InvokeVoidAsync("console.log", $"NavigationRail.SetActive called -> index={index}, activeGroupIndex={activeGroupIndex}"); } catch { }
+            try { Logger?.LogInformation("NavigationRail.SetActive called -> index={Index}, activeGroupIndex={Active}", index, activeGroupIndex); } catch { }
+
+            // Toggle behavior: clicking the same icon toggles the panel (open/close).
+            // Clicking a different icon switches active group and ensures panel is visible.
             if (activeGroupIndex == index)
             {
-                panelVisible = true; // keep the panel open
+                // toggle
+                panelVisible = !panelVisible;
             }
             else
             {
                 activeGroupIndex = index;
                 panelVisible = true;
             }
+
+            // Log state after update
+            try { _ = JSRuntime.InvokeVoidAsync("console.log", $"NavigationRail.SetActive updated -> index={index}, activeGroupIndex={activeGroupIndex}, panelVisible={panelVisible}"); } catch { }
+            try { Logger?.LogInformation("NavigationRail.SetActive updated -> index={Index}, activeGroupIndex={Active}, panelVisible={Visible}", index, activeGroupIndex, panelVisible); } catch { }
 
             // Ensure Blazor re-renders on the correct synchronization context.
             await InvokeAsync(StateHasChanged);
@@ -451,6 +463,28 @@
             try { _ = JSRuntime.InvokeVoidAsync("console.error", "NavigationRail.SetActive.exception -> " + ex?.ToString()); }
             catch
             { }
+        }
+    }
+
+    private void OnPanelItemClick(string href)
+    {
+        try
+        {
+            // Close the panel when a navigation item is clicked to mirror overlay/panel UX
+            panelVisible = false;
+            showUserDetails = false;
+
+            // Debug: emit a console log so we can confirm the click handler executed in the browser devtools console
+            try { _ = JSRuntime.InvokeVoidAsync("console.log", $"OnPanelItemClick -> {href}"); } catch { }
+
+            try { Logger?.LogInformation("NavigationRail.OnPanelItemClick -> {Href}", href); } catch { }
+
+            // Use NavigateTo to ensure navigation happens under our control
+            NavigationManager.NavigateTo(href);
+        }
+        catch
+        {
+            // swallow — navigation will still work through NavLink fallback
         }
     }
 
@@ -508,4 +542,18 @@
     IReadOnlyList<NavigationLinkViewModel> Links);
 
     private sealed record NavigationLinkViewModel(string Href, string DisplayName, string IconCss);
+}
+
+@functions {
+    private bool IsLinkActive(string href)
+    {
+        if (string.IsNullOrEmpty(href)) return false;
+        var current = NavigationManager.Uri;
+        var baseUri = NavigationManager.BaseUri;
+        // Normalize
+        var relative = current.StartsWith(baseUri, StringComparison.OrdinalIgnoreCase) ? current.Substring(baseUri.Length) : current;
+        if (!relative.StartsWith('/')) relative = "/" + relative;
+        if (!href.StartsWith('/')) href = "/" + href;
+        return relative.StartsWith(href.TrimStart('/'), StringComparison.OrdinalIgnoreCase) || relative.Equals(href.TrimStart('/'), StringComparison.OrdinalIgnoreCase);
+    }
 }

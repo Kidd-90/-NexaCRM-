@@ -28,19 +28,27 @@
     --spinner-track-color: color-mix(in srgb, var(--primary-color) 24%, rgba(255, 255, 255, 0.35));
     --spinner-color: color-mix(in srgb, var(--primary-color) 88%, rgba(255, 255, 255, 0.1));
     font-family: var(--font-family-sans);
-    background: var(--app-background-gradient);
+    /* force a clean white background for the login route to match design */
+    background: var(--neutral-white, #ffffff);
+    /* make the login containers fill the viewport to avoid background seams */
+    width: 100vw;
+    max-width: 100vw;
+    min-height: 100dvh;
     color: var(--text-color);
     box-sizing: border-box;
-    min-height: calc(100vh - clamp(150px, 20vh, 240px));
-    height: auto;
-    padding: clamp(32px, 6vh, 58px) clamp(16px, 3.2vw, 40px);
-    max-width: min(1220px, 86vw);
-    margin: clamp(52px, 7vh, 96px) auto;
+     /* Ensure login container fills the full viewport from the top (0px) on
+         small screens. Desktop/tablet layout remains controlled by the
+         min-width media query below. */
+     min-height: 100dvh;
+     height: auto;
+     padding: clamp(32px, 6vh, 58px) clamp(16px, 3.2vw, 40px);
+    max-width: min(1220px, 92vw);
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     align-content: center;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     isolation: isolate;
 }
@@ -66,6 +74,8 @@
     height: 100%;
     min-height: 100%;
     padding: 0;
+    width: 100vw;
+    max-width: 100vw;
 }
 
 /* 이미지 섹션 - 모바일에서는 숨김 */
@@ -76,43 +86,61 @@
 /* 데스크톱/태블릿에서는 컨텐츠에 맞게 높이 조절 */
 @media (min-width: 769px) {
     .login-container {
-        min-height: calc(100vh - clamp(200px, 26vh, 300px));
+    padding: clamp(2rem, 4.2vw, 4rem) clamp(1.2rem, 2.6vw, 2.6rem);
+        min-height: 100dvh;
         display: grid;
-        grid-template-columns: minmax(0, 74%) minmax(360px, 560px);
-        gap: clamp(10px, 1.5vw, 22px);
-        max-width: min(1200px, 82vw);
-        margin: 0 auto;
+    /* stronger left image emphasis so it intrudes more into the card */
+    grid-template-columns: 70% minmax(320px, 480px);
+    /* make the single grid row fill available height */
+    grid-template-rows: 1fr;
+    gap: clamp(12px, 2vw, 28px);
+    margin: 0 auto;
         align-items: stretch;
         justify-items: stretch;
-        justify-content: flex-start;
+    /* center the grid block both vertically and horizontally */
+    align-content: center;
+    justify-content: center; /* 그리드 자체를 중앙 정렬 */
     }
     
     /* 왼쪽 이미지 영역 */
     .login-image-section {
         display: flex;
         position: relative;
-        overflow: hidden;
+        /* allow the enlarged backdrop to overflow into the right column so
+           it can appear under the login card */
+        overflow: visible;
         align-items: center;
-        justify-content: flex-start;
-        padding: clamp(3.9rem, 5.8vw, 6rem) clamp(2.4rem, 4vw, 3.4rem);
+        justify-content: center; /* center image content inside left column */
+        /* reduce left padding so image appears larger and uses more real estate */
+        padding: clamp(2rem, 4.2vw, 4rem) clamp(1.2rem, 2.6vw, 2.6rem);
         border-top-left-radius: 1.75rem;
         border-bottom-left-radius: 1.75rem;
         box-shadow: 0 36px 74px color-mix(in srgb, var(--primary-color) 16%, rgba(15, 23, 42, 0.28));
         width: 100%;
         max-width: min(1320px, 84vw);
+        /* make the image column stretch to match the right column's height */
+        height: 100%;
+        align-self: stretch;
     }
 
     .login-image-backdrop {
         position: absolute;
         inset: 0;
         background-size: cover;
-        background-position: center;
+        /* prioritize the right-side subject so it sits closer to the card */
+        background-position: center right;
         background-repeat: no-repeat;
         opacity: 1;
         filter: saturate(1.05) contrast(1.12) brightness(1.05);
         animation: loginImageFade 0.7s ease forwards;
         transform-origin: center;
         z-index: 0;
+        /* conservative backdrop sizing to avoid extreme zoom while still allowing
+         visible intrusion under the card. Tweak these values to increase/decrease
+         overlap intensity. */
+        width: 120%;
+        height: 100%;
+        transform: translateX(14%) scale(1.12);
         pointer-events: none;
     }
     
@@ -125,10 +153,8 @@
         right: 0;
         bottom: 0;
         z-index: 1;
-        background: linear-gradient(160deg,
-                color-mix(in srgb, var(--primary-color) 10%, rgba(8, 12, 31, 0.45)) 0%,
-                color-mix(in srgb, var(--primary-hover) 8%, rgba(11, 17, 32, 0.22)) 55%,
-                color-mix(in srgb, var(--primary-color) 6%, rgba(15, 19, 36, 0.1)) 100%);
+        /* soften the overlay so image details remain visible */
+        background: linear-gradient(160deg, rgba(8,12,31,0.28) 0%, rgba(11,17,32,0.12) 55%, rgba(15,19,36,0.06) 100%);
     }
     
     .login-image-content {
@@ -193,19 +219,35 @@
     .mobile-login-card {
         width: 100%;
         max-width: 660px;
-        height: 100%;
+        /* let the grid row determine height; allow stretching */
+        height: auto;
         border-radius: 2rem;
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding: clamp(2.5rem, 5vw, 3.85rem);
+        justify-content: flex-start;
+        padding: clamp(1.8rem, 3.2vw, 2.6rem);
         position: relative;
-        z-index: 2;
-        overflow: hidden;
-        margin-left: clamp(-260px, -18vw, -160px);
-        align-self: center;
+        /* ensure card visually sits above the expanded image */
+        z-index: 20;
+        overflow: visible;
+        /* nudge the card slightly left so it overlaps the expanded backdrop by ~8px */
+        margin-left: -8px;
+        align-self: stretch;
         justify-self: center;
-        box-shadow: var(--card-shadow);
+        box-shadow: 0 40px 90px rgba(10, 15, 30, 0.25);
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .mobile-login-card::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Slightly reduce right-column padding so the card doesn't appear pushed
+       off the centered grid on narrower desktop widths */
+    .login-container > .mobile-login-card,
+    .login-container > .mobile-login-card * {
+        box-sizing: border-box;
     }
 }
 
@@ -217,13 +259,19 @@
     border-radius: 1.5rem;
     border: 1px solid var(--divider-color-elevated);
     box-shadow: var(--card-shadow);
-    padding: clamp(2.75rem, 4.5vw, 3.5rem) clamp(2.25rem, 4vw, 3.25rem);
+    padding: clamp(2.25rem, 3.6vw, 3rem) clamp(1.8rem, 3.4vw, 2.6rem);
     display: flex;
     flex-direction: column;
-    gap: 32px;
-    overflow: hidden;
+    gap: 20px;
+    overflow: visible;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.mobile-login-card::-webkit-scrollbar {
+    display: none;
 }
 
 .mobile-login-container button,
@@ -246,43 +294,55 @@
     align-items: center;
     text-align: center;
     gap: 10px;
+    line-height: 1.35;
 }
 
 .brand-logo {
-    font-size: 42px;
+    font-size: clamp(2.25rem, 2.8vw, 2.75rem);
     font-weight: 800;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     background: linear-gradient(120deg, var(--brand-gradient-start), var(--brand-gradient-end));
     -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* Safari / older WebKit fallback */
     background-clip: text;
     color: transparent;
 }
 
+/* Fallback for browsers that don't support background-clip:text (ensure logo is readable) */
+@supports not ((-webkit-background-clip: text)) {
+    .brand-logo {
+        background: none !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: initial !important;
+    }
+}
+
 .brand-caption {
-    font-size: 16px;
+    font-size: 0.95rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.005em;
+    line-height: 1.45;
     color: var(--muted-color);
 }
 
 .mobile-form {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 18px;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .input-label {
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--muted-color);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
 }
 
 .password-wrapper {
@@ -375,10 +435,10 @@
     width: 100%;
     border: none;
     border-radius: 24px;
-    padding: 18px 16px;
+    padding: 18px 18px;
     font-size: 1.05rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.035em;
     color: var(--neutral-white);
     background: var(--button-gradient);
     box-shadow: var(--button-shadow);
@@ -396,7 +456,7 @@
 
 .login-button:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-accent) 22%, transparent), var(--button-shadow);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-accent) 28%, transparent), var(--button-shadow);
 }
 
 .login-button:disabled {
@@ -404,6 +464,16 @@
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+.login-button .ripple-effect,
+.social-login-btn .ripple-effect {
+    width: 180%;
+    height: 180%;
+    left: -40%;
+    top: -40%;
+    border-radius: 999px;
+    opacity: 0.12;
 }
 
 .button-loading {
@@ -435,7 +505,8 @@
     justify-content: center;
     align-items: center;
     gap: 12px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.025em;
     color: var(--muted-color);
 }
 
@@ -460,10 +531,10 @@
 .login-divider {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 0.75rem;
+    gap: 14px;
+    font-size: 0.8rem;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted-color);
 }
@@ -477,26 +548,29 @@
 }
 
 .social-login-grid {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: clamp(10px, 1vw, 12px);
+    width: 100%;
+    margin-top: 0;
+    align-self: stretch;
 }
 
 .social-login-btn {
-    flex: 1 1 calc(33.333% - 12px);
-    min-width: 92px;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    border-radius: 22px;
-    border: 1px solid color-mix(in srgb, var(--divider-color-elevated) 85%, transparent);
-    padding: 16px 12px;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--divider-color-elevated) 80%, transparent);
+    padding: 14px 10px;
     background: var(--surface-muted-elevated);
     box-shadow: var(--shadow-soft-layer);
     color: var(--muted-color);
     font-weight: 600;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -529,8 +603,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
 }
 
 .social-icon svg {
@@ -543,10 +617,11 @@
 }
 
 .social-login-notice {
-    margin-top: 1rem;
+    margin-top: 0; /* flex-gap으로 간격이 이미 적용되므로 불필요한 margin 제거 */
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--muted-color);
+    letter-spacing: 0.02em;
 }
 
 .naver-btn {
@@ -569,7 +644,7 @@
     .mobile-login-card {
         padding: 28px 20px 32px;
         border-radius: 24px;
-        gap: 24px;
+        gap: 20px;
     }
 
     .brand-section {
@@ -578,11 +653,11 @@
 
     .brand-logo {
         font-size: 32px;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.2em;
     }
 
     .brand-caption {
-        font-size: 14px;
+        font-size: 0.9rem;
     }
 
     .mobile-form {
@@ -620,8 +695,9 @@
 
     .login-button {
         font-size: 0.95rem;
-        padding: 12px;
-        border-radius: 20px;
+        padding: 18px;
+        border-radius: 24px;
+        letter-spacing: 0.05em;
     }
 
     .button-loading {
@@ -634,40 +710,49 @@
     }
 
     .login-divider {
-        gap: 10px;
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
+        gap: 12px;
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
     }
 
     .social-login-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 10px;
     }
 
     .social-login-btn {
-        flex: 1 1 calc(50% - 10px);
         gap: 10px;
-        padding: 12px 10px;
+        padding: 14px 10px;
         border-radius: 18px;
         font-size: 0.75rem;
     }
 
     .social-icon {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
     }
 }
 
 @media (max-width: 340px) {
+    /* On extremely narrow screens, keep buttons compact and attempt to
+       show three per row; if the viewport is too small, they will wrap but
+       remain visually balanced and not clipped. */
+    .social-login-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        gap: 6px;
+    }
+
     .social-login-btn {
-        flex: 1 1 100%;
-        gap: 8px;
-        padding: 11px 12px;
-        font-size: 0.72rem;
+        min-width: 0;
+        gap: 5px;
+        padding: 9px 6px;
+        border-radius: 14px;
+        font-size: 0.66rem;
     }
 
     .social-icon {
-        width: 44px;
-        height: 44px;
+        width: 32px;
+        height: 32px;
     }
 }
 

@@ -1,5 +1,5 @@
 /* Mobile Header Styles */
-.mobile-header {
+[data-mobile-header] {
     display: none;
     background: #ffffff;
     border-bottom: 1px solid #e7ecf3;
@@ -392,7 +392,7 @@
 /* Mobile Responsive Styles */
 @media (max-width: 767.98px) {
     /* Show mobile header components */
-    .mobile-header {
+    [data-mobile-header][data-active="true"] {
         display: block;
     }
     

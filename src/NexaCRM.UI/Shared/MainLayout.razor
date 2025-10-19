@@ -49,7 +49,7 @@
     </script>
 </HeadContent>
 
-<div class="page desktop-shell">
+<div class="desktop-shell">
     <NavigationRail />
 
     <div class="desktop-shell__main">
@@ -86,20 +86,6 @@
                         <span class="desktop-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
                     }
                 </button>
-                <AuthorizeView>
-                    <Authorized>
-                        <button class="desktop-shell__profile" @onclick="GoToProfile" title="Open profile settings">
-                            <span class="desktop-shell__avatar">@userInitials</span>
-                            <span class="desktop-shell__profile-name">@userDisplayName</span>
-                        </button>
-                    </Authorized>
-                    <NotAuthorized>
-                        <button class="desktop-shell__profile" @onclick="GoToProfile" title="Sign in">
-                            <span class="desktop-shell__avatar"><i class="bi bi-person" aria-hidden="true"></i></span>
-                            <span class="desktop-shell__profile-name">@userDisplayName</span>
-                        </button>
-                    </NotAuthorized>
-                </AuthorizeView>
             </div>
         </header>
 
@@ -236,11 +222,38 @@
     {
         if (firstRender)
         {
-            layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/layout.js");
-            await layoutModule.InvokeVoidAsync("initializeShell");
-            await UpdateUnreadNotificationsAsync();
-            await layoutModule.InvokeVoidAsync("refreshThemeToggle");
-            StateHasChanged();
+            // Prefer the library script packaged under the Razor Class Library content path.
+            // If that import fails (wrong path or server config), catch the error and
+            // try a graceful fallback to any global functions the non-module script
+            // might have registered on window.
+            try
+            {
+                layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/NexaCRM.UI/js/layout.js");
+                await layoutModule.InvokeVoidAsync("initializeShell");
+                await UpdateUnreadNotificationsAsync();
+                await layoutModule.InvokeVoidAsync("refreshThemeToggle");
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Log a clearer error for diagnostics and attempt a non-module fallback.
+                Console.Error?.WriteLine($"Failed to import layout module: {ex.Message}");
+
+                try
+                {
+                    // If the non-module scripts were included via <script> tags they may have
+                    // registered functions on window. Call those as a fallback.
+                    await JSRuntime.InvokeVoidAsync("initializeShell");
+                    await UpdateUnreadNotificationsAsync();
+                    await JSRuntime.InvokeVoidAsync("refreshThemeToggle");
+                    StateHasChanged();
+                }
+                catch (Exception inner)
+                {
+                    // If fallback also fails, log it but don't rethrow so the app stays up.
+                    Console.Error?.WriteLine($"Fallback initializeShell failed: {inner.Message}");
+                }
+            }
         }
     }
 

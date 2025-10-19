@@ -1,0 +1,42 @@
+/* ========================================
+   Login Status Indicator Component
+   ======================================== */
+
+/* Bottom-right login status indicator */
+.login-status-indicator {
+    position: fixed;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.12);
+    /* emerald-500 tint */
+    color: #065F46;
+    /* emerald-800 */
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    z-index: 40;
+    pointer-events: none;
+    /* purely informational */
+}
+
+.login-status-indicator .indicator-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #10B981;
+    /* emerald-500 */
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22);
+}
+
+.login-status-indicator .indicator-text {
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    font-size: 0.85rem;
+    color: #065F46;
+}

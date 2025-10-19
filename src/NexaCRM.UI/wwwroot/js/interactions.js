@@ -6,6 +6,30 @@
         return;
     }
 
+    const safeRemoveNode = (node) => {
+        if (!node) {
+            return;
+        }
+
+        const parent = node.parentNode;
+        if (parent && typeof parent.removeChild === 'function') {
+            try {
+                parent.removeChild(node);
+                return;
+            } catch (err) {
+                console.warn('Failed to detach node via parent.removeChild', err);
+            }
+        }
+
+        if (typeof node.remove === 'function') {
+            try {
+                node.remove();
+            } catch (err) {
+                console.warn('Failed to detach node via node.remove()', err);
+            }
+        }
+    };
+
     const _manager = {
         // Initialize all interaction enhancements
         init: () => {
@@ -88,7 +112,7 @@
             
             // Remove existing ripples
             const existingRipples = element.querySelectorAll('.ripple-effect');
-            existingRipples.forEach(ripple => ripple.remove());
+            existingRipples.forEach(safeRemoveNode);
             
             // Create ripple element
             const ripple = document.createElement('span');
@@ -100,19 +124,20 @@
             const x = e.clientX - rect.left - size / 2;
             const y = e.clientY - rect.top - size / 2;
             
-            // Set ripple styles
+            // Set ripple styles (use a sensible fallback color and make animation-friendly)
             ripple.style.cssText = `
                 position: absolute;
                 width: ${size}px;
                 height: ${size}px;
                 left: ${x}px;
                 top: ${y}px;
-                background: var(--focus-ring);
+                background: var(--focus-ring, rgba(15,23,42,0.10));
                 border-radius: 50%;
                 transform: scale(0);
                 animation: ripple-animation 0.6s linear;
                 pointer-events: none;
                 z-index: 1;
+                will-change: transform, opacity;
             `;
             
             // Ensure element has relative positioning
@@ -124,21 +149,37 @@
             element.appendChild(ripple);
             
             // Remove ripple after animation
-            setTimeout(() => ripple.remove(), 600);
+            setTimeout(() => safeRemoveNode(ripple), 600);
         });
         
-        // Add ripple animation CSS
+            // Add ripple animation CSS
         const rippleCSS = `
+            :root { --nexacrm-ripple: rgba(15,23,42,0.10); --nexacrm-ripple-weak: rgba(15,23,42,0.06); }
             @keyframes ripple-animation {
                 to {
                     transform: scale(4);
                     opacity: 0;
                 }
             }
-            
-            .ripple {
-                overflow: hidden;
+
+            .ripple { overflow: hidden; position: relative; }
+
+            /* Improve ripple visuals and reduce visual weight for login toggle */
+            .ripple-effect {
+                transition: opacity 0.28s linear, transform 0.28s linear;
+                opacity: 0.95;
+                mix-blend-mode: normal;
+                background: var(--nexacrm-ripple);
             }
+
+            /* Make the ripple for the small login theme toggle lighter and subtler */
+            .login-theme-toggle .ripple-effect {
+                background: var(--nexacrm-ripple-weak) !important;
+                opacity: 0.9 !important;
+            }
+
+            /* If the element author wants the ripple to be visually behind icon, lower z-index */
+            .login-theme-toggle .ripple-effect { z-index: 0; }
         `;
         
         if (!document.getElementById('nexacrm-ripple-styles')) {
@@ -211,35 +252,103 @@
         let isPulling = false;
         let refreshThreshold = 70;
         
-        const mainContent = document.querySelector('main') || document.querySelector('.content');
-        if (!mainContent) return;
+    // Only enable pull-to-refresh on touch devices and when debug flag is present.
+    // Set window.__NEXACRM_DEBUG__ = true from server-side or dev HTML to enable during development.
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (!isTouchDevice || !window.__NEXACRM_DEBUG__) return;
+
+    const mainContent = document.querySelector('main') || document.querySelector('.content');
+    if (!mainContent) return;
         
-        // Create pull-to-refresh indicator
+        // Create pull-to-refresh indicator with accessibility and animated spinner
         const refreshIndicator = document.createElement('div');
         refreshIndicator.className = 'pull-refresh-indicator';
-        refreshIndicator.innerHTML = '<div class="refresh-icon">↓</div><div class="refresh-text">Pull to refresh</div>';
-        refreshIndicator.style.cssText = `
-            position: absolute;
-            top: -60px;
+        // ARIA: announce state changes to assistive tech
+        refreshIndicator.setAttribute('role', 'status');
+        refreshIndicator.setAttribute('aria-live', 'polite');
+        refreshIndicator.setAttribute('aria-atomic', 'true');
+        refreshIndicator.innerHTML = `
+            <div class="refresh-icon" aria-hidden="true">
+                <svg class="refresh-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-opacity="0.18"></circle>
+                    <path class="refresh-spinner-head" d="M22 12a10 10 0 00-3.1-7.05" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+            </div>
+            <div class="refresh-text">Pull to refresh</div>
+        `;
+    // Make the indicator fixed at the top and more visible during debug.
+            refreshIndicator.style.cssText = `
+            position: fixed;
+            top: 28px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(-6px);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: 8px;
-            padding: 10px;
-            background: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px var(--shadow-light);
-            transition: all 0.3s ease;
-            z-index: 1000;
+            gap: 10px;
+            padding: 8px 14px;
+            background: color-mix(in srgb, white 92%, var(--nexacrm-bg, #ffffff));
+            color: var(--text-primary, #0f172a);
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 999px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+            transition: transform 0.22s cubic-bezier(.2,.9,.3,1), opacity 0.18s ease;
+            z-index: 99999;
+            pointer-events: none; /* non-interactive visual hint */
+            opacity: 0; /* hidden by default until pulling */
         `;
         
-        mainContent.style.position = 'relative';
-        mainContent.appendChild(refreshIndicator);
+        // Do not append into main flow; attach to body so it's always visible and fixed.
+        try {
+            document.body.appendChild(refreshIndicator);
+        } catch (e) {
+            mainContent.style.position = 'relative';
+            mainContent.appendChild(refreshIndicator);
+        }
+
+        // Add spinner/check CSS if not present
+        if (!document.getElementById('nexacrm-pull-refresh-styles')) {
+            const rfStyle = document.createElement('style');
+            rfStyle.id = 'nexacrm-pull-refresh-styles';
+            rfStyle.textContent = `
+                .pull-refresh-indicator { transition: transform 0.22s cubic-bezier(.2,.9,.3,1), opacity 0.18s ease; }
+                .pull-refresh-indicator .refresh-spinner { display: block; color: var(--text-secondary, #6b7280); }
+                .pull-refresh-indicator .refresh-spinner-head { transform-origin: center; }
+                .pull-refresh-indicator.refreshing .refresh-spinner-head { animation: nexacrm-spin 1s linear infinite; }
+                @keyframes nexacrm-spin { to { transform: rotate(360deg); } }
+                .pull-refresh-indicator .refresh-check { display: none; }
+                .pull-refresh-indicator.show-check .refresh-spinner { display: none; }
+                .pull-refresh-indicator.show-check .refresh-check { display: block; }
+                .pull-refresh-indicator .refresh-check svg { width:18px; height:18px; color:var(--success,#10b981); }
+                /* Visible when pulling */
+                .pull-refresh-indicator.visible { opacity: 1; }
+            `;
+            document.head.appendChild(rfStyle);
+        }
+
+        // Completion handler: listen for app-level completion event to animate success
+        let completionTimeout = null;
+        function handleRefreshComplete() {
+            // show checkmark briefly
+            refreshIndicator.classList.remove('refreshing');
+            refreshIndicator.classList.add('show-check');
+            const textEl = refreshIndicator.querySelector('.refresh-text');
+            if (textEl) textEl.textContent = 'Refreshed';
+
+            // clear any previous timeout
+            if (completionTimeout) clearTimeout(completionTimeout);
+            completionTimeout = setTimeout(() => {
+                refreshIndicator.classList.remove('show-check');
+                if (textEl) textEl.textContent = 'Pull to refresh';
+            }, 900);
+        }
+
+        window.addEventListener('nexacrm:pullToRefreshComplete', handleRefreshComplete);
         
         mainContent.addEventListener('touchstart', (e) => {
-            if (mainContent.scrollTop === 0) {
+            // only start when at top of scrollable container
+            const atTop = mainContent.scrollTop === 0 || (window.scrollY === 0 && mainContent === document.body);
+            if (atTop) {
                 startY = e.touches[0].clientY;
                 isPulling = true;
             }
@@ -254,10 +363,10 @@
             if (pullDistance > 0) {
                 e.preventDefault();
                 
-                // Update indicator position and appearance
+                // Update indicator transform and appearance
                 const progress = Math.min(pullDistance / refreshThreshold, 1);
-                refreshIndicator.style.top = `${-60 + (pullDistance * 0.5)}px`;
-                refreshIndicator.style.opacity = progress;
+                refreshIndicator.style.transform = `translateX(-50%) translateY(${(Math.min(pullDistance, 100) * 0.4)}px)`;
+                refreshIndicator.style.opacity = String(0.5 + (progress * 0.5));
                 
                 const icon = refreshIndicator.querySelector('.refresh-icon');
                 const text = refreshIndicator.querySelector('.refresh-text');
@@ -266,10 +375,12 @@
                     icon.style.transform = 'rotate(180deg)';
                     text.textContent = 'Release to refresh';
                     refreshIndicator.style.color = 'var(--primary-color)';
+                    refreshIndicator.classList.add('visible');
                 } else {
                     icon.style.transform = `rotate(${progress * 180}deg)`;
                     text.textContent = 'Pull to refresh';
                     refreshIndicator.style.color = 'var(--text-secondary)';
+                    refreshIndicator.classList.add('visible');
                 }
             }
         }, { passive: false });
@@ -279,20 +390,24 @@
             
             const pullDistance = currentY - startY;
             
-            if (pullDistance >= refreshThreshold) {
-                // Trigger refresh
-                refreshIndicator.querySelector('.refresh-text').textContent = 'Refreshing...';
-                refreshIndicator.querySelector('.refresh-icon').style.animation = 'spin 1s linear infinite';
-                
-                // Simulate refresh (replace with actual refresh logic)
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            }
-            
-            // Reset
-            refreshIndicator.style.top = '-60px';
-            refreshIndicator.style.opacity = '0';
+                if (pullDistance >= refreshThreshold) {
+                    // Trigger refresh: dispatch an app-level event so Blazor or other code can handle it.
+                    refreshIndicator.querySelector('.refresh-text').textContent = 'Refreshing...';
+                    refreshIndicator.classList.add('refreshing');
+                    refreshIndicator.classList.add('visible');
+
+                    // Dispatch custom event for in-app handlers to perform a soft refresh.
+                    try {
+                        window.dispatchEvent(new CustomEvent('nexacrm:pullToRefresh'));
+                    } catch (ex) {
+                        // fallback to full reload only if dispatch fails
+                        setTimeout(() => { window.location.reload(); }, 1200);
+                    }
+                }
+
+            // Reset visual state
+            refreshIndicator.style.transform = 'translateX(-50%) translateY(-6px)';
+            refreshIndicator.classList.remove('visible');
             isPulling = false;
             startY = 0;
             currentY = 0;
@@ -595,9 +710,7 @@ if (!(window.downloadFile && window.downloadFile._nexacrm_init)) {
             link.click();
             // Defensive removal: the link may have been removed elsewhere or
             // not appended in some environments. Check parentNode first.
-            if (link && link.parentNode) {
-                link.parentNode.removeChild(link);
-            }
+            safeRemoveNode(link);
             // Revoke the object URL if available. Guard in a try/catch to
             // avoid unhandled exceptions in older or restricted environments.
             try {

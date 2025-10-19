@@ -18,134 +18,6 @@
 <a href="#mainDashboardContent" class="dashboard-skip-link">@Localizer["SkipToMainContent"]</a>
 
 <div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden common-page-container" data-page="main-dashboard">
-    <!-- Mobile Header Bar -->
-    <div class="mobile-header mobile-header--active">
-        <div class="mobile-header-content">
-            <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu" title="@Localizer["OpenMenu"]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                    <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
-                </svg>
-            </button>
-            
-            <div class="mobile-header-title">
-                <h1 class="mobile-title">@Localizer["CRM"]</h1>
-            </div>
-
-            <div class="mobile-header-actions">
-                <button class="mobile-action-btn" @onclick="ToggleMobileSearch" title="@Localizer["Search"]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
-                    </svg>
-                </button>
-                <button class="mobile-action-btn mobile-notifications-btn" @onclick="ToggleMobileNotifications" title="@Localizer["Notifications"]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
-                    </svg>
-                    @if (UnreadMobileNotificationsCount > 0)
-                    {
-                        <span class="notification-badge" aria-label="@Localizer["Notifications"]">
-                            @UnreadMobileNotificationsCount
-                        </span>
-                    }
-                </button>
-            </div>
-        </div>
-        
-        <!-- Mobile Search Bar (collapsed by default) -->
-        <div class="mobile-search-bar @(MobileInteractions.IsSearchOpen ?"expanded" : "collapsed")">
-            <div class="mobile-search-input">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                    <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
-                </svg>
-                <input type="text" placeholder='@Localizer["Search"]' @bind="mobileSearchQuery" @onkeyup="HandleMobileSearch" />
-                <button class="mobile-search-close" @onclick="ToggleMobileSearch">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile Quick Actions Bar -->
-    <div class="mobile-quick-actions" role="navigation" aria-label="@Localizer["QuickActionsLabel"]">
-        <AuthorizeView>
-            <Authorized>
-                @{
-                    var salesLink = "/sales-pipeline-page";
-                    if (context.User.IsInRole("Manager"))
-                    {
-                        salesLink = "/sales-manager-dashboard";
-                    }
-                }
-                <button class="quick-action-btn" @onclick="@(() => NavigateToPage(salesLink))" title="@Localizer["Sales"]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"></path>
-                    </svg>
-                    <span>@Localizer["Sales"]</span>
-                </button>
-                
-                <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/contacts"))" title="@Localizer["Contacts"]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Z"></path>
-                    </svg>
-                    <span>@Localizer["Contacts"]</span>
-                </button>
-                
-                <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/tasks-page"))" title="@Localizer["Tasks"]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
-                    </svg>
-                    <span>@Localizer["Tasks"]</span>
-                </button>
-                
-                <button class="quick-action-btn" @onclick="@(() => NavigateToPage("/reports-page"))" title="@Localizer["Reports"]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Z"></path>
-                    </svg>
-                    <span>@Localizer["Reports"]</span>
-                </button>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-
-    <!-- Mobile Notifications Panel (collapsed by default) -->
-    <div class="mobile-notifications-panel @(MobileInteractions.AreNotificationsOpen ?"expanded" : "collapsed")">
-        <div class="mobile-notifications-header">
-            <h3>@Localizer["Notifications"]</h3>
-            <button class="mobile-notifications-close" @onclick="ToggleMobileNotifications">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                    <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
-                </svg>
-            </button>
-        </div>
-        <div class="mobile-notifications-content">
-            @if (mobileNotifications.Count == 0)
-            {
-                <div class="notification-empty">@ResolveString("NotificationEmpty", "새 알림이 없습니다.")</div>
-            }
-            else
-            {
-                @foreach (var notification in mobileNotifications)
-                {
-                    <div class="notification-item @(notification.IsRead ? string.Empty"notification-item--unread")">
-                        <div class="notification-icon">
-                            <i class="@ResolveNotificationIcon(notification)" aria-hidden="true"></i>
-                        </div>
-                        <div class="notification-content">
-                            <div class="notification-title">@notification.Title</div>
-                            @if (!string.IsNullOrWhiteSpace(notification.Message))
-                            {
-                                <div class="notification-message">@notification.Message</div>
-                            }
-                            <div class="notification-time">@FormatRelativeTime(notification.TimestampUtc)</div>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-
     <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
         <div class="dashboard-container">
         <main id="mainDashboardContent" class="dashboard-main-content" tabindex="-1">
@@ -395,13 +267,6 @@
         </div>
     </div>
 
-    <!-- Mobile Quick Actions Floating Button -->
-    <NexaCRM.UI.Components.UI.FloatingActionButton 
-        ShowCallAction="true" 
-        ShowEmailAction="true" 
-        ShowMeetingAction="true" 
-        ShowAddAction="true"
-        OnActionClicked="HandleFloatingAction" />
 </div>
 
 @code {
@@ -678,25 +543,6 @@
                 Logger.LogWarning(ex, "Failed to set up mobile dashboard interactions.");
             }
         }
-    }
-
-    private async Task HandleFloatingAction(string action)
-    {
-        var request = action switch
-        {
-            "call" => new GlobalActionRequest(GlobalActionType.Call),
-            "email" => new GlobalActionRequest(GlobalActionType.Email),
-            "meeting" => new GlobalActionRequest(GlobalActionType.ScheduleMeeting),
-            "add" => new GlobalActionRequest(GlobalActionType.AddContact),
-            _ => null
-        };
-
-        if (request is null)
-        {
-            return;
-        }
-
-        await GlobalActionService.LaunchAsync(request);
     }
 
     public void Dispose()

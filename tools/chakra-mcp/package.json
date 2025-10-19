@@ -1,24 +1,11 @@
 {
-  "name": "chakra-mcp",
+  "name": "chakra-mcp-tool",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/server.ts",
-  "scripts": {
-    "start": "bun run --silent src/server.ts",
-    "dev": "bun src/server.ts",
-    "update": "bun src/update.ts"
-  },
-  "keywords": [],
-  "author": "smelzer",
-  "license": "ISC",
-  "packageManager": "pnpm@10.12.1",
+  "private": true,
   "devDependencies": {
-    "@types/node": "^22.15.33",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "chalk": "^5.4.1",
-    "ora": "^8.2.0"
+    "@types/node": "^20.11.24",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "typescript": "^5.3.3"
   }
 }

@@ -12,12 +12,10 @@
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
     --font-size-lg: 1.125rem;
-    --font-size-xl: 1.375rem;    
-    --font-size-2xl: 1.75rem; /* 28px */
-    --font-size-3xl: 2.75rem; /* 44px */
+    --font-size-xl: 1.375rem;
+    --font-size-2xl: clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem);
+    --font-size-3xl: clamp(2.25rem, 1.8rem + 2.2vw, 3.125rem);
     --body-line-height: 1.6;
-    --h1-size: 44px;
-    --h2-size: 28px;
     --heading-line-height-tight: 1.2;
     --heading-letter-spacing: -0.02em;
     --body-letter-spacing: -0.01em;
@@ -40,7 +38,6 @@
     --overlay-black: rgba(0, 0, 0, 0.5);
     --shadow-soft-layer: 0px 2px 6px rgba(0, 0, 0, 0.15);
     --shadow-deep-layer: 0px 4px 12px rgba(0, 0, 0, 0.35);
-    --shadow-100: 0 8px 24px rgba(21, 33, 65, 0.06); /* soft shadow */
     --glow-white: 0px 0px 8px rgba(255, 255, 255, 0.8);
     --glow-dark: 0px 0px 6px rgba(0, 0, 0, 0.6);
 
@@ -52,11 +49,7 @@
 
     /* Light Theme Colors */
     --primary-color: var(--color-primary);
-    --primary-hover: #7c828f;    
-    --surface-100: #F8F9FB; /* 페이지 배경 */
-    --surface-200: #FFFFFF; /* 카드 배경 */
-    --muted-300: #E8EEF3; /* 섹션 카드 배경 */
-    --accent-500: #6C5CE7; /* 액센트/활성 색 */
+    --primary-hover: #7c828f;
     --secondary-color: var(--color-primary);
     --background-color: var(--neutral-white);
     --background-muted: var(--neutral-gray-100);
@@ -98,25 +91,12 @@
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
     --mobile-header-height: 4.5rem;
-    --space-xs: 6px;
-    --space-sm: 12px;
-    --space-md: 24px;
-    --space-lg: 40px;
-
-    /* Radius (Rounding) Tokens */
-    --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-
-    /* Touch Target Sizes */
-    --touch-target-min: 44px;
     --mobile-footer-height: 4.75rem;
 
     /* Global layout alignment tokens */
     --app-shell-page-header-height: 57px;
     --sidebar-width: min(90vw, 320px);
     --app-shell-surface-padding-top: 0.5rem;
-    --shell-content-padding: 1.5rem; /* 24px, 쉘 내부 공통 패딩 */
     --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem);
     --nav-rail-vertical-offset-base: 86px;
     --nav-rail-vertical-offset: max(var(--nav-rail-vertical-offset-base), var(--app-shell-page-header-height));

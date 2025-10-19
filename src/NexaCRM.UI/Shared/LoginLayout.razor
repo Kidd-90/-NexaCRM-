@@ -35,9 +35,9 @@
     </script>
 </HeadContent>
 
-<div class="page">
+<div class="login-page">
     <!-- Theme Toggle Button - positioned for login page -->
-    <button title="Toggle theme" class="login-theme-toggle" data-theme-toggle aria-label="Switch theme">
+    <button title="Toggle theme" class="login-theme-toggle ripple" data-theme-toggle aria-label="Switch theme">
         <span class="theme-light-icon">🌞</span>
         <span class="theme-dark-icon">🌙</span>
     </button>
@@ -51,6 +51,70 @@
     
     <!-- JavaScript files are loaded globally from index.html -->
 </div>
+
+<style>
+    /* Make the login page use the full viewport height and allow centered content */
+    .login-page {
+        /* Use svh when available to avoid mobile browser UI collapse issues, fallback to 100vh */
+        min-height: 100svh;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--background-color, #f8fafc);
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* Ensure main and article content expand properly */
+    .login-page > main {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto; /* allow main to grow and take remaining vertical space */
+        padding: 24px 0; /* give breathing room on very small viewports */
+    }
+
+    .login-page .content {
+        width: 100%;
+        max-width: 760px;
+        box-sizing: border-box;
+    }
+
+    /* Ensure login content renders above the theme toggle so the form isn't hidden */
+    .login-page .content {
+        position: relative;
+        z-index: 1110; /* higher than the toggle so content is visible */
+    }
+
+    /* Theme toggle position tweak for login page (non-obstructive) */
+    .login-theme-toggle {
+        position: fixed;
+        top: 18px;
+        right: 18px;
+        z-index: 1100;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 4px; /* smaller hit area so it interferes less */
+        border-radius: 6px;
+        opacity: 0.9;
+        /* Keep it visible but visually lightweight; pointer events remain enabled */
+    }
+
+    /* Reduce the toggle's visual footprint on very small screens */
+    /* Note: media query removed to avoid Razor parsing nuances in component files. */
+    .login-theme-toggle.small-screen {
+        top: 12px;
+        right: 12px;
+        padding: 2px;
+        opacity: 0.85;
+    }
+</style>
 
 <script>
     // Update theme toggle button icons based on current theme
