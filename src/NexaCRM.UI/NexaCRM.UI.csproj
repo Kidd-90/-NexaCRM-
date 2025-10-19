@@ -33,4 +33,21 @@
     <ProjectReference Include="..\NexaCRM.Service\NexaCRM.Service.csproj" />
   </ItemGroup>
 
+  <!-- Ensure library wwwroot assets are copied into build output under wwwroot/_content/NexaCRM.UI for local dev servers -->
+  <Target Name="CopyLibraryStaticWebAssets" AfterTargets="Build">
+    <PropertyGroup>
+      <_LibContentDir>$(OutputPath)wwwroot/_content/NexaCRM.UI/</_LibContentDir>
+    </PropertyGroup>
+
+    <Message Importance="low" Text="Copying NexaCRM.UI static assets to $(_LibContentDir)" />
+
+    <ItemGroup>
+      <_LibJsFiles Include="$(MSBuildThisFileDirectory)wwwroot/js/**" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(_LibContentDir)js" />
+
+    <Copy SourceFiles="@(_LibJsFiles)" DestinationFolder="$(_LibContentDir)js\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>
