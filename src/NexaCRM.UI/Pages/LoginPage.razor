@@ -209,17 +209,25 @@
 
         errorMessage = null;
         isLoading = true;
+        // Give the renderer a chance to display the loading state before
+        // performing potentially blocking async work. Task.Yield yields back
+        // to the synchronization context so the UI updates immediately.
+        await Task.Yield();
         StateHasChanged();
 
-        try
-        {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync(identifier: "console.log", "Attempting Supabase login");
-            }
-            catch (JSException) { /* JSInterop 실패 무시 */ }
+    try
+    {
+      try
+      {
+        await JSRuntime.InvokeVoidAsync(identifier: "console.log", "Attempting Supabase login");
+      }
+      catch (JSException) { /* JSInterop 실패 무시 */ }
 
-            var result = await AuthenticationService.SignInAsync(username, password);
+      // Small delay to ensure spinner renders and logs appear in console
+      try { await Task.Delay(50); } catch { }
+      try { await JSRuntime.InvokeVoidAsync("console.log", "Calling AuthenticationService.SignInAsync"); } catch {}
+
+      var result = await AuthenticationService.SignInAsync(username, password);
             if (!result.Succeeded)
             {
                 errorMessage = result.ErrorMessage ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";

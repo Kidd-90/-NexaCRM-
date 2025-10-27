@@ -1,0 +1,50 @@
+@inject IJSRuntime JSRuntime
+
+@code {
+    private IJSObjectReference? module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/NexaCRM.UI/js/layout.interop.js");
+            // module will register globals and initialize itself
+            try { await JSRuntime.InvokeVoidAsync("console.log", "[LayoutInterop] imported module"); } catch {}
+            await module.InvokeVoidAsync("initializeShell");
+            try { await JSRuntime.InvokeVoidAsync("console.log", "[LayoutInterop] initializeShell invoked"); } catch {}
+        }
+        catch (Exception ex)
+        {
+            Console.Error?.WriteLine($"LayoutInterop initialization failed: {ex.Message}");
+        }
+    }
+
+    public async ValueTask RefreshThemeToggleAsync()
+    {
+        try
+        {
+            if (module is not null)
+            {
+                await module.InvokeVoidAsync("refreshThemeToggle");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("refreshThemeToggle");
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}

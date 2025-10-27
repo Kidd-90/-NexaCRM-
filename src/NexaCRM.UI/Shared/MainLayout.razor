@@ -33,7 +33,8 @@
                 'interactions.js',
                 'client-console-forwarder.js',
                 'csv-export.js',
-                'actions.js'
+                'actions.js',
+                'layout.js',
             ];
 
             files.forEach(function (file) {
@@ -49,8 +50,9 @@
     </script>
 </HeadContent>
 
-<div class="desktop-shell">
-    <NavigationRail />
+<div class="page desktop-layout desktop-shell">
+    <NewNavigationTail />
+    <LayoutInterop />
 
     <div class="desktop-shell__main">
         <header class="desktop-shell__header">

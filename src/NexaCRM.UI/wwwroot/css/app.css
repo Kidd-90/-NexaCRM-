@@ -61,12 +61,12 @@
     --background-color: var(--neutral-white);
     --background-muted: var(--neutral-gray-100);
     --surface-color: var(--neutral-white);
-    --surface-muted: color-mix(in srgb, var(--neutral-white) 86%, var(--neutral-gray-100) 14%);
+    --surface-muted: rgba(245,245,245,0.86);
     --surface-tint: rgba(224, 224, 224, 0.45);
     --text-primary: var(--neutral-black);
     --text-secondary: var(--neutral-gray-600);
     --text-tertiary: var(--neutral-gray-300);
-    --border-color: color-mix(in srgb, var(--neutral-gray-100) 70%, transparent);
+    --border-color: rgba(224,224,224,0.7);
     --divider-color: rgba(176, 176, 176, 0.35);
     --shadow-light: rgba(0, 0, 0, 0.08);
     --shadow-medium: rgba(0, 0, 0, 0.18);
@@ -81,7 +81,7 @@
     --app-background-gradient: var(--gradient-light);
     --surface-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(224, 224, 224, 0.9) 100%);
     --floating-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(224, 224, 224, 0.82));
-    --frosted-border: color-mix(in srgb, var(--neutral-gray-100) 65%, transparent);
+    --frosted-border: rgba(224,224,224,0.65);
     --favorite-surface: linear-gradient(135deg, rgba(224, 224, 224, 0.45), rgba(176, 176, 176, 0.35));
     --favorite-icon-shadow: rgba(74, 74, 74, 0.25);
 
@@ -398,6 +398,36 @@ body {
 
 .app-shell__content {
     flex: 1;
+
+/* Layout offset rules for desktop shell main content to account for nav rail and panel */
+.desktop-shell__main {
+    transition: margin-left var(--transition-normal);
+    margin-left: 68px; /* default: sit next to collapsed rail */
+}
+
+/* If sidebar exists and is NOT panel-open and NOT collapsed, give full rail space (80px) */
+.sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main,
+.desktop-shell .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
+    margin-left: 80px;
+}
+
+/* When sidebar is collapsed, reduce offset */
+.sidebar.collapsed ~ .desktop-shell__main,
+.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
+    margin-left: 68px;
+}
+
+/* When panel is open, push main to the right by rail + panel width */
+.sidebar.panel-open ~ .desktop-shell__main,
+.desktop-shell .sidebar.panel-open ~ .desktop-shell__main {
+    margin-left: 68px; /* when panel open, main should sit next to collapsed rail */
+}
+
+/* If sidebar is collapsed but panel is NOT open, keep main next to collapsed rail as well */
+.sidebar.collapsed ~ .desktop-shell__main,
+.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
+    margin-left: 68px;
+}
     border-radius: 1rem;
     background: var(--background-color);
     border: 1px solid var(--divider-color);
@@ -784,7 +814,7 @@ a:hover,
 .sidebar {
     --nav-accent-color: var(--primary-color, #2153C8);
     background: linear-gradient(180deg, rgba(114, 99, 255, 0.08) 0%, rgba(114, 99, 255, 0.02) 100%), var(--surface-gradient, var(--surface-color));
-    background: linear-gradient(180deg, color-mix(in srgb, var(--nav-accent-color) 14%, transparent) 0%, color-mix(in srgb, var(--nav-accent-color) 4%, transparent) 100%), var(--surface-gradient, var(--surface-color));
+    background: linear-gradient(180deg, rgba(33,83,200,0.14) 0%, rgba(33,83,200,0.04) 100%), var(--surface-gradient, var(--surface-color));
     border-right: none;
     width: var(--sidebar-width);
     min-height: 100vh;
@@ -871,7 +901,7 @@ a:hover,
     font-size: 1.35rem;
     color: #fff;
     background: linear-gradient(135deg, rgba(114, 99, 255, 0.95), rgba(88, 73, 228, 0.9));
-    background: linear-gradient(135deg, color-mix(in srgb, var(--nav-accent-color) 82%, #6b4dff 18%), color-mix(in srgb, var(--nav-accent-color) 65%, #4c3ac1 35%));
+    background: linear-gradient(135deg, rgba(33,83,200,0.82) 0%, rgba(76,58,193,0.65) 100%);
     box-shadow: 0 14px 28px rgba(114, 99, 255, 0.25);
 }
 
@@ -1282,16 +1312,20 @@ a:hover,
         --sidebar-width: clamp(260px, 24vw, 320px);
     }
 
-    /* Offset the main document content by the fixed navigation rail width on
-       desktop/tablet so content does not get covered when the rail is fixed. */
-    body {
-    }
+     /* Offset the main document content by the fixed navigation rail width on
+         desktop/tablet so content does not get covered when the rail is fixed. */
 
-    /* Hide legacy .sidebar (mobile drawer) on desktop/tablet to avoid having two
-       sidebars rendered at once (the fixed NavigationRail is used on desktop). */
-    .sidebar {
+    /* Hide legacy .sidebar (mobile drawer) only on pages that are NOT using
+       the desktop-layout. Desktop pages should use `.page.desktop-layout` and
+       render the fixed navigation rail; limit the hide rule so component
+       scoped sidebars on desktop are not accidentally suppressed. */
+    .page:not(.desktop-layout) .sidebar {
         display: none !important;
     }
+
+     /* NOTE: desktop layout applies via `.page.desktop-layout`; avoid
+         overriding `.sidebar` here so component-scoped / library styles can
+         control presentation. */
 
     /* Edge-to-edge layout on tablet and above */
     .page.desktop-layout {

@@ -2,6 +2,12 @@
     display: contents;
 }
 .desktop-shell {
+    /* Default navigation width for the fixed sidebar. Kept here so layout can
+       adapt when the sidebar is collapsed without editing many rules. */
+    --nav-width: 280px;
+    --nav-collapsed-width: 80px;
+}
+.desktop-shell {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     height: 100vh;
@@ -25,7 +31,18 @@
     min-height: 0;
     /* Let flexbox handle the width and position. No margin needed. */
     padding: var(--shell-content-padding);
+    /* Reserve space on the left for the fixed sidebar so content doesn't sit
+       underneath it. The sidebar uses `position: fixed` so we offset the main
+       area by the same width. When a sidebar is collapsed, the sibling
+       selector below will reduce the offset. */
+    margin-left: var(--nav-width);
     gap: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+/* When the sidebar is present but collapsed, reduce the left offset so the
+   main area aligns with the smaller sidebar width. */
+.sidebar.collapsed ~ .desktop-shell__main {
+    margin-left: var(--nav-collapsed-width);
 }
 
 .desktop-shell__header {

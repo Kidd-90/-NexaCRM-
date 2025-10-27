@@ -1,0 +1,304 @@
+.sidebar {
+    height: 100vh;
+    background-color: transparent; /* allow rail + panel visuals */
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    align-items: stretch;
+}
+
+.sidebar.collapsed .sidebar-rail {
+    width: 72px;
+}
+
+.sidebar-rail {
+    width: 80px;
+    background-color: #f8fafb;
+    border-right: 1px solid #eaecf0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 16px;
+    transition: width 0.25s ease;
+}
+
+.rail-logo {
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+}
+
+.rail-logo-img {
+    width: 100%;
+    height: auto;
+}
+
+.rail-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    flex: 1 1 auto;
+}
+
+.rail-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667085;
+    cursor: pointer;
+}
+
+.rail-btn:hover,
+.rail-btn.active {
+    background-color: #101828;
+    color: #ffffff;
+}
+
+.rail-footer {
+    padding: 12px 0 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure footer is pinned to bottom of the rail regardless of rail content */
+.sidebar-rail .rail-footer {
+    margin-top: auto;
+}
+
+/* SVG sizing inside rail buttons to avoid visual clipping */
+.rail-btn svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+.rail-btn .nav-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+/* normalize icon rendering: ensure consistent stroke width and crisp geometry */
+.nav-icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+.nav-icon svg path,
+.nav-icon svg line,
+.nav-icon svg rect,
+.nav-icon svg circle,
+.nav-icon svg ellipse {
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.nav-icon svg path,
+.nav-icon svg line {
+    stroke-width: 1.6;
+}
+/* shapes that rely on fill should still show; we intentionally don't override fill globally */
+
+/* ensure link icons inherit color and scale nicely */
+.link-icon {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Prevent accidental fills from global CSS - prefer stroke-based icons by default */
+
+/* NOTE:
+   Removed an aggressive global rule that cleared fills on all child SVG shapes.
+   That rule could unintentionally strip fills from purposely filled icons (eg. the
+   right-side check circle) when the scoped CSS selectors don't reach raw SVG markup
+   inserted as markup. We prefer controlling fills at the group/icon level below.
+*/
+
+/* Prefer controlling icon appearance at the group level. .svg-group is added inside each SVG
+   so themes/states can adjust stroke/fill/width centrally without touching individual shapes. */
+.nav-icon .svg-group {
+    fill: none !important;           /* default: no fill (stroke icons)
+                                        can be overridden per-icon when needed */
+    stroke: currentColor !important;  /* inherit color from element */
+    stroke-width: 1.6 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+}
+
+/* If an icon intentionally relies on a filled shape (eg. the active "check" circle),
+   make the explicit exception after the group rules. Using !important here ensures
+   it wins over the `.nav-icon .svg-group` defaults. */
+.check-icon svg circle,
+.check-icon svg .svg-group circle {
+    fill: #fff !important;
+    stroke: none !important;
+}
+
+/* The check icon needs a filled circle - allow it explicitly */
+.check-icon svg circle {
+    fill: #fff !important;
+}
+
+.rail-avatar {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.rail-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: block;
+}
+
+.rail-avatar:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16,24,40,0.06);
+}
+
+.sidebar.collapsed .rail-avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar.collapsed .rail-avatar img {
+    width: 32px;
+    height: 32px;
+}
+
+.sidebar-panel {
+    width: 320px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(16,24,40,0.08);
+    border-left: 1px solid #eef2f6;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    transform: translateX(0);
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-panel:not(.open) {
+    transform: translateX(-8px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel-header {
+    padding: 20px 20px 8px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.panel-title {
+    font-weight: 700;
+    font-size: 16px;
+}
+/* Group title: show a small icon to the left of the title text */
+.panel-subgroup-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: #0f1724;
+    margin: 8px 0 6px 0;
+}
+.panel-subgroup-title .group-title-icon { display: inline-flex; align-items: center; justify-content: center; }
+.panel-subgroup-title .group-title-icon svg { width: 18px; height: 18px; }
+.panel-subgroup-title .group-title-text { display: inline-block; }
+
+.panel-subtitle { color: #98a2b3; font-size: 12px; margin-top: 4px; }
+
+.panel-body { padding: 16px 20px; flex: 1 1 auto; overflow-y: auto; }
+
+.panel-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.panel-list a {
+    text-decoration: none;
+    color: #0f1724;
+    /* provide room for a left selection marker; increased left padding to avoid overlap
+       between the marker and the link icon */
+    padding: 10px 12px 10px 44px;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.panel-list a i { width: 20px; text-align: center; color: #667085; }
+
+.panel-list a span { flex: 1 1 auto; }
+
+.panel-list a:hover { background: transparent; }
+
+/* Active state: subtle background + small left dot indicator */
+.panel-list a.active {
+    background: #f1f5f9; /* subtle light highlight to match design */
+    color: #0f1724;
+    box-shadow: none !important;
+}
+
+.panel-list a.active i { color: #0f1724; }
+
+.panel-list a.active::before {
+    /* small circular marker instead of full-height bar; positioned to sit left of the link icon */
+    content: "";
+    position: absolute;
+    left: 18px; /* tuned so marker visually aligns with list text and icon */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background: var(--nav-active-color, #0f1724);
+    border-radius: 50%;
+}
+
+/* Make sure link icons (radio circles) sit left of text and the check icon aligns right */
+.panel-list a .link-icon { margin-right: 12px; }
+.panel-list a .check-icon { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; }
+
+.panel-footer { padding: 16px 20px; border-top: 1px solid #f1f5f9; }
+
+.profile-card { display: flex; gap: 12px; align-items: center; }
+
+.profile-card img { width: 44px; height: 44px; border-radius: 50%; }
+
+.profile-info .profile-name { font-weight: 600; }
+
+.profile-info .profile-email { color: #667085; font-size: 13px; }
+
+.btn-toggle-collapse { position: absolute; left: 84px; top: 50%; transform: translateY(-50%); background-color: white; border: 1px solid #eaecf0; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 1002; transition: left 0.25s ease; }
+
+/* When panel open, place toggle near collapsed rail (so it visually sits between rail and panel) */
+.sidebar.panel-open .btn-toggle-collapse { left: 68px; }
+
+/* When sidebar fully collapsed, move toggle slightly inward */
+.sidebar.collapsed .btn-toggle-collapse { left: 56px; }

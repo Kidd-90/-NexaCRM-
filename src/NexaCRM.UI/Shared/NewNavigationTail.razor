@@ -1,0 +1,743 @@
+﻿@using System.Linq
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using NexaCRM.UI.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject Microsoft.Extensions.Logging.ILogger<NavigationRail> Logger
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IRolePermissionService RolePermissionService
+@inject IAuthenticationService AuthenticationService
+@inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
+@using NexaCRM.UI.Models.Navigation
+
+<div class='sidebar @(isCollapsed ? "collapsed" : "") @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "panel-open" : "")' role="navigation">
+    <div class="sidebar-rail">
+        <a href="/" class="rail-logo" title="Online store">
+            <img src="https://localhost:7065/_content/NexaCRM.UI/images/logo.svg" alt="Logo" class="rail-logo-img" />
+        </a>
+
+        <ul class="rail-list">
+            @for (var i = 0; i < visibleGroups.Count; i++)
+            {
+                var g = visibleGroups[i];
+                var tooltip = g.DisplayName;
+                        <li>
+                    <button role="tab" class="rail-btn @(activeSubMenuIndex == i ? "active" : "")"
+                            title="@tooltip"
+                            aria-label="@tooltip"
+                            aria-selected="@(activeSubMenuIndex == i ? "true" : "false")"
+                            tabindex="0"
+                            @onclick="async () => await ToggleSubMenuByKey(g.Key)"
+                            @onkeydown="async (e) => await HandleKeyDown(e, g.Key)">
+                        @RenderIcon(g.IconCss, "rail-icon")
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <div class="rail-footer">
+            <button class="rail-avatar" title="Profile">
+                <img src="https://localhost:7065/_content/NexaCRM.UI/images/avatar.png" alt="avatar" />
+            </button>
+        </div>
+    </div>
+
+    <div class='sidebar-panel @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "open" : "")'>
+        <div class="panel-header">
+            <div class="panel-title">Online store</div>
+            <div class="panel-subtitle">Untitled UI</div>
+        </div>
+
+        <div class="panel-body">
+            @{ var hasValidIndex = activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count; }
+            @if (!hasValidIndex)
+            {
+                <div class="panel-empty">Select a menu item</div>
+            }
+            else
+            {
+                var grp = visibleGroups[activeSubMenuIndex.Value];
+                var grouped = GroupLinks(grp.Links);
+                @foreach (var sub in grouped)
+                {
+                        var hasActiveInSub = sub.Links.Any(l => string.Equals(NormalizePath(l.Href), selectedItem, StringComparison.OrdinalIgnoreCase));
+                        <div class="panel-subgroup @(hasActiveInSub ? "subgroup-has-active" : "")">
+                            <div class="panel-subgroup-title">
+                                @{
+                                    // Choose an icon for the subgroup title. Prefer a mapping based on
+                                    // the friendly title; fall back to the first link's IconCss if present.
+                                    var friendly = ToFriendlyGroupTitle(sub.Title);
+                                    var firstIcon = sub.Links.FirstOrDefault()?.IconCss;
+                                    var titleIconKey = MapIcon(friendly, firstIcon ?? string.Empty);
+                                }
+                                @RenderIcon(titleIconKey, "group-title-icon")
+                                <span class="group-title-text">@friendly</span>
+                            </div>
+                            <ul class="panel-list">
+                                @foreach (var link in sub.Links)
+                                {
+                                    var isActive = string.Equals(NormalizePath(link.Href), selectedItem, StringComparison.OrdinalIgnoreCase);
+                                    <li class='@(isActive ? "item-active" : "")'>
+                                        <a href="@link.Href" class='@(isActive ? "active page-active" : "")' @onclick='() => SelectItem(link.Href)'>
+                                            @RenderIcon(link.IconCss, "link-icon")
+                                            <span>@link.DisplayName</span>
+                                            @if (isActive)
+                                            {
+                                                @RenderIcon("check", "check-icon")
+                                            }
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                }
+            }
+        </div>
+
+        <div class="panel-footer">
+                <div class="profile-card">
+                <img src="https://localhost:7065/_content/NexaCRM.UI/images/avatar.png" alt="User Avatar" />
+                <div class="profile-info">
+                    <div class="profile-name">Sophia Munn</div>
+                    <div class="profile-email">sophia@untitledui.com</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button @onclick="ToggleCollapse" class="btn-toggle-collapse" aria-label="Toggle sidebar">
+        <i class='fas @(isCollapsed ? "fa-chevron-right" : "fa-chevron-left")'></i>
+    </button>
+</div>
+
+@code {
+    private bool isCollapsed;
+    private int? activeSubMenuIndex;
+    private string? selectedItem = null;
+    private DotNetObjectReference<NewNavigationTail>? _dotNetRef;
+
+    private readonly List<NavGroupVm> visibleGroups = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadGroupsAsync();
+        // register storage-event listener for multi-tab sync
+        try
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("navigationStorageSync.registerDotNet", _dotNetRef, StorageKey);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to register navigationStorageSync: {ex}");
+            try { Logger?.LogDebug(ex, "navigationStorageSync registration failed"); } catch { }
+        }
+        // attempt to restore previously selected group from localStorage
+        try
+        {
+            var stored = await LoadActiveIndexFromStorageAsync();
+            if (stored.HasValue && stored.Value >= 0 && stored.Value < visibleGroups.Count)
+            {
+                activeSubMenuIndex = stored.Value;
+            }
+        }
+        catch { }
+    }
+
+    private async Task LoadGroupsAsync()
+    {
+        // Try to get roles from authentication state if available to filter groups
+        string[] roles = Array.Empty<string>();
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+            }
+        }
+        catch { }
+
+        visibleGroups.Clear();
+        var roleSet = new HashSet<string>(roles ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var g in NavigationCatalog.Groups)
+        {
+            // Filter groups by required roles (if any)
+            if (g.RequiredRoles?.Count > 0)
+            {
+                if (roleSet.Count == 0 || !g.RequiredRoles.Any(r => roleSet.Contains(r)))
+                {
+                    continue;
+                }
+            }
+
+            // Build link VMs and localize display names if Localizer is available
+            var links = g.Links.Select(l => new NavLinkVm(GetHref(l.Href), Localizer[l.ResourceKey]?.Value ?? l.ResourceKey, l.IconCssClass)).ToList();
+            if (links.Count == 0) continue;
+
+            // Map group icon to a more realistic bootstrap icon where appropriate
+            var resourceKey = g.ResourceKey ?? string.Empty;
+            var mappedIcon = MapIcon(Localizer[resourceKey]?.Value ?? resourceKey, g.IconCssClass);
+            // Use a stable key for the group (resource key normalized) to allow safe lookups
+            var key = (resourceKey.Length > 0 ? resourceKey : Guid.NewGuid().ToString()).ToLowerInvariant();
+            var displayName = Localizer[resourceKey]?.Value ?? resourceKey;
+            visibleGroups.Add(new NavGroupVm(key, displayName, mappedIcon, links));
+        }
+
+        // Debug: log what groups were built
+        try
+        {
+            var names = string.Join(", ", visibleGroups.Select(v => v.DisplayName));
+            _ = JSRuntime.InvokeVoidAsync("console.log", $"NewNavigationTail.LoadGroupsAsync built groups: {names}");
+            try { Logger?.LogInformation("NewNavigationTail.LoadGroupsAsync built groups: {Groups}", names); } catch { }
+        }
+        catch { }
+
+        // Ensure the active index remains valid after rebuilding groups
+        if (activeSubMenuIndex.HasValue)
+        {
+            if (activeSubMenuIndex.Value < 0 || activeSubMenuIndex.Value >= visibleGroups.Count)
+            {
+                activeSubMenuIndex = null;
+            }
+        }
+        else
+        {
+            // If there's no active index, but localStorage has one, try to restore it
+            try
+            {
+                var stored = await LoadActiveIndexFromStorageAsync();
+                if (stored.HasValue && stored.Value >= 0 && stored.Value < visibleGroups.Count)
+                {
+                    activeSubMenuIndex = stored.Value;
+                }
+            }
+            catch { }
+        }
+
+        // If still no active index, default to first visible group
+        if (!activeSubMenuIndex.HasValue && visibleGroups.Count > 0)
+        {
+            activeSubMenuIndex = 0;
+            _ = SaveActiveIndexToStorageAsync(activeSubMenuIndex);
+        }
+    }
+
+    private void ToggleCollapse()
+    {
+        isCollapsed = !isCollapsed;
+    }
+
+    private async Task ToggleSubMenu(int index)
+    {
+        // Capture incoming index immediately to avoid races with async work
+        var newIndex = index;
+        await JSRuntime.InvokeVoidAsync("console.log", $"ToggleSubMenu called with index={newIndex}");
+
+        try
+        {
+            // Determine the target index in a local variable first
+            int? targetIndex;
+
+            // If clicking the already-active index, we will clear it
+            if (activeSubMenuIndex == newIndex)
+            {
+                targetIndex = null;
+            }
+            else
+            {
+                // Only set if the index is within the current visibleGroups bounds
+                if (newIndex >= 0 && newIndex < visibleGroups.Count)
+                {
+                    targetIndex = newIndex;
+                }
+                else
+                {
+                    // Out of range: ignore the toggle and keep current state
+                    await JSRuntime.InvokeVoidAsync("console.warn", $"ToggleSubMenu called with out-of-range index={newIndex}");
+                    return;
+                }
+            }
+
+            // Capture group details for logging BEFORE any awaits so they reflect intended target
+            string details;
+            if (targetIndex.HasValue)
+            {
+                var grp = visibleGroups[targetIndex.Value];
+                details = $"index={targetIndex.Value}, group={grp.DisplayName}, links={grp.Links.Count}";
+            }
+            else
+            {
+                details = "index=null, no group";
+            }
+
+            // Apply the state change immediately so the UI reflects the click right away
+            activeSubMenuIndex = targetIndex;
+            await InvokeAsync(StateHasChanged);
+
+            // Persist selection to localStorage in background while UI is already updated
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("console.log", $"NewNavigationTail.ToggleSubMenu persisting index={(targetIndex.HasValue ? targetIndex.Value.ToString() : "null")}");
+                await SaveActiveIndexToStorageAsync(targetIndex);
+                await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu persistence complete");
+            }
+            catch (Exception persistEx)
+            {
+                try { Logger?.LogWarning(persistEx, "Failed to persist activeSubMenuIndex"); } catch { }
+                await JSRuntime.InvokeVoidAsync("console.warn", $"Failed to persist activeSubMenuIndex: {persistEx.Message}");
+            }
+
+            // Log out the final decision
+            await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu -> " + details);
+            try { Logger?.LogInformation("NewNavigationTail.ToggleSubMenu -> {Details}", details); } catch { }
+
+            // ensure UI updates
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogError(ex, "ToggleSubMenu failed"); } catch { }
+            Console.WriteLine($"ToggleSubMenu error: {ex}");
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e, int index)
+    {
+        if (e == null) return;
+        if (e.Key == "Enter" || e.Key == " " || e.Code == "Space")
+        {
+            await ToggleSubMenu(index);
+        }
+    }
+
+    private void SelectItem(string href)
+    {
+        selectedItem = NormalizePath(href);
+        // navigate
+        try
+        {
+            NavigationManager.NavigateTo(href);
+        }
+        catch { }
+    }
+
+    private static string GetHref(string href)
+    {
+        if (string.IsNullOrWhiteSpace(href)) return "/";
+        return href.StartsWith('/') ? href : "/" + href;
+    }
+
+    private static string NormalizePath(string? href)
+    {
+        if (string.IsNullOrWhiteSpace(href)) return "/";
+
+        try
+        {
+            // If absolute URL provided, extract path component
+            if (Uri.TryCreate(href, UriKind.Absolute, out var abs))
+            {
+                href = abs.PathAndQuery ?? abs.AbsolutePath ?? "/";
+            }
+        }
+        catch { }
+
+        // strip query and fragment
+        var qIdx = href.IndexOf('?');
+        if (qIdx >= 0) href = href.Substring(0, qIdx);
+        var hIdx = href.IndexOf('#');
+        if (hIdx >= 0) href = href.Substring(0, hIdx);
+
+        if (!href.StartsWith('/')) href = "/" + href;
+
+        // collapse repeated slashes
+        while (href.Contains("//")) href = href.Replace("//", "/");
+
+        // remove trailing slash except for root
+        if (href.Length > 1 && href.EndsWith('/')) href = href.TrimEnd('/');
+
+        return href;
+    }
+
+    private static string MapIcon(string displayName, string originalIcon)
+    {
+        if (string.IsNullOrEmpty(displayName)) return originalIcon ?? "default";
+
+        var key = displayName.ToLowerInvariant();
+    var result = key switch
+        {
+            var s when s.Contains("project") || s.Contains("projects") => "kanban",
+            var s when s.Contains("sales") || s.Contains("pipeline") => "graph",
+            var s when s.Contains("db") || s.Contains("database") || s.Contains("dbmanagement") => "database",
+            var s when s.Contains("engagement") || s.Contains("sms") => "chat",
+            var s when s.Contains("insight") || s.Contains("reports") || s.Contains("statistics") => "bar-chart",
+            var s when s.Contains("setting") || s.Contains("settings") => "gear",
+            var s when s.Contains("organization") || s.Contains("org") => "people",
+            var s when s.Contains("system") || s.Contains("info") => "cpu",
+            _ => "default"
+        };
+
+        // If we couldn't map from the display name, attempt to derive a token from
+        // the original icon CSS (eg. "bi bi-kanban") passed in as the second
+        // parameter to this method. This ensures groups that are localized to
+        // arbitrary names still get a sensible icon when the NavigationCatalog
+        // carries an icon class.
+        if (result == "default")
+        {
+            var parsed = FallbackParseIcon(originalIcon);
+            if (parsed != "default") return parsed;
+        }
+
+        return result;
+    }
+
+    // If mapping by display name fails, attempt to parse the original icon CSS
+    // classes (eg. "bi bi-kanban", "fa fa-cog") and extract a reasonable
+    // fallback token such as "kanban" or "cog".
+    private static string FallbackParseIcon(string? originalIcon)
+    {
+        if (string.IsNullOrWhiteSpace(originalIcon)) return "default";
+        try
+        {
+            var token = originalIcon.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+            token = token.Replace("bi-", "").Replace("fa-", "").Replace("bi", "").Replace("fa", "").Trim('-', '_');
+            return string.IsNullOrEmpty(token) ? "default" : token;
+        }
+        catch
+        {
+            return "default";
+        }
+    }
+
+    private RenderFragment RenderIcon(string iconKey, string? extraClass = null) => builder =>
+    {
+        // inline small SVGs for icons used in rail and links
+    var cls = string.IsNullOrEmpty(extraClass) ? "nav-icon" : $"nav-icon {extraClass}";
+    // Normalize incoming icon keys: callers sometimes pass CSS classes like
+    // "bi bi-kanban" or "fa fa-cog". Extract the most-meaningful token and
+    // strip common prefixes so our switch matches expected icon names.
+    var rawKey = iconKey ?? "default";
+    var svg = rawKey.ToLowerInvariant();
+        if (svg.Contains(' ')) svg = svg.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+        svg = svg.Replace("bi-", "").Replace("fa-", "").Replace("bi", "").Replace("fa", "").Trim('-','_');
+
+        // Alias common icon tokens (from icon font class names) to our supported
+        // inline SVG keys so more items render as icons instead of the fallback circle.
+        var alias = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["table"] = "database",
+            ["person-lines-fill"] = "people",
+            ["person-lines"] = "people",
+            ["person-circle"] = "people",
+            ["person"] = "people",
+            ["calendar-event"] = "calendar",
+            ["calendar-day"] = "calendar",
+            ["calendar"] = "calendar",
+            ["clock-history"] = "graph",
+            ["star"] = "star",
+            ["x-circle"] = "default",
+            ["plus-circle"] = "bar-chart",
+            ["clipboard-data"] = "bar-chart",
+            ["send"] = "chat",
+            ["send-check"] = "chat",
+            ["megaphone"] = "chat",
+            ["bell"] = "chat",
+            ["graph-up"] = "bar-chart",
+            ["file-earmark-bar-graph"] = "bar-chart",
+            ["hdd-network"] = "cpu",
+            ["diagram-3-fill"] = "people",
+            ["people-fill"] = "people",
+            ["person-fill"] = "people",
+            // additional aliases for group icons
+            ["briefcase"] = "kanban",
+            ["building-fill"] = "people",
+            ["building"] = "people",
+            ["sliders"] = "gear",
+            ["graph-up"] = "bar-chart",
+            ["chat-left-text"] = "chat",
+            ["send-check"] = "chat",
+            ["send"] = "chat",
+        };
+
+        if (alias.TryGetValue(svg, out var mapped)) svg = mapped;
+        // Wrap shape elements in a <g class='svg-group'> so we can target group-level styles (stroke/fill) from CSS
+        string svgHtml = svg switch
+        {
+            // Kanban / boards: three stacked rectangles (stroke-only)
+            "kanban" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='7' height='16' rx='1.5'/><rect x='10.5' y='4' width='3' height='9' rx='1'/><rect x='15.5' y='11' width='5.5' height='9' rx='1.5'/></g></svg>",
+
+            // Graph / sales: axes with polyline for trend
+            "graph" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3 21v-8'/><path d='M3 21h18'/><polyline points='7 13 11 9 15 15 21 7'/></g></svg>",
+
+            // Database: stacked ellipses, stroke-only for clarity
+            "database" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='12' cy='6' rx='8' ry='2.5'/><path d='M4 6v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V6'/><path d='M4 12c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5' stroke-width='1.2'/></g></svg>",
+
+            // Chat / engagement: rounded bubble stroke-only
+            "chat" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></g></svg>",
+
+            // Bar chart: 3 vertical bars
+            "bar-chart" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='10' width='3.5' height='10' rx='0.6'/><rect x='10.25' y='5' width='3.5' height='15' rx='0.6'/><rect x='16.5' y='14' width='3.5' height='6' rx='0.6'/></g></svg>",
+
+            // Gear / settings: simplified cog (circle + spokes)
+            // Added .svg-group wrapper so group-level CSS applies consistently.
+            "gear" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3.2' stroke-width='1.5'/><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33'/><path d='M4.6 9a1.65 1.65 0 0 1-.33-1.82l-.06-.06A2 2 0 0 0 6.9 3.29l.06.06a1.65 1.65 0 0 1 1.82.33'/></g></svg>",
+
+            // People / org: two heads + shoulders
+            "people" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='8' r='2.2'/><circle cx='17' cy='8' r='2.2'/><path d='M4 20c1.5-3 5-4 8-4s6.5 1 8 4'/></g></svg>",
+
+            // CPU / system: square chip + inner square
+            "cpu" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='12' height='12' rx='2'/><rect x='9' y='9' width='6' height='6' stroke-width='1.6'/><path d='M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l-1-1M20 20l1 1M19 4l1-1M4 19l-1 1' stroke-width='1.2'/></g></svg>",
+
+            // Check (active): filled circle with white tick (keep fill)
+            // We keep the circle filled with currentColor but wrap tick in a group for transformability
+            "check" => "<svg class='check-svg' width='18' height='18' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group'><circle class='check-bg' cx='8' cy='8' r='8' fill='#0f1724'></circle><path d='M4.5 8.2l2 2 5-5' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'></path></g></svg>",
+
+            // Star (favorite)
+            "star" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'><path d='M12 17.3l-5.6 3 1.5-6.1L3 10.6l6.2-.5L12 4.5l2.8 5.6 6.2.5-4.9 3.6 1.5 6.1z'/></g></svg>",
+
+            // Calendar (simple)
+            "calendar" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><path d='M16 2v4M8 2v4M3 10h18'/></g></svg>",
+
+            // Default: a distinct outline circle (stroke-only) as fallback
+            _ => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6'><circle cx='12' cy='12' r='9'/></g></svg>"
+        };
+
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", cls);
+        builder.AddMarkupContent(2, svgHtml);
+        builder.CloseElement();
+    };
+
+    private sealed record NavGroupVm(string Key, string DisplayName, string IconCss, List<NavLinkVm> Links);
+    private sealed record NavLinkVm(string Href, string DisplayName, string IconCss);
+
+    private async Task ToggleSubMenuByKey(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+
+        // Resolve index for key from the current visibleGroups snapshot
+        var idx = visibleGroups.FindIndex(g => string.Equals(g.Key, key, StringComparison.OrdinalIgnoreCase));
+        if (idx < 0)
+        {
+            await JSRuntime.InvokeVoidAsync("console.warn", $"ToggleSubMenuByKey: no group found for key={key}");
+            return;
+        }
+
+        try
+        {
+            // If already active, clear; otherwise set immediately
+            if (activeSubMenuIndex.HasValue && activeSubMenuIndex.Value == idx)
+            {
+                activeSubMenuIndex = null;
+                await InvokeAsync(StateHasChanged);
+                _ = SaveActiveIndexToStorageAsync(null);
+                await JSRuntime.InvokeVoidAsync("console.log", $"ToggleSubMenuByKey cleared index for key={key}");
+                return;
+            }
+
+            // Set immediately for responsive UI
+            activeSubMenuIndex = idx;
+            await InvokeAsync(StateHasChanged);
+
+            // Capture details for logging
+            var grp = visibleGroups[idx];
+            var details = $"index={idx}, group={grp.DisplayName}, links={grp.Links.Count}";
+            await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenuByKey -> " + details);
+
+            // Persist selection in background
+            _ = SaveActiveIndexToStorageAsync(activeSubMenuIndex);
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogError(ex, "ToggleSubMenuByKey failed"); } catch { }
+            await JSRuntime.InvokeVoidAsync("console.error", $"ToggleSubMenuByKey error: {ex.Message}");
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e, string key)
+    {
+        if (e == null) return;
+        if (e.Key == "Enter" || e.Key == " " || e.Code == "Space")
+        {
+            await ToggleSubMenuByKey(key);
+        }
+    }
+
+    private const string StorageKey = "nexacrm.activeSubMenuIndex";
+
+    private async Task<int?> LoadActiveIndexFromStorageAsync()
+    {
+        try
+        {
+            var raw = await JSRuntime.InvokeAsync<string>("localStorage.getItem", StorageKey);
+            if (!string.IsNullOrEmpty(raw) && int.TryParse(raw, out var idx)) return idx;
+        }
+        catch { }
+
+        return null;
+    }
+
+    private async Task SaveActiveIndexToStorageAsync(int? index)
+    {
+        try
+        {
+            if (index.HasValue)
+            {
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, index.Value.ToString());
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKey);
+            }
+        }
+        catch { }
+    }
+
+    [JSInvokable]
+    public Task OnExternalStorageChange(string? newValue)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(newValue))
+            {
+                // removed -> clear selection
+                activeSubMenuIndex = null;
+            }
+            else if (int.TryParse(newValue, out var parsed))
+            {
+                // only update if different and still valid
+                if (activeSubMenuIndex != parsed)
+                {
+                    if (visibleGroups != null && parsed >= 0 && parsed < visibleGroups.Count)
+                    {
+                        activeSubMenuIndex = parsed;
+                    }
+                    else
+                    {
+                        activeSubMenuIndex = null;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnExternalStorageChange error: {ex}");
+        }
+
+        // ensure UI updates
+        _ = InvokeAsync(StateHasChanged);
+        return Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigationStorageSync.unregisterDotNet");
+        }
+        catch { }
+
+        if (_dotNetRef != null)
+        {
+            _dotNetRef.Dispose();
+            _dotNetRef = null;
+        }
+        try
+        {
+            NavigationManager.LocationChanged -= OnLocationChanged;
+        }
+        catch { }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // initialize selectedItem from current URI
+        selectedItem = NormalizePath("/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        selectedItem = NormalizePath("/" + NavigationManager.ToBaseRelativePath(e.Location));
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private record LinkSubgroup(string Title, List<NavLinkVm> Links);
+
+    private static List<LinkSubgroup> GroupLinks(List<NavLinkVm> links)
+    {
+        var groups = new Dictionary<string, List<NavLinkVm>>(StringComparer.OrdinalIgnoreCase);
+        foreach (var l in links)
+        {
+            // group by first URL segment
+            var href = l.Href ?? "/";
+            var parts = href.TrimStart('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+            string seg;
+            // If this looks like a db/database route, include the second segment to separate functions
+            if (parts.Length >= 2 && (string.Equals(parts[0], "db", StringComparison.OrdinalIgnoreCase) || string.Equals(parts[0], "database", StringComparison.OrdinalIgnoreCase)))
+            {
+                seg = parts[0] + "/" + parts[1];
+            }
+            else
+            {
+                seg = parts.FirstOrDefault() ?? "/";
+            }
+            if (!groups.TryGetValue(seg, out var list))
+            {
+                list = new List<NavLinkVm>();
+                groups[seg] = list;
+            }
+            list.Add(l);
+        }
+
+        // Convert to ordered list preserving original order within subgroup
+        var result = groups.Select(g => new LinkSubgroup(g.Key, g.Value)).ToList();
+        return result;
+    }
+
+    private string ToFriendlyGroupTitle(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return string.Empty;
+        var key = raw.Trim();
+        // If group key contains '/', prefer the last segment for the display title
+        if (key.Contains('/'))
+        {
+            var parts = key.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 0) key = parts.Last();
+        }
+
+        // Prefer localized resource if available
+        try
+        {
+            var localized = Localizer?[key];
+            if (!string.IsNullOrEmpty(localized)) return localized;
+        }
+        catch { }
+
+        // Mapping table for common catalog keys
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["products"] = "Products",
+            ["orders"] = "Orders",
+            ["subscriptions"] = "Subscriptions",
+            ["customers"] = "Customers",
+            ["discounts"] = "Discounts",
+            ["licenses"] = "Licenses",
+            ["store"] = "Store",
+        };
+
+        if (map.TryGetValue(key, out var mapped)) return mapped;
+
+        // Fallback: title-case and replace dashes/underscores
+        var cleaned = key.ToLowerInvariant().Replace('-', ' ').Replace('_', ' ');
+        return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(cleaned);
+    }
+}

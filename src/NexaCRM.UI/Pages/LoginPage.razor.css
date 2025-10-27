@@ -1,32 +1,26 @@
 .login-container {
     --brand-accent: var(--primary-color);
     --brand-accent-dark: var(--primary-hover);
-    --brand-accent-soft: color-mix(in srgb, var(--primary-color) 40%, var(--surface-muted) 60%);
-    --brand-gradient-start: color-mix(in srgb, var(--primary-color) 82%, rgba(255, 255, 255, 0.08));
-    --brand-gradient-end: color-mix(in srgb, var(--primary-hover) 78%, rgba(15, 23, 42, 0.24));
-    --surface-elevated: color-mix(in srgb, var(--surface-color) 90%, color-mix(in srgb, var(--primary-color) 10%, transparent));
-    --surface-muted-elevated: color-mix(in srgb, var(--surface-muted) 80%, color-mix(in srgb, var(--primary-color) 6%, transparent));
-    --card-shadow: 0 24px 48px color-mix(in srgb, var(--primary-color) 14%, transparent), var(--shadow-soft-layer);
+    --brand-accent-soft: rgba(59,130,246,0.28); /* approx primary tint */
+    --brand-gradient-start: rgba(59,130,246,0.82);
+    --brand-gradient-end: rgba(16,24,40,0.24);
+    --surface-elevated: rgba(250,250,251,0.9);
+    --surface-muted-elevated: rgba(244,246,248,0.8);
+    --card-shadow: 0 24px 48px rgba(59,130,246,0.14), var(--shadow-soft-layer);
     --text-color: var(--text-primary);
-    --muted-color: color-mix(in srgb, var(--text-secondary) 82%, color-mix(in srgb, var(--primary-color) 8%, transparent));
-    --input-border: color-mix(in srgb, var(--divider-color) 70%, color-mix(in srgb, var(--primary-color) 12%, transparent));
-    --input-bg: color-mix(in srgb, var(--surface-color) 88%, color-mix(in srgb, var(--primary-color) 8%, transparent));
-    --input-placeholder: color-mix(in srgb, var(--text-secondary) 65%, var(--surface-muted) 35%);
-    --input-focus-border: color-mix(in srgb, var(--primary-color) 70%, var(--primary-hover) 30%);
-    --divider-color-elevated: color-mix(in srgb, var(--divider-color) 70%, color-mix(in srgb, var(--primary-color) 10%, transparent));
+    --muted-color: rgba(107,114,128,0.82);
+    --input-border: rgba(226,232,240,0.85);
+    --input-bg: rgba(255,255,255,0.98);
+    --input-placeholder: rgba(107,114,128,0.65);
+    --input-focus-border: rgba(59,130,246,0.7);
+    --divider-color-elevated: rgba(226,232,240,0.85);
     --focus-ring-color: var(--focus-ring);
-    --link-color: color-mix(in srgb, var(--primary-hover) 72%, var(--primary-color) 28%);
-    --button-gradient: linear-gradient(135deg,
-            color-mix(in srgb, var(--primary-color) 92%, transparent) 0%,
-            color-mix(in srgb, var(--primary-hover) 100%, transparent) 65%,
-            color-mix(in srgb, var(--primary-color) 65%, rgba(15, 23, 42, 0.55)) 100%);
-    --button-gradient-hover: linear-gradient(135deg,
-            color-mix(in srgb, var(--primary-color) 100%, transparent) 0%,
-            color-mix(in srgb, var(--primary-hover) 100%, transparent) 55%,
-            color-mix(in srgb, var(--primary-color) 80%, rgba(15, 23, 42, 0.45)) 100%);
-    --button-shadow: 0 28px 52px color-mix(in srgb, var(--primary-color) 24%, transparent);
-    --spinner-track-color: color-mix(in srgb, var(--primary-color) 24%, rgba(255, 255, 255, 0.35));
-    --spinner-color: color-mix(in srgb, var(--primary-color) 88%, rgba(255, 255, 255, 0.1));
+    --link-color: rgba(37,99,235,0.9);
+    --button-gradient: linear-gradient(135deg, rgba(59,130,246,0.92) 0%, rgba(59,130,246,1) 65%, rgba(15,23,42,0.55) 100%);
+    --button-gradient-hover: linear-gradient(135deg, rgba(59,130,246,1) 0%, rgba(59,130,246,1) 55%, rgba(15,23,42,0.45) 100%);
+    --button-shadow: 0 28px 52px rgba(59,130,246,0.24);
+    --spinner-track-color: rgba(59,130,246,0.24);
+    --spinner-color: rgba(59,130,246,0.88);
     font-family: var(--font-family-sans);
     /* force a clean white background for the login route to match design */
     background: var(--neutral-white, #ffffff);
