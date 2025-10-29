@@ -7,7 +7,7 @@
 @using Microsoft.JSInterop
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@inject Microsoft.Extensions.Logging.ILogger<NavigationRail> Logger
+@inject Microsoft.Extensions.Logging.ILogger<NewNavigationTail> Logger
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IRolePermissionService RolePermissionService
 @inject IAuthenticationService AuthenticationService
@@ -73,22 +73,24 @@
                                     var friendly = ToFriendlyGroupTitle(sub.Title);
                                     var firstIcon = sub.Links.FirstOrDefault()?.IconCss;
                                     var titleIconKey = MapIcon(friendly, firstIcon ?? string.Empty);
+                                    // Determine expansion state: keep expanded if it contains an active
+                                    // link, or the user explicitly expanded it.
+                                    var isExpanded = hasActiveInSub || openSubgroups.Contains(sub.Title);
                                 }
                                 @RenderIcon(titleIconKey, "group-title-icon")
                                 <span class="group-title-text">@friendly</span>
+
+                                <button class="subgroup-toggler" aria-expanded="@isExpanded" @onclick="() => ToggleSubgroup(sub.Title)" title="Toggle details">
+                                    @((MarkupString)(isExpanded ? "&minus;" : "+"))
+                                </button>
                             </div>
-                            <ul class="panel-list">
+                            <ul class="panel-list @(isExpanded ? "" : "collapsed")">
                                 @foreach (var link in sub.Links)
                                 {
                                     var isActive = string.Equals(NormalizePath(link.Href), selectedItem, StringComparison.OrdinalIgnoreCase);
                                     <li class='@(isActive ? "item-active" : "")'>
                                         <a href="@link.Href" class='@(isActive ? "active page-active" : "")' @onclick='() => SelectItem(link.Href)'>
-                                            @RenderIcon(link.IconCss, "link-icon")
-                                            <span>@link.DisplayName</span>
-                                            @if (isActive)
-                                            {
-                                                @RenderIcon("check", "check-icon")
-                                            }
+                                            <span class="link-text">@link.DisplayName</span>
                                         </a>
                                     </li>
                                 }
@@ -108,10 +110,6 @@
             </div>
         </div>
     </div>
-
-    <button @onclick="ToggleCollapse" class="btn-toggle-collapse" aria-label="Toggle sidebar">
-        <i class='fas @(isCollapsed ? "fa-chevron-right" : "fa-chevron-left")'></i>
-    </button>
 </div>
 
 @code {
@@ -121,6 +119,9 @@
     private DotNetObjectReference<NewNavigationTail>? _dotNetRef;
 
     private readonly List<NavGroupVm> visibleGroups = new();
+    // Track which subgroups are expanded in the panel. Keys are the subgroup.Title values
+    // produced by GroupLinks (eg. first path segment or db/... keys).
+    private readonly HashSet<string> openSubgroups = new(StringComparer.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
@@ -373,7 +374,21 @@
         var key = displayName.ToLowerInvariant();
     var result = key switch
         {
-            var s when s.Contains("project") || s.Contains("projects") => "kanban",
+            // Dashboard / main overview
+            var s when s.Contains("dashboard") || s.Contains("main") || s.Contains("overview") => "graph",
+
+            // Tasks / project boards
+            var s when s.Contains("task") || s.Contains("tasks") || s.Contains("todo") || s.Contains("projects") || s.Contains("project") => "kanban",
+
+            // Distribution / allocation visualizations
+            var s when s.Contains("distribution") || s.Contains("distribute") => "bar-chart",
+
+            // Scheduling / calendar
+            var s when s.Contains("schedule") || s.Contains("schedules") || s.Contains("calendar") => "calendar",
+
+            // Advanced / settings-like pages
+            var s when s.Contains("advanced") || s.Contains("advanced") || s.Contains("expert") => "gear",
+
             var s when s.Contains("sales") || s.Contains("pipeline") => "graph",
             var s when s.Contains("db") || s.Contains("database") || s.Contains("dbmanagement") => "database",
             var s when s.Contains("engagement") || s.Contains("sms") => "chat",
@@ -701,6 +716,14 @@
         // Convert to ordered list preserving original order within subgroup
         var result = groups.Select(g => new LinkSubgroup(g.Key, g.Value)).ToList();
         return result;
+    }
+
+    private void ToggleSubgroup(string subgroupKey)
+    {
+        if (string.IsNullOrEmpty(subgroupKey)) return;
+        if (openSubgroups.Contains(subgroupKey)) openSubgroups.Remove(subgroupKey);
+        else openSubgroups.Add(subgroupKey);
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private string ToFriendlyGroupTitle(string raw)

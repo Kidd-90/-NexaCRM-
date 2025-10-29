@@ -29,14 +29,27 @@
     flex-direction: column;
     height: 100vh;
     min-height: 0;
-    /* Let flexbox handle the width and position. No margin needed. */
+    /* Let flexbox handle the width and position. Default to no margin; the
+       sibling selectors below will set the correct left offset depending on
+       whether a sidebar (or panel) is present. */
     padding: var(--shell-content-padding);
-    /* Reserve space on the left for the fixed sidebar so content doesn't sit
-       underneath it. The sidebar uses `position: fixed` so we offset the main
-       area by the same width. When a sidebar is collapsed, the sibling
-       selector below will reduce the offset. */
-    margin-left: var(--nav-width);
+    margin-left: 0;
     gap: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+/* When the sidebar exists and is not in overlay (panel-open) mode, reserve
+   space for the rail plus configured nav width. This uses a sibling selector
+   so the rule is applied only when the sidebar node is present in the DOM
+   before the main content (which matches how the layout renders the nav
+   component). */
+.sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
+    margin-left: calc(80px + var(--nav-width));
+}
+
+/* When the sidebar is an overlaying panel (panel-open), do not offset the
+   main content — the panel floats above content. */
+.sidebar.panel-open ~ .desktop-shell__main {
+    margin-left: 0;
 }
 
 /* When the sidebar is present but collapsed, reduce the left offset so the

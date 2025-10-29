@@ -94,6 +94,87 @@ function initializeShell() {
     try { console.log('[layout] initializeShell end'); } catch (e) {}
 }
 
+// Observe sidebar class changes and enforce main offset/z-index as a robust
+// fallback when CSS specificity/scoping prevents stylesheet rules from taking effect.
+function observeSidebarState() {
+    try {
+        // Prefer the page-scoped sidebar, but fall back to any .sidebar in the
+        // document. This makes the observer resilient to small DOM structure
+        // differences between server/client renders.
+        let sidebar = document.querySelector('.page.desktop-layout.desktop-shell .sidebar')
+            || document.querySelector('.sidebar');
+        let main = document.querySelector('.page.desktop-layout.desktop-shell .desktop-shell__main')
+            || document.querySelector('.desktop-shell__main');
+        if (!sidebar || !main) {
+            // If nodes are not present yet, ensure we have a body-level observer
+            // that will re-run this function when elements are added.
+            if (!window.__nexacrm_bodyObserver) {
+                const bodyObserver = new MutationObserver(() => {
+                    const exists = document.querySelector('.sidebar') && document.querySelector('.desktop-shell__main');
+                    if (exists) {
+                        try { bodyObserver.disconnect(); } catch (_) {}
+                        window.__nexacrm_bodyObserver = null;
+                        // Try again now that nodes exist
+                        window.setTimeout(observeSidebarState, 20);
+                    }
+                });
+                bodyObserver.observe(document.body, { childList: true, subtree: true });
+                window.__nexacrm_bodyObserver = bodyObserver;
+            }
+            return;
+        }
+
+        const applyState = () => {
+            const isPanelOpen = sidebar.classList.contains('panel-open');
+            if (isPanelOpen) {
+                // Panel overlays main: ensure main has no left offset and lower z-index
+                main.style.marginLeft = '0';
+                main.style.position = 'relative';
+                main.style.zIndex = '0';
+            } else {
+                // Sidebar-only: shift main left so it's visible rather than hidden
+                // (negative offset matches requested layout). Use -280px as the
+                // baseline; if you change --nav-width, update this value too.
+                main.style.marginLeft = '-280px';
+                main.style.position = 'relative';
+                main.style.zIndex = '1100';
+            }
+        };
+
+        // Apply initial state
+        applyState();
+
+        // Watch for class changes on sidebar
+        const mo = new MutationObserver((records) => {
+            for (const r of records) {
+                if (r.type === 'attributes' && (r.attributeName === 'class' || r.attributeName === 'className')) {
+                    applyState();
+                    break;
+                }
+            }
+        });
+        mo.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+        // store reference for potential cleanup (not strictly necessary)
+        window.__nexacrm_sidebarObserver = mo;
+    } catch (e) {
+        try { console.warn('[layout] observeSidebarState failed', e); } catch (_) {}
+    }
+}
+
+// Ensure observer runs after initializeShell so DOM nodes exist
+try {
+    // If initializeShell has already run, start immediately; otherwise the
+    // initializeShell function will call this indirectly via dedupeSidebar
+    // and other setup. We call it here defensively on script load.
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        window.setTimeout(observeSidebarState, 60);
+    } else {
+        document.addEventListener('DOMContentLoaded', () => window.setTimeout(observeSidebarState, 60));
+    }
+} catch (e) {
+    try { console.warn('[layout] failed to schedule sidebar observer', e); } catch (_) {}
+}
+
 function dedupeSidebar() {
     const nodes = Array.from(document.querySelectorAll('.sidebar'));
     if (!nodes || nodes.length <= 1) return;

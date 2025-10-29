@@ -231,7 +231,7 @@
 .panel-subgroup.subgroup-has-active {
     position: relative;
     background: rgba(0,0,0,0.02); /* subtle group background */
-    border-radius: 0.35rem;
+    border-radius: 0.15rem;
     /* add extra left padding so items can overlap the accent bar */
     padding-left: 0.85rem;
 }
@@ -239,11 +239,11 @@
     content: "";
     position: absolute;
     /* place the thick accent bar a little inset from the very left */
-    left: 0.35rem;
-    top: 0.35rem;
-    bottom: 0.35rem;
-    width: 0.62rem; /* thicker bar like the reference image */
-    background: #0b0b0b; /* near-black accent as in screenshot */
+    left: 1.55rem;
+    top: 5.35rem;
+    bottom: 1.35rem;
+    width: 0.2rem; /* thicker bar like the reference image */
+    background: lightgray; /* near-black accent as in screenshot */
     border-radius: 4px;
 }
 .panel-subgroup.subgroup-has-active .panel-subgroup-title {
@@ -341,50 +341,20 @@
 
 .panel-list li a.page-active,
 .panel-list li a.active {
-    /* pill-style active item that overlaps the left accent bar */
+    /* active item retains visual emphasis but stays aligned with other items */
     background: rgba(241,247,250,0.95); /* subtle pale-blue pill */
     color: var(--text-primary);
     font-weight: 700;
-    border-radius: 0.6rem;
-    padding: 0.6rem 0.9rem 0.6rem 1.05rem; /* larger left padding so text is clear */
-    margin-left: -0.28rem; /* pull the pill slightly left so it overlaps the thick bar */
+    border-radius: 0.375rem; /* keep consistent with non-active items */
+    /* use the same padding as non-active links so text doesn't shift */
+    padding: 0.4rem 0.75rem;
+    margin-left: 0;
     box-shadow: 0 6px 18px rgba(15,23,42,0.06);
 }
 
-/* notch circle to visually cut a rounded hole where the pill meets the bar */
-.panel-list li a.page-active::before,
-.panel-list li a.active::before {
-    content: "";
-    position: absolute;
-    left: -0.52rem; /* sits slightly left of the pill's left edge to overlap the bar */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: rgba(241,247,250,0.95); /* match pill background to create notch */
-    box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset;
-}
+/* removed left notch for active items so text and alignment remain consistent */
 
-/* small check icon shown for active items (right side) */
-.panel-list li a.page-active::after,
-.panel-list li a.active::after {
-    /* legacy fallback: small check bubble on the right (hidden if inline .check-icon used) */
-    content: "";
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    background-color: #0b0b0b; /* dark bubble like reference */
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 0.6rem 0.6rem;
-    border-radius: 50%;
-    box-shadow: 0 6px 18px rgba(15,23,42,0.12);
-    opacity: 0.98;
-}
+/* removed legacy right-side pseudo check marker for active items; inline/check-icon usage preferred */
 
 /* Inline check icon wrapper styling (used when we render inline SVG in markup) */
 .check-icon {

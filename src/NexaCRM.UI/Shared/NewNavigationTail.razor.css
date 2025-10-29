@@ -209,6 +209,22 @@
     pointer-events: none;
 }
 
+/* Global overrides to control the main content offset depending on the
+   sidebar state. Scoped CSS cannot reliably target sibling elements in other
+   components, so we emit global selectors here. Use !important to ensure
+   these layout rules win over other scoped styles. */
+:global(.sidebar.panel-open) ~ .desktop-shell__main {
+    margin-left: 0 !important; /* panel overlays — main should not be pushed */
+}
+
+:global(.sidebar:not(.panel-open)) ~ .desktop-shell__main {
+    margin-left: -280px !important; /* sidebar-only state: apply requested -280px */
+}
+
+:global(.sidebar.collapsed) ~ .desktop-shell__main {
+    margin-left: 68px !important; /* keep collapsed behavior consistent */
+}
+
 .panel-header {
     padding: 20px 20px 8px;
     border-bottom: 1px solid #f1f5f9;
@@ -234,18 +250,53 @@
 .panel-subgroup-title .group-title-icon svg { width: 18px; height: 18px; }
 .panel-subgroup-title .group-title-text { display: inline-block; }
 
+/* Toggler button on subgroup titles to expand/collapse the inner list */
+.subgroup-toggler {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    width: 34px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #667085;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.subgroup-toggler:hover { background: rgba(16,24,40,0.04); color: #0f1724; }
+.subgroup-toggler:focus { outline: none; box-shadow: 0 0 0 3px rgba(16,24,40,0.06); }
+
+/* When collapsed, hide the list entirely to match the compact design */
+.panel-list.collapsed { display: none; }
+
 .panel-subtitle { color: #98a2b3; font-size: 12px; margin-top: 4px; }
 
 .panel-body { padding: 16px 20px; flex: 1 1 auto; overflow-y: auto; }
+
+/* Vertical guide line running along the subgroup items (subtle gray) */
+.panel-body { position: relative; }
+.panel-body::before {
+    content: "";
+    position: absolute;
+    left: 18px; /* aligns with the circular marker position */
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    background: #eef2f6; /* subtle gray guide */
+    border-radius: 4px;
+    z-index: 1;
+}
 
 .panel-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 
 .panel-list a {
     text-decoration: none;
     color: #0f1724;
-    /* provide room for a left selection marker; increased left padding to avoid overlap
-       between the marker and the link icon */
-    padding: 10px 12px 10px 44px;
+    /* left icon removed for compact listing; reduce left padding accordingly */
+    padding: 10px 12px 10px 28px;
     border-radius: 0;
     display: flex;
     align-items: center;
@@ -260,8 +311,12 @@
 .panel-list a:hover { background: transparent; }
 
 /* Active state: subtle background + small left dot indicator */
+
+/* Active state: no full-row background; show a small circular marker positioned over
+   the vertical guide line. Links remain above the guide (z-index) so marker sits
+   visually as a badge on the guide. */
 .panel-list a.active {
-    background: #f1f5f9; /* subtle light highlight to match design */
+    background: transparent;
     color: #0f1724;
     box-shadow: none !important;
 }
@@ -269,21 +324,24 @@
 .panel-list a.active i { color: #0f1724; }
 
 .panel-list a.active::before {
-    /* small circular marker instead of full-height bar; positioned to sit left of the link icon */
     content: "";
     position: absolute;
-    left: 18px; /* tuned so marker visually aligns with list text and icon */
+    left: 12px; /* place the small dot slightly left of the guide center */
     top: 50%;
     transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
+    width: 12px;
+    height: 12px;
     background: var(--nav-active-color, #0f1724);
     border-radius: 50%;
+    z-index: 3; /* above guide but below link content to appear attached */
 }
 
+/* Hide the right-side check icon when active to match compact design */
+.panel-list a.active .check-icon { display: none; }
+
 /* Make sure link icons (radio circles) sit left of text and the check icon aligns right */
-.panel-list a .link-icon { margin-right: 12px; }
-.panel-list a .check-icon { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; }
+.panel-list li.item-active .link-icon { display: none; margin-right: 0; }
+.panel-list li.item-active .check-icon { display: none !important; margin-left: 0; }
 
 .panel-footer { padding: 16px 20px; border-top: 1px solid #f1f5f9; }
 

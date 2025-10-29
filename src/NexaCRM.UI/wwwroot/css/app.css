@@ -115,6 +115,7 @@
     /* Global layout alignment tokens */
     --app-shell-page-header-height: 57px;
     --sidebar-width: min(90vw, 320px);
+    --nav-width: 280px; /* default nav width token (can be overridden by sidebar state) */
     --app-shell-surface-padding-top: 0.5rem;
     --shell-content-padding: 1.5rem; /* 24px, 쉘 내부 공통 패딩 */
     --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem);
@@ -405,28 +406,38 @@ body {
     margin-left: 68px; /* default: sit next to collapsed rail */
 }
 
-/* If sidebar exists and is NOT panel-open and NOT collapsed, give full rail space (80px) */
+/* When the sidebar is visible and NOT in panel-open overlay mode, reserve
+   space for the rail and the sidebar panel so the main content starts after
+   both elements. We use the rail (80px) plus the CSS variable --sidebar-width
+   (defaults to 320px) so this adapts if that variable is changed. */
 .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main,
 .desktop-shell .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
-    margin-left: 80px;
+    /* Use --nav-width to compute the offset. The variable will be adjusted
+       depending on whether the sidebar is in overlay (panel-open) mode or
+       in normal sidebar-only mode. */
+    margin-left: calc(80px + var(--nav-width));
 }
 
-/* When sidebar is collapsed, reduce offset */
+/* When sidebar is collapsed, keep a small offset to match the collapsed rail */
 .sidebar.collapsed ~ .desktop-shell__main,
 .desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
     margin-left: 68px;
 }
 
-/* When panel is open, push main to the right by rail + panel width */
+/* Control --nav-width per sidebar state:
+     - When the sidebar is a panel overlay (panel-open) the effective nav width
+         should be 0 so the main content is not pushed.
+     - When the sidebar is present but not panel-open, the nav width should be
+         negative (e.g. -280px) to shift the main content appropriately.
+     These rules set the custom property; the layout selector above consumes it. */
+.desktop-shell .sidebar.panel-open { --nav-width: 0px; }
+.desktop-shell .sidebar:not(.panel-open) { --nav-width: -280px; }
+
+/* Keep a specific override for the common case (ensure no left margin when
+     panel overlay is active). */
 .sidebar.panel-open ~ .desktop-shell__main,
 .desktop-shell .sidebar.panel-open ~ .desktop-shell__main {
-    margin-left: 68px; /* when panel open, main should sit next to collapsed rail */
-}
-
-/* If sidebar is collapsed but panel is NOT open, keep main next to collapsed rail as well */
-.sidebar.collapsed ~ .desktop-shell__main,
-.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
-    margin-left: 68px;
+        margin-left: 0 !important;
 }
     border-radius: 1rem;
     background: var(--background-color);
