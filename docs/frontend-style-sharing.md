@@ -83,6 +83,7 @@
 - 페이지 전용 `.razor.css` 파일에는 **그 페이지에서만 사용되는 선택자**와 레이아웃 미세 조정만 남깁니다.
 - 여러 페이지에서 재사용되는 패턴(대시보드 카드 간격, 사이드바 숨김, 테이블 스크롤 처리 등)은 `ui/patterns.css`로 이동해 재사용성을 높이고 유지보수 범위를 축소합니다.
 - 공통 패턴에 맞추기 어렵거나 실험적인 디자인은 `@layer page { ... }` 블록을 활용해 범위를 명확히 하고, 필요 시 `patterns.css`로 승격합니다.
+- 전체 뷰포트 폭을 채우는 배경이 필요할 때는 `width: min(100%, 100vw)`처럼 현대 CSS 함수를 활용해 스크롤바로 인한 가로 스크롤을 방지하고, 사용되지 않는 선택자는 즉시 제거해 스코프 누수를 예방하세요.
 
 ## Server Host Integration Checklist
 - `src/NexaCRM.WebServer/Pages/_Host.cshtml` 파일에서 WebClient와 동일한 `_content/NexaCRM.UI` CSS, JS 번들을 참조해 서버 렌더링과 WebAssembly 클라이언트 간 스타일 일관성을 확보합니다.
