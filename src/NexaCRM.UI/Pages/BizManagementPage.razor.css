@@ -29,6 +29,8 @@
     background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
     color: #1f2937;
     font-size: 0.95rem;
+    line-height: 1.45;
+    flex-wrap: wrap;
 }
 
 .preview-banner .bi {
@@ -98,13 +100,6 @@
     font-size: 0.9rem;
 }
 
-.grid {
-    border: 1px solid #E5E7EB;
-    background: #FFFFFF;
-    border-radius: 10px;
-    padding: 0.5rem;
-}
-
 .table td, .table th {
     vertical-align: middle;
 }
@@ -138,29 +133,13 @@
     padding: 1.25rem;
 }
 
-.card-title {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.card-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-}
-
 @media (max-width: 991px) {
     .explore {
         grid-template-columns: 1fr;
     }
-    
+
     .filters {
         order: 2;
-    }
-    
-    .grid {
-        order: 1;
     }
 }
 
@@ -174,9 +153,8 @@
         width: 100%;
         flex-direction: column;
     }
-    
-    .advanced-db__header .toolbar button,
-    .advanced-db__header .toolbar label {
+
+    .advanced-db__header .toolbar button {
         width: 100%;
     }
     
