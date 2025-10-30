@@ -38,8 +38,8 @@
   - `--gradient-light`: `linear-gradient(180deg, #FFFFFF 0%, #E0E0E0 100%)`
   - `--gradient-medium`: `linear-gradient(145deg, #B0B0B0 0%, #4A4A4A 100%)`
   - `--gradient-deep`: `linear-gradient(160deg, #2E2E2E 0%, #000000 100%)`
-  - `--shadow-soft-layer`: `0px 2px 6px rgba(0, 0, 0, 0.15)`
-  - `--shadow-deep-layer`: `0px 4px 12px rgba(0, 0, 0, 0.35)`
+  - `--shadow-soft-layer`: `0px 2px 6px rgba(15, 23, 42, 0.12)`
+  - `--shadow-deep-layer`: `0px 4px 16px rgba(15, 23, 42, 0.22)`
   - `--overlay-glass-white`: `rgba(255, 255, 255, 0.1)` (blur와 함께 사용)
   - `--overlay-black`: `rgba(0, 0, 0, 0.5)`
   - `--glow-white`: `0px 0px 8px rgba(255, 255, 255, 0.8)`
