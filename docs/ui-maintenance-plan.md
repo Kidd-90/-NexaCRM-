@@ -7,6 +7,7 @@
 - Introduced shared radius and shadow tokens in `wwwroot/css/ui/foundations.css`, updated utility classes, and refactored the Biz Management and Login scoped styles to consume the new surface scale.
 - Implemented the reusable `Banner` component in `Components/Notifications`, applied scoped styling, and replaced the Biz Management preview banner to validate the hierarchy.
 - Propagated the shared banner and surface tokens to `Pages/DbAdvancedManagementPage`, ensuring filters, rule configs, and modal shells align with the radius/shadow scale.
+- Authored bUnit regression tests for the shared `Banner` component so accessibility attributes and dismiss callbacks remain stable during future refactors.
 
 ## Recommended Workflow for UI Iterations
 1. **Audit Scoped CSS**: For each Razor page being touched, compare the markup classes with the corresponding `.razor.css` file and remove or rename anything no longer in use.
@@ -35,6 +36,7 @@
 - **Blazor Scoped CSS** (`*.razor.css`) keeps page-level rules encapsulated—leverage it for one-off tweaks, and ensure deletions do not affect other pages.
 - **Modern CSS Functions** such as `min()` and `clamp()` are used throughout `NexaCRM.UI` to maintain responsive sizing. Prefer these over hard-coded pixel values when adjusting layouts.
 - **Design Tokens** defined in `wwwroot/css/app.css` (font stacks, spacing, colors) should be the source of truth for future UI additions.
+- **Component Testing** guidance lives in `docs/bunit-component-testing.md`; follow it when introducing new shared UI primitives or updating existing suites.
 
 ## Banner Hierarchy Componentization Plan
 
@@ -70,7 +72,7 @@
 3. **Add Storybook Example (Optional)**: If UI documentation exists, add banner stories demonstrating each variant and slot combination.
 4. ✅ **Integrate First Consumer**: Replaced the Biz Management preview banner markup with the new component to validate alignment and responsive behavior.
 5. ✅ **Propagate Across Pages**: Migrated the ad-hoc banner on `DbAdvancedManagementPage` to the shared component and removed duplicate styling; continue auditing newly added pages during feature work.
-6. **Write Regression Tests**: Add bUnit snapshot tests covering variant rendering and dismiss events in `tests/NexaCRM.UI.Tests/Components/Notifications`.
+6. ✅ **Write Regression Tests**: Added bUnit interaction and accessibility tests in `tests/NexaCRM.UI.Tests/Components/Notifications` to cover variants, live-region behaviour, and dismiss callbacks.
 7. **QA Checklist**: Verify keyboard navigation, screen reader output (NVDA/JAWS), and mobile viewport wrapping on at least two browsers.
 
 ### Dependencies & Risks
