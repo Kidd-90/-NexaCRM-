@@ -4,6 +4,7 @@
  */
 @import url("./foundations.css");
 @import url("./utilities.css");
+@import url("./forms.css");
 @import url("./components.css");
 @import url("./layout.css");
 @import url("./patterns.css");

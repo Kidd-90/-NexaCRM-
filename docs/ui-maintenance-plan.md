@@ -8,6 +8,7 @@
 - Implemented the reusable `Banner` component in `Components/Notifications`, applied scoped styling, and replaced the Biz Management preview banner to validate the hierarchy.
 - Propagated the shared banner and surface tokens to `Pages/DbAdvancedManagementPage`, ensuring filters, rule configs, and modal shells align with the radius/shadow scale.
 - Authored bUnit regression tests for the shared `Banner` component so accessibility attributes and dismiss callbacks remain stable during future refactors.
+- Standardized interactive control heights via `wwwroot/css/ui/forms.css`, ensuring `form-control`, `form-select`, and `btn` classes all respect the 44px touch target token.
 
 ## Recommended Workflow for UI Iterations
 1. **Audit Scoped CSS**: For each Razor page being touched, compare the markup classes with the corresponding `.razor.css` file and remove or rename anything no longer in use.
@@ -19,7 +20,7 @@
 ## Design Enhancements to Prioritize
 - **Dashboard Density Controls**: Introduce a compact/comfortable toggle for table-heavy pages (use CSS custom properties to swap padding/margin scales).
 - **Banner Hierarchy**: Convert informational banners (e.g., preview banner) into a reusable component with leading icon, title, and helper text slots for better content scanning.
-- **Form Input Consistency**: Align input heights by reusing the login page’s `--touch-target-min` token in other modules so pointer targets meet 44px minimums.
+- ✅ **Form Input Consistency**: Rolled the login page’s `--touch-target-min` token into shared form helpers so controls across dashboards meet the 44px minimum touch target.
 - **Dark Theme Expansion**: Mirror the new login width logic in other entry points and extend the existing `[data-theme="dark"]` overrides for page-level banners and filters.
 - **Micro-interactions**: Apply `prefers-reduced-motion` safe transitions (opacity/translate) when introducing hover states or tab switches on admin dashboards.
 - **Surface Treatment Harmonization**: Standardize border radii, shadows, and divider usage so flat cards and rounded panels read as a cohesive system instead of competing motifs.
@@ -31,6 +32,12 @@
 - **Document Overrides**: Extend the component README snippets (e.g., `Components/Cards/README.md` if present) with “surface” tables showing default radius and how to opt into alternatives using CSS custom properties.
 - **QA Checklist Addition**: Update UI review scripts to flag any new component that mixes `border-radius: 0` and `border-radius: 16px` within the same cluster without a documented rationale.
 - **Dark Theme Parity**: Mirror the same radius tokens inside `[data-theme="dark"]` so neutral and dark palettes share identical silhouettes; ensure shadows degrade to `box-shadow: none` with increased border opacity for dark surfaces where glow would be distracting.
+
+### Form Input Consistency Rollout
+- **Tokenize Control Heights**: ✅ Added `--ui-control-height` scale inside `wwwroot/css/ui/forms.css` mapped to `--touch-target-min` to guarantee 44px minimums.
+- **Normalize Base Controls**: ✅ Applied the shared scale to `.form-control`, `.form-select`, and `.btn` classes (including size variants) so filters, modals, and toolbars align without manual overrides.
+- **Page Pass**: ✅ Updated Biz/DB management filters to inherit the shared control styling and removed ad-hoc height declarations.
+- **QA Checklist**: Verify all newly added inputs and actions render with a minimum of 44px height on 360px/768px/1280px breakpoints; regress `prefers-reduced-motion` focus outlines to confirm they remain within the touch bounds.
 
 ## Technology Reference
 - **Blazor Scoped CSS** (`*.razor.css`) keeps page-level rules encapsulated—leverage it for one-off tweaks, and ensure deletions do not affect other pages.

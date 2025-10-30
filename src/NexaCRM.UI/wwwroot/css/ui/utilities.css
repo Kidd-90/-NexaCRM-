@@ -50,18 +50,18 @@
 }
 
 .ui-input-height {
-    min-height: 2.75rem;
-    height: 2.75rem;
+    min-height: var(--touch-target-min, 44px);
+    height: var(--touch-target-min, 44px);
 }
 
 .ui-input-height-lg {
-    min-height: 3.5rem;
-    height: 3.5rem;
+    min-height: calc(var(--touch-target-min, 44px) + 8px);
+    height: calc(var(--touch-target-min, 44px) + 8px);
 }
 
 .ui-input-height-sm {
-    min-height: 2.25rem;
-    height: 2.25rem;
+    min-height: var(--touch-target-min, 44px);
+    height: var(--touch-target-min, 44px);
 }
 
 .ui-aspect-square {

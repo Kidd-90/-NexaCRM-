@@ -78,6 +78,10 @@
     box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
 }
 
+.filters :where(.form-control, .form-select) {
+    width: 100%;
+}
+
 .filter-group {
     display: flex;
     flex-direction: column;
