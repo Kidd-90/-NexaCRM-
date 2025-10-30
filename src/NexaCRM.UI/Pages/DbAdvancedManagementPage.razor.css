@@ -1,7 +1,7 @@
 .advanced-db {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--ui-density-gap-sm, 0.75rem);
     /* add subtle horizontal margins so content doesn't touch edges */
     margin-inline: clamp(0.5rem, 2vw, 1rem);
     width: min(100%, 100vw);
@@ -10,9 +10,22 @@
 
 .advanced-db__header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: var(--ui-density-gap-sm, 0.75rem);
+}
+
+.advanced-db__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--ui-density-gap-sm, 0.75rem);
+}
+
+.advanced-db__density {
+    flex: 0 0 auto;
 }
 
 :global(.advanced-db__banner) {
@@ -38,13 +51,14 @@
 
 .advanced-db__header .toolbar {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--ui-density-gap-sm, 0.5rem);
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .tabs {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--ui-density-gap-sm, 0.5rem);
     border-bottom: 1px solid var(--border-color, #E5E7EB);
 }
 
@@ -52,7 +66,8 @@
     appearance: none;
     border: none;
     background: transparent;
-    padding: 0.5rem 0.75rem;
+    padding-block: calc(var(--ui-density-gap-sm, 0.75rem) / 1.5);
+    padding-inline: clamp(0.5rem, 2vw, 0.75rem);
     border-bottom: 2px solid transparent;
     color: var(--text-secondary, #6B7280);
     font-weight: 600;
@@ -72,17 +87,17 @@
 .explore {
     display: grid;
     grid-template-columns: 260px 1fr;
-    gap: 1rem;
+    gap: var(--ui-density-gap-md, 1rem);
 }
 
 .filters {
     border: 1px solid var(--border-color, #E5E7EB);
     background: var(--surface-color, #FFFFFF);
     border-radius: var(--radius-sm, 8px);
-    padding: 0.75rem;
+    padding: calc(var(--ui-density-gap-sm, 0.75rem) + 0.125rem);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--ui-density-gap-sm, 0.75rem);
     height: fit-content;
     box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
 }
@@ -94,7 +109,7 @@
 .filter-group label {
     font-weight: 700;
     color: var(--text-primary, #374151);
-    margin-bottom: 0.25rem;
+    margin-bottom: calc(var(--ui-density-gap-sm, 0.75rem) / 3);
     display: block;
 }
 
@@ -102,17 +117,32 @@
     border: 1px solid var(--border-color, #E5E7EB);
     background: var(--surface-color, #FFFFFF);
     border-radius: var(--radius-sm, 8px);
-    padding: 0.5rem;
+    padding: clamp(0.5rem, var(--ui-density-gap-sm, 0.75rem), 0.75rem);
     box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
 }
 
 /* Dedupe tab */
-.dedupe { display: flex; flex-direction: column; gap: 0.75rem; }
-.dedupe-controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.dedupe { display: flex; flex-direction: column; gap: var(--ui-density-gap-sm, 0.75rem); }
+.dedupe-controls { display: flex; align-items: center; gap: var(--ui-density-gap-md, 1rem); flex-wrap: wrap; }
 .dedupe-controls .hint { font-size: 0.9rem; }
 .action-cell { white-space: nowrap; }
 .table td, .table th { vertical-align: middle; }
 .table .action-btn { font-size: 0.78rem; padding: 0.25rem 0.5rem; line-height: 1.2; border-radius: 0.35rem; }
+
+:global(.advanced-db[data-density] .table) {
+    font-size: calc(1rem * var(--ui-density-font-scale, 1));
+}
+
+:global(.advanced-db[data-density] .table > :not(caption) > * > *) {
+    padding-block: var(--ui-density-table-padding-y, 0.75rem);
+    padding-inline: var(--ui-density-table-padding-x, 0.75rem);
+    transition: padding var(--transition-fast, 0.2s ease);
+}
+
+:global(.advanced-db[data-density] .toolbar .btn) {
+    transition: padding var(--transition-fast, 0.2s ease);
+    padding-inline: clamp(0.625rem, 2vw, 0.875rem);
+}
 
 .modal-backdrop {
     position: fixed;
@@ -161,6 +191,13 @@
     color: var(--text-secondary, #6B7280);
     font-size: 0.9rem;
     margin: 0.25rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :global(.advanced-db[data-density] .table > :not(caption) > * > *),
+    :global(.advanced-db[data-density] .toolbar .btn) {
+        transition: none;
+    }
 }
 
 .rule-config {

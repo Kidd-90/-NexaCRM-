@@ -15,16 +15,24 @@
 @inject IJSRuntime JS
 @implements IDisposable
 
-<div class="advanced-db common-page-container">
+<div class="advanced-db common-page-container" data-density="@densityMode.ToDataAttribute()">
     <header class="advanced-db__header">
         <h1>고급 DB 관리</h1>
-        <div class="toolbar">
-            <button class="btn btn-light preview-action" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
-            <button class="btn btn-light" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
-            <button class="btn btn-light" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
-            <button class="btn btn-light" @onclick="ExportCsv" disabled="@isExporting"><i class="bi bi-download"></i> 내보내기</button>
-            <label class="btn btn-success preview-action" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
-            <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
+        <div class="advanced-db__actions">
+            <DensityToggle Class="advanced-db__density"
+                            Value="@densityMode"
+                            ValueChanged="OnDensityChanged"
+                            Label="표 간격 모드"
+                            ComfortableText="여유"
+                            CompactText="컴팩트" />
+            <div class="toolbar">
+                <button class="btn btn-light preview-action" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
+                <button class="btn btn-light" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
+                <button class="btn btn-light" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
+                <button class="btn btn-light" @onclick="ExportCsv" disabled="@isExporting"><i class="bi bi-download"></i> 내보내기</button>
+                <label class="btn btn-success preview-action" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
+                <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
+            </div>
         </div>
     </header>
 
@@ -709,6 +717,7 @@
     private DateTime? filterTo;
     private bool isLoading;
     private bool isExporting;
+    private DensityMode densityMode = DensityMode.Comfortable;
     private readonly HashSet<int> deletingIds = new();
     private CancellationTokenSource? searchDebounceCts;
     private bool dedupeEnabled;
@@ -720,6 +729,28 @@
     private bool showMergeModal;
     private DuplicateGroup? modalGroup;
     private int modalPrimaryId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var stored = await JS.InvokeAsync<string?>("localStorage.getItem", DensityPreference.StorageKey);
+            if (DensityPreference.TryParse(stored, out var storedMode) && storedMode != densityMode)
+            {
+                densityMode = storedMode;
+                StateHasChanged();
+            }
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference retrieval failed: {ex.Message}");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -734,6 +765,20 @@
     }
 
     private void SetTab(Tab t) => activeTab = t;
+
+    private async Task OnDensityChanged(DensityMode mode)
+    {
+        densityMode = mode;
+
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", DensityPreference.StorageKey, mode.ToString());
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference persistence failed: {ex.Message}");
+        }
+    }
 
     private void ApplyFilters()
     {
