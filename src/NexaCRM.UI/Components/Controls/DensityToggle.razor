@@ -52,14 +52,15 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private string CssClass => string.IsNullOrWhiteSpace(Class)
-        ? "nc-density-toggle"
-        : $"nc-density-toggle {Class}";
+        ? "nc-density-toggle motion-fade-in"
+        : $"nc-density-toggle motion-fade-in {Class}";
 
     private string GetButtonClass(DensityMode mode)
     {
+        var baseClass = "nc-density-toggle__option motion-pressable";
         return Value == mode
-            ? "nc-density-toggle__option is-active"
-            : "nc-density-toggle__option";
+            ? $"{baseClass} is-active"
+            : baseClass;
     }
 
     private bool IsActive(DensityMode mode) => Value == mode;

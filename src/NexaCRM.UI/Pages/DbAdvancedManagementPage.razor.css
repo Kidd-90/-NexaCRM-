@@ -42,7 +42,7 @@
 
 .preview-action {
     opacity: 0.88;
-    transition: opacity var(--transition-fast, 0.2s ease);
+    transition: opacity var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
 .preview-action:hover {
@@ -72,7 +72,8 @@
     color: var(--text-secondary, #6B7280);
     font-weight: 600;
     cursor: pointer;
-    transition: color var(--transition-fast, 0.2s ease), border-color var(--transition-fast, 0.2s ease);
+    transition: color var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        border-color var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
 .tab:hover {
@@ -136,11 +137,11 @@
 :global(.advanced-db[data-density] .table > :not(caption) > * > *) {
     padding-block: var(--ui-density-table-padding-y, 0.75rem);
     padding-inline: var(--ui-density-table-padding-x, 0.75rem);
-    transition: padding var(--transition-fast, 0.2s ease);
+    transition: padding var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
 :global(.advanced-db[data-density] .toolbar .btn) {
-    transition: padding var(--transition-fast, 0.2s ease);
+    transition: padding var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     padding-inline: clamp(0.625rem, 2vw, 0.875rem);
 }
 
@@ -194,6 +195,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .tab,
+    .preview-action {
+        transition: none;
+    }
+
     :global(.advanced-db[data-density] .table > :not(caption) > * > *),
     :global(.advanced-db[data-density] .toolbar .btn) {
         transition: none;
