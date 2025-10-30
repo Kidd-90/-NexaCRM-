@@ -9,6 +9,7 @@
 - Propagated the shared banner and surface tokens to `Pages/DbAdvancedManagementPage`, ensuring filters, rule configs, and modal shells align with the radius/shadow scale.
 - Authored bUnit regression tests for the shared `Banner` component so accessibility attributes and dismiss callbacks remain stable during future refactors.
 - Standardized interactive control heights via `wwwroot/css/ui/forms.css`, ensuring `form-control`, `form-select`, and `btn` classes all respect the 44px touch target token.
+- Mirrored the full-width clamp strategy from the login experience into the authenticated layout shell and hardened dark theme surface tokens for Biz/DB management banners, filters, modals, and cards so night mode no longer produces glowing artifacts or stray scrollbars.
 
 ## Recommended Workflow for UI Iterations
 1. **Audit Scoped CSS**: For each Razor page being touched, compare the markup classes with the corresponding `.razor.css` file and remove or rename anything no longer in use.
@@ -21,7 +22,7 @@
 - **Dashboard Density Controls**: Introduce a compact/comfortable toggle for table-heavy pages (use CSS custom properties to swap padding/margin scales).
 - **Banner Hierarchy**: Convert informational banners (e.g., preview banner) into a reusable component with leading icon, title, and helper text slots for better content scanning.
 - ✅ **Form Input Consistency**: Rolled the login page’s `--touch-target-min` token into shared form helpers so controls across dashboards meet the 44px minimum touch target.
-- **Dark Theme Expansion**: Mirror the new login width logic in other entry points and extend the existing `[data-theme="dark"]` overrides for page-level banners and filters.
+- ✅ **Dark Theme Expansion**: Propagated the login width clamp to the desktop shell and refreshed `[data-theme="dark"]` surface overrides for banners, filters, and modals across Biz and Advanced DB management.
 - **Micro-interactions**: Apply `prefers-reduced-motion` safe transitions (opacity/translate) when introducing hover states or tab switches on admin dashboards.
 - **Surface Treatment Harmonization**: Standardize border radii, shadows, and divider usage so flat cards and rounded panels read as a cohesive system instead of competing motifs.
 

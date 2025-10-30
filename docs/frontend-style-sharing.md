@@ -67,6 +67,12 @@
 - 다크 테마에서도 동일한 컴포넌트 구조를 유지할 수 있도록 `data-theme="dark"` 범위에서 버튼 그라디언트와 포커스 링, 링크 색상을 재조정했습니다.
 - 소셜 로그인 카드와 패스워드 토글과 같은 상호작용 요소는 전역 `--focus-ring` 토큰과 `var(--surface-muted)` 조합을 사용해 접근성과 일관성을 확보했습니다.
 
+## Dark Theme Surface Expansion
+- `Shared/MainLayout.razor.css`의 `.desktop-shell`은 이제 `width: min(100%, 100vw);`를 사용해 로그인 페이지에서 검증한 풀블리드 폭 처리 방식을 재사용합니다. 이로써 다크 테마 배경 그라디언트가 데스크톱 앱에서도 가로 스크롤을 유발하지 않습니다.
+- `Pages/BizManagementPage.razor.css`와 `Pages/DbAdvancedManagementPage.razor.css`는 배너, 필터, 카드, 모달 표면에 `var(--surface-color)`/`var(--surface-muted)` 토큰을 매핑하고, `[data-theme="dark"]` 범위에서 선형 그라디언트와 보더 농도를 조정해 글로우 현상을 제거했습니다.
+- 배너 컴포넌트는 페이지 스코프 클래스(예: `.advanced-db__banner`)에서 `--banner-*` 커스텀 프로퍼티를 재정의하고, 다크 테마 전용 오버라이드로 조직 색상(`--org-primary`)을 밝은 파랑(#8db4ff) 계열로 보정해 야간 모드에서도 정보 계층이 동일하게 인식됩니다.
+- 새 표면 토큰은 bUnit 테스트나 Storybook 문서 없이도 재사용할 수 있도록 `docs/dark-theme-expansion.md`에서 상세 가이드를 제공합니다. 새로운 페이지가 다크 테마를 지원하려면 이 문서의 체크리스트를 참고해 표면/테두리/타이포 토큰을 지정하세요.
+
 ## Form Control Scale
 - `wwwroot/css/ui/forms.css`는 로그인에서 사용하던 `--touch-target-min` 값을 기반으로 `--ui-control-height` 토큰을 노출하며, 모든 `.form-control`, `.form-select`, `.btn` 클래스에 동일한 높이와 패딩을 적용합니다.
 - `.btn-sm`와 같은 크기 변형도 최소 44px 높이를 유지하고 가로 패딩만 조정해 터치 타깃 기준을 깨지 않도록 구성했습니다.
