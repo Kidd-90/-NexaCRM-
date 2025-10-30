@@ -12,7 +12,7 @@
 
 ## Included Assets
 - `wwwroot/css/app.css`: 데스크톱 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
-- `wwwroot/css/ui/index.css`: 토큰(`foundations.css`), 유틸리티(`utilities.css`), 폼 컨트롤(`forms.css`), 컴포넌트(`components.css`), 레이아웃(`layout.css`), 패턴(`patterns.css`) 계층을 순서대로 불러오는 엔트리 포인트.
+- `wwwroot/css/ui/index.css`: 토큰(`foundations.css`), 유틸리티(`utilities.css`), 밀도 토큰(`density.css`), 폼 컨트롤(`forms.css`), 컴포넌트(`components.css`), 레이아웃(`layout.css`), 패턴(`patterns.css`) 계층을 순서대로 불러오는 엔트리 포인트.
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 - `https://tweakcn.com/live-preview.min.js`: TweakCN 라이브 프리뷰 스니펫. 디자인 팀이 [TweakCN 테마 편집기](https://tweakcn.com/editor/theme?p=custom)와 실시간으로 스타일을 연동할 때 사용합니다.
 
@@ -112,3 +112,4 @@
 - `prefers-reduced-motion` 미디어 쿼리를 통해 패널/항목 애니메이션을 자동으로 비활성화해 접근성 요구 사항을 충족합니다.
 - 패널이 확장될 때 `railPanelReveal` 키프레임으로 슬라이드 인·스프링 효과를 적용하고, 접힘 상태에는 스케일 축소와 투명도 전환을 함께 적용해 자연스러운 전환을 제공합니다.
 - `Components/Notifications/Banner`를 추가해 정보, 경고, 성공, 위험 배너를 슬롯 기반으로 구성하고, `BannerVariant` 열거형과 `data-variant` 속성으로 색상/아이콘을 제어합니다. 페이지 스코프에서는 `Class` 매개변수로 여백만 조정하고, 시각적 처리는 컴포넌트 스코프에서 유지합니다.
+- `Components/Controls/DensityToggle`은 `DensityMode` 값에 따라 버튼 그룹을 표시하고, 페이지 루트에 설정된 `data-density` 속성과 `ui/density.css` 토큰을 사용해 테이블/필터 간격과 글꼴 스케일을 전환합니다.

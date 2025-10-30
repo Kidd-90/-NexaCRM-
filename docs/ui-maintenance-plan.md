@@ -19,7 +19,7 @@
 5. **Regression Build**: Run `dotnet build NexaCrmSolution.sln --configuration Release` to ensure Razor scoped CSS changes compile before shipping.
 
 ## Design Enhancements to Prioritize
-- **Dashboard Density Controls**: Introduce a compact/comfortable toggle for table-heavy pages (use CSS custom properties to swap padding/margin scales).
+- ✅ **Dashboard Density Controls**: Added the `DensityToggle` component, density token sheet, and Biz/DB management integration so operators can switch between 여유/컴팩트 모드 without duplicating scoped CSS.
 - **Banner Hierarchy**: Convert informational banners (e.g., preview banner) into a reusable component with leading icon, title, and helper text slots for better content scanning.
 - ✅ **Form Input Consistency**: Rolled the login page’s `--touch-target-min` token into shared form helpers so controls across dashboards meet the 44px minimum touch target.
 - ✅ **Dark Theme Expansion**: Propagated the login width clamp to the desktop shell and refreshed `[data-theme="dark"]` surface overrides for banners, filters, and modals across Biz and Advanced DB management.
@@ -82,6 +82,12 @@
 5. ✅ **Propagate Across Pages**: Migrated the ad-hoc banner on `DbAdvancedManagementPage` to the shared component and removed duplicate styling; continue auditing newly added pages during feature work.
 6. ✅ **Write Regression Tests**: Added bUnit interaction and accessibility tests in `tests/NexaCRM.UI.Tests/Components/Notifications` to cover variants, live-region behaviour, and dismiss callbacks.
 7. **QA Checklist**: Verify keyboard navigation, screen reader output (NVDA/JAWS), and mobile viewport wrapping on at least two browsers.
+
+## Density Control Rollout Checklist
+- ✅ **Component Foundation**: Introduced `DensityMode` enum, `DensityPreference` helpers, and the slot-based `DensityToggle` control with ARIA semantics.
+- ✅ **Tokenization**: Published `wwwroot/css/ui/density.css` to expose shared gap and table padding variables consumed by dashboard pages.
+- ✅ **Page Integration**: Wired Biz/DB management containers to store the density mode in local storage, update toolbar layouts, and adjust table/form spacing via CSS variables.
+- **QA Tasks**: Capture screenshots for compact mode across 768px/1280px breakpoints and run cross-browser reduced-motion checks.
 
 ### Dependencies & Risks
 - Requires confirmation of icon assets (Font Awesome vs. in-house SVG) for consistent sizing.

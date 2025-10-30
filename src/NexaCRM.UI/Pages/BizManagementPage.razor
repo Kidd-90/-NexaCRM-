@@ -10,23 +10,31 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @implements IDisposable
 
-<div class="advanced-db">
+<div class="advanced-db" data-density="@densityMode.ToDataAttribute()">
     <header class="advanced-db__header">
         <h1>비즈니스/프랜차이즈 관리</h1>
-        <div class="toolbar">
-            <button class="btn btn-light" @onclick="ExportData"><i class="bi bi-download"></i> 내보내기</button>
-            @if (activeTab == Tab.Companies)
-            {
-                <button class="btn btn-success" @onclick="ShowAddCompanyModal"><i class="bi bi-building-add"></i> 회사 추가</button>
-            }
-            @if (activeTab == Tab.Branches)
-            {
-                <button class="btn btn-success" @onclick="ShowAddBranchModal"><i class="bi bi-building-add"></i> 지점 추가</button>
-            }
-            @if (activeTab == Tab.Teams)
-            {
-                <button class="btn btn-success" @onclick="ShowAddTeamModal"><i class="bi bi-people-fill"></i> 팀 추가</button>
-            }
+        <div class="advanced-db__actions">
+            <DensityToggle Class="advanced-db__density"
+                            Value="@densityMode"
+                            ValueChanged="OnDensityChanged"
+                            Label="표 간격 모드"
+                            ComfortableText="여유"
+                            CompactText="컴팩트" />
+            <div class="toolbar">
+                <button class="btn btn-light" @onclick="ExportData"><i class="bi bi-download"></i> 내보내기</button>
+                @if (activeTab == Tab.Companies)
+                {
+                    <button class="btn btn-success" @onclick="ShowAddCompanyModal"><i class="bi bi-building-add"></i> 회사 추가</button>
+                }
+                @if (activeTab == Tab.Branches)
+                {
+                    <button class="btn btn-success" @onclick="ShowAddBranchModal"><i class="bi bi-building-add"></i> 지점 추가</button>
+                }
+                @if (activeTab == Tab.Teams)
+                {
+                    <button class="btn btn-success" @onclick="ShowAddTeamModal"><i class="bi bi-people-fill"></i> 팀 추가</button>
+                }
+            </div>
         </div>
     </header>
 
@@ -645,6 +653,7 @@
     private long tenantUnitId = 1; // Will be set from user's organization or default
     private Guid? currentUserId;
     private string? errorMessage;
+    private DensityMode densityMode = DensityMode.Comfortable;
 
     protected override async Task OnInitializedAsync()
     {
@@ -698,6 +707,28 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var stored = await JS.InvokeAsync<string?>("localStorage.getItem", DensityPreference.StorageKey);
+            if (DensityPreference.TryParse(stored, out var storedMode) && storedMode != densityMode)
+            {
+                densityMode = storedMode;
+                StateHasChanged();
+            }
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference retrieval failed: {ex.Message}");
+        }
+    }
+
     private async Task LoadData()
     {
         if (activeTab == Tab.Companies)
@@ -717,6 +748,20 @@
             await LoadCompanies();
             await LoadBranches();
             await LoadTeams();
+        }
+    }
+
+    private async Task OnDensityChanged(DensityMode mode)
+    {
+        densityMode = mode;
+
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", DensityPreference.StorageKey, mode.ToString());
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference persistence failed: {ex.Message}");
         }
     }
 
