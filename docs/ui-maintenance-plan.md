@@ -18,6 +18,15 @@
 - **Form Input Consistency**: Align input heights by reusing the login page’s `--touch-target-min` token in other modules so pointer targets meet 44px minimums.
 - **Dark Theme Expansion**: Mirror the new login width logic in other entry points and extend the existing `[data-theme="dark"]` overrides for page-level banners and filters.
 - **Micro-interactions**: Apply `prefers-reduced-motion` safe transitions (opacity/translate) when introducing hover states or tab switches on admin dashboards.
+- **Surface Treatment Harmonization**: Standardize border radii, shadows, and divider usage so flat cards and rounded panels read as a cohesive system instead of competing motifs.
+
+### Surface Treatment Harmonization Roadmap
+- **Codify Radius Tokens**: Define a 3-step radius scale in `wwwroot/css/ui/foundations.css` (e.g., `--radius-none`, `--radius-sm`, `--radius-lg`) and refactor scoped CSS that hard-codes `0`, `4px`, `8px`, `12px`, or `20px` values to consume the tokens.
+- **Differentiate by Component Intent**: Use `--radius-none` for list rows, tables, and navigation rails where crisp separation supports density; reserve `--radius-sm` for inline inputs/buttons; apply `--radius-lg` only to modal shells or hero cards that need higher emphasis.
+- **Align Shadow + Border Logic**: Pair flat elements (`--radius-none`) with `border-bottom` or subtle dividers, and rounded elements with `box-shadow` tokens (`--shadow-soft`, `--shadow-deep`) so each surface depth reads consistently.
+- **Document Overrides**: Extend the component README snippets (e.g., `Components/Cards/README.md` if present) with “surface” tables showing default radius and how to opt into alternatives using CSS custom properties.
+- **QA Checklist Addition**: Update UI review scripts to flag any new component that mixes `border-radius: 0` and `border-radius: 16px` within the same cluster without a documented rationale.
+- **Dark Theme Parity**: Mirror the same radius tokens inside `[data-theme="dark"]` so neutral and dark palettes share identical silhouettes; ensure shadows degrade to `box-shadow: none` with increased border opacity for dark surfaces where glow would be distracting.
 
 ## Technology Reference
 - **Blazor Scoped CSS** (`*.razor.css`) keeps page-level rules encapsulated—leverage it for one-off tweaks, and ensure deletions do not affect other pages.
