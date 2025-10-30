@@ -109,8 +109,8 @@
     public string? DismissButtonAriaLabel { get; set; }
 
     private string CssClass => string.IsNullOrWhiteSpace(Class)
-        ? "nc-banner"
-        : $"nc-banner {Class}";
+        ? "nc-banner motion-fade-in"
+        : $"nc-banner motion-fade-in {Class}";
 
     private string VariantName => Variant.ToString().ToLowerInvariant();
 

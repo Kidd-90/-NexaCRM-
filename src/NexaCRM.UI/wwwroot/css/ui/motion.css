@@ -1,0 +1,114 @@
+/*!
+ * NexaCRM Motion Tokens & Utilities
+ * Centralizes micro-interaction timing so hover/entrance effects stay consistent.
+ */
+:root {
+    --motion-duration-xs: 120ms;
+    --motion-duration-sm: 180ms;
+    --motion-duration-md: 240ms;
+    --motion-duration-lg: 360ms;
+    --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --motion-ease-decelerated: cubic-bezier(0, 0, 0.2, 1);
+    --motion-ease-emphasized: cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+.motion-fade-in {
+    animation: motion-fade-in var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)) both;
+}
+
+.motion-fade-in-up {
+    animation: motion-fade-in-up var(--motion-duration-md, 240ms) var(--motion-ease-decelerated, cubic-bezier(0, 0, 0.2, 1)) both;
+}
+
+.motion-fade-in-down {
+    animation: motion-fade-in-down var(--motion-duration-md, 240ms) var(--motion-ease-decelerated, cubic-bezier(0, 0, 0.2, 1)) both;
+}
+
+.motion-pressable {
+    transition: transform var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        box-shadow var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        background-color var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        color var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        border-color var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    will-change: transform, box-shadow;
+}
+
+.motion-pressable:hover,
+.motion-pressable:focus-visible {
+    transform: translateY(var(--motion-pressable-translate, -2px));
+}
+
+.motion-pressable:active {
+    transform: translateY(var(--motion-pressable-active-translate, 0));
+}
+
+.motion-stagger > * {
+    animation-delay: calc(var(--motion-stagger-step, 60ms) * var(--motion-index, 1));
+}
+
+.motion-stagger > *:nth-child(1) { --motion-index: 0; }
+.motion-stagger > *:nth-child(2) { --motion-index: 1; }
+.motion-stagger > *:nth-child(3) { --motion-index: 2; }
+.motion-stagger > *:nth-child(4) { --motion-index: 3; }
+.motion-stagger > *:nth-child(5) { --motion-index: 4; }
+.motion-stagger > *:nth-child(6) { --motion-index: 5; }
+.motion-stagger > *:nth-child(7) { --motion-index: 6; }
+.motion-stagger > *:nth-child(8) { --motion-index: 7; }
+.motion-stagger > *:nth-child(9) { --motion-index: 8; }
+.motion-stagger > *:nth-child(10) { --motion-index: 9; }
+
+@keyframes motion-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes motion-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes motion-fade-in-down {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --motion-duration-xs: 1ms;
+        --motion-duration-sm: 1ms;
+        --motion-duration-md: 1ms;
+        --motion-duration-lg: 1ms;
+    }
+
+    .motion-fade-in,
+    .motion-fade-in-up,
+    .motion-fade-in-down {
+        animation: none !important;
+    }
+
+    .motion-pressable {
+        transition-duration: 1ms !important;
+    }
+
+    .motion-pressable:hover,
+    .motion-pressable:focus-visible,
+    .motion-pressable:active {
+        transform: none !important;
+    }
+}
