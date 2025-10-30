@@ -12,7 +12,7 @@
 
 ## Included Assets
 - `wwwroot/css/app.css`: 데스크톱 테마, 전역 레이아웃, 상단 헤더, 사이드바, 카드 컴포넌트 스타일 정의.
-- `wwwroot/css/ui/index.css`: 토큰(`foundations.css`), 유틸리티(`utilities.css`), 컴포넌트(`components.css`), 레이아웃(`layout.css`), 패턴(`patterns.css`) 계층을 순서대로 불러오는 엔트리 포인트.
+- `wwwroot/css/ui/index.css`: 토큰(`foundations.css`), 유틸리티(`utilities.css`), 폼 컨트롤(`forms.css`), 컴포넌트(`components.css`), 레이아웃(`layout.css`), 패턴(`patterns.css`) 계층을 순서대로 불러오는 엔트리 포인트.
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 - `https://tweakcn.com/live-preview.min.js`: TweakCN 라이브 프리뷰 스니펫. 디자인 팀이 [TweakCN 테마 편집기](https://tweakcn.com/editor/theme?p=custom)와 실시간으로 스타일을 연동할 때 사용합니다.
 
@@ -66,6 +66,12 @@
 - `LoginPage.razor.css`에서는 `--surface-color`, `--surface-muted`, `--input-*`, `--button-gradient` 등 화이트 테마용 커스텀 프로퍼티를 재정의하여 글래스모피즘 카드, 입력 필드, CTA 버튼이 뉴트럴 팔레트에 맞춰 렌더링됩니다.
 - 다크 테마에서도 동일한 컴포넌트 구조를 유지할 수 있도록 `data-theme="dark"` 범위에서 버튼 그라디언트와 포커스 링, 링크 색상을 재조정했습니다.
 - 소셜 로그인 카드와 패스워드 토글과 같은 상호작용 요소는 전역 `--focus-ring` 토큰과 `var(--surface-muted)` 조합을 사용해 접근성과 일관성을 확보했습니다.
+
+## Form Control Scale
+- `wwwroot/css/ui/forms.css`는 로그인에서 사용하던 `--touch-target-min` 값을 기반으로 `--ui-control-height` 토큰을 노출하며, 모든 `.form-control`, `.form-select`, `.btn` 클래스에 동일한 높이와 패딩을 적용합니다.
+- `.btn-sm`와 같은 크기 변형도 최소 44px 높이를 유지하고 가로 패딩만 조정해 터치 타깃 기준을 깨지 않도록 구성했습니다.
+- 페이지 전용 필터나 툴바에 별도 높이 값을 지정할 필요가 없어지므로, 새 입력/버튼을 추가할 때는 기본 부트스트랩 클래스를 그대로 사용하고 필요한 경우 보조 유틸리티(`.ui-input-height-lg` 등)만 추가하면 됩니다.
+- QA 시 360px/768px/1280px 뷰포트에서 `form-control`과 `btn` 요소가 `--touch-target-min` 이상으로 렌더링되는지 확인하세요.
 
 ## Usage Guidance
 1. Razor 컴포넌트 또는 레이아웃에서 다음과 같이 정적 자산을 참조합니다.
