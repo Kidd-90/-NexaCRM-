@@ -4,6 +4,7 @@
 - Removed unused `.grid`, `.card-title`, and `.card-text` selectors from `Pages/BizManagementPage.razor.css` to keep scoped styles aligned with the rendered markup and avoid accidental overrides.
 - Enabled wrapping text within the Biz Management preview banner and relaxed its line height to prevent clipping on narrow layouts.
 - Normalized the login container width handling by switching to `min(100%, 100vw)` so Blazor pages avoid unexpected horizontal scrollbars while still honoring full-width background treatments.
+- Introduced shared radius and shadow tokens in `wwwroot/css/ui/foundations.css`, updated utility classes, and refactored the Biz Management and Login scoped styles to consume the new surface scale.
 
 ## Recommended Workflow for UI Iterations
 1. **Audit Scoped CSS**: For each Razor page being touched, compare the markup classes with the corresponding `.razor.css` file and remove or rename anything no longer in use.
@@ -21,7 +22,7 @@
 - **Surface Treatment Harmonization**: Standardize border radii, shadows, and divider usage so flat cards and rounded panels read as a cohesive system instead of competing motifs.
 
 ### Surface Treatment Harmonization Roadmap
-- **Codify Radius Tokens**: Define a 3-step radius scale in `wwwroot/css/ui/foundations.css` (e.g., `--radius-none`, `--radius-sm`, `--radius-lg`) and refactor scoped CSS that hard-codes `0`, `4px`, `8px`, `12px`, or `20px` values to consume the tokens.
+- **Codify Radius Tokens**: ✅ Completed. `wwwroot/css/ui/foundations.css` now exports `--radius-none`, `--radius-sm`, `--radius-md`, `--radius-lg`, and `--radius-pill`, and the first wave of scoped CSS refactors replaced hard-coded values with the shared tokens.
 - **Differentiate by Component Intent**: Use `--radius-none` for list rows, tables, and navigation rails where crisp separation supports density; reserve `--radius-sm` for inline inputs/buttons; apply `--radius-lg` only to modal shells or hero cards that need higher emphasis.
 - **Align Shadow + Border Logic**: Pair flat elements (`--radius-none`) with `border-bottom` or subtle dividers, and rounded elements with `box-shadow` tokens (`--shadow-soft`, `--shadow-deep`) so each surface depth reads consistently.
 - **Document Overrides**: Extend the component README snippets (e.g., `Components/Cards/README.md` if present) with “surface” tables showing default radius and how to opt into alternatives using CSS custom properties.
