@@ -5,6 +5,7 @@
 - Enabled wrapping text within the Biz Management preview banner and relaxed its line height to prevent clipping on narrow layouts.
 - Normalized the login container width handling by switching to `min(100%, 100vw)` so Blazor pages avoid unexpected horizontal scrollbars while still honoring full-width background treatments.
 - Introduced shared radius and shadow tokens in `wwwroot/css/ui/foundations.css`, updated utility classes, and refactored the Biz Management and Login scoped styles to consume the new surface scale.
+- Implemented the reusable `Banner` component in `Components/Notifications`, applied scoped styling, and replaced the Biz Management preview banner to validate the hierarchy.
 
 ## Recommended Workflow for UI Iterations
 1. **Audit Scoped CSS**: For each Razor page being touched, compare the markup classes with the corresponding `.razor.css` file and remove or rename anything no longer in use.
@@ -63,10 +64,10 @@
 - Validate color contrast for each variant (target ≥4.5:1 for text/background combinations in both themes).
 
 ### Implementation Steps
-1. **Scaffold Component**: Generate the Razor component with named `RenderFragment` parameters for each slot and backing parameters for variant, dismiss handler, and custom icon.
-2. **Author Scoped Styles**: Create `Banner.razor.css` with responsive grid layout, token usage, and data-variant driven color assignments.
+1. ✅ **Scaffold Component**: Generated the Razor component with named `RenderFragment` slots, variant enum, dismiss support, and accessibility defaults.
+2. ✅ **Author Scoped Styles**: Added `Banner.razor.css` with responsive grid layout, token usage, and variant-driven color custom properties.
 3. **Add Storybook Example (Optional)**: If UI documentation exists, add banner stories demonstrating each variant and slot combination.
-4. **Integrate First Consumer**: Replace the Biz Management preview banner markup with the new component to validate alignment and responsive behavior.
+4. ✅ **Integrate First Consumer**: Replaced the Biz Management preview banner markup with the new component to validate alignment and responsive behavior.
 5. **Propagate Across Pages**: Identify other ad-hoc banners (`rg "banner" src/NexaCRM.UI/Pages`) and migrate them incrementally, removing redundant CSS.
 6. **Write Regression Tests**: Add bUnit snapshot tests covering variant rendering and dismiss events in `tests/NexaCRM.UI.Tests/Components/Notifications`.
 7. **QA Checklist**: Verify keyboard navigation, screen reader output (NVDA/JAWS), and mobile viewport wrapping on at least two browsers.
