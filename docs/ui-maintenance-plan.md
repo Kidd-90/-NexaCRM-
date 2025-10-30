@@ -6,6 +6,7 @@
 - Normalized the login container width handling by switching to `min(100%, 100vw)` so Blazor pages avoid unexpected horizontal scrollbars while still honoring full-width background treatments.
 - Introduced shared radius and shadow tokens in `wwwroot/css/ui/foundations.css`, updated utility classes, and refactored the Biz Management and Login scoped styles to consume the new surface scale.
 - Implemented the reusable `Banner` component in `Components/Notifications`, applied scoped styling, and replaced the Biz Management preview banner to validate the hierarchy.
+- Propagated the shared banner and surface tokens to `Pages/DbAdvancedManagementPage`, ensuring filters, rule configs, and modal shells align with the radius/shadow scale.
 
 ## Recommended Workflow for UI Iterations
 1. **Audit Scoped CSS**: For each Razor page being touched, compare the markup classes with the corresponding `.razor.css` file and remove or rename anything no longer in use.
@@ -68,7 +69,7 @@
 2. ✅ **Author Scoped Styles**: Added `Banner.razor.css` with responsive grid layout, token usage, and variant-driven color custom properties.
 3. **Add Storybook Example (Optional)**: If UI documentation exists, add banner stories demonstrating each variant and slot combination.
 4. ✅ **Integrate First Consumer**: Replaced the Biz Management preview banner markup with the new component to validate alignment and responsive behavior.
-5. **Propagate Across Pages**: Identify other ad-hoc banners (`rg "banner" src/NexaCRM.UI/Pages`) and migrate them incrementally, removing redundant CSS.
+5. ✅ **Propagate Across Pages**: Migrated the ad-hoc banner on `DbAdvancedManagementPage` to the shared component and removed duplicate styling; continue auditing newly added pages during feature work.
 6. **Write Regression Tests**: Add bUnit snapshot tests covering variant rendering and dismiss events in `tests/NexaCRM.UI.Tests/Components/Notifications`.
 7. **QA Checklist**: Verify keyboard navigation, screen reader output (NVDA/JAWS), and mobile viewport wrapping on at least two browsers.
 

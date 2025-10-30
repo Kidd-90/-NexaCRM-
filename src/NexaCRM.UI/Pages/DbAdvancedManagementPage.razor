@@ -28,10 +28,10 @@
         </div>
     </header>
 
-    <div class="preview-banner" role="status" aria-live="polite">
-        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
-        <span>체험 데이터 기반으로 동작합니다. CSV 내보내기와 삭제는 실제로 수행됩니다.</span>
-    </div>
+    <Banner Variant="BannerVariant.Info"
+            Class="advanced-db__banner"
+            TitleText="체험 환경 안내"
+            DescriptionText="체험 데이터 기반으로 동작합니다. CSV 내보내기와 삭제는 실제로 수행됩니다." />
 
     <nav class="tabs" role="tablist">
     <button class="tab @(activeTab==Tab.Explore?"active":null)" @onclick="(()=>SetTab(Tab.Explore))">목록</button>
