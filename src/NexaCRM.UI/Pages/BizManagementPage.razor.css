@@ -3,6 +3,8 @@
     flex-direction: column;
     gap: 0.75rem;
     margin-inline: clamp(0.5rem, 2vw, 1rem);
+    width: min(100%, 100vw);
+    color: var(--text-primary, #111827);
 }
 
 .advanced-db__header {
@@ -15,12 +17,16 @@
 .advanced-db__header h1 {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary, #111827);
     margin: 0;
 }
 
 :global(.advanced-db__banner) {
     margin-block: 0.5rem 0.75rem;
+    --banner-border-color: rgba(33, 83, 200, 0.22);
+    --banner-background: linear-gradient(135deg, rgba(33, 83, 200, 0.12) 0%, rgba(33, 83, 200, 0.04) 100%);
+    --banner-icon-surface: rgba(33, 83, 200, 0.16);
+    --banner-icon-color: var(--org-primary, #2153C8);
 }
 
 :global(.advanced-db__banner .nc-banner__description) {
@@ -36,7 +42,7 @@
 .tabs {
     display: flex;
     gap: 0.5rem;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid var(--border-color, #E5E7EB);
 }
 
 .tab {
@@ -45,19 +51,19 @@
     background: transparent;
     padding: 0.5rem 0.75rem;
     border-bottom: 2px solid transparent;
-    color: #6B7280;
+    color: var(--text-secondary, #6B7280);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color var(--transition-fast, 0.2s ease), border-color var(--transition-fast, 0.2s ease);
 }
 
 .tab:hover {
-    color: #374151;
+    color: var(--text-primary, #374151);
 }
 
 .tab.active {
-    color: #111827;
-    border-bottom-color: #2153C8;
+    color: var(--text-primary, #111827);
+    border-bottom-color: var(--org-primary, #2153C8);
 }
 
 .explore {
@@ -67,8 +73,8 @@
 }
 
 .filters {
-    border: 1px solid #E5E7EB;
-    background: #FFFFFF;
+    border: 1px solid var(--border-color, #E5E7EB);
+    background: var(--surface-color, #FFFFFF);
     border-radius: var(--radius-sm, 8px);
     padding: 0.75rem;
     display: flex;
@@ -89,7 +95,7 @@
 
 .filter-group label {
     font-weight: 700;
-    color: #374151;
+    color: var(--text-primary, #374151);
     margin-bottom: 0.25rem;
     font-size: 0.9rem;
 }
@@ -99,26 +105,26 @@
 }
 
 .placeholder {
-    border: 1px solid #E5E7EB;
-    background: #FFFFFF;
+    border: 1px solid var(--border-color, #E5E7EB);
+    background: var(--surface-color, #FFFFFF);
     border-radius: var(--radius-sm, 8px);
     padding: 2rem;
     text-align: center;
 }
 
 .placeholder h5 {
-    color: #111827;
+    color: var(--text-primary, #111827);
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .placeholder p {
-    color: #6B7280;
+    color: var(--text-secondary, #6B7280);
     margin-bottom: 1rem;
 }
 
 .card {
-    border: 1px solid #E5E7EB;
+    border: 1px solid var(--border-color, #E5E7EB);
     border-radius: var(--radius-sm, 8px);
     overflow: hidden;
     box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
@@ -126,6 +132,42 @@
 
 .card-body {
     padding: 1.25rem;
+}
+
+:global([data-theme="dark"]) .advanced-db__banner {
+    --banner-background: linear-gradient(135deg, rgba(46, 60, 107, 0.82) 0%, rgba(23, 37, 84, 0.88) 100%);
+    --banner-border-color: rgba(148, 163, 184, 0.32);
+    --banner-icon-surface: rgba(125, 176, 255, 0.26);
+    --banner-icon-color: #9bb7ff;
+    --banner-subtle-text: rgba(226, 232, 240, 0.78);
+}
+
+:global([data-theme="dark"]) .advanced-db .filters,
+:global([data-theme="dark"]) .advanced-db .card,
+:global([data-theme="dark"]) .advanced-db .placeholder {
+    background: linear-gradient(145deg, rgba(37, 42, 74, 0.96), rgba(26, 32, 58, 0.92));
+    border-color: rgba(148, 163, 184, 0.24);
+    box-shadow: 0 1px 0 rgba(2, 6, 23, 0.45);
+}
+
+:global([data-theme="dark"]) .advanced-db .placeholder h5 {
+    color: rgba(226, 232, 240, 0.94);
+}
+
+:global([data-theme="dark"]) .advanced-db .placeholder p {
+    color: rgba(203, 213, 225, 0.8);
+}
+
+:global([data-theme="dark"]) .advanced-db .tab {
+    color: rgba(203, 213, 225, 0.78);
+}
+
+:global([data-theme="dark"]) .advanced-db .tab:hover {
+    color: rgba(226, 232, 240, 0.96);
+}
+
+:global([data-theme="dark"]) .advanced-db .tab.active {
+    border-bottom-color: #8db4ff;
 }
 
 @media (max-width: 991px) {

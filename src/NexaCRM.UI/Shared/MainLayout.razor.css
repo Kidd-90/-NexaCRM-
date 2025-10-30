@@ -18,7 +18,7 @@
        prevents anonymous/login pages from showing an empty left column. */
     padding: 0;
     box-sizing: border-box;
-    width: 100%;
+    width: min(100%, 100vw);
     overflow: hidden;
     border-radius: 1.5rem;
 }
