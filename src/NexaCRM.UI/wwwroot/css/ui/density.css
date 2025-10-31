@@ -1,0 +1,30 @@
+/*!
+ * Density controls allow per-page components to opt into compact layouts by toggling CSS custom properties.
+ */
+:root {
+    --ui-density-gap-sm: var(--space-3, 0.75rem);
+    --ui-density-gap-md: var(--space-4, 1rem);
+    --ui-density-table-padding-y: 0.75rem;
+    --ui-density-table-padding-x: 0.75rem;
+    --ui-density-chip-gap: 0.5rem;
+    --ui-density-font-scale: 1;
+}
+
+[data-density="comfortable"] {
+    --ui-density-gap-sm: var(--space-3, 0.75rem);
+    --ui-density-gap-md: var(--space-4, 1rem);
+    --ui-density-table-padding-y: 0.75rem;
+    --ui-density-table-padding-x: 0.75rem;
+    --ui-density-chip-gap: 0.5rem;
+    --ui-density-font-scale: 1;
+}
+
+[data-density="compact"] {
+    --ui-density-gap-sm: max(0.375rem, calc(var(--space-2, 0.5rem) - 0.125rem));
+    --ui-density-gap-md: var(--space-3, 0.75rem);
+    --ui-density-table-padding-y: max(0.375rem, calc(var(--space-2, 0.5rem)));
+    --ui-density-table-padding-x: max(0.5rem, calc(var(--space-2, 0.5rem)));
+    --ui-density-chip-gap: 0.375rem;
+    --ui-density-font-scale: 0.96;
+}
+

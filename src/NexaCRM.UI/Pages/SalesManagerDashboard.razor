@@ -6,8 +6,10 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
-<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden">
-      <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+<a href="#salesManagerDashboardContent" class="dashboard-skip-link">@Localizer["SkipToMainContent"]</a>
+
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden common-page-container" data-page="sales-manager-dashboard">
+      <div class="layout-container d-flex h-100 flex-grow-1 flex-column motion-fade-in-up">
         
         <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay @(isMobileMenuOpen ?"active" : "")" @onclick="CloseMobileMenu">
@@ -30,19 +32,28 @@
         </nav>
         
         <div class="dashboard-main-container px-4 d-flex flex-grow-1 justify-content-center py-5">
-          <div class="layout-content-container d-flex flex-column w-100 max-w-none flex-grow-1">
+          <div class="layout-content-container d-flex flex-column w-100 max-w-none flex-grow-1" data-surface="panel">
+            <main id="salesManagerDashboardContent" class="dashboard-main-content" tabindex="-1">
             <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
               <div class="d-flex w-100 flex-column gap-3">
-                <AuthorizeView>
-                    <Authorized>
-                        <p class="text-ink fs-3 fw-bold lh-sm">@Localizer["Welcome", @context.User.Identity?.Name ?? ""]</p>
-                    </Authorized>
-                </AuthorizeView>
-                <p class="text-ink-muted small fw-normal lh-base">@Localizer["Overview"]</p>
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                  <AuthorizeView>
+                      <Authorized>
+                          <p class="text-ink fs-3 fw-bold lh-sm mb-0">@Localizer["Welcome", @context.User.Identity?.Name ?? ""]</p>
+                      </Authorized>
+                  </AuthorizeView>
+                  <button type="button" class="mobile-menu-button motion-pressable" @onclick="ToggleMobileMenu" aria-label="@OpenNavigationLabel">
+                    <span class="visually-hidden">@OpenNavigationLabel</span>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-ink-muted small fw-normal lh-base mb-0">@Localizer["Overview"]</p>
               </div>
             </div>
-            <div class="d-flex gap-2 p-3 flex-wrap pr-4 overflow-x-auto">
-              <button class="d-flex ui-input-height-sm shrink-0 align-items-center justify-content-center gx-2 rounded-3 bg-accent-soft pl-3 pr-2 small">
+            <div class="d-flex gap-2 p-3 flex-wrap pr-4 overflow-x-auto dashboard-filter-group motion-stagger">
+              <button class="d-flex ui-input-height-sm shrink-0 align-items-center justify-content-center gx-2 rounded-3 pl-3 pr-2 small motion-pressable dashboard-filter-button">
                 <p class="text-ink fw-semibold lh-base">@Localizer["Team"]</p>
                 <div class="text-ink" data-icon="CaretDown" data-size="16px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
@@ -50,7 +61,7 @@
                   </svg>
                 </div>
               </button>
-              <button class="d-flex ui-input-height-sm shrink-0 align-items-center justify-content-center gx-2 rounded-3 bg-accent-soft pl-3 pr-2 small">
+              <button class="d-flex ui-input-height-sm shrink-0 align-items-center justify-content-center gx-2 rounded-3 pl-3 pr-2 small motion-pressable dashboard-filter-button">
                 <p class="text-ink fw-semibold lh-base">@Localizer["TimePeriod"]</p>
                 <div class="text-ink" data-icon="CaretDown" data-size="16px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
@@ -58,7 +69,7 @@
                   </svg>
                 </div>
               </button>
-              <button class="d-flex ui-input-height-sm shrink-0 align-items-center justify-content-center gx-2 rounded-3 bg-accent-soft pl-3 pr-2 small">
+              <button class="d-flex ui-input-height-sm shrink-0 align-items-center justify-content-center gx-2 rounded-3 pl-3 pr-2 small motion-pressable dashboard-filter-button">
                 <p class="text-ink fw-semibold lh-base">@Localizer["Product"]</p>
                 <div class="text-ink" data-icon="CaretDown" data-size="16px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
@@ -67,27 +78,27 @@
                 </div>
               </button>
             </div>
-            <div class="stats-container d-flex flex-wrap gap-3 p-4">
-              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 bg-accent-soft">
+            <div class="stats-container d-flex flex-wrap gap-3 p-4 motion-stagger">
+              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 motion-fade-in">
                 <p class="text-ink small fw-semibold lh-base">@Localizer["TotalSales"]</p>
                 <p class="text-ink fs-3 fw-bold lh-sm">$2.5M</p>
               </div>
-              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 bg-accent-soft">
+              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 motion-fade-in">
                 <p class="text-ink small fw-semibold lh-base">@Localizer["SalesPipelineValue"]</p>
                 <p class="text-ink fs-3 fw-bold lh-sm">$1.2M</p>
               </div>
-              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 bg-accent-soft">
+              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 motion-fade-in">
                 <p class="text-ink small fw-semibold lh-base">@Localizer["WinRate"]</p>
                 <p class="text-ink fs-3 fw-bold lh-sm">65%</p>
               </div>
-              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 bg-accent-soft">
+              <div class="stat-card d-flex ui-min-w-140 flex-grow-1 flex-column gap-2 rounded-3 p-4 motion-fade-in">
                 <p class="text-ink small fw-semibold lh-base">@Localizer["AverageDealSize"]</p>
                 <p class="text-ink fs-3 fw-bold lh-sm">$15K</p>
               </div>
             </div>
             <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["TeamPerformance"]</h2>
-            <div class="d-flex flex-wrap gap-4 px-4 py-4">
-              <div class="chart-container d-flex w-100 flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-4">
+            <div class="d-flex flex-wrap gap-4 px-4 py-4 motion-stagger">
+              <div class="chart-container d-flex w-100 flex-grow-1 flex-column gap-2 rounded-3 p-4 motion-fade-in">
                 <p class="text-ink small fw-semibold lh-base">@Localizer["SalesByTeamMember"]</p>
                 <div class="d-grid ui-min-h-150 ui-grid-flow-col gap-3 ui-grid-rows align-items-end justify-items-center px-1">
                   <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 50%;"></div>
@@ -104,8 +115,8 @@
               </div>
             </div>
             <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["SalesPipeline"]</h2>
-            <div class="d-flex flex-wrap gap-4 px-4 py-4">
-              <div class="chart-container d-flex w-100 flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-4">
+            <div class="d-flex flex-wrap gap-4 px-4 py-4 motion-stagger">
+              <div class="chart-container d-flex w-100 flex-grow-1 flex-column gap-2 rounded-3 p-4 motion-fade-in">
                 <p class="text-ink small fw-semibold lh-base">@Localizer["PipelineStages"]</p>
                 <div class="d-grid ui-min-h-150 gx-2 gy-3 ui-grid-auto-1fr align-items-center py-3">
                   <p class="text-ink-muted small fw-bold lh-base">@Localizer["Prospecting"]</p>
@@ -127,7 +138,7 @@
             
             <!-- Desktop/Tablet Table View -->
             <div class="performance-table-container px-4 py-3 container">
-              <div class="d-flex overflow-hidden rounded-3 border border-soft bg-surface-soft overflow-x-auto">
+              <div class="d-flex overflow-hidden rounded-3 overflow-x-auto performance-table-shell">
                 <table class="flex-grow-1 min-w-full">
                   <thead>
                     <tr class="bg-surface-soft">
@@ -176,8 +187,8 @@
             </div>
 
             <!-- Mobile Card View -->
-            <div class="performance-mobile-view px-4 py-3">
-              <div class="performance-card">
+            <div class="performance-mobile-view px-4 py-3 motion-stagger">
+              <div class="performance-card motion-fade-in">
                 <div class="performance-card-rank">#1</div>
                 <div class="performance-card-name">@Localizer["Alex"]</div>
                 <div class="performance-card-stats">
@@ -192,7 +203,7 @@
                 </div>
               </div>
               
-              <div class="performance-card">
+              <div class="performance-card motion-fade-in">
                 <div class="performance-card-rank">#2</div>
                 <div class="performance-card-name">@Localizer["Jordan"]</div>
                 <div class="performance-card-stats">
@@ -207,7 +218,7 @@
                 </div>
               </div>
               
-              <div class="performance-card">
+              <div class="performance-card motion-fade-in">
                 <div class="performance-card-rank">#3</div>
                 <div class="performance-card-name">@Localizer["Taylor"]</div>
                 <div class="performance-card-stats">
@@ -222,7 +233,7 @@
                 </div>
               </div>
               
-              <div class="performance-card">
+              <div class="performance-card motion-fade-in">
                 <div class="performance-card-rank">#4</div>
                 <div class="performance-card-name">@Localizer["Casey"]</div>
                 <div class="performance-card-stats">
@@ -237,7 +248,7 @@
                 </div>
               </div>
               
-              <div class="performance-card">
+              <div class="performance-card motion-fade-in">
                 <div class="performance-card-rank">#5</div>
                 <div class="performance-card-name">@Localizer["Morgan"]</div>
                 <div class="performance-card-stats">
@@ -253,7 +264,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
     
@@ -267,6 +278,10 @@
 
 @code {
     private bool isMobileMenuOpen = false;
+
+    private string OpenNavigationLabel => Localizer["OpenNavigation"].ResourceNotFound
+        ? "Open navigation"
+        : Localizer["OpenNavigation"].Value;
 
     private void ToggleMobileMenu()
     {

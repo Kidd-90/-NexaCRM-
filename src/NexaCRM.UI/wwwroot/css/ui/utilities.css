@@ -18,23 +18,50 @@
     color: #4d6a99;
 }
 
+.surface-flat {
+    border-radius: var(--radius-none);
+    box-shadow: var(--shadow-none);
+}
+
+.surface-rounded {
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-soft);
+}
+
+.surface-hero {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-deep);
+}
+
+.shadow-none {
+    box-shadow: var(--shadow-none) !important;
+}
+
+.shadow-soft {
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.shadow-deep {
+    box-shadow: var(--shadow-deep) !important;
+}
+
 .border-soft {
     border-color: #d0d9e7 !important;
 }
 
 .ui-input-height {
-    min-height: 2.75rem;
-    height: 2.75rem;
+    min-height: var(--touch-target-min, 44px);
+    height: var(--touch-target-min, 44px);
 }
 
 .ui-input-height-lg {
-    min-height: 3.5rem;
-    height: 3.5rem;
+    min-height: calc(var(--touch-target-min, 44px) + 8px);
+    height: calc(var(--touch-target-min, 44px) + 8px);
 }
 
 .ui-input-height-sm {
-    min-height: 2.25rem;
-    height: 2.25rem;
+    min-height: var(--touch-target-min, 44px);
+    height: var(--touch-target-min, 44px);
 }
 
 .ui-aspect-square {

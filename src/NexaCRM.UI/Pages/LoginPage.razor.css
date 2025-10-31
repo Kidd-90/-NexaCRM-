@@ -6,7 +6,8 @@
     --brand-gradient-end: rgba(16,24,40,0.24);
     --surface-elevated: rgba(250,250,251,0.9);
     --surface-muted-elevated: rgba(244,246,248,0.8);
-    --card-shadow: 0 24px 48px rgba(59,130,246,0.14), var(--shadow-soft-layer);
+    --card-shadow: var(--shadow-soft, 0 18px 32px rgba(15, 23, 42, 0.08));
+    --card-shadow-layer: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
     --text-color: var(--text-primary);
     --muted-color: rgba(107,114,128,0.82);
     --input-border: rgba(226,232,240,0.85);
@@ -18,24 +19,26 @@
     --link-color: rgba(37,99,235,0.9);
     --button-gradient: linear-gradient(135deg, rgba(59,130,246,0.92) 0%, rgba(59,130,246,1) 65%, rgba(15,23,42,0.55) 100%);
     --button-gradient-hover: linear-gradient(135deg, rgba(59,130,246,1) 0%, rgba(59,130,246,1) 55%, rgba(15,23,42,0.45) 100%);
-    --button-shadow: 0 28px 52px rgba(59,130,246,0.24);
+    --button-shadow: var(--shadow-deep, 0 32px 64px rgba(15, 23, 42, 0.14));
     --spinner-track-color: rgba(59,130,246,0.24);
     --spinner-color: rgba(59,130,246,0.88);
+    --surface-radius-sm: var(--radius-sm, 8px);
+    --surface-radius-md: var(--radius-md, 12px);
+    --surface-radius-lg: var(--radius-lg, 18px);
+    --surface-radius-pill: var(--radius-pill, 999px);
     font-family: var(--font-family-sans);
     /* force a clean white background for the login route to match design */
     background: var(--neutral-white, #ffffff);
     /* make the login containers fill the viewport to avoid background seams */
-    width: 100vw;
-    max-width: 100vw;
+    width: min(100%, 100vw);
     min-height: 100dvh;
     color: var(--text-color);
     box-sizing: border-box;
-     /* Ensure login container fills the full viewport from the top (0px) on
-         small screens. Desktop/tablet layout remains controlled by the
-         min-width media query below. */
-     min-height: 100dvh;
-     height: auto;
-     padding: clamp(32px, 6vh, 58px) clamp(16px, 3.2vw, 40px);
+    /* Ensure login container fills the full viewport from the top (0px) on
+       small screens. Desktop/tablet layout remains controlled by the
+       min-width media query below. */
+    height: auto;
+    padding: clamp(32px, 6vh, 58px) clamp(16px, 3.2vw, 40px);
     max-width: min(1220px, 92vw);
     margin: 0 auto;
     display: flex;
@@ -68,8 +71,7 @@
     height: 100%;
     min-height: 100%;
     padding: 0;
-    width: 100vw;
-    max-width: 100vw;
+    width: min(100%, 100vw);
 }
 
 /* 이미지 섹션 - 모바일에서는 숨김 */
@@ -80,20 +82,20 @@
 /* 데스크톱/태블릿에서는 컨텐츠에 맞게 높이 조절 */
 @media (min-width: 769px) {
     .login-container {
-    padding: clamp(2rem, 4.2vw, 4rem) clamp(1.2rem, 2.6vw, 2.6rem);
+        padding: clamp(2rem, 4.2vw, 4rem) clamp(1.2rem, 2.6vw, 2.6rem);
         min-height: 100dvh;
         display: grid;
-    /* stronger left image emphasis so it intrudes more into the card */
-    grid-template-columns: 70% minmax(320px, 480px);
-    /* make the single grid row fill available height */
-    grid-template-rows: 1fr;
-    gap: clamp(12px, 2vw, 28px);
-    margin: 0 auto;
+        /* stronger left image emphasis so it intrudes more into the card */
+        grid-template-columns: 70% minmax(320px, 480px);
+        /* make the single grid row fill available height */
+        grid-template-rows: 1fr;
+        gap: clamp(12px, 2vw, 28px);
+        margin: 0 auto;
         align-items: stretch;
         justify-items: stretch;
-    /* center the grid block both vertically and horizontally */
-    align-content: center;
-    justify-content: center; /* 그리드 자체를 중앙 정렬 */
+        /* center the grid block both vertically and horizontally */
+        align-content: center;
+        justify-content: center; /* 그리드 자체를 중앙 정렬 */
     }
     
     /* 왼쪽 이미지 영역 */
@@ -107,8 +109,8 @@
         justify-content: center; /* center image content inside left column */
         /* reduce left padding so image appears larger and uses more real estate */
         padding: clamp(2rem, 4.2vw, 4rem) clamp(1.2rem, 2.6vw, 2.6rem);
-        border-top-left-radius: 1.75rem;
-        border-bottom-left-radius: 1.75rem;
+        border-top-left-radius: var(--surface-radius-lg);
+        border-bottom-left-radius: var(--surface-radius-lg);
         box-shadow: 0 36px 74px color-mix(in srgb, var(--primary-color) 16%, rgba(15, 23, 42, 0.28));
         width: 100%;
         max-width: min(1320px, 84vw);
@@ -215,7 +217,7 @@
         max-width: 660px;
         /* let the grid row determine height; allow stretching */
         height: auto;
-        border-radius: 2rem;
+        border-radius: var(--surface-radius-lg);
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -228,7 +230,7 @@
         margin-left: -8px;
         align-self: stretch;
         justify-self: center;
-        box-shadow: 0 40px 90px rgba(10, 15, 30, 0.25);
+        box-shadow: var(--card-shadow-layer), var(--shadow-deep, 0 32px 64px rgba(15, 23, 42, 0.14));
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
@@ -250,9 +252,9 @@
     max-width: 680px;
     background: var(--surface-elevated);
     color: var(--text-color);
-    border-radius: 1.5rem;
+    border-radius: var(--surface-radius-lg);
     border: 1px solid var(--divider-color-elevated);
-    box-shadow: var(--card-shadow);
+    box-shadow: var(--card-shadow-layer), var(--card-shadow);
     padding: clamp(2.25rem, 3.6vw, 3rem) clamp(1.8rem, 3.4vw, 2.6rem);
     display: flex;
     flex-direction: column;
@@ -345,7 +347,7 @@
 
 .login-input {
     width: 100%;
-    border-radius: 18px;
+    border-radius: var(--surface-radius-md);
     border: 1.5px solid var(--input-border);
     background: var(--input-bg);
     padding: 14px 18px;
@@ -358,8 +360,8 @@
 
 /* Ensure left rounded corners show for the username field inside input-group */
 #login-username.login-input {
-    border-top-left-radius: 18px !important;
-    border-bottom-left-radius: 18px !important;
+    border-top-left-radius: var(--surface-radius-md) !important;
+    border-bottom-left-radius: var(--surface-radius-md) !important;
 }
 
 .login-input::placeholder {
@@ -386,7 +388,7 @@
     text-transform: uppercase;
     cursor: pointer;
     padding: 4px 6px;
-    border-radius: 999px;
+    border-radius: var(--surface-radius-pill);
 }
 
 .password-toggle:focus-visible {
@@ -408,11 +410,11 @@
     width: 20px;
     height: 20px;
     accent-color: var(--primary-color);
-    border-radius: 6px;
+    border-radius: var(--surface-radius-sm);
 }
 
 .login-error-message {
-    border-radius: 16px;
+    border-radius: var(--surface-radius-md);
     border: 1px solid rgba(239, 68, 68, 0.35);
     background: rgba(254, 226, 226, 0.65);
     color: #b91c1c;
@@ -428,7 +430,7 @@
     gap: 12px;
     width: 100%;
     border: none;
-    border-radius: 24px;
+    border-radius: var(--surface-radius-pill);
     padding: 18px 18px;
     font-size: 1.05rem;
     font-weight: 700;
@@ -466,7 +468,7 @@
     height: 180%;
     left: -40%;
     top: -40%;
-    border-radius: 999px;
+    border-radius: var(--surface-radius-pill);
     opacity: 0.12;
 }
 
@@ -518,7 +520,7 @@
 .divider-dot {
     width: 4px;
     height: 4px;
-    border-radius: 999px;
+    border-radius: 50%;
     background: var(--divider-color-elevated);
 }
 
@@ -557,7 +559,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    border-radius: 18px;
+    border-radius: var(--surface-radius-md);
     border: 1px solid color-mix(in srgb, var(--divider-color-elevated) 80%, transparent);
     padding: 14px 10px;
     background: var(--surface-muted-elevated);
@@ -637,7 +639,7 @@
 
     .mobile-login-card {
         padding: 28px 20px 32px;
-        border-radius: 24px;
+        border-radius: var(--surface-radius-lg);
         gap: 20px;
     }
 
@@ -669,7 +671,7 @@
     .login-input {
         padding: 12px 16px;
         font-size: 15px;
-        border-radius: 16px;
+        border-radius: var(--surface-radius-md);
     }
 
     .password-toggle {
@@ -690,7 +692,7 @@
     .login-button {
         font-size: 0.95rem;
         padding: 18px;
-        border-radius: 24px;
+        border-radius: var(--surface-radius-pill);
         letter-spacing: 0.05em;
     }
 
@@ -717,7 +719,7 @@
     .social-login-btn {
         gap: 10px;
         padding: 14px 10px;
-        border-radius: 18px;
+        border-radius: var(--surface-radius-md);
         font-size: 0.75rem;
     }
 
@@ -740,7 +742,7 @@
         min-width: 0;
         gap: 5px;
         padding: 9px 6px;
-        border-radius: 14px;
+        border-radius: var(--surface-radius-sm);
         font-size: 0.66rem;
     }
 
@@ -768,7 +770,7 @@
     --brand-gradient-end: rgba(148, 163, 184, 0.88);
     --surface-color: rgba(24, 22, 35, 0.95);
     --surface-muted: rgba(17, 24, 39, 0.72);
-    --card-shadow: 0 24px 60px rgba(5, 5, 20, 0.6);
+    --card-shadow: var(--shadow-deep, 0 32px 64px rgba(4, 8, 20, 0.7));
     --text-color: #f3f4f6;
     --muted-color: rgba(226, 232, 240, 0.78);
     --input-border: rgba(148, 163, 184, 0.38);

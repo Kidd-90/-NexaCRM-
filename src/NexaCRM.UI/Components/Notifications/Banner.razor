@@ -1,0 +1,156 @@
+@using Microsoft.AspNetCore.Components
+
+<section class="@CssClass"
+         role="@Role"
+         aria-live="@AriaLiveValue"
+         aria-labelledby="@_titleId"
+         aria-describedby="@DescriptionReference"
+         data-variant="@VariantName">
+    <div class="nc-banner__icon" aria-hidden="true">
+        @if (LeadingVisual is not null)
+        {
+            @LeadingVisual
+        }
+        else
+        {
+            <i class="bi @DefaultIconClass"></i>
+        }
+    </div>
+
+    <div class="nc-banner__body">
+        <div id="@_titleId" class="nc-banner__title">
+            @if (Title is not null)
+            {
+                @Title
+            }
+            else
+            {
+                @TitleText
+            }
+        </div>
+
+        @if (HasDescription)
+        {
+            <div id="@_descriptionId" class="nc-banner__description">
+                @if (Description is not null)
+                {
+                    @Description
+                }
+                else
+                {
+                    @DescriptionText
+                }
+            </div>
+        }
+    </div>
+
+    @if (HasActions || ShowDismissButton)
+    {
+        <div class="nc-banner__actions">
+            @if (Actions is not null)
+            {
+                @Actions
+            }
+
+            @if (ShowDismissButton)
+            {
+                <button type="button"
+                        class="nc-banner__dismiss"
+                        @onclick="HandleDismissAsync"
+                        aria-label="@DismissAriaLabel">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private readonly string _titleId = $"banner-title-{Guid.NewGuid():N}";
+    private readonly string _descriptionId = $"banner-description-{Guid.NewGuid():N}";
+
+    [Parameter]
+    public BannerVariant Variant { get; set; } = BannerVariant.Info;
+
+    [Parameter]
+    public RenderFragment? LeadingVisual { get; set; }
+
+    [Parameter]
+    public RenderFragment? Title { get; set; }
+
+    [Parameter]
+    public string TitleText { get; set; } = string.Empty;
+
+    [Parameter]
+    public RenderFragment? Description { get; set; }
+
+    [Parameter]
+    public string? DescriptionText { get; set; }
+
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    [Parameter]
+    public bool Dismissible { get; set; }
+
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    [Parameter]
+    public string Role { get; set; } = "status";
+
+    [Parameter]
+    public string? AriaLive { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? DismissButtonAriaLabel { get; set; }
+
+    private string CssClass => string.IsNullOrWhiteSpace(Class)
+        ? "nc-banner motion-fade-in"
+        : $"nc-banner motion-fade-in {Class}";
+
+    private string VariantName => Variant.ToString().ToLowerInvariant();
+
+    private string AriaLiveValue => string.IsNullOrWhiteSpace(AriaLive)
+        ? (Role.Equals("alert", StringComparison.OrdinalIgnoreCase) ? "assertive" : "polite")
+        : AriaLive;
+
+    private string? DescriptionReference => HasDescription ? _descriptionId : null;
+
+    private bool HasDescription => Description is not null || !string.IsNullOrWhiteSpace(DescriptionText);
+
+    private bool HasActions => Actions is not null;
+
+    private bool ShowDismissButton => Dismissible && OnDismiss.HasDelegate;
+
+    private string DefaultIconClass => Variant switch
+    {
+        BannerVariant.Success => "bi-check-circle-fill",
+        BannerVariant.Warning => "bi-exclamation-triangle-fill",
+        BannerVariant.Danger => "bi-exclamation-octagon-fill",
+        _ => "bi-info-circle-fill"
+    };
+
+    private string DismissAriaLabel => string.IsNullOrWhiteSpace(DismissButtonAriaLabel)
+        ? "배너 닫기"
+        : DismissButtonAriaLabel!;
+
+    protected override void OnParametersSet()
+    {
+        if (Title is null && string.IsNullOrWhiteSpace(TitleText))
+        {
+            throw new InvalidOperationException("Banner requires either a Title fragment or TitleText value.");
+        }
+    }
+
+    private async Task HandleDismissAsync()
+    {
+        if (OnDismiss.HasDelegate)
+        {
+            await OnDismiss.InvokeAsync();
+        }
+    }
+}

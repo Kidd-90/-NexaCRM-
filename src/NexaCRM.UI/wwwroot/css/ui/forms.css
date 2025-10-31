@@ -1,0 +1,64 @@
+/*!
+ * NexaCRM UI Form Controls
+ * Standardizes interactive control sizing so all touch targets respect the shared token scale.
+ */
+@layer components {
+    :root {
+        --ui-control-height: var(--touch-target-min, 44px);
+        --ui-control-height-lg: clamp(52px, calc(var(--touch-target-min, 44px) + 8px), 60px);
+        --ui-control-height-sm: var(--ui-control-height);
+        --ui-control-padding-y: clamp(0.65rem, 0.55rem + 0.3vw, 0.8rem);
+        --ui-control-padding-y-sm: clamp(0.55rem, 0.5rem + 0.25vw, 0.7rem);
+        --ui-control-padding-y-lg: clamp(0.75rem, 0.65rem + 0.35vw, 0.95rem);
+    }
+
+    :where(.form-control, .form-select) {
+        min-height: var(--ui-control-height);
+        padding-block: var(--ui-control-padding-y);
+        border-radius: var(--radius-sm, 8px);
+        line-height: 1.4;
+    }
+
+    :where(.form-control-sm, .form-select-sm) {
+        min-height: var(--ui-control-height-sm);
+        padding-block: var(--ui-control-padding-y-sm);
+    }
+
+    :where(.form-control-lg, .form-select-lg) {
+        min-height: var(--ui-control-height-lg);
+        padding-block: var(--ui-control-padding-y-lg);
+    }
+
+    :where(.input-group > .form-control, .input-group > .form-select) {
+        min-height: var(--ui-control-height);
+    }
+
+    :where(.form-floating > .form-control) {
+        min-height: calc(var(--ui-control-height) + 0.75rem);
+    }
+
+    :where(.btn) {
+        min-height: var(--ui-control-height);
+        padding-inline: clamp(0.85rem, 0.75rem + 0.4vw, 1.4rem);
+        border-radius: var(--radius-sm, 8px);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        line-height: 1.1;
+    }
+
+    :where(.btn.btn-sm) {
+        min-height: var(--ui-control-height);
+        padding-inline: clamp(0.65rem, 0.55rem + 0.35vw, 1.1rem);
+    }
+
+    :where(.btn.btn-lg) {
+        min-height: var(--ui-control-height-lg);
+        padding-inline: clamp(1rem, 0.9rem + 0.45vw, 1.65rem);
+    }
+
+    :where(.btn > i) {
+        line-height: 1;
+    }
+}

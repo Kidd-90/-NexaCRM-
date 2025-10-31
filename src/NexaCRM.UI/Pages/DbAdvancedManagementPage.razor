@@ -15,33 +15,49 @@
 @inject IJSRuntime JS
 @implements IDisposable
 
-<div class="advanced-db common-page-container">
+<div class="advanced-db common-page-container motion-fade-in-up" data-density="@densityMode.ToDataAttribute()">
     <header class="advanced-db__header">
         <h1>고급 DB 관리</h1>
-        <div class="toolbar">
-            <button class="btn btn-light preview-action" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
-            <button class="btn btn-light" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
-            <button class="btn btn-light" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
-            <button class="btn btn-light" @onclick="ExportCsv" disabled="@isExporting"><i class="bi bi-download"></i> 내보내기</button>
-            <label class="btn btn-success preview-action" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
-            <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
+        <div class="advanced-db__actions">
+            <DensityToggle Class="advanced-db__density"
+                            Value="@densityMode"
+                            ValueChanged="OnDensityChanged"
+                            Label="표 간격 모드"
+                            ComfortableText="여유"
+                            CompactText="컴팩트" />
+            <div class="toolbar">
+                <button class="btn btn-light preview-action motion-pressable" @onclick="SaveCurrentView" title="곧 제공 예정 기능입니다."><i class="bi bi-bookmark"></i> 보기 저장</button>
+                <button class="btn btn-light motion-pressable" disabled><i class="bi bi-layout-three-columns"></i> 컬럼</button>
+                <button class="btn btn-light motion-pressable" disabled><i class="bi bi-list-check"></i> 일괄 작업</button>
+                <button class="btn btn-light motion-pressable" @onclick="ExportCsv" disabled="@isExporting"><i class="bi bi-download"></i> 내보내기</button>
+                <label class="btn btn-success preview-action motion-pressable" for="importFile" title="곧 제공 예정 기능입니다."><i class="bi bi-person-plus"></i> 고객 DB 추가하기</label>
+                <input id="importFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" @onchange="OnImportFileSelected" />
+            </div>
         </div>
     </header>
 
-    <div class="preview-banner" role="status" aria-live="polite">
-        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
-        <span>체험 데이터 기반으로 동작합니다. CSV 내보내기와 삭제는 실제로 수행됩니다.</span>
-    </div>
+    <Banner Variant="BannerVariant.Info"
+            Class="advanced-db__banner"
+            TitleText="체험 환경 안내"
+            DescriptionText="체험 데이터 기반으로 동작합니다. CSV 내보내기와 삭제는 실제로 수행됩니다." />
 
-    <nav class="tabs" role="tablist">
-    <button class="tab @(activeTab==Tab.Explore?"active":null)" @onclick="(()=>SetTab(Tab.Explore))">목록</button>
-    <button class="tab @(activeTab==Tab.Segments?"active":null)" @onclick="(()=>SetTab(Tab.Segments))">세그먼트</button>
-    <button class="tab @(activeTab==Tab.Imports?"active":null)" @onclick="(()=>SetTab(Tab.Imports))">가져오기</button>
-    <button class="tab @(activeTab==Tab.Dedupe?"active":null)" @onclick="(()=>SetTab(Tab.Dedupe))">중복 관리</button>
-    <button class="tab @(activeTab==Tab.Grade?"active":null)" @onclick="(()=>SetTab(Tab.Grade))">등급 관리</button>
-    <button class="tab @(activeTab==Tab.Consult?"active":null)" @onclick="(()=>SetTab(Tab.Consult))">상담 구분값</button>
-    <button class="tab @(activeTab==Tab.Distribution?"active":null)" @onclick="(()=>SetTab(Tab.Distribution))">분배설정</button>
-    <button class="tab @(activeTab==Tab.Settings?"active":null)" @onclick="(()=>SetTab(Tab.Settings))">설정</button>
+    <nav class="tabs motion-stagger" role="tablist">
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Explore ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Explore))">목록</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Segments ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Segments))">세그먼트</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Imports ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Imports))">가져오기</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Dedupe ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Dedupe))">중복 관리</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Grade ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Grade))">등급 관리</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Consult ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Consult))">상담 구분값</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Distribution ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Distribution))">분배설정</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Settings ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Settings))">설정</button>
     </nav>
 
     @if (activeTab == Tab.Explore)
@@ -110,7 +126,7 @@
                                         <td class="@GetStatusClass(c.Status)">@StatusLocalizer[c.Status.ToString()]</td>
                                         <td>@c.LastContactDate.ToShortDateString()</td>
                                         <td class="text-end">
-                                            <button class="btn btn-link text-danger p-0" title="삭제"
+                                            <button class="btn btn-link text-danger motion-pressable p-0" title="삭제"
                                                     disabled="@deletingIds.Contains(c.ContactId)"
                                                     @onclick="() => DeleteCustomerAsync(c)">
                                                 <span class="visually-hidden">삭제</span>
@@ -241,16 +257,16 @@
                                         <td>@g.LatestAssigned.ToShortDateString()</td>
                                         <td>@g.SampleName</td>
                                         <td class="action-cell">
-                                            <button class="btn btn-warning btn-sm action-btn me-1" @onclick="() => NotifyAdmin(g)">관리자 알림</button>
-                                            <button class="btn btn-outline-secondary btn-sm action-btn me-1" @onclick="() => ArchiveGroup(g)">보관 처리</button>
-                                            <button class="btn btn-outline-danger btn-sm action-btn me-2" @onclick="() => DeleteGroup(g)">삭제</button>
+                                            <button class="btn btn-warning btn-sm action-btn motion-pressable me-1" @onclick="() => NotifyAdmin(g)">관리자 알림</button>
+                                            <button class="btn btn-outline-secondary btn-sm action-btn motion-pressable me-1" @onclick="() => ArchiveGroup(g)">보관 처리</button>
+                                            <button class="btn btn-outline-danger btn-sm action-btn motion-pressable me-2" @onclick="() => DeleteGroup(g)">삭제</button>
                                             <select class="form-select form-select-sm d-inline-block" style="width: auto;" @bind="mergePrimary[g.Key]">
                                                 @foreach (var c in g.Candidates)
                                                 {
                                                     <option value="@c.ContactId">@c.CustomerName (@c.ContactId)</option>
                                                 }
                                             </select>
-                                            <button class="btn btn-primary btn-sm action-btn" @onclick="() => OpenMergeModal(g)">병합</button>
+                                            <button class="btn btn-primary btn-sm action-btn motion-pressable" @onclick="() => OpenMergeModal(g)">병합</button>
                                         </td>
                                     </tr>
                                 }
@@ -306,8 +322,8 @@
                             </div>
                         </div>
                         <footer class="modal-footer">
-                            <button class="btn btn-light" @onclick="CloseMergeModal">취소</button>
-                            <button class="btn btn-primary" @onclick="ConfirmMergeModal">병합 실행</button>
+                            <button class="btn btn-light motion-pressable" @onclick="CloseMergeModal">취소</button>
+                            <button class="btn btn-primary motion-pressable" @onclick="ConfirmMergeModal">병합 실행</button>
                         </footer>
                     </div>
                 </div>
@@ -709,6 +725,7 @@
     private DateTime? filterTo;
     private bool isLoading;
     private bool isExporting;
+    private DensityMode densityMode = DensityMode.Comfortable;
     private readonly HashSet<int> deletingIds = new();
     private CancellationTokenSource? searchDebounceCts;
     private bool dedupeEnabled;
@@ -720,6 +737,28 @@
     private bool showMergeModal;
     private DuplicateGroup? modalGroup;
     private int modalPrimaryId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var stored = await JS.InvokeAsync<string?>("localStorage.getItem", DensityPreference.StorageKey);
+            if (DensityPreference.TryParse(stored, out var storedMode) && storedMode != densityMode)
+            {
+                densityMode = storedMode;
+                StateHasChanged();
+            }
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference retrieval failed: {ex.Message}");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -734,6 +773,20 @@
     }
 
     private void SetTab(Tab t) => activeTab = t;
+
+    private async Task OnDensityChanged(DensityMode mode)
+    {
+        densityMode = mode;
+
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", DensityPreference.StorageKey, mode.ToString());
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference persistence failed: {ex.Message}");
+        }
+    }
 
     private void ApplyFilters()
     {

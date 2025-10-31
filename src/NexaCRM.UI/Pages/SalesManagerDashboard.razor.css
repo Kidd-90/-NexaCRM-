@@ -1,144 +1,183 @@
-/* SalesManagerDashboard Mobile Responsive Styles */
-
-/* Ensure page content sits below the fixed app-shell page header. This
-   uses the runtime-updated --app-shell-page-header-offset variable so the
-   stats-container and other content won't be occluded by the header. */
-.layout-content-container {
-    margin-top: var(--app-shell-page-header-offset, 0px) !important;
+@layer page {
+:root {
+    --sales-dashboard-shell-mobile: min(100%, 100vw);
+    --sales-dashboard-shell-tablet: 64rem;
+    --sales-dashboard-shell-desktop: 78rem;
+    --sales-dashboard-panel-surface: color-mix(in srgb, var(--surface-color) 88%, var(--surface-muted) 12%);
+    --sales-dashboard-panel-border: color-mix(in srgb, var(--divider-color) 70%, transparent);
+    --sales-dashboard-panel-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
+    --sales-dashboard-card-surface: color-mix(in srgb, var(--surface-color) 92%, var(--surface-muted) 8%);
+    --sales-dashboard-focus-ring: var(--focus-ring, rgba(124, 130, 143, 0.35));
 }
 
-/* Ensure the stats container (page-level summary cards) always begins
-   below the fixed app-shell page header. We use the runtime-updated
-   --app-shell-page-header-offset so the page remains robust to changes
-   in header height across breakpoints and when hot-reloading. */
-.layout-content-container .stats-container {
-    margin-top: calc(var(--app-shell-page-header-offset, 0px) + 0.5rem) !important;
-    /* provide a small scroll margin so anchor-navigation doesn't put the
-       stats behind the fixed header */
-    scroll-margin-top: calc(var(--app-shell-page-header-offset, 0px) + 0.5rem);
+.dashboard-skip-link {
+    position: absolute;
+    top: -999px;
+    left: -999px;
+    z-index: 1000;
+    padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+    background-color: var(--org-primary, #2153c8);
+    color: var(--surface-200, #ffffff);
+    border-radius: var(--radius-md, 12px);
+    font-weight: var(--font-weight-semibold, 600);
+    letter-spacing: 0.01em;
+    box-shadow: var(--shadow-soft, 0 18px 32px rgba(15, 23, 42, 0.08));
+    transition:
+        transform var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        top var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        left var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
-
-/* Container query table responsive behavior */
-@container(max-width:120px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120{display: none;}}
-@container(max-width:240px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240{display: none;}}
-@container(max-width:360px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360{display: none;}}
-@container(max-width:480px){.table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480{display: none;}}
-
-/* Mobile responsive styles for sales dashboard */
-@media (max-width: 768px) {
-    /* Header mobile adjustments */
-    .dashboard-header {
-        padding: 0.75rem 1rem !important;
-        gap: 1rem !important;
-    }
-    
-    .dashboard-nav {
-        display: none;
-    }
-    
-    /* Show mobile menu button */
-    .mobile-menu-button {
-        display: block !important;
-    }
-    
-    /* Main container mobile padding */
-    .dashboard-main-container {
-        padding: 1rem !important;
-    }
-    
-    /* Statistics cards mobile layout */
-    .stats-container {
-        gap: 0.75rem !important;
-    }
-    
-    .stat-card {
-        min-width: 100% !important;
-        padding: 1rem !important;
-    }
-    
-    /* Chart containers mobile */
-    .chart-container {
-        min-width: 100% !important;
-        padding: 1rem !important;
-    }
-    
-    /* Performance table mobile - convert to cards */
-    .performance-table-container {
-        display: none !important;
-    }
-    
-    .performance-mobile-view {
-        display: block !important;
-    }
-    
-    /* Mobile search adjustments */
-    .dashboard-search {
-        min-width: 8rem !important;
-        max-width: 12rem !important;
-    }
-    
-    /* Profile and notifications mobile */
-    .dashboard-controls {
-        gap: 0.5rem !important;
-    }
+.dashboard-skip-link:focus-visible {
+    top: 1.25rem;
+    left: 1.5rem;
+    outline: 3px solid var(--sales-dashboard-focus-ring);
+    outline-offset: 3px;
 }
 
-/* Small mobile devices (480px and below) */
-@media (max-width: 480px) {
-    .dashboard-header {
-        padding: 0.5rem !important;
-    }
-    
-    .dashboard-main-container {
-        padding: 0.5rem !important;
-    }
-    
-    .stat-card {
-        padding: 0.75rem !important;
-    }
-    
-    .chart-container {
-        padding: 0.75rem !important;
-    }
-    
-    .dashboard-search {
-        display: none !important;
-    }
+.common-page-container[data-page="sales-manager-dashboard"] {
+    background: var(--ui-page-background, color-mix(in srgb, var(--surface-muted) 80%, #f4f6fb 20%));
 }
 
-/* Performance mobile card styles */
+.layout-content-container[data-surface="panel"] {
+    width: 100%;
+    max-width: var(--sales-dashboard-shell-mobile);
+    margin: calc(var(--app-shell-page-header-offset, 0px) + 1rem) auto clamp(2.5rem, 2rem + 1vw, 4rem);
+    background: var(--sales-dashboard-panel-surface);
+    border-radius: var(--radius-lg, 18px);
+    border: 1px solid var(--sales-dashboard-panel-border);
+    box-shadow: var(--sales-dashboard-panel-shadow);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+}
+
+.dashboard-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 1.25rem + 0.5vw, 2.5rem);
+    padding: clamp(1.5rem, 1.25rem + 0.5vw, 2.25rem) clamp(1.25rem, 1rem + 0.5vw, 2rem) clamp(2.5rem, 2rem + 1vw, 4rem);
+    min-height: 100%;
+    scroll-margin-top: calc(var(--app-shell-page-header-offset, 0px) + 1rem);
+}
+
+.dashboard-main-content:focus-visible {
+    outline: 3px solid var(--sales-dashboard-focus-ring);
+    outline-offset: 4px;
+}
+
+.dashboard-filter-group {
+    border: 1px solid color-mix(in srgb, var(--sales-dashboard-panel-border) 75%, transparent);
+    background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
+    border-radius: var(--radius-md, 12px);
+    box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
+    gap: clamp(0.5rem, 0.45rem + 0.35vw, 0.85rem);
+    padding: clamp(0.5rem, 0.45rem + 0.25vw, 0.75rem) clamp(0.75rem, 0.65rem + 0.35vw, 1.25rem);
+}
+
+.dashboard-filter-button {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    transition: background-color var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+}
+
+.dashboard-filter-button:hover,
+.dashboard-filter-button:focus-visible {
+    background: color-mix(in srgb, var(--hover-overlay, rgba(124, 130, 143, 0.12)) 100%, transparent);
+    color: var(--text-primary);
+}
+
+.dashboard-filter-button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--sales-dashboard-focus-ring) 65%, transparent);
+    outline-offset: 2px;
+}
+
+.stats-container,
+.chart-container,
+.performance-table-container,
+.performance-mobile-view {
+    gap: clamp(1rem, 0.9rem + 0.45vw, 1.5rem);
+}
+
+.stat-card,
+.chart-container {
+    background: var(--sales-dashboard-card-surface);
+    border: 1px solid color-mix(in srgb, var(--sales-dashboard-panel-border) 85%, transparent);
+    box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
+    transition:
+        transform var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1)),
+        box-shadow var(--motion-duration-sm, 180ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+}
+
+.stat-card:hover,
+.chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-deep-layer, 0 4px 16px rgba(15, 23, 42, 0.16));
+}
+
+.chart-container {
+    min-width: 0;
+}
+
+.performance-table-shell {
+    background: var(--sales-dashboard-card-surface);
+    border: 1px solid color-mix(in srgb, var(--sales-dashboard-panel-border) 85%, transparent);
+    box-shadow: var(--sales-dashboard-panel-shadow);
+}
+
+.performance-table-shell table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.performance-table-shell thead tr {
+    background: color-mix(in srgb, var(--surface-muted) 75%, transparent);
+}
+
+.performance-table-shell th {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold, 600);
+    border-bottom: 1px solid color-mix(in srgb, var(--sales-dashboard-panel-border) 80%, transparent);
+}
+
+.performance-table-shell td {
+    color: var(--text-secondary);
+}
+
+.performance-table-shell tbody tr:hover {
+    background: color-mix(in srgb, var(--hover-overlay, rgba(124, 130, 143, 0.12)) 65%, transparent);
+}
+
 .performance-mobile-view {
     display: none;
 }
 
 .performance-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
+    background: var(--sales-dashboard-card-surface);
+    border-radius: var(--radius-lg, 18px);
+    padding: clamp(1.25rem, 1.1rem + 0.45vw, 1.75rem);
+    border: 1px solid color-mix(in srgb, var(--sales-dashboard-panel-border) 85%, transparent);
+    box-shadow: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
 }
 
 .performance-card-rank {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
+    font-size: clamp(1.35rem, 1.2rem + 0.6vw, 1.75rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--org-primary, #2153c8);
     text-align: center;
     margin-bottom: 0.75rem;
 }
 
 .performance-card-name {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: clamp(1.05rem, 0.95rem + 0.35vw, 1.25rem);
+    font-weight: var(--font-weight-semibold, 600);
     color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .performance-card-stats {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     margin-top: 0.75rem;
 }
@@ -157,34 +196,24 @@
 
 .performance-stat-value {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold, 600);
     color: var(--text-primary);
 }
 
-/* Mobile hamburger menu styles */
 .mobile-menu-button {
     display: none;
     background: none;
     border: none;
     padding: 0.5rem;
-    cursor: pointer;
-}
-
-.mobile-menu-icon {
-    width: 24px;
-    height: 24px;
     color: var(--text-primary);
 }
 
-/* Mobile navigation overlay */
 .mobile-nav-overlay {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(4px);
     z-index: 50;
 }
 
@@ -197,13 +226,17 @@
     top: 0;
     right: 0;
     height: 100vh;
-    width: 280px;
-    background: white;
+    width: min(80vw, 320px);
+    background: var(--sales-dashboard-panel-surface);
+    border-left: 1px solid color-mix(in srgb, var(--sales-dashboard-panel-border) 85%, transparent);
+    box-shadow: var(--shadow-deep-layer, 0 8px 28px rgba(15, 23, 42, 0.22));
     transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-    z-index: 51;
-    padding: 1rem;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: transform var(--motion-duration-md, 240ms) var(--motion-ease-decelerated, cubic-bezier(0, 0, 0.2, 1));
+    padding: clamp(1.5rem, 1.25rem + 0.5vw, 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    z-index: 100;
 }
 
 .mobile-nav-menu.active {
@@ -211,65 +244,144 @@
 }
 
 .mobile-nav-close {
-    background: none;
     border: none;
+    background: transparent;
+    align-self: flex-end;
     padding: 0.5rem;
-    cursor: pointer;
-    margin-left: auto;
-    display: block;
-    margin-bottom: 1rem;
+    color: var(--text-primary);
 }
 
 .mobile-nav-links {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .mobile-nav-link {
-    display: block;
-    padding: 1rem 0;
-    color: #0e131b;
+    color: var(--text-primary);
     text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px solid #e5e7eb;
+    font-weight: var(--font-weight-medium, 500);
+    padding: 0.5rem 0.25rem;
+    border-radius: var(--radius-sm, 8px);
+    transition: background-color var(--motion-duration-xs, 120ms) var(--motion-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 
-.mobile-nav-link:hover {
-    background: #f8faff;
-    border-radius: 8px;
+.mobile-nav-link:hover,
+.mobile-nav-link:focus-visible {
+    background: color-mix(in srgb, var(--hover-overlay, rgba(124, 130, 143, 0.12)) 85%, transparent);
 }
 
-/* Accessibility improvements */
+@media (max-width: 767px) {
+    .layout-content-container[data-surface="panel"] {
+        margin: calc(var(--app-shell-page-header-offset, 0px) + 0.75rem) 0 clamp(2rem, 1.75rem + 0.75vw, 3rem);
+        max-width: 100%;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        backdrop-filter: none;
+    }
+
+    .dashboard-main-content {
+        padding: clamp(1.25rem, 1rem + 1vw, 1.75rem) clamp(1rem, 0.75rem + 1vw, 1.5rem) clamp(2rem, 1.5rem + 1vw, 3rem);
+    }
+
+    .stats-container {
+        gap: 0.75rem;
+    }
+
+    .stat-card,
+    .chart-container {
+        width: 100%;
+    }
+
+    .performance-table-container {
+        display: none;
+    }
+
+    .performance-mobile-view {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .mobile-menu-button {
+        display: block;
+    }
+}
+
+@media (min-width: 768px) {
+    .layout-content-container[data-surface="panel"] {
+        max-width: var(--sales-dashboard-shell-tablet);
+    }
+
+    .performance-mobile-view {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .layout-content-container[data-surface="panel"] {
+        max-width: var(--sales-dashboard-shell-desktop);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
+    .stat-card,
+    .chart-container {
+        transition: none;
+    }
+
+    .stat-card:hover,
+    .chart-container:hover {
+        transform: none;
+    }
+
     .mobile-nav-menu {
         transition: none;
     }
 }
 
-/* Ensure app shell content does not overlap or extend beneath the nav-rail.
-   We use a CSS variable --nav-rail-width so the layout can adapt if the
-   rail width changes. On small screens where the nav rail is hidden or
-   becomes an overlay, remove the left margin so the content can span full
-   width. */
-.app-shell__content {
-    /* default rail width — override with :root or a parent when needed */
-    --nav-rail-width: 72px;
-    margin-left: var(--nav-rail-width);
-    max-width: calc(100% - var(--nav-rail-width));
-    box-sizing: border-box;
-    position: relative;
-    overflow-wrap: break-word;
-    /* keep content scrollable within its area */
-    overflow-x: hidden;
+:global([data-theme="dark"]) .layout-content-container[data-surface="panel"] {
+    background: color-mix(in srgb, var(--surface-color) 94%, var(--surface-muted) 6%);
+    box-shadow: none;
 }
 
-/* If the app hides the nav-rail on small screens (or uses an overlay),
-   ensure the content doesn't keep the left offset. Adjust breakpoint to
-   match your layout's collapse point. */
-@media (max-width: 768px) {
-    .app-shell__content {
-        margin-left: 0 !important;
-        max-width: 100% !important;
+:global([data-theme="dark"]) .stat-card,
+:global([data-theme="dark"]) .chart-container,
+:global([data-theme="dark"]) .performance-card,
+:global([data-theme="dark"]) .performance-table-shell {
+    box-shadow: none;
+    border-color: color-mix(in srgb, var(--divider-color) 85%, transparent);
+}
+
+:global([data-theme="dark"]) .performance-table-shell thead tr {
+    background: color-mix(in srgb, var(--surface-muted) 85%, transparent);
+}
+}
+
+@container (max-width: 120px) {
+    .table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-120 {
+        display: none;
+    }
+}
+
+@container (max-width: 240px) {
+    .table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-240 {
+        display: none;
+    }
+}
+
+@container (max-width: 360px) {
+    .table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-360 {
+        display: none;
+    }
+}
+
+@container (max-width: 480px) {
+    .table-90e7711b-05e4-42bf-8822-e250d5edb30e-column-480 {
+        display: none;
     }
 }

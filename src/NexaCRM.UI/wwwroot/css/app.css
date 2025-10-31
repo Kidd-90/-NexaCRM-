@@ -38,8 +38,8 @@
     --gradient-deep: linear-gradient(160deg, #2E2E2E 0%, #000000 100%);
     --overlay-glass-white: rgba(255, 255, 255, 0.1);
     --overlay-black: rgba(0, 0, 0, 0.5);
-    --shadow-soft-layer: 0px 2px 6px rgba(0, 0, 0, 0.15);
-    --shadow-deep-layer: 0px 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow-soft-layer: 0px 2px 6px rgba(15, 23, 42, 0.12);
+    --shadow-deep-layer: 0px 4px 16px rgba(15, 23, 42, 0.22);
     --shadow-100: 0 8px 24px rgba(21, 33, 65, 0.06); /* soft shadow */
     --glow-white: 0px 0px 8px rgba(255, 255, 255, 0.8);
     --glow-dark: 0px 0px 6px rgba(0, 0, 0, 0.6);
@@ -105,8 +105,9 @@
 
     /* Radius (Rounding) Tokens */
     --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
 
     /* Touch Target Sizes */
     --touch-target-min: 44px;

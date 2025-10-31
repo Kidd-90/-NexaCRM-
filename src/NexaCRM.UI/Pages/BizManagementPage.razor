@@ -10,23 +10,31 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @implements IDisposable
 
-<div class="advanced-db">
+<div class="advanced-db motion-fade-in-up" data-density="@densityMode.ToDataAttribute()">
     <header class="advanced-db__header">
         <h1>비즈니스/프랜차이즈 관리</h1>
-        <div class="toolbar">
-            <button class="btn btn-light" @onclick="ExportData"><i class="bi bi-download"></i> 내보내기</button>
-            @if (activeTab == Tab.Companies)
-            {
-                <button class="btn btn-success" @onclick="ShowAddCompanyModal"><i class="bi bi-building-add"></i> 회사 추가</button>
-            }
-            @if (activeTab == Tab.Branches)
-            {
-                <button class="btn btn-success" @onclick="ShowAddBranchModal"><i class="bi bi-building-add"></i> 지점 추가</button>
-            }
-            @if (activeTab == Tab.Teams)
-            {
-                <button class="btn btn-success" @onclick="ShowAddTeamModal"><i class="bi bi-people-fill"></i> 팀 추가</button>
-            }
+        <div class="advanced-db__actions">
+            <DensityToggle Class="advanced-db__density"
+                            Value="@densityMode"
+                            ValueChanged="OnDensityChanged"
+                            Label="표 간격 모드"
+                            ComfortableText="여유"
+                            CompactText="컴팩트" />
+            <div class="toolbar">
+                <button class="btn btn-light motion-pressable" @onclick="ExportData"><i class="bi bi-download"></i> 내보내기</button>
+                @if (activeTab == Tab.Companies)
+                {
+                    <button class="btn btn-success motion-pressable" @onclick="ShowAddCompanyModal"><i class="bi bi-building-add"></i> 회사 추가</button>
+                }
+                @if (activeTab == Tab.Branches)
+                {
+                    <button class="btn btn-success motion-pressable" @onclick="ShowAddBranchModal"><i class="bi bi-building-add"></i> 지점 추가</button>
+                }
+                @if (activeTab == Tab.Teams)
+                {
+                    <button class="btn btn-success motion-pressable" @onclick="ShowAddTeamModal"><i class="bi bi-people-fill"></i> 팀 추가</button>
+                }
+            </div>
         </div>
     </header>
 
@@ -39,16 +47,26 @@
         </div>
     }
 
-    <div class="preview-banner" role="status" aria-live="polite">
-        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
-        <span>프랜차이즈 본사, 지점, 팀을 통합 관리합니다. 회사 및 지점 구조를 설정하고 팀을 배치할 수 있습니다.</span>
-    </div>
+    <Banner Variant="BannerVariant.Info"
+            Class="advanced-db__banner"
+            AriaLive="polite">
+        <Title>
+            프랜차이즈 관리 안내
+        </Title>
+        <Description>
+            프랜차이즈 본사, 지점, 팀을 통합 관리합니다. 회사 및 지점 구조를 설정하고 팀을 배치할 수 있습니다.
+        </Description>
+    </Banner>
 
-    <nav class="tabs" role="tablist">
-        <button class="tab @(activeTab==Tab.Companies?"active":null)" @onclick="(()=>SetTab(Tab.Companies))">회사 관리</button>
-        <button class="tab @(activeTab==Tab.Branches?"active":null)" @onclick="(()=>SetTab(Tab.Branches))">지점 관리</button>
-        <button class="tab @(activeTab==Tab.Teams?"active":null)" @onclick="(()=>SetTab(Tab.Teams))">팀 관리</button>
-        <button class="tab @(activeTab==Tab.Statistics?"active":null)" @onclick="(()=>SetTab(Tab.Statistics))">통계</button>
+    <nav class="tabs motion-stagger" role="tablist">
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Companies ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Companies))">회사 관리</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Branches ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Branches))">지점 관리</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Teams ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Teams))">팀 관리</button>
+        <button class="@($"tab motion-pressable motion-fade-in {(activeTab == Tab.Statistics ? "active" : string.Empty)}".Trim())"
+                @onclick="(() => SetTab(Tab.Statistics))">통계</button>
     </nav>
 
     @if (activeTab == Tab.Companies)
@@ -111,10 +129,10 @@
                                         </td>
                                         <td>@company.CreatedAt.ToShortDateString()</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditCompany(company)" title="편집">
+                                            <button class="btn btn-sm btn-outline-primary motion-pressable me-1" @onclick="() => EditCompany(company)" title="편집">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteCompany(company)" title="삭제">
+                                            <button class="btn btn-sm btn-outline-danger motion-pressable" @onclick="() => DeleteCompany(company)" title="삭제">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
@@ -207,10 +225,10 @@
                                         </td>
                                         <td>@branch.CreatedAt.ToShortDateString()</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditBranch(branch)" title="편집">
+                                            <button class="btn btn-sm btn-outline-primary motion-pressable me-1" @onclick="() => EditBranch(branch)" title="편집">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteBranch(branch)" title="삭제">
+                                            <button class="btn btn-sm btn-outline-danger motion-pressable" @onclick="() => DeleteBranch(branch)" title="삭제">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
@@ -313,10 +331,10 @@
                                         </td>
                                         <td>@team.RegisteredAt.ToShortDateString()</td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => EditTeam(team)" title="편집">
+                                            <button class="btn btn-sm btn-outline-primary motion-pressable me-1" @onclick="() => EditTeam(team)" title="편집">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteTeam(team)" title="삭제">
+                                            <button class="btn btn-sm btn-outline-danger motion-pressable" @onclick="() => DeleteTeam(team)" title="삭제">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
@@ -639,6 +657,7 @@
     private long tenantUnitId = 1; // Will be set from user's organization or default
     private Guid? currentUserId;
     private string? errorMessage;
+    private DensityMode densityMode = DensityMode.Comfortable;
 
     protected override async Task OnInitializedAsync()
     {
@@ -692,6 +711,28 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var stored = await JS.InvokeAsync<string?>("localStorage.getItem", DensityPreference.StorageKey);
+            if (DensityPreference.TryParse(stored, out var storedMode) && storedMode != densityMode)
+            {
+                densityMode = storedMode;
+                StateHasChanged();
+            }
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference retrieval failed: {ex.Message}");
+        }
+    }
+
     private async Task LoadData()
     {
         if (activeTab == Tab.Companies)
@@ -711,6 +752,20 @@
             await LoadCompanies();
             await LoadBranches();
             await LoadTeams();
+        }
+    }
+
+    private async Task OnDensityChanged(DensityMode mode)
+    {
+        densityMode = mode;
+
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", DensityPreference.StorageKey, mode.ToString());
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Density preference persistence failed: {ex.Message}");
         }
     }
 

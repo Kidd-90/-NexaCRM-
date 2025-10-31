@@ -8,248 +8,267 @@
 @using NexaCRM.Services.Admin.Interfaces
 @inject IStatisticsService StatisticsService
 
-<ResponsivePage class="common-page-container">
-    <section class="dashboard-header">
-        <div class="dashboard-header__copy">
-            <p class="dashboard-header__eyebrow">Engagement overview</p>
-            <h3>Statistics Dashboard</h3>
-            <p class="dashboard-header__subtitle">
-                Monitor how your community is growing and how resources are being adopted across the selected time window.
-            </p>
-        </div>
-        <div class="dashboard-header__meta" aria-live="polite">
-            <span class="dashboard-header__range">@GetRangeSummaryText()</span>
-            <span class="dashboard-header__window">@GetRangeWindowText()</span>
-        </div>
-    </section>
+<a href="#statisticsDashboardContent" class="dashboard-skip-link">Skip to main content</a>
 
-    <section class="dashboard-toolbar" aria-label="Statistics dashboard controls">
-        <div class="quick-ranges" role="group" aria-label="Quick date ranges">
-            @foreach (var option in quickRangeOptions)
-            {
-                <button type="button"
-                        class="quick-range-button @GetQuickRangeClass(option.Days)"
-                        aria-pressed="@(activeQuickRangeDays == option.Days ? "true" : "false")"
-                        disabled="@isLoading"
-                        title="@option.Description"
-                        @onclick="async () => await ApplyQuickRangeAsync(option.Days)">
-                    <span class="quick-range-button__label">@option.Label</span>
-                    <span class="quick-range-button__caption">@option.Description</span>
-                </button>
-            }
-        </div>
+<div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden common-page-container" data-page="statistics-dashboard">
+    <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
+        <div class="statistics-dashboard motion-fade-in-up">
+            <main id="statisticsDashboardContent" class="statistics-dashboard__main" tabindex="-1">
+                <header class="statistics-dashboard__header motion-stagger">
+                    <div class="statistics-dashboard__header-copy motion-fade-in">
+                        <p class="statistics-dashboard__eyebrow">Engagement overview</p>
+                        <h3 class="statistics-dashboard__title">Statistics Dashboard</h3>
+                        <p class="statistics-dashboard__subtitle">
+                            Monitor how your community is growing and how resources are being adopted across the selected time window.
+                        </p>
+                    </div>
+                    <div class="statistics-dashboard__meta motion-fade-in" aria-live="polite">
+                        <span class="statistics-dashboard__range">@GetRangeSummaryText()</span>
+                        <span class="statistics-dashboard__window">@GetRangeWindowText()</span>
+                    </div>
+                </header>
 
-        <div class="date-range" role="group" aria-label="Custom date range selection">
-            <label class="date-field">
-                <span>Start</span>
-                <input type="date"
-                       @bind="StartDate"
-                       @bind:format="yyyy-MM-dd"
-                       max="@EndDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" />
-            </label>
-            <label class="date-field">
-                <span>End</span>
-                <input type="date"
-                       @bind="EndDate"
-                       @bind:format="yyyy-MM-dd"
-                       min="@StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
-                       max="@DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" />
-            </label>
-            <button type="button" class="btn-refresh" @onclick="LoadStatistics" disabled="@isLoading">
-                <span>@(isLoading ? "Refreshing…" : "Refresh")</span>
-            </button>
-        </div>
-    </section>
-
-    @if (isLoading)
-    {
-        <LoadingSpinner LoadingText="Loading statistics..." />
-    }
-    else if (stats is null ||
-            (stats.Summary.TotalMembers == 0 && stats.Summary.TotalLogins == 0 && stats.Summary.TotalDownloads == 0))
-    {
-        <p>No statistics available for the selected date range.</p>
-    }
-    else
-    {
-        <section class="summary-tiles" aria-label="Key metrics summary">
-            <article class="tile tile--members" style="--tile-accent: #6366f1; --tile-accent-rgb: 99, 102, 241;">
-                <div class="tile__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-                        <circle cx="8" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M3 18c0-2.7 2.6-4 5-4s5 1.3 5 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                        <circle cx="17" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M14 18c0-1.9 1.8-2.8 3-2.8 1.2 0 3 .9 3 2.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="tile__content">
-                    <span class="tile__label">Total Members</span>
-                    <span class="tile__value">@FormatCount(stats.Summary.TotalMembers)</span>
-                    <span class="tile__hint">As of @EndDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture)</span>
-                </div>
-            </article>
-            <article class="tile tile--logins" style="--tile-accent: #2563eb; --tile-accent-rgb: 37, 99, 235;">
-                <div class="tile__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-                        <polyline points="4 15 10 9 14 13 20 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M4 11V7h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="tile__content">
-                    <span class="tile__label">Total Logins</span>
-                    <span class="tile__value">@FormatCount(stats.Summary.TotalLogins)</span>
-                    <div class="tile__meta">
-                        <span class="tile__delta @GetTrendBadgeClass(stats.LoginTrend)">@GetTrendChangeText(stats.LoginTrend)</span>
-                        <span class="tile__caption">vs previous day</span>
-                    </div>
-                    <span class="tile__hint">Sign-ins captured for the selected range</span>
-                </div>
-            </article>
-            <article class="tile tile--downloads" style="--tile-accent: #0ea5e9; --tile-accent-rgb: 14, 165, 233;">
-                <div class="tile__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-                        <path d="M12 4v9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                        <polyline points="8 10 12 14 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                        <rect x="4" y="16" width="16" height="4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6" />
-                    </svg>
-                </div>
-                <div class="tile__content">
-                    <span class="tile__label">Total Downloads</span>
-                    <span class="tile__value">@FormatCount(stats.Summary.TotalDownloads)</span>
-                    <div class="tile__meta">
-                        <span class="tile__delta @GetTrendBadgeClass(stats.DownloadTrend)">@GetTrendChangeText(stats.DownloadTrend)</span>
-                        <span class="tile__caption">vs previous day</span>
-                    </div>
-                    <span class="tile__hint">Resource downloads completed in the range</span>
-                </div>
-            </article>
-        </section>
-
-        <div class="trend-charts">
-            <div class="chart-card" style="--chart-accent: #4c6ef5; --chart-accent-rgb: 76, 110, 245;">
-                <div class="chart-card__header">
-                    <div class="chart-card__titles">
-                        <span class="chart-card__eyebrow">Activity</span>
-                        <h4>Logins Trend</h4>
-                        <span class="chart-card__subtitle">@GetTrendSubtitle(stats.LoginTrend)</span>
-                    </div>
-                    <div class="chart-card__value">
-                        <span class="chart-card__number">@GetTrendLatestValue(stats.LoginTrend)</span>
-                        <span class="chart-card__badge @GetTrendBadgeClass(stats.LoginTrend)">@GetTrendChangeText(stats.LoginTrend)</span>
-                    </div>
-                </div>
-                @if (stats.LoginTrend.Any())
-                {
-                    var gradientId = GetGradientId("logins");
-                    var lastPoint = GetTrendLastPoint(stats.LoginTrend);
-                    <div class="chart-card__chart">
-                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Logins trend">
-                            <defs>
-                                <linearGradient id="@gradientId" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4c6ef5" stop-opacity="0.38" />
-                                    <stop offset="100%" stop-color="#4c6ef5" stop-opacity="0" />
-                                </linearGradient>
-                            </defs>
-                            <g class="chart-grid">
-                                @foreach (var y in GetHorizontalGridLines(4))
-                                {
-                                    <line x1="0" x2="100" y1="@FormatDouble(y)" y2="@FormatDouble(y)" vector-effect="non-scaling-stroke" />
-                                }
-                            </g>
-                            <polygon class="chart-area" points="@GetTrendFillPoints(stats.LoginTrend)" fill="@($"url(#{gradientId})")" />
-                            <polyline class="chart-line" points="@GetTrendLinePoints(stats.LoginTrend)" stroke="#4c6ef5" stroke-width="1.6" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-                            @if (lastPoint is { } point)
-                            {
-                                <circle class="chart-dot" cx="@FormatDouble(point.X)" cy="@FormatDouble(point.Y)" r="1.8" fill="#4c6ef5" />
-                            }
-                        </svg>
-                    </div>
-                    <div class="chart-card__axis">
-                        @foreach (var label in GetTrendAxisLabels(stats.LoginTrend))
+                <section class="statistics-toolbar motion-stagger" aria-label="Statistics dashboard controls">
+                    <div class="statistics-toolbar__quick motion-fade-in" role="group" aria-label="Quick date ranges">
+                        @foreach (var option in quickRangeOptions)
                         {
-                            <span>@label</span>
+                            <button type="button"
+                                    class="statistics-quick-range motion-pressable @GetQuickRangeClass(option.Days)"
+                                    aria-pressed="@(activeQuickRangeDays == option.Days ? "true" : "false")"
+                                    disabled="@isLoading"
+                                    title="@option.Description"
+                                    @onclick="async () => await ApplyQuickRangeAsync(option.Days)">
+                                <span class="statistics-quick-range__label">@option.Label</span>
+                                <span class="statistics-quick-range__caption">@option.Description</span>
+                            </button>
                         }
                     </div>
-                    <div class="chart-card__insights" role="list">
-                        <div class="chart-insight" role="listitem">
-                            <span class="chart-insight__label">Peak day</span>
-                            <span class="chart-insight__value">@GetTrendPeakInsight(stats.LoginTrend)</span>
-                        </div>
-                        <div class="chart-insight" role="listitem">
-                            <span class="chart-insight__label">Daily average</span>
-                            <span class="chart-insight__value">@GetTrendAverageInsight(stats.LoginTrend)</span>
-                        </div>
+
+                    <div class="statistics-toolbar__dates motion-fade-in" role="group" aria-label="Custom date range selection">
+                        <label class="statistics-date-field">
+                            <span class="statistics-date-field__label">Start</span>
+                            <input type="date"
+                                   class="form-control ui-input-height-sm"
+                                   @bind="StartDate"
+                                   @bind:format="yyyy-MM-dd"
+                                   max="@EndDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" />
+                        </label>
+                        <label class="statistics-date-field">
+                            <span class="statistics-date-field__label">End</span>
+                            <input type="date"
+                                   class="form-control ui-input-height-sm"
+                                   @bind="EndDate"
+                                   @bind:format="yyyy-MM-dd"
+                                   min="@StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" />
+                        </label>
+                        <button type="button"
+                                class="btn btn-primary ui-input-height-sm motion-pressable statistics-toolbar__refresh"
+                                @onclick="LoadStatistics"
+                                disabled="@isLoading">
+                            <span>@(isLoading ? "Refreshing…" : "Refresh")</span>
+                        </button>
                     </div>
+                </section>
+
+                @if (isLoading)
+                {
+                    <div class="statistics-dashboard__loading">
+                        <LoadingSpinner LoadingText="Loading statistics..." />
+                    </div>
+                }
+                else if (stats is null ||
+                        (stats.Summary.TotalMembers == 0 && stats.Summary.TotalLogins == 0 && stats.Summary.TotalDownloads == 0))
+                {
+                    <p class="statistics-dashboard__empty">No statistics available for the selected date range.</p>
                 }
                 else
                 {
-                    <div class="chart-card__empty">No data.</div>
-                }
-            </div>
+                    <section class="statistics-tiles motion-stagger" aria-label="Key metrics summary">
+                        <article class="statistics-tile motion-fade-in" data-variant="members">
+                            <div class="statistics-tile__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+                                    <circle cx="8" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M3 18c0-2.7 2.6-4 5-4s5 1.3 5 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="17" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M14 18c0-1.9 1.8-2.8 3-2.8 1.2 0 3 .9 3 2.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="statistics-tile__content">
+                                <span class="statistics-tile__label">Total Members</span>
+                                <span class="statistics-tile__value">@FormatCount(stats.Summary.TotalMembers)</span>
+                                <span class="statistics-tile__hint">As of @EndDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture)</span>
+                            </div>
+                        </article>
 
-            <div class="chart-card" style="--chart-accent: #0ea5e9; --chart-accent-rgb: 14, 165, 233;">
-                <div class="chart-card__header">
-                    <div class="chart-card__titles">
-                        <span class="chart-card__eyebrow">Resources</span>
-                        <h4>Downloads Trend</h4>
-                        <span class="chart-card__subtitle">@GetTrendSubtitle(stats.DownloadTrend)</span>
-                    </div>
-                    <div class="chart-card__value">
-                        <span class="chart-card__number">@GetTrendLatestValue(stats.DownloadTrend)</span>
-                        <span class="chart-card__badge @GetTrendBadgeClass(stats.DownloadTrend)">@GetTrendChangeText(stats.DownloadTrend)</span>
-                    </div>
-                </div>
-                @if (stats.DownloadTrend.Any())
-                {
-                    var gradientId = GetGradientId("downloads");
-                    var lastPoint = GetTrendLastPoint(stats.DownloadTrend);
-                    <div class="chart-card__chart">
-                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Downloads trend">
-                            <defs>
-                                <linearGradient id="@gradientId" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.38" />
-                                    <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0" />
-                                </linearGradient>
-                            </defs>
-                            <g class="chart-grid">
-                                @foreach (var y in GetHorizontalGridLines(4))
-                                {
-                                    <line x1="0" x2="100" y1="@FormatDouble(y)" y2="@FormatDouble(y)" vector-effect="non-scaling-stroke" />
-                                }
-                            </g>
-                            <polygon class="chart-area" points="@GetTrendFillPoints(stats.DownloadTrend)" fill="@($"url(#{gradientId})")" />
-                            <polyline class="chart-line" points="@GetTrendLinePoints(stats.DownloadTrend)" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
-                            @if (lastPoint is { } point)
+                        <article class="statistics-tile motion-fade-in" data-variant="logins">
+                            <div class="statistics-tile__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+                                    <polyline points="4 15 10 9 14 13 20 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M4 11V7h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="statistics-tile__content">
+                                <span class="statistics-tile__label">Total Logins</span>
+                                <span class="statistics-tile__value">@FormatCount(stats.Summary.TotalLogins)</span>
+                                <div class="statistics-tile__meta">
+                                    <span class="statistics-badge @GetTrendBadgeClass(stats.LoginTrend)">@GetTrendChangeText(stats.LoginTrend)</span>
+                                    <span class="statistics-tile__caption">vs previous day</span>
+                                </div>
+                                <span class="statistics-tile__hint">Sign-ins captured for the selected range</span>
+                            </div>
+                        </article>
+
+                        <article class="statistics-tile motion-fade-in" data-variant="downloads">
+                            <div class="statistics-tile__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+                                    <path d="M12 4v9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <polyline points="8 10 12 14 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <rect x="4" y="16" width="16" height="4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6" />
+                                </svg>
+                            </div>
+                            <div class="statistics-tile__content">
+                                <span class="statistics-tile__label">Total Downloads</span>
+                                <span class="statistics-tile__value">@FormatCount(stats.Summary.TotalDownloads)</span>
+                                <div class="statistics-tile__meta">
+                                    <span class="statistics-badge @GetTrendBadgeClass(stats.DownloadTrend)">@GetTrendChangeText(stats.DownloadTrend)</span>
+                                    <span class="statistics-tile__caption">vs previous day</span>
+                                </div>
+                                <span class="statistics-tile__hint">Resource downloads completed in the range</span>
+                            </div>
+                        </article>
+                    </section>
+
+                    <section class="statistics-charts motion-stagger">
+                        <article class="statistics-chart motion-fade-in" data-variant="logins">
+                            <header class="statistics-chart__header">
+                                <div class="statistics-chart__titles">
+                                    <span class="statistics-chart__eyebrow">Activity</span>
+                                    <h4 class="statistics-chart__title">Logins Trend</h4>
+                                    <span class="statistics-chart__subtitle">@GetTrendSubtitle(stats.LoginTrend)</span>
+                                </div>
+                                <div class="statistics-chart__value">
+                                    <span class="statistics-chart__number">@GetTrendLatestValue(stats.LoginTrend)</span>
+                                    <span class="statistics-badge @GetTrendBadgeClass(stats.LoginTrend)">@GetTrendChangeText(stats.LoginTrend)</span>
+                                </div>
+                            </header>
+
+                            @if (stats.LoginTrend.Any())
                             {
-                                <circle class="chart-dot" cx="@FormatDouble(point.X)" cy="@FormatDouble(point.Y)" r="1.8" fill="#0ea5e9" />
+                                var gradientId = GetGradientId("logins");
+                                var lastPoint = GetTrendLastPoint(stats.LoginTrend);
+                                <div class="statistics-chart__chart">
+                                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Logins trend">
+                                        <defs>
+                                            <linearGradient id="@gradientId" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" class="statistics-chart__gradient-start" />
+                                                <stop offset="100%" class="statistics-chart__gradient-end" />
+                                            </linearGradient>
+                                        </defs>
+                                        <g class="statistics-chart__grid">
+                                            @foreach (var y in GetHorizontalGridLines(4))
+                                            {
+                                                <line x1="0" x2="100" y1="@FormatDouble(y)" y2="@FormatDouble(y)" vector-effect="non-scaling-stroke" />
+                                            }
+                                        </g>
+                                        <polygon class="statistics-chart__area" points="@GetTrendFillPoints(stats.LoginTrend)" fill="@($"url(#{gradientId})")" />
+                                        <polyline class="statistics-chart__line" points="@GetTrendLinePoints(stats.LoginTrend)" stroke-width="1.6" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
+                                        @if (lastPoint is { } point)
+                                        {
+                                            <circle class="statistics-chart__dot" cx="@FormatDouble(point.X)" cy="@FormatDouble(point.Y)" r="1.8" />
+                                        }
+                                    </svg>
+                                </div>
+                                <div class="statistics-chart__axis">
+                                    @foreach (var label in GetTrendAxisLabels(stats.LoginTrend))
+                                    {
+                                        <span>@label</span>
+                                    }
+                                </div>
+                                <div class="statistics-chart__insights" role="list">
+                                    <div class="statistics-chart__insight" role="listitem">
+                                        <span class="statistics-chart__insight-label">Peak day</span>
+                                        <span class="statistics-chart__insight-value">@GetTrendPeakInsight(stats.LoginTrend)</span>
+                                    </div>
+                                    <div class="statistics-chart__insight" role="listitem">
+                                        <span class="statistics-chart__insight-label">Daily average</span>
+                                        <span class="statistics-chart__insight-value">@GetTrendAverageInsight(stats.LoginTrend)</span>
+                                    </div>
+                                </div>
                             }
-                        </svg>
-                    </div>
-                    <div class="chart-card__axis">
-                        @foreach (var label in GetTrendAxisLabels(stats.DownloadTrend))
-                        {
-                            <span>@label</span>
-                        }
-                    </div>
-                    <div class="chart-card__insights" role="list">
-                        <div class="chart-insight" role="listitem">
-                            <span class="chart-insight__label">Peak day</span>
-                            <span class="chart-insight__value">@GetTrendPeakInsight(stats.DownloadTrend)</span>
-                        </div>
-                        <div class="chart-insight" role="listitem">
-                            <span class="chart-insight__label">Daily average</span>
-                            <span class="chart-insight__value">@GetTrendAverageInsight(stats.DownloadTrend)</span>
-                        </div>
-                    </div>
+                            else
+                            {
+                                <div class="statistics-chart__empty">No data.</div>
+                            }
+                        </article>
+
+                        <article class="statistics-chart motion-fade-in" data-variant="downloads">
+                            <header class="statistics-chart__header">
+                                <div class="statistics-chart__titles">
+                                    <span class="statistics-chart__eyebrow">Resources</span>
+                                    <h4 class="statistics-chart__title">Downloads Trend</h4>
+                                    <span class="statistics-chart__subtitle">@GetTrendSubtitle(stats.DownloadTrend)</span>
+                                </div>
+                                <div class="statistics-chart__value">
+                                    <span class="statistics-chart__number">@GetTrendLatestValue(stats.DownloadTrend)</span>
+                                    <span class="statistics-badge @GetTrendBadgeClass(stats.DownloadTrend)">@GetTrendChangeText(stats.DownloadTrend)</span>
+                                </div>
+                            </header>
+
+                            @if (stats.DownloadTrend.Any())
+                            {
+                                var gradientId = GetGradientId("downloads");
+                                var lastPoint = GetTrendLastPoint(stats.DownloadTrend);
+                                <div class="statistics-chart__chart">
+                                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Downloads trend">
+                                        <defs>
+                                            <linearGradient id="@gradientId" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" class="statistics-chart__gradient-start" />
+                                                <stop offset="100%" class="statistics-chart__gradient-end" />
+                                            </linearGradient>
+                                        </defs>
+                                        <g class="statistics-chart__grid">
+                                            @foreach (var y in GetHorizontalGridLines(4))
+                                            {
+                                                <line x1="0" x2="100" y1="@FormatDouble(y)" y2="@FormatDouble(y)" vector-effect="non-scaling-stroke" />
+                                            }
+                                        </g>
+                                        <polygon class="statistics-chart__area" points="@GetTrendFillPoints(stats.DownloadTrend)" fill="@($"url(#{gradientId})")" />
+                                        <polyline class="statistics-chart__line" points="@GetTrendLinePoints(stats.DownloadTrend)" stroke-width="1.6" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" />
+                                        @if (lastPoint is { } point)
+                                        {
+                                            <circle class="statistics-chart__dot" cx="@FormatDouble(point.X)" cy="@FormatDouble(point.Y)" r="1.8" />
+                                        }
+                                    </svg>
+                                </div>
+                                <div class="statistics-chart__axis">
+                                    @foreach (var label in GetTrendAxisLabels(stats.DownloadTrend))
+                                    {
+                                        <span>@label</span>
+                                    }
+                                </div>
+                                <div class="statistics-chart__insights" role="list">
+                                    <div class="statistics-chart__insight" role="listitem">
+                                        <span class="statistics-chart__insight-label">Peak day</span>
+                                        <span class="statistics-chart__insight-value">@GetTrendPeakInsight(stats.DownloadTrend)</span>
+                                    </div>
+                                    <div class="statistics-chart__insight" role="listitem">
+                                        <span class="statistics-chart__insight-label">Daily average</span>
+                                        <span class="statistics-chart__insight-value">@GetTrendAverageInsight(stats.DownloadTrend)</span>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="statistics-chart__empty">No data.</div>
+                            }
+                        </article>
+                    </section>
                 }
-                else
-                {
-                    <div class="chart-card__empty">No data.</div>
-                }
-            </div>
+            </main>
         </div>
-    }
-</ResponsivePage>
+    </div>
+</div>
 
 @code {
     private DateTime startDate = DateTime.Today.AddDays(-6);

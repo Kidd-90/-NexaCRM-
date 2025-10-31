@@ -1,0 +1,87 @@
+@using Microsoft.AspNetCore.Components
+@using System.Collections.Generic
+
+<div class="@CssClass" role="group" aria-label="@Label" @attributes="AdditionalAttributes">
+    <button type="button"
+            class="@GetButtonClass(DensityMode.Comfortable)"
+            aria-pressed="@IsActive(DensityMode.Comfortable).ToString().ToLowerInvariant()"
+            aria-label="@ComfortableButtonLabel"
+            @onclick="() => OnToggleAsync(DensityMode.Comfortable)">
+        <i class="bi bi-arrows-expand" aria-hidden="true"></i>
+        <span class="nc-density-toggle__text">@ComfortableText</span>
+    </button>
+    <button type="button"
+            class="@GetButtonClass(DensityMode.Compact)"
+            aria-pressed="@IsActive(DensityMode.Compact).ToString().ToLowerInvariant()"
+            aria-label="@CompactButtonLabel"
+            @onclick="() => OnToggleAsync(DensityMode.Compact)">
+        <i class="bi bi-arrows-collapse" aria-hidden="true"></i>
+        <span class="nc-density-toggle__text">@CompactText</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public DensityMode Value { get; set; } = DensityMode.Comfortable;
+
+    [Parameter]
+    public EventCallback<DensityMode> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<DensityMode> OnChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string Label { get; set; } = "표 간격";
+
+    [Parameter]
+    public string ComfortableText { get; set; } = "여유";
+
+    [Parameter]
+    public string CompactText { get; set; } = "컴팩트";
+
+    [Parameter]
+    public string ComfortableButtonLabel { get; set; } = "여유 모드";
+
+    [Parameter]
+    public string CompactButtonLabel { get; set; } = "컴팩트 모드";
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CssClass => string.IsNullOrWhiteSpace(Class)
+        ? "nc-density-toggle motion-fade-in"
+        : $"nc-density-toggle motion-fade-in {Class}";
+
+    private string GetButtonClass(DensityMode mode)
+    {
+        var baseClass = "nc-density-toggle__option motion-pressable";
+        return Value == mode
+            ? $"{baseClass} is-active"
+            : baseClass;
+    }
+
+    private bool IsActive(DensityMode mode) => Value == mode;
+
+    private async Task OnToggleAsync(DensityMode mode)
+    {
+        if (Value == mode)
+        {
+            return;
+        }
+
+        Value = mode;
+
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(mode);
+        }
+
+        if (OnChanged.HasDelegate)
+        {
+            await OnChanged.InvokeAsync(mode);
+        }
+    }
+}
