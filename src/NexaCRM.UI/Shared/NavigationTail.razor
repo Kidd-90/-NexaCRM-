@@ -7,7 +7,7 @@
 @using Microsoft.JSInterop
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@inject Microsoft.Extensions.Logging.ILogger<NewNavigationTail> Logger
+@inject Microsoft.Extensions.Logging.ILogger<NavigationTail> Logger
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IRolePermissionService RolePermissionService
 @inject IAuthenticationService AuthenticationService
@@ -116,7 +116,7 @@
     private bool isCollapsed;
     private int? activeSubMenuIndex;
     private string? selectedItem = null;
-    private DotNetObjectReference<NewNavigationTail>? _dotNetRef;
+    private DotNetObjectReference<NavigationTail>? _dotNetRef;
 
     private readonly List<NavGroupVm> visibleGroups = new();
     // Track which subgroups are expanded in the panel. Keys are the subgroup.Title values
@@ -196,8 +196,8 @@
         try
         {
             var names = string.Join(", ", visibleGroups.Select(v => v.DisplayName));
-            _ = JSRuntime.InvokeVoidAsync("console.log", $"NewNavigationTail.LoadGroupsAsync built groups: {names}");
-            try { Logger?.LogInformation("NewNavigationTail.LoadGroupsAsync built groups: {Groups}", names); } catch { }
+            _ = JSRuntime.InvokeVoidAsync("console.log", $"NavigationTail.LoadGroupsAsync built groups: {names}");
+            try { Logger?.LogInformation("NavigationTail.LoadGroupsAsync built groups: {Groups}", names); } catch { }
         }
         catch { }
 
@@ -286,9 +286,9 @@
             // Persist selection to localStorage in background while UI is already updated
             try
             {
-                await JSRuntime.InvokeVoidAsync("console.log", $"NewNavigationTail.ToggleSubMenu persisting index={(targetIndex.HasValue ? targetIndex.Value.ToString() : "null")}");
+                await JSRuntime.InvokeVoidAsync("console.log", $"NavigationTail.ToggleSubMenu persisting index={(targetIndex.HasValue ? targetIndex.Value.ToString() : "null")}");
                 await SaveActiveIndexToStorageAsync(targetIndex);
-                await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu persistence complete");
+                await JSRuntime.InvokeVoidAsync("console.log", "NavigationTail.ToggleSubMenu persistence complete");
             }
             catch (Exception persistEx)
             {
@@ -297,8 +297,8 @@
             }
 
             // Log out the final decision
-            await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu -> " + details);
-            try { Logger?.LogInformation("NewNavigationTail.ToggleSubMenu -> {Details}", details); } catch { }
+            await JSRuntime.InvokeVoidAsync("console.log", "NavigationTail.ToggleSubMenu -> " + details);
+            try { Logger?.LogInformation("NavigationTail.ToggleSubMenu -> {Details}", details); } catch { }
 
             // ensure UI updates
             await InvokeAsync(StateHasChanged);
@@ -564,7 +564,7 @@
             // Capture details for logging
             var grp = visibleGroups[idx];
             var details = $"index={idx}, group={grp.DisplayName}, links={grp.Links.Count}";
-            await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenuByKey -> " + details);
+            await JSRuntime.InvokeVoidAsync("console.log", "NavigationTail.ToggleSubMenuByKey -> " + details);
 
             // Persist selection in background
             _ = SaveActiveIndexToStorageAsync(activeSubMenuIndex);
