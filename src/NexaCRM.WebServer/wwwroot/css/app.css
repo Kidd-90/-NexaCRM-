@@ -1268,7 +1268,7 @@ a:hover,
     }
 
     /* Hide legacy .sidebar (mobile drawer) on desktop/tablet to avoid having two
-       sidebars rendered at once (the fixed NavigationRail is used on desktop). */
+       sidebars rendered at once (the fixed NavigationTail is used on desktop). */
     .sidebar {
         display: none !important;
     }
@@ -2347,7 +2347,7 @@ textarea::placeholder {
 }
 
 /* ========================================
-   NavigationRail Panel - CRITICAL FIX (Global Override)
+   NavigationTail Panel - CRITICAL FIX (Global Override)
    ======================================== */
 
 /* Collapsed state */
@@ -2360,10 +2360,10 @@ textarea::placeholder {
 }
 
 /* ========================================
-   NavigationRail Active Item Styles (Global Fallback)
+   NavigationTail Active Item Styles (Global Fallback)
    ======================================== */
 
-/* Global fallback for NavigationRail active items
+/* Global fallback for NavigationTail active items
    This is needed because NavLink component may not inherit scoped CSS attributes.
    These styles ensure active navigation items are properly styled. */
 
@@ -2408,7 +2408,7 @@ textarea::placeholder {
    - Login status indicator → wwwroot/css/components/login-status.css
      (login-status-indicator and its children)
    
-   - NavigationRail → Shared/NavigationRail.razor.css (scoped CSS)
+   - NavigationTail → Shared/NavigationTail.razor.css (scoped CSS)
      (all nav-rail__* and rail-* classes)
    
    Include these files in your specific pages/components as needed.

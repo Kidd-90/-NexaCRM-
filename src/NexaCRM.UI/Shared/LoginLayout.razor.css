@@ -9,7 +9,7 @@
 }
 
 /* If a page-level wrapper (.page) is present (eg. login/anonymous routes),
-   ensure any desktop-shell left padding (reserved for NavigationRail) is
+   ensure any desktop-shell left padding (reserved for NavigationTail) is
    overridden so the page takes the full viewport width.
    This avoids a persistent empty left column when the rail isn't rendered. */
 

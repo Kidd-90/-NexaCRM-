@@ -1,7 +1,7 @@
-# NavigationRail Route Synchronization
+# NavigationTail Route Synchronization
 
 ## Overview
-The `NavigationRail` component in the UI shell now keeps its icon rail and detail panel synchronized with the current router state. A shared lookup table that maps each accessible navigation link to its parent group ensures the correct icon is marked active and the matching section in the detail panel is expanded.
+The `NavigationTail` component in the UI shell now keeps its icon rail and detail panel synchronized with the current router state. A shared lookup table that maps each accessible navigation link to its parent group ensures the correct icon is marked active and the matching section in the detail panel is expanded.
 
 ## Key Behaviors
 - The component normalizes route URIs by trimming query strings and fragments before matching them to navigation links.
