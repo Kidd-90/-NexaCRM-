@@ -1,7 +1,61 @@
-/*!
+/*! 
  * NexaCRM UI Layout Patterns
  * Grid and structural helpers for dashboard surfaces and detail panes.
  */
+:root {
+    --ui-shell-max-width: clamp(64rem, 82vw, 78rem);
+    --ui-shell-padding-inline: clamp(1.25rem, 4vw, 2.75rem);
+    --ui-shell-padding-block: clamp(1.5rem, 4vw, 3rem);
+    --ui-grid-gap: clamp(1rem, 2vw, 1.75rem);
+    --ui-grid-gap-tight: clamp(0.75rem, 1.5vw, 1.25rem);
+    --ui-grid-gap-loose: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.ui-shell {
+    width: min(100%, var(--ui-shell-max-width));
+    margin-inline: auto;
+    padding-inline: var(--ui-shell-padding-inline);
+    padding-block: var(--ui-shell-padding-block);
+}
+
+.ui-shell[data-ui-grid-gap="tight"] {
+    --ui-grid-gap: var(--ui-grid-gap-tight);
+}
+
+.ui-shell[data-ui-grid-gap="loose"] {
+    --ui-grid-gap: var(--ui-grid-gap-loose);
+}
+
+.ui-grid-12 {
+    --ui-grid-active-columns: 12;
+    display: grid;
+    grid-template-columns: repeat(var(--ui-grid-active-columns), minmax(0, 1fr));
+    column-gap: var(--ui-grid-column-gap, var(--ui-grid-gap));
+    row-gap: var(--ui-grid-row-gap, var(--ui-grid-gap));
+}
+
+.ui-grid-12[data-ui-grid-gap="tight"] {
+    --ui-grid-column-gap: var(--ui-grid-gap-tight);
+    --ui-grid-row-gap: var(--ui-grid-gap-tight);
+}
+
+.ui-grid-12[data-ui-grid-gap="loose"] {
+    --ui-grid-column-gap: var(--ui-grid-gap-loose);
+    --ui-grid-row-gap: var(--ui-grid-gap-loose);
+}
+
+[data-ui-col-span] {
+    --ui-grid-col-span: 12;
+    grid-column: span var(--ui-grid-col-span);
+}
+
+[data-ui-col-span="2"] { --ui-grid-col-span: 2; }
+[data-ui-col-span="3"] { --ui-grid-col-span: 3; }
+[data-ui-col-span="4"] { --ui-grid-col-span: 4; }
+[data-ui-col-span="6"] { --ui-grid-col-span: 6; }
+[data-ui-col-span="8"] { --ui-grid-col-span: 8; }
+[data-ui-col-span="12"] { --ui-grid-col-span: 12; }
+
 .ui-stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -36,4 +90,43 @@
     display: grid;
     grid-template-rows: 1fr auto;
     gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+    .ui-grid-12 {
+        --ui-grid-active-columns: 10;
+    }
+}
+
+@media (max-width: 992px) {
+    .ui-grid-12 {
+        --ui-grid-active-columns: 8;
+    }
+}
+
+@media (max-width: 864px) {
+    .ui-grid-12 {
+        --ui-grid-active-columns: 6;
+    }
+}
+
+@media (max-width: 768px) {
+    .ui-grid-12 {
+        --ui-grid-active-columns: 4;
+    }
+
+    [data-ui-col-span] {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 576px) {
+    .ui-shell {
+        padding-inline: clamp(1rem, 6vw, 1.5rem);
+        padding-block: clamp(1.25rem, 6vw, 2rem);
+    }
+
+    .ui-grid-12 {
+        --ui-grid-active-columns: 1;
+    }
 }
