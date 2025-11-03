@@ -19,16 +19,16 @@
 
 <div class="position-relative d-flex min-vh-100 flex-column bg-surface-soft overflow-x-hidden common-page-container" data-page="main-dashboard">
     <div class="layout-container d-flex h-100 flex-grow-1 flex-column">
-        <div class="dashboard-container">
+        <div class="dashboard-container ui-shell" data-ui-grid-gap="loose">
         <main id="mainDashboardContent" class="dashboard-main-content" tabindex="-1">
-        <div class="d-flex flex-wrap justify-content-between gap-3 p-4">
+        <div class="dashboard-section-block">
             <AuthorizeView>
                 <Authorized>
                     <p class="text-ink fs-1 fw-bold lh-sm ui-min-w-18rem dashboard-welcome">@Localizer["WelcomeBack", @context.User.Identity?.Name ?? ""]</p>
                 </Authorized>
             </AuthorizeView>
         </div>
-        <div class="px-4 py-3">
+        <div class="dashboard-section-block">
             <label class="d-flex flex-column ui-min-w-10rem ui-input-height-lg w-100">
             <div class="d-flex w-100 flex-grow-1 align-items-stretch rounded-3 h-100">
                 <div
@@ -52,8 +52,8 @@
             </label>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["DashboardOverview"]</h2>
-        <div class="d-grid ui-grid-autofit gap-3 p-4 dashboard-grid">
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/sales-pipeline">
+        <div class="dashboard-grid ui-grid-12">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/sales-pipeline" data-ui-col-span="3">
             <div class="text-ink" data-icon="Funnel" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -63,7 +63,7 @@
             </div>
             <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["SalesPipeline"]</h2>
             </button>
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/reports">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/reports" data-ui-col-span="3">
             <div class="text-ink" data-icon="Target" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -73,7 +73,7 @@
             </div>
             <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["QuarterlyPerformance"]</h2>
             </button>
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/tasks-page">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/tasks-page" data-ui-col-span="3">
             <div class="text-ink" data-icon="ListBullets" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -83,7 +83,7 @@
             </div>
             <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["Tasks"]</h2>
             </button>
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="#recent-activity">
+            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="#recent-activity" data-ui-col-span="3">
             <div class="text-ink" data-icon="Users" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path
@@ -95,8 +95,8 @@
             </button>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["SalesPipelineSummary"]</h2>
-        <div class="d-flex flex-wrap gap-4 px-4 py-4 dashboard-section-content">
-            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card">
+        <div class="dashboard-section-grid ui-grid-12" data-ui-grid-gap="tight">
+            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card" data-ui-col-span="6">
             <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["DealsByStage"]</p>
             <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3 dashboard-chart-grid">
                 <p class="text-ink-muted small fw-bold lh-base">@Localizer["Prospecting"]</p>
@@ -115,8 +115,8 @@
             </div>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["QuarterlyPerformance"]</h2>
-        <div class="d-flex flex-wrap gap-4 px-4 py-4 dashboard-section-content">
-            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card">
+        <div class="dashboard-section-grid ui-grid-12" data-ui-grid-gap="tight">
+            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card" data-ui-col-span="6">
             <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["RevenueByQuarter"]</p>
             <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3 dashboard-chart-grid">
                 <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 70%;"></div>
@@ -131,7 +131,7 @@
             </div>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["Tasks"]</h2>
-        <div class="px-4 py-3 container">
+        <div class="dashboard-section-block">
             <div class="d-flex overflow-hidden rounded-3 border border-soft bg-surface-soft dashboard-table-container">
             <table class="flex-grow-1">
                 <thead>
@@ -194,7 +194,8 @@
             </div>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5" id="recent-activity">@Localizer["RecentActivity"]</h2>
-        <div class="d-grid ui-grid-40-1fr gx-2 px-4">
+        <div class="dashboard-section-block">
+            <div class="d-grid ui-grid-40-1fr gx-2 dashboard-activity-grid">
             <div class="d-flex flex-column align-items-center gap-1 pt-3">
             <div class="text-ink" data-icon="UserPlus" data-size="24px" data-weight="regular">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
@@ -239,9 +240,10 @@
             <p class="text-ink-muted fs-5 fw-normal lh-base">2024-07-14</p>
             </div>
         </div>
+        </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["LeadSourceAnalytics"]</h2>
-        <div class="d-flex flex-wrap gap-4 px-4 py-4">
-            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6">
+        <div class="dashboard-section-grid ui-grid-12" data-ui-grid-gap="tight">
+            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6" data-ui-col-span="6">
                 <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["LeadsBySource"]</p>
                 <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3">
                     <p class="text-ink-muted small fw-bold lh-base">@Localizer["Website"]</p>

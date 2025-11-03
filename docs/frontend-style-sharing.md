@@ -17,6 +17,13 @@
 - `wwwroot/js/*.js`: 인증, 내비게이션, 테마, 디바이스 감지 등 공통 상호작용 로직 모음.
 - `https://tweakcn.com/live-preview.min.js`: TweakCN 라이브 프리뷰 스니펫. 디자인 팀이 [TweakCN 테마 편집기](https://tweakcn.com/editor/theme?p=custom)와 실시간으로 스타일을 연동할 때 사용합니다.
 
+## Layout Grid Tokens
+- `ui/layout.css`는 `.ui-shell`과 `.ui-grid-12`를 통해 데스크톱 12컬럼 기반 레이아웃을 구성할 수 있는 커스텀 프로퍼티를 제공합니다. `--ui-shell-max-width`, `--ui-shell-padding-inline`, `--ui-grid-gap`과 같은 토큰은 `clamp()`를 사용해 모바일부터 와이드 스크린까지 동일한 수치를 유지합니다.
+- `.ui-grid-12`는 `--ui-grid-active-columns` 값을 뷰포트 너비에 따라 12→10→8→6→4→1로 조정하며, `[data-ui-col-span="3"]`처럼 열 span 속성을 부여하면 카드나 섹션의 폭을 손쉽게 제어할 수 있습니다.
+- `.ui-shell`을 페이지 컨테이너에 부여하면 폭/패딩 토큰이 즉시 적용되며, 필요 시 페이지 스코프 CSS에서 `--ui-shell-padding-inline`, `--ui-shell-padding-block` 값을 재정의해 구역별 여백을 조정할 수 있습니다. 예를 들어 `MainDashboard`는 상단은 `clamp(1.75rem, 4vw, 3.5rem)`, 하단은 `clamp(3.5rem, 5vw, 4.75rem)`으로 재정의해 카드가 밀집된 구간에서도 여유를 확보합니다. `data-ui-grid-gap` 속성을 `.ui-shell`에 부여하면 페이지 전반에 사용할 기본 그리드 간격을 정의할 수 있고, 개별 섹션은 필요 시 자체 속성으로 재정의해 더 촘촘하거나 느슨한 간격을 적용할 수 있습니다. 페이지 컨테이너가 자체적으로 `gap`을 정의해야 한다면 `gap: var(--ui-grid-gap)` 형태로 커스텀 프로퍼티를 그대로 참조하면 셸의 기본 간격 변경이 즉시 반영됩니다.
+- 페이지 스코프에서는 `dashboard-section-grid`, `dashboard-section-block`처럼 커스텀 클래스를 추가해 섹션 패딩만 조정하고, 기본 간격은 `data-ui-grid-gap` 속성으로 결정합니다. 모바일 분기에서는 필요 시 `--ui-grid-column-gap` 값을 재정의해 카드 간격을 세밀하게 보정합니다. 이 방식은 `MainDashboard` 카드/차트/테이블 섹션을 하나의 레이아웃 시스템으로 통합하는 데 사용됩니다.
+- `MainDashboard.razor.css`와 같은 페이지 스코프 스타일에서는 `padding-inline`·`padding-block`·`gap` 값을 `calc(var(--ui-grid-gap) * n)` 형태로 설정해 밀도 전환이 발생해도 내부 여백이 자동으로 재계산되도록 구성했습니다. 예를 들어 `dashboard-section-grid`는 기본 간격을 `var(--ui-grid-gap)`에서 가져오고, 모바일 뷰에서는 0.75배 스케일을 적용해 촘촘한 뷰에서도 동일한 토큰을 재사용합니다.
+
 ## Typography Tokens
 - `app.css` 상단에서 `Pretendard Variable` 가변 글꼴을 `@font-face`로 선언하고, `--font-family-sans`, `--font-family-heading`, `--font-family-mono` 등
   전역 타이포그래피 토큰을 제공합니다.

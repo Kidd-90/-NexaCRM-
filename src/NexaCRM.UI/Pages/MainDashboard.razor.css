@@ -1,9 +1,5 @@
 :root {
-    --dashboard-shell-max-mobile: 100%;
-    --dashboard-shell-max-tablet: 62rem;
-    --dashboard-shell-max-desktop: 78rem;
     --dashboard-sidebar-width: 19rem;
-    --dashboard-gap: 1.75rem;
     --dashboard-surface: #f8fafc;
     --dashboard-border: rgba(208, 217, 231, 0.65);
     --dashboard-focus-ring: #6366f1;
@@ -49,13 +45,16 @@
 }
 
 .dashboard-container {
-    width: min(100%, var(--dashboard-shell-max-mobile));
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.75rem 1.25rem 4.5rem;
+    gap: var(--ui-grid-gap);
+    padding-block-end: clamp(3.5rem, 5vw, 4.75rem);
     transition: padding 0.25s ease;
+}
+
+.dashboard-container.ui-shell {
+    --ui-shell-padding-inline: clamp(1.25rem, 4vw, 2.75rem);
+    --ui-shell-padding-block: clamp(1.75rem, 4vw, 3.5rem);
 }
 
 .dashboard-sidebar {
@@ -125,7 +124,7 @@
 .dashboard-main-content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: calc(var(--ui-grid-gap) * 0.9);
     padding: 1rem 0 3.5rem;
     min-height: 100%;
 }
@@ -143,12 +142,14 @@
 
 @media (min-width: 768px) {
     .dashboard-container {
-        width: min(100%, var(--dashboard-shell-max-tablet));
         display: grid;
         grid-template-columns: minmax(0, var(--dashboard-sidebar-width)) minmax(0, 1fr);
-        gap: var(--dashboard-gap);
         align-items: start;
-        padding: 2.5rem 2rem 5rem;
+    }
+
+    .dashboard-container.ui-shell {
+        --ui-shell-padding-block: clamp(2.25rem, 4vw, 3rem);
+        padding-block-end: clamp(3.75rem, 5vw, 4.75rem);
     }
 
     .dashboard-sidebar {
@@ -169,16 +170,17 @@
     .dashboard-main-content {
         background-color: var(--dashboard-main-surface);
         border-radius: 1.5rem;
-        padding: 2.25rem 2.25rem 3rem;
+        padding: clamp(2rem, 4vw, 2.5rem) clamp(2rem, 4vw, 2.75rem) clamp(2.5rem, 4vw, 3.25rem);
         box-shadow: var(--dashboard-main-shadow);
         border: 1px solid var(--dashboard-border);
     }
 }
 
 @media (min-width: 1200px) {
-    .dashboard-container {
-        width: min(100%, var(--dashboard-shell-max-desktop));
-        padding-inline: 3rem;
+    .dashboard-container.ui-shell {
+        --ui-shell-padding-inline: clamp(2rem, 4vw, 3rem);
+        --ui-shell-padding-block: clamp(2.5rem, 4vw, 3.5rem);
+        padding-block-end: clamp(4rem, 4vw, 4.75rem);
     }
 
     .dashboard-sidebar {
@@ -186,7 +188,7 @@
     }
 
     .dashboard-main-content {
-        padding: 2.75rem 3rem 3.25rem;
+        padding: clamp(2.5rem, 4vw, 3rem) clamp(2.5rem, 4vw, 3.25rem) clamp(3rem, 4vw, 3.5rem);
     }
 }
 
@@ -247,11 +249,23 @@
     visibility: visible;
 }
 
-.dashboard-section-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1.5rem 1rem;
+.dashboard-section-grid {
+    padding-block: calc(var(--ui-grid-gap) * 0.9);
+    padding-inline: calc(var(--ui-grid-gap) * 1.1);
+}
+
+.dashboard-section-block {
+    padding-block: calc(var(--ui-grid-gap) * 0.75);
+    padding-inline: var(--ui-grid-gap);
+}
+
+.dashboard-grid {
+    padding-block: var(--ui-grid-gap);
+    padding-inline: calc(var(--ui-grid-gap) * 1.25);
+}
+
+.dashboard-activity-grid {
+    gap: calc(var(--ui-grid-gap) * 0.85);
 }
 
 .dashboard-stat-card {
@@ -263,10 +277,6 @@
 .dashboard-chart-grid {
     display: grid;
     min-height: 180px;
-}
-
-.dashboard-grid {
-    display: grid;
 }
 
 .priority-button {
@@ -602,9 +612,10 @@
     }
 
     .dashboard-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.75rem;
-        padding: 1rem;
+        --ui-grid-column-gap: calc(var(--ui-grid-gap) * 0.75);
+        --ui-grid-row-gap: calc(var(--ui-grid-gap) * 0.75);
+        padding-block: calc(var(--ui-grid-gap) * 0.75);
+        padding-inline: calc(var(--ui-grid-gap) * 0.85);
     }
 
     .dashboard-card {
@@ -614,9 +625,16 @@
         min-height: auto;
     }
 
-    .dashboard-section-content {
-        gap: 1rem;
-        padding: 1rem;
+    .dashboard-section-grid {
+        --ui-grid-column-gap: calc(var(--ui-grid-gap) * 0.75);
+        --ui-grid-row-gap: calc(var(--ui-grid-gap) * 0.75);
+        padding-block: calc(var(--ui-grid-gap) * 0.75);
+        padding-inline: calc(var(--ui-grid-gap) * 0.85);
+    }
+
+    .dashboard-section-block {
+        padding-block: calc(var(--ui-grid-gap) * 0.6);
+        padding-inline: calc(var(--ui-grid-gap) * 0.85);
     }
 
     .dashboard-stat-card {
