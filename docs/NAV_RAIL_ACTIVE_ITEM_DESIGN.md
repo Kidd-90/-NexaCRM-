@@ -1,7 +1,7 @@
 # Navigation Rail Active Item Design Update
 
 ## Overview
-Updated the active navigation link styling in the NavigationRail component to feature a white border with a gray-to-white gradient background, creating a modern, elevated appearance.
+Updated the active navigation link styling in the NavigationTail component to feature a white border with a gray-to-white gradient background, creating a modern, elevated appearance.
 
 ## Design Changes
 
@@ -154,7 +154,7 @@ The design uses direct color values for precise control, but remains compatible 
 
 ## File Modified
 
-**Location**: `src/NexaCRM.UI/Shared/NavigationRail.razor.css`
+**Location**: `src/NexaCRM.UI/Shared/NavigationTail.razor.css`
 
 **Lines Changed**:
 1. Lines 1-8: Panel border-radius and shadow enhancements

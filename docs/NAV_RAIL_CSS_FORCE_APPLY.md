@@ -97,7 +97,7 @@ dotnet build --no-incremental
 
 **수정된 파일**: 
 ```
-src/NexaCRM.UI/Shared/NavigationRail.razor.css
+src/NexaCRM.UI/Shared/NavigationTail.razor.css
 ```
 
 **라인 번호**: 984-996

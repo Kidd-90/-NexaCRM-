@@ -10560,7 +10560,7 @@ textarea.form-control[b-4nauvjnn8x] {
 }
 
 /* If a page-level wrapper (.page) is present (eg. login/anonymous routes),
-   ensure any desktop-shell left padding (reserved for NavigationRail) is
+   ensure any desktop-shell left padding (reserved for NavigationTail) is
    overridden so the page takes the full viewport width.
    This avoids a persistent empty left column when the rail isn't rendered. */
 
@@ -11426,7 +11426,7 @@ body[data-theme="dark"] .login-theme-toggle .theme-light-icon[b-sq1rqjv87y] {
         top: calc(100% + 0.25rem);
     }
 }
-/* _content/NexaCRM.UI/Shared/NavigationRail.razor.rz.scp.css */
+/* _content/NexaCRM.UI/Shared/NavigationTail.razor.rz.scp.css */
 /* Navigation Rail - responsive icon rail + detail panel */
 /* Panel styles moved to line ~345 - consolidated single definition */
 

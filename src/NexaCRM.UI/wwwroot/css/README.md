@@ -20,8 +20,8 @@ NexaCRM.UI/
 │           └── login-status.css             # 🟢 로그인 상태 인디케이터
 │
 └── Shared/
-    ├── NavigationRail.razor                 # 🧭 네비게이션 컴포넌트
-    └── NavigationRail.razor.css             # 🎨 NavigationRail 전용 스타일 (Scoped CSS)
+    ├── NavigationTail.razor                 # 🧭 네비게이션 컴포넌트
+    └── NavigationTail.razor.css             # 🎨 NavigationTail 전용 스타일 (Scoped CSS)
 ```
 
 ## 🎯 각 파일의 역할
@@ -69,14 +69,14 @@ NexaCRM.UI/
 .indicator-text               /* 상태 텍스트 */
 ```
 
-### **NavigationRail.razor.css** - NavigationRail 전용 (Scoped CSS)
+### **NavigationTail.razor.css** - NavigationTail 전용 (Scoped CSS)
 **Blazor Scoped CSS 특징**:
 - 자동으로 고유 속성 추가 (예: `[b-hqrahhuzx2]`)
 - 스타일 격리 - 다른 컴포넌트에 영향 없음
 - 빌드 시 `NexaCRM.UI.bundle.scp.css`로 번들링
 
 **제공 스타일**:
-- `.nav-rail__*` - NavigationRail 레이아웃
+- `.nav-rail__*` - NavigationTail 레이아웃
 - `.rail-icon` - 아이콘 버튼
 - `.rail-panel-item` - 패널 메뉴 아이템
 - `.rail-panel-item.active` - 활성 메뉴 아이템 (흰색 테두리 + 그라데이션)
@@ -165,10 +165,10 @@ publish/wwwroot/_content/NexaCRM.UI/
 
 ## ✨ Active Item 스타일 적용 예제
 
-NavigationRail의 active 메뉴 아이템은 자동으로 다음 스타일이 적용됩니다:
+NavigationTail의 active 메뉴 아이템은 자동으로 다음 스타일이 적용됩니다:
 
 ```css
-/* NavigationRail.razor.css (Scoped) */
+/* NavigationTail.razor.css (Scoped) */
 .nav-rail__panel .rail-panel-item.active {
     color: #000000 !important;
     background: linear-gradient(135deg, rgba(245, 245, 245, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
