@@ -1,5 +1,7 @@
 ﻿@using System.Linq
 @using System.Security.Claims
+@using System.Text.Json
+@using System.Text.Json.Serialization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
 @using NexaCRM.UI.Services.Interfaces
@@ -14,7 +16,7 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
 @using NexaCRM.UI.Models.Navigation
 
-<div class='sidebar @(isCollapsed ? "collapsed" : "") @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "panel-open" : "")' role="navigation">
+<div class='@BuildSidebarClasses()' role="navigation" data-viewport='@GetViewportCategoryKey(_currentViewportCategory)'>
     <div class="sidebar-rail">
         <a href="/" class="rail-logo" title="Online store">
             <img src="https://localhost:7065/_content/NexaCRM.UI/images/logo.svg" alt="Logo" class="rail-logo-img" />
@@ -46,10 +48,17 @@
         </div>
     </div>
 
-    <div class='sidebar-panel @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "open" : "")'>
+    <div class="sidebar-panel @(ShouldShowPanel ? "open" : string.Empty)">
         <div class="panel-header">
-            <div class="panel-title">Online store</div>
-            <div class="panel-subtitle">Untitled UI</div>
+            <div class="panel-header-text">
+                <div class="panel-title">Online store</div>
+                <div class="panel-subtitle">Untitled UI</div>
+            </div>
+            <div class="panel-header-actions">
+                <button type="button" class="panel-action panel-dismiss" @onclick="ClosePanelFromHeader" title="Close navigation" aria-label="Close navigation panel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </div>
 
         <div class="panel-body">
@@ -113,24 +122,59 @@
 </div>
 
 @code {
-    private bool isCollapsed;
+    private bool isRailCollapsed;
     private int? activeSubMenuIndex;
     private string? selectedItem = null;
     private DotNetObjectReference<NewNavigationTail>? _dotNetRef;
+    private IJSObjectReference? _viewportModule;
+    private bool _overlayPanelHidden = true;
+    private bool _storageHydrated;
+    private ViewportCategory _currentViewportCategory = ViewportCategory.Desktop;
+    private NavigationStorageSnapshot _storageSnapshot = CreateEmptySnapshot();
 
     private readonly List<NavGroupVm> visibleGroups = new();
     // Track which subgroups are expanded in the panel. Keys are the subgroup.Title values
     // produced by GroupLinks (eg. first path segment or db/... keys).
     private readonly HashSet<string> openSubgroups = new(StringComparer.OrdinalIgnoreCase);
 
+    private const string StorageKey = "nexacrm.activeSubMenuState.v2";
+    private static readonly JsonSerializerOptions StorageSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = false,
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never
+    };
+
+    private bool ShouldShowPanel => activeSubMenuIndex.HasValue && (!PanelShouldOverlay || !_overlayPanelHidden);
+    private bool PanelShouldOverlay => _currentViewportCategory is ViewportCategory.Mobile or ViewportCategory.Tablet;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        _dotNetRef ??= DotNetObjectReference.Create(this);
         await LoadGroupsAsync();
-        // register storage-event listener for multi-tab sync
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _dotNetRef ??= DotNetObjectReference.Create(this);
+
+        var category = await InitializeViewportCategoryAsync();
+        await HydrateStorageCacheAsync();
+        await ApplyViewportCategoryAsync(category, isInitial: true);
+        await RegisterStorageSyncAsync();
+    }
+
+    private async Task RegisterStorageSyncAsync()
+    {
         try
         {
-            _dotNetRef = DotNetObjectReference.Create(this);
             await JSRuntime.InvokeVoidAsync("navigationStorageSync.registerDotNet", _dotNetRef, StorageKey);
         }
         catch (Exception ex)
@@ -138,16 +182,50 @@
             Console.WriteLine($"Failed to register navigationStorageSync: {ex}");
             try { Logger?.LogDebug(ex, "navigationStorageSync registration failed"); } catch { }
         }
-        // attempt to restore previously selected group from localStorage
+
+        // attempt to restore previously selected group from localStorage for the current viewport
         try
         {
             var stored = await LoadActiveIndexFromStorageAsync();
             if (stored.HasValue && stored.Value >= 0 && stored.Value < visibleGroups.Count)
             {
                 activeSubMenuIndex = stored.Value;
+                if (PanelShouldOverlay)
+                {
+                    _overlayPanelHidden = false;
+                }
             }
         }
         catch { }
+    }
+
+    private async Task<ViewportCategory> InitializeViewportCategoryAsync()
+    {
+        try
+        {
+            _viewportModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NexaCRM.UI/js/navigationTailInterop.js");
+            var categoryKey = await _viewportModule.InvokeAsync<string>("navigationTail.registerViewportObserver", _dotNetRef);
+            return ParseViewportCategory(categoryKey);
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogDebug(ex, "navigationTail viewport observer init failed"); } catch { }
+            return ViewportCategory.Desktop;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // initialize selectedItem from current URI
+        selectedItem = NormalizePath("/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        selectedItem = NormalizePath("/" + NavigationManager.ToBaseRelativePath(e.Location));
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadGroupsAsync()
@@ -201,93 +279,81 @@
         }
         catch { }
 
-        // Ensure the active index remains valid after rebuilding groups
-        if (activeSubMenuIndex.HasValue)
+        await HydrateStorageCacheAsync();
+
+        if (activeSubMenuIndex.HasValue && !IsIndexWithinBounds(activeSubMenuIndex.Value))
         {
-            if (activeSubMenuIndex.Value < 0 || activeSubMenuIndex.Value >= visibleGroups.Count)
-            {
-                activeSubMenuIndex = null;
-            }
-        }
-        else
-        {
-            // If there's no active index, but localStorage has one, try to restore it
-            try
-            {
-                var stored = await LoadActiveIndexFromStorageAsync();
-                if (stored.HasValue && stored.Value >= 0 && stored.Value < visibleGroups.Count)
-                {
-                    activeSubMenuIndex = stored.Value;
-                }
-            }
-            catch { }
+            activeSubMenuIndex = null;
         }
 
-        // If still no active index, default to first visible group
+        if (!activeSubMenuIndex.HasValue)
+        {
+            var stored = GetStoredIndexForCategory(_currentViewportCategory);
+            if (stored.HasValue && IsIndexWithinBounds(stored.Value))
+            {
+                activeSubMenuIndex = stored.Value;
+            }
+        }
+
         if (!activeSubMenuIndex.HasValue && visibleGroups.Count > 0)
         {
             activeSubMenuIndex = 0;
-            _ = SaveActiveIndexToStorageAsync(activeSubMenuIndex);
+            await SaveActiveIndexToStorageAsync(activeSubMenuIndex);
+        }
+
+        if (PanelShouldOverlay && !activeSubMenuIndex.HasValue)
+        {
+            _overlayPanelHidden = true;
         }
     }
 
+    private bool IsIndexWithinBounds(int index) => index >= 0 && index < visibleGroups.Count;
+
     private void ToggleCollapse()
     {
-        isCollapsed = !isCollapsed;
+        isRailCollapsed = !isRailCollapsed;
     }
 
     private async Task ToggleSubMenu(int index)
     {
-        // Capture incoming index immediately to avoid races with async work
         var newIndex = index;
         await JSRuntime.InvokeVoidAsync("console.log", $"ToggleSubMenu called with index={newIndex}");
 
         try
         {
-            // Determine the target index in a local variable first
-            int? targetIndex;
+            if (!IsIndexWithinBounds(newIndex))
+            {
+                await JSRuntime.InvokeVoidAsync("console.warn", $"ToggleSubMenu called with out-of-range index={newIndex}");
+                return;
+            }
 
-            // If clicking the already-active index, we will clear it
             if (activeSubMenuIndex == newIndex)
             {
-                targetIndex = null;
-            }
-            else
-            {
-                // Only set if the index is within the current visibleGroups bounds
-                if (newIndex >= 0 && newIndex < visibleGroups.Count)
+                if (PanelShouldOverlay)
                 {
-                    targetIndex = newIndex;
-                }
-                else
-                {
-                    // Out of range: ignore the toggle and keep current state
-                    await JSRuntime.InvokeVoidAsync("console.warn", $"ToggleSubMenu called with out-of-range index={newIndex}");
+                    _overlayPanelHidden = !_overlayPanelHidden;
+                    await InvokeAsync(StateHasChanged);
                     return;
                 }
+
+                activeSubMenuIndex = null;
+                _overlayPanelHidden = PanelShouldOverlay;
+                await SaveActiveIndexToStorageAsync(activeSubMenuIndex);
+                await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu -> index=null, no group");
+                try { Logger?.LogInformation("NewNavigationTail.ToggleSubMenu -> {Details}", "index=null, no group"); } catch { }
+                await InvokeAsync(StateHasChanged);
+                return;
             }
 
-            // Capture group details for logging BEFORE any awaits so they reflect intended target
-            string details;
-            if (targetIndex.HasValue)
-            {
-                var grp = visibleGroups[targetIndex.Value];
-                details = $"index={targetIndex.Value}, group={grp.DisplayName}, links={grp.Links.Count}";
-            }
-            else
-            {
-                details = "index=null, no group";
-            }
-
-            // Apply the state change immediately so the UI reflects the click right away
-            activeSubMenuIndex = targetIndex;
+            activeSubMenuIndex = newIndex;
+            _overlayPanelHidden = false;
             await InvokeAsync(StateHasChanged);
 
             // Persist selection to localStorage in background while UI is already updated
             try
             {
-                await JSRuntime.InvokeVoidAsync("console.log", $"NewNavigationTail.ToggleSubMenu persisting index={(targetIndex.HasValue ? targetIndex.Value.ToString() : "null")}");
-                await SaveActiveIndexToStorageAsync(targetIndex);
+                await JSRuntime.InvokeVoidAsync("console.log", $"NewNavigationTail.ToggleSubMenu persisting index={newIndex}");
+                await SaveActiveIndexToStorageAsync(activeSubMenuIndex);
                 await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu persistence complete");
             }
             catch (Exception persistEx)
@@ -296,17 +362,37 @@
                 await JSRuntime.InvokeVoidAsync("console.warn", $"Failed to persist activeSubMenuIndex: {persistEx.Message}");
             }
 
-            // Log out the final decision
+            var grp = visibleGroups[newIndex];
+            var details = $"index={newIndex}, group={grp.DisplayName}, links={grp.Links.Count}";
             await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenu -> " + details);
             try { Logger?.LogInformation("NewNavigationTail.ToggleSubMenu -> {Details}", details); } catch { }
-
-            // ensure UI updates
-            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             try { Logger?.LogError(ex, "ToggleSubMenu failed"); } catch { }
             Console.WriteLine($"ToggleSubMenu error: {ex}");
+        }
+    }
+
+    private async Task ToggleSubMenuByKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return;
+
+        try
+        {
+            var idx = visibleGroups.FindIndex(g => string.Equals(g.Key, key, StringComparison.OrdinalIgnoreCase));
+            if (idx < 0)
+            {
+                await JSRuntime.InvokeVoidAsync("console.warn", $"ToggleSubMenuByKey could not locate key={key}");
+                return;
+            }
+
+            await ToggleSubMenu(idx);
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogError(ex, "ToggleSubMenuByKey failed"); } catch { }
+            await JSRuntime.InvokeVoidAsync("console.error", $"ToggleSubMenuByKey error: {ex.Message}");
         }
     }
 
@@ -319,9 +405,22 @@
         }
     }
 
+    private async Task HandleKeyDown(KeyboardEventArgs e, string key)
+    {
+        if (e == null) return;
+        if (e.Key == "Enter" || e.Key == " " || e.Code == "Space")
+        {
+            await ToggleSubMenuByKey(key);
+        }
+    }
+
     private void SelectItem(string href)
     {
         selectedItem = NormalizePath(href);
+        if (PanelShouldOverlay)
+        {
+            _overlayPanelHidden = true;
+        }
         // navigate
         try
         {
@@ -372,7 +471,7 @@
         if (string.IsNullOrEmpty(displayName)) return originalIcon ?? "default";
 
         var key = displayName.ToLowerInvariant();
-    var result = key switch
+        var result = key switch
         {
             // Dashboard / main overview
             var s when s.Contains("dashboard") || s.Contains("main") || s.Contains("overview") => "graph",
@@ -501,27 +600,9 @@
             "bar-chart" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='10' width='3.5' height='10' rx='0.6'/><rect x='10.25' y='5' width='3.5' height='15' rx='0.6'/><rect x='16.5' y='14' width='3.5' height='6' rx='0.6'/></g></svg>",
 
             // Gear / settings: simplified cog (circle + spokes)
-            // Added .svg-group wrapper so group-level CSS applies consistently.
             "gear" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3.2' stroke-width='1.5'/><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33'/><path d='M4.6 9a1.65 1.65 0 0 1-.33-1.82l-.06-.06A2 2 0 0 0 6.9 3.29l.06.06a1.65 1.65 0 0 1 1.82.33'/></g></svg>",
 
-            // People / org: two heads + shoulders
-            "people" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='8' r='2.2'/><circle cx='17' cy='8' r='2.2'/><path d='M4 20c1.5-3 5-4 8-4s6.5 1 8 4'/></g></svg>",
-
-            // CPU / system: square chip + inner square
-            "cpu" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='12' height='12' rx='2'/><rect x='9' y='9' width='6' height='6' stroke-width='1.6'/><path d='M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l-1-1M20 20l1 1M19 4l1-1M4 19l-1 1' stroke-width='1.2'/></g></svg>",
-
-            // Check (active): filled circle with white tick (keep fill)
-            // We keep the circle filled with currentColor but wrap tick in a group for transformability
-            "check" => "<svg class='check-svg' width='18' height='18' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group'><circle class='check-bg' cx='8' cy='8' r='8' fill='#0f1724'></circle><path d='M4.5 8.2l2 2 5-5' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'></path></g></svg>",
-
-            // Star (favorite)
-            "star" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.4' stroke-linejoin='round' stroke-linecap='round'><path d='M12 17.3l-5.6 3 1.5-6.1L3 10.6l6.2-.5L12 4.5l2.8 5.6 6.2.5-4.9 3.6 1.5 6.1z'/></g></svg>",
-
-            // Calendar (simple)
-            "calendar" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><path d='M16 2v4M8 2v4M3 10h18'/></g></svg>",
-
-            // Default: a distinct outline circle (stroke-only) as fallback
-            _ => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6'><circle cx='12' cy='12' r='9'/></g></svg>"
+            _ => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='6.5'/></g></svg>"
         };
 
         builder.OpenElement(0, "span");
@@ -529,161 +610,6 @@
         builder.AddMarkupContent(2, svgHtml);
         builder.CloseElement();
     };
-
-    private sealed record NavGroupVm(string Key, string DisplayName, string IconCss, List<NavLinkVm> Links);
-    private sealed record NavLinkVm(string Href, string DisplayName, string IconCss);
-
-    private async Task ToggleSubMenuByKey(string key)
-    {
-        if (string.IsNullOrEmpty(key)) return;
-
-        // Resolve index for key from the current visibleGroups snapshot
-        var idx = visibleGroups.FindIndex(g => string.Equals(g.Key, key, StringComparison.OrdinalIgnoreCase));
-        if (idx < 0)
-        {
-            await JSRuntime.InvokeVoidAsync("console.warn", $"ToggleSubMenuByKey: no group found for key={key}");
-            return;
-        }
-
-        try
-        {
-            // If already active, clear; otherwise set immediately
-            if (activeSubMenuIndex.HasValue && activeSubMenuIndex.Value == idx)
-            {
-                activeSubMenuIndex = null;
-                await InvokeAsync(StateHasChanged);
-                _ = SaveActiveIndexToStorageAsync(null);
-                await JSRuntime.InvokeVoidAsync("console.log", $"ToggleSubMenuByKey cleared index for key={key}");
-                return;
-            }
-
-            // Set immediately for responsive UI
-            activeSubMenuIndex = idx;
-            await InvokeAsync(StateHasChanged);
-
-            // Capture details for logging
-            var grp = visibleGroups[idx];
-            var details = $"index={idx}, group={grp.DisplayName}, links={grp.Links.Count}";
-            await JSRuntime.InvokeVoidAsync("console.log", "NewNavigationTail.ToggleSubMenuByKey -> " + details);
-
-            // Persist selection in background
-            _ = SaveActiveIndexToStorageAsync(activeSubMenuIndex);
-        }
-        catch (Exception ex)
-        {
-            try { Logger?.LogError(ex, "ToggleSubMenuByKey failed"); } catch { }
-            await JSRuntime.InvokeVoidAsync("console.error", $"ToggleSubMenuByKey error: {ex.Message}");
-        }
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e, string key)
-    {
-        if (e == null) return;
-        if (e.Key == "Enter" || e.Key == " " || e.Code == "Space")
-        {
-            await ToggleSubMenuByKey(key);
-        }
-    }
-
-    private const string StorageKey = "nexacrm.activeSubMenuIndex";
-
-    private async Task<int?> LoadActiveIndexFromStorageAsync()
-    {
-        try
-        {
-            var raw = await JSRuntime.InvokeAsync<string>("localStorage.getItem", StorageKey);
-            if (!string.IsNullOrEmpty(raw) && int.TryParse(raw, out var idx)) return idx;
-        }
-        catch { }
-
-        return null;
-    }
-
-    private async Task SaveActiveIndexToStorageAsync(int? index)
-    {
-        try
-        {
-            if (index.HasValue)
-            {
-                await JSRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, index.Value.ToString());
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKey);
-            }
-        }
-        catch { }
-    }
-
-    [JSInvokable]
-    public Task OnExternalStorageChange(string? newValue)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(newValue))
-            {
-                // removed -> clear selection
-                activeSubMenuIndex = null;
-            }
-            else if (int.TryParse(newValue, out var parsed))
-            {
-                // only update if different and still valid
-                if (activeSubMenuIndex != parsed)
-                {
-                    if (visibleGroups != null && parsed >= 0 && parsed < visibleGroups.Count)
-                    {
-                        activeSubMenuIndex = parsed;
-                    }
-                    else
-                    {
-                        activeSubMenuIndex = null;
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"OnExternalStorageChange error: {ex}");
-        }
-
-        // ensure UI updates
-        _ = InvokeAsync(StateHasChanged);
-        return Task.CompletedTask;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("navigationStorageSync.unregisterDotNet");
-        }
-        catch { }
-
-        if (_dotNetRef != null)
-        {
-            _dotNetRef.Dispose();
-            _dotNetRef = null;
-        }
-        try
-        {
-            NavigationManager.LocationChanged -= OnLocationChanged;
-        }
-        catch { }
-    }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        // initialize selectedItem from current URI
-        selectedItem = NormalizePath("/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
-    {
-        selectedItem = NormalizePath("/" + NavigationManager.ToBaseRelativePath(e.Location));
-        _ = InvokeAsync(StateHasChanged);
-    }
 
     private record LinkSubgroup(string Title, List<NavLinkVm> Links);
 
@@ -763,4 +689,263 @@
         var cleaned = key.ToLowerInvariant().Replace('-', ' ').Replace('_', ' ');
         return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(cleaned);
     }
+
+    private async Task HydrateStorageCacheAsync()
+    {
+        if (_storageHydrated) return;
+        try
+        {
+            var raw = await JSRuntime.InvokeAsync<string>("localStorage.getItem", StorageKey);
+            if (!string.IsNullOrWhiteSpace(raw))
+            {
+                var snapshot = JsonSerializer.Deserialize<NavigationStorageSnapshot>(raw, StorageSerializerOptions);
+                _storageSnapshot = NormalizeSnapshot(snapshot);
+            }
+            else
+            {
+                _storageSnapshot = CreateEmptySnapshot();
+            }
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogDebug(ex, "Failed to hydrate navigation storage state"); } catch { }
+            _storageSnapshot = CreateEmptySnapshot();
+        }
+        finally
+        {
+            _storageHydrated = true;
+        }
+    }
+
+    private async Task<int?> LoadActiveIndexFromStorageAsync()
+    {
+        await HydrateStorageCacheAsync();
+        return GetStoredIndexForCategory(_currentViewportCategory);
+    }
+
+    private int? GetStoredIndexForCategory(ViewportCategory category)
+    {
+        var key = GetViewportCategoryKey(category);
+        return _storageSnapshot.Indices.TryGetValue(key, out var value) ? value : null;
+    }
+
+    private async Task SaveActiveIndexToStorageAsync(int? index)
+    {
+        await HydrateStorageCacheAsync();
+        try
+        {
+            var key = GetViewportCategoryKey(_currentViewportCategory);
+            _storageSnapshot.Indices[key] = index;
+            _storageSnapshot.ActiveCategory = key;
+            var payload = JsonSerializer.Serialize(_storageSnapshot, StorageSerializerOptions);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, payload);
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogDebug(ex, "Failed to persist navigation storage state"); } catch { }
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnExternalStorageChange(string? newValue)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(newValue))
+            {
+                _storageSnapshot = CreateEmptySnapshot();
+                _storageHydrated = true;
+                activeSubMenuIndex = null;
+                if (PanelShouldOverlay)
+                {
+                    _overlayPanelHidden = true;
+                }
+            }
+            else
+            {
+                var snapshot = JsonSerializer.Deserialize<NavigationStorageSnapshot>(newValue, StorageSerializerOptions);
+                _storageSnapshot = NormalizeSnapshot(snapshot);
+                _storageHydrated = true;
+
+                var stored = GetStoredIndexForCategory(_currentViewportCategory);
+                if (stored.HasValue && IsIndexWithinBounds(stored.Value))
+                {
+                    activeSubMenuIndex = stored.Value;
+                    if (PanelShouldOverlay)
+                    {
+                        _overlayPanelHidden = false;
+                    }
+                }
+                else if (!stored.HasValue)
+                {
+                    activeSubMenuIndex = null;
+                    if (PanelShouldOverlay)
+                    {
+                        _overlayPanelHidden = true;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnExternalStorageChange error: {ex}");
+            try { Logger?.LogDebug(ex, "OnExternalStorageChange failed"); } catch { }
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public Task OnViewportCategoryChanged(string? categoryKey) => ApplyViewportCategoryAsync(ParseViewportCategory(categoryKey));
+
+    private async Task ApplyViewportCategoryAsync(ViewportCategory category, bool isInitial = false)
+    {
+        if (!isInitial && _currentViewportCategory == category)
+        {
+            return;
+        }
+
+        _currentViewportCategory = category;
+
+        if (!PanelShouldOverlay)
+        {
+            _overlayPanelHidden = false;
+        }
+        else if (isInitial && !activeSubMenuIndex.HasValue)
+        {
+            _overlayPanelHidden = true;
+        }
+
+        var stored = await LoadActiveIndexFromStorageAsync();
+        if (stored.HasValue && IsIndexWithinBounds(stored.Value))
+        {
+            activeSubMenuIndex = stored.Value;
+            if (PanelShouldOverlay)
+            {
+                _overlayPanelHidden = false;
+            }
+        }
+        else if (!activeSubMenuIndex.HasValue && visibleGroups.Count > 0)
+        {
+            activeSubMenuIndex = 0;
+            _overlayPanelHidden = PanelShouldOverlay;
+            await SaveActiveIndexToStorageAsync(activeSubMenuIndex);
+        }
+        else if (PanelShouldOverlay && !stored.HasValue)
+        {
+            _overlayPanelHidden = true;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DisposeViewportModuleAsync()
+    {
+        if (_viewportModule == null) return;
+        try
+        {
+            await _viewportModule.InvokeVoidAsync("navigationTail.dispose");
+            await _viewportModule.DisposeAsync();
+        }
+        catch { }
+        _viewportModule = null;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigationStorageSync.unregisterDotNet");
+        }
+        catch { }
+
+        await DisposeViewportModuleAsync();
+
+        if (_dotNetRef != null)
+        {
+            _dotNetRef.Dispose();
+            _dotNetRef = null;
+        }
+        try
+        {
+            NavigationManager.LocationChanged -= OnLocationChanged;
+        }
+        catch { }
+    }
+
+    private string BuildSidebarClasses()
+    {
+        var classes = new List<string> { "sidebar" };
+        if (isRailCollapsed) classes.Add("collapsed");
+        if (ShouldShowPanel) classes.Add("panel-open");
+        if (PanelShouldOverlay) classes.Add("overlay-mode");
+        if (PanelShouldOverlay && _overlayPanelHidden) classes.Add("panel-hidden");
+        return string.Join(' ', classes.Where(c => !string.IsNullOrWhiteSpace(c)));
+    }
+
+    private void ClosePanelFromHeader()
+    {
+        if (!PanelShouldOverlay) return;
+        _overlayPanelHidden = true;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private static string GetViewportCategoryKey(ViewportCategory category) => category switch
+    {
+        ViewportCategory.Mobile => "mobile",
+        ViewportCategory.Tablet => "tablet",
+        ViewportCategory.Widescreen => "widescreen",
+        _ => "desktop"
+    };
+
+    private static ViewportCategory ParseViewportCategory(string? category) => category?.ToLowerInvariant() switch
+    {
+        "mobile" => ViewportCategory.Mobile,
+        "tablet" => ViewportCategory.Tablet,
+        "widescreen" => ViewportCategory.Widescreen,
+        "desktop" => ViewportCategory.Desktop,
+        _ => ViewportCategory.Desktop
+    };
+
+    private static NavigationStorageSnapshot NormalizeSnapshot(NavigationStorageSnapshot? snapshot)
+    {
+        if (snapshot == null)
+        {
+            return CreateEmptySnapshot();
+        }
+
+        var indices = snapshot.Indices != null
+            ? new Dictionary<string, int?>(snapshot.Indices, StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, int?>(StringComparer.OrdinalIgnoreCase);
+
+        return new NavigationStorageSnapshot
+        {
+            ActiveCategory = snapshot.ActiveCategory,
+            Indices = indices
+        };
+    }
+
+    private static NavigationStorageSnapshot CreateEmptySnapshot() => new()
+    {
+        ActiveCategory = null,
+        Indices = new Dictionary<string, int?>(StringComparer.OrdinalIgnoreCase)
+    };
+
+    private enum ViewportCategory
+    {
+        Mobile,
+        Tablet,
+        Desktop,
+        Widescreen
+    }
+
+    private sealed class NavigationStorageSnapshot
+    {
+        [JsonPropertyName("category")]
+        public string? ActiveCategory { get; set; }
+
+        [JsonPropertyName("indices")]
+        public Dictionary<string, int?> Indices { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    }
 }
+

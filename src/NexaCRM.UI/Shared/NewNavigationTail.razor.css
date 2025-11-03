@@ -1,4 +1,6 @@
 .sidebar {
+    --nav-tail-rail-width: 80px;
+    --nav-tail-panel-width: 320px;
     height: 100vh;
     background-color: transparent; /* allow rail + panel visuals */
     display: flex;
@@ -14,7 +16,7 @@
 }
 
 .sidebar-rail {
-    width: 80px;
+    width: var(--nav-tail-rail-width);
     background-color: #f8fafb;
     border-right: 1px solid #eaecf0;
     display: flex;
@@ -192,21 +194,22 @@
 }
 
 .sidebar-panel {
-    width: 320px;
+    width: var(--nav-tail-panel-width);
     background: #ffffff;
     box-shadow: 0 8px 24px rgba(16,24,40,0.08);
     border-left: 1px solid #eef2f6;
     transition: transform 0.25s ease, opacity 0.25s ease;
-    transform: translateX(0);
-    opacity: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-panel:not(.open) {
     transform: translateX(-8px);
     opacity: 0;
+    display: flex;
+    flex-direction: column;
     pointer-events: none;
+}
+
+.sidebar-panel.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* Global overrides to control the main content offset depending on the
@@ -217,17 +220,99 @@
     margin-left: 0 !important; /* panel overlays — main should not be pushed */
 }
 
-:global(.sidebar:not(.panel-open)) ~ .desktop-shell__main {
+:global(.sidebar:not(.overlay-mode):not(.panel-open)) ~ .desktop-shell__main {
     margin-left: -280px !important; /* sidebar-only state: apply requested -280px */
+}
+
+:global(.sidebar.overlay-mode) ~ .desktop-shell__main {
+    margin-left: 0 !important;
 }
 
 :global(.sidebar.collapsed) ~ .desktop-shell__main {
     margin-left: 68px !important; /* keep collapsed behavior consistent */
 }
 
+.sidebar.overlay-mode {
+    width: auto;
+}
+
+.sidebar.overlay-mode .sidebar-rail {
+    width: var(--nav-tail-rail-width);
+}
+
+.sidebar.overlay-mode .sidebar-panel {
+    position: fixed;
+    left: var(--nav-tail-rail-width);
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    width: min(var(--nav-tail-panel-width), calc(100vw - var(--nav-tail-rail-width)));
+    transform: translateX(calc(100% + 24px));
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar.overlay-mode .sidebar-panel.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebar.overlay-mode.panel-hidden .sidebar-panel {
+    transform: translateX(calc(100% + 24px));
+    opacity: 0;
+    pointer-events: none;
+}
+
 .panel-header {
     padding: 20px 20px 8px;
     border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.panel-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 auto;
+}
+
+.panel-header-actions {
+    display: none;
+    gap: 8px;
+    align-items: center;
+}
+
+.panel-action {
+    border: 1px solid #d0d5dd;
+    background: #ffffff;
+    color: #475467;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    line-height: 1;
+}
+
+.panel-action:hover {
+    background-color: #f1f5f9;
+    color: #0f1724;
+}
+
+.panel-action:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16,24,40,0.08);
+}
+
+.panel-action span {
+    font-size: 18px;
+    line-height: 1;
 }
 
 .panel-title {
@@ -360,3 +445,48 @@
 
 /* When sidebar fully collapsed, move toggle slightly inward */
 .sidebar.collapsed .btn-toggle-collapse { left: 56px; }
+
+@media (min-width: 1440px) {
+    .sidebar {
+        --nav-tail-panel-width: 360px;
+    }
+}
+
+@media (max-width: 1279.98px) {
+    .sidebar {
+        --nav-tail-panel-width: 300px;
+    }
+
+    .panel-header-actions {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 1023.98px) {
+    .sidebar {
+        --nav-tail-panel-width: 296px;
+    }
+
+    .panel-action {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        --nav-tail-rail-width: 64px;
+        --nav-tail-panel-width: calc(100vw - 32px);
+    }
+
+    .sidebar.overlay-mode .sidebar-panel {
+        left: 0;
+        width: 100vw;
+    }
+
+    .panel-action {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+}

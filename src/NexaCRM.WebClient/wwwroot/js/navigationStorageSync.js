@@ -1,7 +1,7 @@
 // navigationStorageSync.js
 // Helper to notify Blazor components when localStorage key changes in other tabs.
 // Usage:
-// window.navigationStorageSync.registerDotNet(dotNetRef, 'nexacrm.activeSubMenuIndex')
+// window.navigationStorageSync.registerDotNet(dotNetRef, 'nexacrm.activeSubMenuState.v2')
 // window.navigationStorageSync.unregisterDotNet()
 
 (function () {
@@ -31,6 +31,10 @@
   window.navigationStorageSync = {
     registerDotNet: function (dotNetObject, key) {
       try {
+        if (keyToWatch) {
+          window.removeEventListener('storage', onStorage);
+        }
+
         dotNetRef = dotNetObject;
         keyToWatch = key;
         window.addEventListener('storage', onStorage);
