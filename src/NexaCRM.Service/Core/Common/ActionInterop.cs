@@ -102,6 +102,13 @@ public sealed class ActionInterop : IAsyncDisposable
         return await module.InvokeAsync<bool>("isMobileViewport").ConfigureAwait(false);
     }
 
+    public async Task<string> GetViewportBreakpointAsync()
+    {
+        var module = await _moduleTask.Value.ConfigureAwait(false);
+        var result = await module.InvokeAsync<string>("getViewportBreakpoint").ConfigureAwait(false);
+        return string.IsNullOrWhiteSpace(result) ? "desktop" : result;
+    }
+
     public async Task RegisterFabOutsideHandlerAsync()
     {
         var module = await _moduleTask.Value.ConfigureAwait(false);

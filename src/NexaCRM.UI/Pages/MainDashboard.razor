@@ -1,5 +1,7 @@
 @page "/main-dashboard"
+@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Collections.Generic
 @using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Logging
 @using NexaCRM.UI.Services.Interfaces
@@ -52,83 +54,113 @@
             </label>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["DashboardOverview"]</h2>
-        <div class="dashboard-grid ui-grid-12">
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/sales-pipeline" data-ui-col-span="3">
-            <div class="text-ink" data-icon="Funnel" data-size="24px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                    d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"
-                ></path>
-                </svg>
-            </div>
-            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["SalesPipeline"]</h2>
-            </button>
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/reports" data-ui-col-span="3">
-            <div class="text-ink" data-icon="Target" data-size="24px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                    d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"
-                ></path>
-                </svg>
-            </div>
-            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["QuarterlyPerformance"]</h2>
-            </button>
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="/tasks-page" data-ui-col-span="3">
-            <div class="text-ink" data-icon="ListBullets" data-size="24px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                    d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"
-                ></path>
-                </svg>
-            </div>
-            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["Tasks"]</h2>
-            </button>
-            <button class="d-flex flex-grow-1 gap-3 rounded-3 border border-soft bg-surface-soft p-4 align-items-center dashboard-card" data-route="#recent-activity" data-ui-col-span="3">
-            <div class="text-ink" data-icon="Users" data-size="24px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                    d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
-                ></path>
-                </svg>
-            </div>
-            <h2 class="text-ink fs-5 fw-bold lh-sm">@Localizer["RecentActivity"]</h2>
-            </button>
+        <div class="dashboard-grid ui-grid-12 dashboard-kpi-grid" role="list">
+            @foreach (var card in _kpiCards)
+            {
+                <button type="button"
+                        class="dashboard-card dashboard-kpi surface-rounded border border-soft bg-surface-soft p-4"
+                        role="listitem"
+                        data-route="@card.Route"
+                        data-ui-col-span="@card.ColumnSpan"
+                        @onclick="async () => await NavigateToPage(card.Route)">
+                    <span class="dashboard-kpi__icon text-ink" aria-hidden="true">@card.Icon</span>
+                    <span class="dashboard-kpi__content">
+                        <span class="dashboard-kpi__header">
+                            <span class="dashboard-kpi__title">@Localizer[card.TitleKey]</span>
+                            <span class="dashboard-kpi__timestamp">@Localizer["KpiLastUpdated", FormatTimestamp(card.LastUpdated)]</span>
+                        </span>
+                        <span class="dashboard-kpi__value-block">
+                            <span class="dashboard-kpi__value" aria-live="polite">@FormatKpiValue(card)</span>
+                            <span class="dashboard-kpi__subtitle">@Localizer[card.SubtitleKey]</span>
+                        </span>
+                        <span class="dashboard-kpi__goal">
+                            <span class="dashboard-kpi__goal-label">@Localizer["KpiGoalLabel"]</span>
+                            <span class="dashboard-kpi__goal-value">@FormatKpiGoal(card)</span>
+                        </span>
+                        <span class="dashboard-kpi__delta" data-trend="@card.Trend.ToString().ToLowerInvariant()">
+                            <span aria-hidden="true">@FormatKpiDelta(card)</span>
+                            <span class="ui-sr-only">@FormatKpiDeltaAccessible(card)</span>
+                        </span>
+                    </span>
+                </button>
+            }
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["SalesPipelineSummary"]</h2>
         <div class="dashboard-section-grid ui-grid-12" data-ui-grid-gap="tight">
-            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card" data-ui-col-span="6">
-            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["DealsByStage"]</p>
-            <div class="d-grid ui-min-h-180 gx-4 gy-4 ui-grid-auto-1fr align-items-center py-3 dashboard-chart-grid">
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Prospecting"]</p>
-                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 60%;"></div></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Qualification"]</p>
-                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 90%;"></div></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Proposal"]</p>
-                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 30%;"></div></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Negotiation"]</p>
-                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 40%;"></div></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["ClosedWon"]</p>
-                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 90%;"></div></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["ClosedLost"]</p>
-                <div class="h-100 flex-grow-1"><div class="border border-primary bg-accent-soft border-end border-2 h-100" style="width: 80%;"></div></div>
-            </div>
-            </div>
+            <section class="dashboard-visual-panel" data-ui-col-span="6" aria-labelledby="pipelineStageHeading">
+                <div class="dashboard-visual-panel__header">
+                    <p class="dashboard-visual-panel__title" id="pipelineStageHeading">@Localizer["DealsByStage"]</p>
+                    <div class="dashboard-legend" role="group" aria-label="@Localizer["PipelineLegendLabel"]">
+                        @foreach (var stage in _pipelineStages)
+                        {
+                            var isHidden = _hiddenPipelineStageKeys.Contains(stage.Key);
+                            <button type="button"
+                                    class="dashboard-legend__chip @(isHidden ? "dashboard-legend__chip--muted" : string.Empty)"
+                                    aria-pressed="@(!isHidden)"
+                                    aria-label="@Localizer["PipelineStageToggleLabel", Localizer[stage.NameKey]]"
+                                    @onclick="() => TogglePipelineStage(stage.Key)">
+                                <span class="dashboard-legend__swatch" style="--legend-color:@stage.HexColor;"></span>
+                                <span class="dashboard-legend__text">@Localizer[stage.NameKey]</span>
+                                <span class="ui-sr-only">@Localizer[isHidden ? "StageHiddenLabel" : "StageVisibleLabel"]</span>
+                            </button>
+                        }
+                    </div>
+                </div>
+                @if (_isPipelineLoading)
+                {
+                    <div class="dashboard-visual-panel__skeleton" role="status" aria-live="polite">
+                        <span class="dashboard-visual-panel__skeleton-bar"></span>
+                        <span class="dashboard-visual-panel__skeleton-bar"></span>
+                        <span class="dashboard-visual-panel__skeleton-bar"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="dashboard-progress-list" role="list">
+                        @foreach (var stage in _pipelineStages)
+                        {
+                            var isHidden = _hiddenPipelineStageKeys.Contains(stage.Key);
+                            <article class="dashboard-progress-item @(isHidden ? "dashboard-progress-item--hidden" : string.Empty)" role="listitem">
+                                <header class="dashboard-progress-item__header">
+                                    <span class="dashboard-progress-item__label">@Localizer[stage.NameKey]</span>
+                                    <span class="dashboard-progress-item__value" aria-hidden="true">@FormatStagePercent(stage)</span>
+                                </header>
+                                <div class="dashboard-progress-item__bar"
+                                     tabindex="0"
+                                     data-tooltip="@FormatStageTooltip(stage)"
+                                     style="--progress-value:@stage.Progress.ToString(CultureInfo.InvariantCulture); --progress-color:@stage.HexColor;"
+                                     aria-hidden="@isHidden"
+                                     aria-label="@FormatStageAccessibility(stage)">
+                                    <span class="ui-sr-only">@FormatStageAccessibility(stage)</span>
+                                    <div class="dashboard-progress-item__fill"></div>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5 dashboard-section-title">@Localizer["QuarterlyPerformance"]</h2>
         <div class="dashboard-section-grid ui-grid-12" data-ui-grid-gap="tight">
-            <div class="d-flex ui-min-w-18rem flex-grow-1 flex-column gap-2 rounded-3 border border-soft p-6 dashboard-stat-card" data-ui-col-span="6">
-            <p class="text-ink fs-5 fw-semibold lh-base">@Localizer["RevenueByQuarter"]</p>
-            <div class="d-grid ui-min-h-180 ui-grid-flow-col gap-4 ui-grid-rows align-items-end justify-items-center px-3 dashboard-chart-grid">
-                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 70%;"></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q1"]</p>
-                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 90%;"></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q2"]</p>
-                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 70%;"></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q3"]</p>
-                <div class="border border-primary bg-accent-soft border-top border-2 w-100" style="height: 30%;"></div>
-                <p class="text-ink-muted small fw-bold lh-base">@Localizer["Q4"]</p>
-            </div>
-            </div>
+            <section class="dashboard-visual-panel" data-ui-col-span="6" aria-labelledby="quarterPerformanceHeading">
+                <p class="dashboard-visual-panel__title" id="quarterPerformanceHeading">@Localizer["RevenueByQuarter"]</p>
+                <div class="dashboard-quarter-grid" role="list">
+                    @foreach (var quarter in _quarterPerformance)
+                    {
+                        <div class="dashboard-quarter" role="listitem">
+                            <button type="button"
+                                    class="dashboard-quarter__bar @(quarter.IsGoalMet ? "dashboard-quarter__bar--goal-met" : "dashboard-quarter__bar--goal-missed")"
+                                    data-tooltip="@FormatQuarterTooltip(quarter)"
+                                    style="--bar-value:@GetQuarterRevenueHeight(quarter).ToString(CultureInfo.InvariantCulture); --bar-goal:@GetQuarterGoalHeight(quarter).ToString(CultureInfo.InvariantCulture);">
+                                <span class="ui-sr-only">@FormatQuarterAccessibility(quarter)</span>
+                                <span class="dashboard-quarter__goal-line" aria-hidden="true"></span>
+                                <span class="dashboard-quarter__fill" aria-hidden="true"></span>
+                            </button>
+                            <span class="dashboard-quarter__label">@Localizer[quarter.NameKey]</span>
+                        </div>
+                    }
+                </div>
+            </section>
         </div>
         <h2 class="text-ink fs-4 fw-bold lh-sm px-4 pb-3 pt-5">@Localizer["Tasks"]</h2>
         <div class="dashboard-section-block">
@@ -272,10 +304,189 @@
 </div>
 
 @code {
+    private readonly IReadOnlyList<KpiCardModel> _kpiCards = new List<KpiCardModel>
+    {
+        new(
+            TitleKey: "SalesPipeline",
+            SubtitleKey: "SalesPipelineKpiSubtitle",
+            Route: "/sales-pipeline",
+            Icon: new MarkupString(DashboardIcons.Funnel),
+            ValueKind: KpiValueKind.Currency,
+            CurrentValue: 1_240_000m,
+            GoalValue: 1_100_000m,
+            DeltaPercent: 0.08m,
+            Trend: TrendDirection.Up,
+            LastUpdated: DateTimeOffset.UtcNow.AddMinutes(-12)),
+        new(
+            TitleKey: "QuarterlyPerformance",
+            SubtitleKey: "ReportsKpiSubtitle",
+            Route: "/reports",
+            Icon: new MarkupString(DashboardIcons.Target),
+            ValueKind: KpiValueKind.Percentage,
+            CurrentValue: 0.82m,
+            GoalValue: 0.90m,
+            DeltaPercent: -0.08m,
+            Trend: TrendDirection.Down,
+            LastUpdated: DateTimeOffset.UtcNow.AddMinutes(-9)),
+        new(
+            TitleKey: "Tasks",
+            SubtitleKey: "TasksKpiSubtitle",
+            Route: "/tasks-page",
+            Icon: new MarkupString(DashboardIcons.ListBullets),
+            ValueKind: KpiValueKind.Count,
+            CurrentValue: 18m,
+            GoalValue: 12m,
+            DeltaPercent: 0.5m,
+            Trend: TrendDirection.Up,
+            LastUpdated: DateTimeOffset.UtcNow.AddMinutes(-6)),
+        new(
+            TitleKey: "RecentActivity",
+            SubtitleKey: "RecentActivityKpiSubtitle",
+            Route: "#recent-activity",
+            Icon: new MarkupString(DashboardIcons.Users),
+            ValueKind: KpiValueKind.Count,
+            CurrentValue: 5m,
+            GoalValue: 7m,
+            DeltaPercent: -0.29m,
+            Trend: TrendDirection.Down,
+            LastUpdated: DateTimeOffset.UtcNow.AddMinutes(-3))
+    };
+
+    private readonly IReadOnlyList<PipelineStageModel> _pipelineStages = new List<PipelineStageModel>
+    {
+        new("Prospecting", 28, 0.24m, "#6366f1"),
+        new("Qualification", 24, 0.21m, "#3b82f6"),
+        new("Proposal", 18, 0.16m, "#06b6d4"),
+        new("Negotiation", 14, 0.12m, "#f97316"),
+        new("ClosedWon", 19, 0.17m, "#16a34a"),
+        new("ClosedLost", 12, 0.10m, "#dc2626"),
+    };
+
+    private readonly IReadOnlyList<QuarterPerformanceModel> _quarterPerformance = new List<QuarterPerformanceModel>
+    {
+        new("Q1", 480_000m, 450_000m),
+        new("Q2", 525_000m, 500_000m),
+        new("Q3", 472_000m, 520_000m),
+        new("Q4", 388_000m, 500_000m)
+    };
+
+    private readonly HashSet<string> _hiddenPipelineStageKeys = new(StringComparer.OrdinalIgnoreCase);
+    private bool _isPipelineLoading;
+
     private const int MobileNotificationLimit = 12;
     private int unreadNotificationsCount;
     private List<NotificationFeedItem> mobileNotifications = new();
     private bool notificationsFeatureEnabled;
+
+    private string FormatKpiValue(KpiCardModel card) => card.ValueKind switch
+    {
+        KpiValueKind.Currency => FormatCurrency(card.CurrentValue),
+        KpiValueKind.Percentage => FormatPercentageValue(card.CurrentValue, 0),
+        KpiValueKind.Count => FormatCount(card.CurrentValue),
+        _ => card.CurrentValue.ToString(CultureInfo.CurrentCulture)
+    };
+
+    private string FormatKpiGoal(KpiCardModel card) => card.ValueKind switch
+    {
+        KpiValueKind.Currency => FormatCurrency(card.GoalValue),
+        KpiValueKind.Percentage => FormatPercentageValue(card.GoalValue, 0),
+        KpiValueKind.Count => FormatCount(card.GoalValue),
+        _ => card.GoalValue.ToString(CultureInfo.CurrentCulture)
+    };
+
+    private string FormatKpiDelta(KpiCardModel card) => card.Trend switch
+    {
+        TrendDirection.Up => FormatPercentageWithSign(card.DeltaPercent, 1),
+        TrendDirection.Down => FormatPercentageWithSign(card.DeltaPercent, 1),
+        _ => Localizer["KpiDeltaNeutral"]
+    };
+
+    private string FormatKpiDeltaAccessible(KpiCardModel card) => card.DeltaPercent switch
+    {
+        > 0 => string.Format(CultureInfo.CurrentCulture, Localizer["KpiDeltaPositive"], FormatPercentageAbsolute(card.DeltaPercent, 1)),
+        < 0 => string.Format(CultureInfo.CurrentCulture, Localizer["KpiDeltaNegative"], FormatPercentageAbsolute(card.DeltaPercent, 1)),
+        _ => Localizer["KpiDeltaNeutral"],
+    };
+
+    private string FormatTimestamp(DateTimeOffset timestamp) => timestamp.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
+
+    private string FormatStagePercent(PipelineStageModel stage) => FormatPercentageValue(stage.Progress, 0);
+
+    private string FormatStageAccessibility(PipelineStageModel stage) => string.Format(
+        CultureInfo.CurrentCulture,
+        Localizer["PipelineStageAccessibility"],
+        Localizer[stage.NameKey],
+        stage.Deals,
+        FormatStagePercent(stage));
+
+    private string FormatStageTooltip(PipelineStageModel stage) => string.Format(
+        CultureInfo.CurrentCulture,
+        Localizer["PipelineStageTooltip"],
+        Localizer[stage.NameKey],
+        stage.Deals,
+        FormatStagePercent(stage));
+
+    private void TogglePipelineStage(string key)
+    {
+        if (!_hiddenPipelineStageKeys.Add(key))
+        {
+            _hiddenPipelineStageKeys.Remove(key);
+        }
+    }
+
+    private decimal GetQuarterRevenueHeight(QuarterPerformanceModel quarter)
+    {
+        var maxRevenue = _quarterPerformance.Max(q => q.Revenue);
+        if (maxRevenue <= 0)
+        {
+            return 0m;
+        }
+
+        return Math.Clamp(quarter.Revenue / maxRevenue, 0m, 1m);
+    }
+
+    private decimal GetQuarterGoalHeight(QuarterPerformanceModel quarter)
+    {
+        var maxRevenue = _quarterPerformance.Max(q => q.Revenue);
+        if (maxRevenue <= 0)
+        {
+            return 0m;
+        }
+
+        return Math.Clamp(quarter.Goal / maxRevenue, 0m, 1m);
+    }
+
+    private string FormatQuarterTooltip(QuarterPerformanceModel quarter) => string.Format(
+        CultureInfo.CurrentCulture,
+        Localizer["QuarterRevenueTooltip"],
+        Localizer[quarter.NameKey],
+        FormatCurrency(quarter.Revenue),
+        FormatCurrency(quarter.Goal));
+
+    private string FormatQuarterAccessibility(QuarterPerformanceModel quarter) => string.Format(
+        CultureInfo.CurrentCulture,
+        Localizer["QuarterRevenueAccessibility"],
+        Localizer[quarter.NameKey],
+        FormatCurrency(quarter.Revenue),
+        FormatCurrency(quarter.Goal));
+
+    private string FormatCurrency(decimal amount) => string.Format(CultureInfo.CurrentCulture, "{0:C0}", amount);
+
+    private string FormatCount(decimal value) => string.Format(CultureInfo.CurrentCulture, "{0:N0}", value);
+
+    private string FormatPercentageValue(decimal value, int decimals) => value.ToString($"P{decimals}", CultureInfo.CurrentCulture);
+
+    private string FormatPercentageWithSign(decimal value, int decimals)
+    {
+        var formatted = FormatPercentageValue(value, decimals);
+        return value > 0 ? $"+{formatted}" : formatted;
+    }
+
+    private string FormatPercentageAbsolute(decimal value, int decimals)
+    {
+        var absolute = Math.Abs(value);
+        return absolute.ToString($"P{decimals}", CultureInfo.CurrentCulture);
+    }
     private string mobileSearchQuery = string.Empty;
     private int UnreadMobileNotificationsCount => mobileNotifications.Count(item => !item.IsRead);
 
@@ -497,6 +708,78 @@
         }
 
         return timestampUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.CurrentCulture);
+    }
+
+    private sealed record KpiCardModel(
+        string TitleKey,
+        string SubtitleKey,
+        string Route,
+        MarkupString Icon,
+        KpiValueKind ValueKind,
+        decimal CurrentValue,
+        decimal GoalValue,
+        decimal DeltaPercent,
+        TrendDirection Trend,
+        DateTimeOffset LastUpdated,
+        int ColumnSpan = 3);
+
+    private sealed record PipelineStageModel(string NameKey, int Deals, decimal Progress, string HexColor)
+    {
+        public string Key => NameKey;
+    }
+
+    private sealed record QuarterPerformanceModel(string NameKey, decimal Revenue, decimal Goal)
+    {
+        public bool IsGoalMet => Revenue >= Goal;
+    }
+
+    private enum KpiValueKind
+    {
+        Currency,
+        Percentage,
+        Count
+    }
+
+    private enum TrendDirection
+    {
+        Up,
+        Down,
+        Flat
+    }
+
+    private static class DashboardIcons
+    {
+        public const string Funnel = """
+<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+    <path
+        d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z">
+    </path>
+</svg>
+""";
+
+        public const string Target = """
+<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+    <path
+        d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z">
+    </path>
+</svg>
+""";
+
+        public const string ListBullets = """
+<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+    <path
+        d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z">
+    </path>
+</svg>
+""";
+
+        public const string Users = """
+<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+    <path
+        d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z">
+    </path>
+</svg>
+""";
     }
 
     private string ResolveString(string key, string fallback)

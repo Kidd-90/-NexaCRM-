@@ -75,4 +75,49 @@
   <data name="ReportsPreviewEmpty" xml:space="preserve">
     <value>Select fields and generate the report to see a preview.</value>
   </data>
+  <data name="ReportsSubtitle" xml:space="preserve">
+    <value>Build ad-hoc summaries and export-ready datasets.</value>
+  </data>
+  <data name="ReportNameHelp" xml:space="preserve">
+    <value>This name appears in saved reports and exported files.</value>
+  </data>
+  <data name="FieldRequired" xml:space="preserve">
+    <value>Enter a field name before adding.</value>
+  </data>
+  <data name="FilterRequired" xml:space="preserve">
+    <value>Provide both a filter key and value.</value>
+  </data>
+  <data name="FieldAdded" xml:space="preserve">
+    <value>Field {0} added to the report.</value>
+  </data>
+  <data name="FilterAdded" xml:space="preserve">
+    <value>Filter saved for this report.</value>
+  </data>
+  <data name="ReportNameRequired" xml:space="preserve">
+    <value>Add a report name before continuing.</value>
+  </data>
+  <data name="ReportSaved" xml:space="preserve">
+    <value>Report "{0}" saved.</value>
+  </data>
+  <data name="ReportSaveFailed" xml:space="preserve">
+    <value>We couldn't save the report. Try again in a moment.</value>
+  </data>
+  <data name="ReportLoaded" xml:space="preserve">
+    <value>Loaded "{0}".</value>
+  </data>
+  <data name="ReportGenerated" xml:space="preserve">
+    <value>Preview refreshed.</value>
+  </data>
+  <data name="PreviewReady" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="PreviewPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="PreviewField" xml:space="preserve">
+    <value>Field</value>
+  </data>
+  <data name="PreviewValue" xml:space="preserve">
+    <value>Value</value>
+  </data>
 </root>

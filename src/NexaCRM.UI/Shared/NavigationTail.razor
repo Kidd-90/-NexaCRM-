@@ -1,4 +1,6 @@
-﻿@using System.Linq
+@using System
+@using System.Linq
+@using System.Globalization
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
@@ -12,9 +14,33 @@
 @inject IRolePermissionService RolePermissionService
 @inject IAuthenticationService AuthenticationService
 @inject Microsoft.Extensions.Localization.IStringLocalizer<NavMenu> Localizer
+@inject ActionInterop ActionInterop
+@inject IGlobalActionService GlobalActionService
 @using NexaCRM.UI.Models.Navigation
+@implements IAsyncDisposable
 
-<div class='sidebar @(isCollapsed ? "collapsed" : "") @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "panel-open" : "")' role="navigation">
+<div class='sidebar @(isCollapsed ? "collapsed" : "") @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "panel-open" : "")'
+     role="navigation"
+     data-panel-state='@(isMobilePanelOpen ? "expanded" : "collapsed")'
+     data-viewport='@_viewportKey'>
+    <div class="sidebar-mobile-header">
+        <button type="button"
+                class="sidebar-mobile-toggle"
+                aria-expanded="@isMobilePanelOpen"
+                aria-controls="navigationRailPanel"
+                @onclick="ToggleMobilePanel"
+                title="@Localizer["ToggleNavigation"]">
+            <span class="sidebar-mobile-toggle__icon" aria-hidden="true">☰</span>
+            <span class="sidebar-mobile-toggle__label">@Localizer["Navigation"]</span>
+        </button>
+        <button type="button"
+                class="sidebar-mobile-quick-action"
+                @onclick="LaunchMobileQuickActionAsync"
+                title="@Localizer["OpenQuickActions"]">
+            <span class="ui-sr-only">@Localizer["OpenQuickActions"]</span>
+            <i class="bi bi-plus-circle"></i>
+        </button>
+    </div>
     <div class="sidebar-rail">
         <a href="/" class="rail-logo" title="Online store">
             <img src="https://localhost:7065/_content/NexaCRM.UI/images/logo.svg" alt="Logo" class="rail-logo-img" />
@@ -46,7 +72,7 @@
         </div>
     </div>
 
-    <div class='sidebar-panel @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "open" : "")'>
+    <div id="navigationRailPanel" class='sidebar-panel @(activeSubMenuIndex.HasValue && activeSubMenuIndex.Value >= 0 && activeSubMenuIndex.Value < visibleGroups.Count ? "open" : "")'>
         <div class="panel-header">
             <div class="panel-title">Online store</div>
             <div class="panel-subtitle">Untitled UI</div>
@@ -110,6 +136,10 @@
             </div>
         </div>
     </div>
+    @if (isMobilePanelOpen)
+    {
+        <button type="button" class="sidebar-overlay" aria-hidden="true" @onclick="ToggleMobilePanel"></button>
+    }
 </div>
 
 @code {
@@ -117,6 +147,11 @@
     private int? activeSubMenuIndex;
     private string? selectedItem = null;
     private DotNetObjectReference<NavigationTail>? _dotNetRef;
+    private bool isMobilePanelOpen;
+    private string _viewportKey = "desktop";
+    private const string StorageKeyPrefix = "nexacrm.activeSubMenuIndex";
+
+    private string StorageKey => string.Create(CultureInfo.InvariantCulture, $"{StorageKeyPrefix}.{_viewportKey}");
 
     private readonly List<NavGroupVm> visibleGroups = new();
     // Track which subgroups are expanded in the panel. Keys are the subgroup.Title values
@@ -127,27 +162,6 @@
     {
         await base.OnInitializedAsync();
         await LoadGroupsAsync();
-        // register storage-event listener for multi-tab sync
-        try
-        {
-            _dotNetRef = DotNetObjectReference.Create(this);
-            await JSRuntime.InvokeVoidAsync("navigationStorageSync.registerDotNet", _dotNetRef, StorageKey);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to register navigationStorageSync: {ex}");
-            try { Logger?.LogDebug(ex, "navigationStorageSync registration failed"); } catch { }
-        }
-        // attempt to restore previously selected group from localStorage
-        try
-        {
-            var stored = await LoadActiveIndexFromStorageAsync();
-            if (stored.HasValue && stored.Value >= 0 && stored.Value < visibleGroups.Count)
-            {
-                activeSubMenuIndex = stored.Value;
-            }
-        }
-        catch { }
     }
 
     private async Task LoadGroupsAsync()
@@ -236,6 +250,28 @@
         isCollapsed = !isCollapsed;
     }
 
+    private void ToggleMobilePanel()
+    {
+        isMobilePanelOpen = !isMobilePanelOpen;
+    }
+
+    private async Task LaunchMobileQuickActionAsync()
+    {
+        try
+        {
+            isMobilePanelOpen = false;
+            await GlobalActionService.LaunchAsync(new GlobalActionRequest(GlobalActionType.AddContact));
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogError(ex, "LaunchMobileQuickActionAsync failed"); } catch { }
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     private async Task ToggleSubMenu(int index)
     {
         // Capture incoming index immediately to avoid races with async work
@@ -322,6 +358,7 @@
     private void SelectItem(string href)
     {
         selectedItem = NormalizePath(href);
+        isMobilePanelOpen = false;
         // navigate
         try
         {
@@ -585,8 +622,6 @@
         }
     }
 
-    private const string StorageKey = "nexacrm.activeSubMenuIndex";
-
     private async Task<int?> LoadActiveIndexFromStorageAsync()
     {
         try
@@ -613,6 +648,77 @@
             }
         }
         catch { }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await InitializeViewportAsync();
+        }
+    }
+
+    private async Task InitializeViewportAsync()
+    {
+        await ResolveViewportKeyAsync();
+
+        try
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("navigationStorageSync.registerDotNet", _dotNetRef, StorageKey);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to register navigationStorageSync: {ex}");
+            try { Logger?.LogDebug(ex, "navigationStorageSync registration failed"); } catch { }
+        }
+
+        await EnsureNavigationStateAsync();
+    }
+
+    private async Task ResolveViewportKeyAsync()
+    {
+        if (ActionInterop == null)
+        {
+            return;
+        }
+
+        try
+        {
+            var key = await ActionInterop.GetViewportBreakpointAsync();
+            if (!string.IsNullOrWhiteSpace(key))
+            {
+                var normalized = key.ToLowerInvariant();
+                if (!string.Equals(_viewportKey, normalized, StringComparison.Ordinal))
+                {
+                    _viewportKey = normalized;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogDebug(ex, "ResolveViewportKeyAsync failed"); } catch { }
+        }
+    }
+
+    private async Task EnsureNavigationStateAsync()
+    {
+        try
+        {
+            var stored = await LoadActiveIndexFromStorageAsync();
+            if (stored.HasValue && stored.Value >= 0 && stored.Value < visibleGroups.Count)
+            {
+                activeSubMenuIndex = stored.Value;
+            }
+        }
+        catch (Exception ex)
+        {
+            try { Logger?.LogDebug(ex, "EnsureNavigationStateAsync failed"); } catch { }
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     [JSInvokable]

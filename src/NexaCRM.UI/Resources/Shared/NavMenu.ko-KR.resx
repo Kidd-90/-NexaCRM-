@@ -243,4 +243,13 @@
   <data name="GlobalSearchPlaceholder" xml:space="preserve">
     <value>페이지·데이터·도구 검색</value>
   </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>네비게이션</value>
+  </data>
+  <data name="ToggleNavigation" xml:space="preserve">
+    <value>네비게이션 열기/닫기</value>
+  </data>
+  <data name="OpenQuickActions" xml:space="preserve">
+    <value>퀵 액션 열기</value>
+  </data>
 </root>

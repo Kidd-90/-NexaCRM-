@@ -21,16 +21,26 @@
 .surface-flat {
     border-radius: var(--radius-none);
     box-shadow: var(--shadow-none);
+    border: 1px solid var(--ui-surface-border);
+    background-color: var(--surface-color, var(--ui-page-background));
 }
 
 .surface-rounded {
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-soft);
+    border: 1px solid var(--ui-surface-border);
+    background-color: var(--surface-color, var(--ui-page-background));
 }
 
 .surface-hero {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-deep);
+    border: 1px solid color-mix(in srgb, var(--ui-surface-border) 65%, transparent);
+    background-color: var(--surface-elevated, var(--surface-color));
+}
+
+.surface-hero[data-surface-tone="gradient"] {
+    background-image: linear-gradient(135deg, rgba(79, 70, 229, 0.16), rgba(59, 130, 246, 0.22));
 }
 
 .shadow-none {
@@ -43,6 +53,11 @@
 
 .shadow-deep {
     box-shadow: var(--shadow-deep) !important;
+}
+
+.ui-focus-ring {
+    outline: 3px solid var(--dashboard-focus-ring, #6366f1);
+    outline-offset: 3px;
 }
 
 .border-soft {
@@ -93,12 +108,88 @@
     white-space: nowrap;
 }
 
+.ui-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 .ui-scrollable-x {
     overflow-x: auto;
 }
 
 .ui-nowrap {
     white-space: nowrap;
+}
+
+.motion-fade-in {
+    animation: motion-fade-in var(--motion-duration-standard) var(--motion-ease-standard) both;
+}
+
+.motion-slide-in-up {
+    animation: motion-slide-in-up var(--motion-duration-emphasized) var(--motion-ease-entrance) both;
+}
+
+.motion-scale-pop {
+    animation: motion-scale-pop var(--motion-duration-fast) var(--motion-ease-emphasized) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .motion-fade-in,
+    .motion-slide-in-up,
+    .motion-scale-pop,
+    .quick-action-btn,
+    .quick-actions-toast,
+    .quick-actions-sheet,
+    .quick-actions-sheet__primary,
+    .quick-actions-sheet__secondary {
+        animation-duration: var(--motion-duration-instant) !important;
+        transition-duration: var(--motion-duration-instant) !important;
+    }
+}
+
+@keyframes motion-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes motion-slide-in-up {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes motion-scale-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+
+    to {
+        transform: scale(1);
+    }
 }
 
 .ui-min-h-700 {
