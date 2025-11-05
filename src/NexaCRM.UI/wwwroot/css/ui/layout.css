@@ -3,12 +3,12 @@
  * Grid and structural helpers for dashboard surfaces and detail panes.
  */
 :root {
-    --ui-shell-max-width: clamp(64rem, 82vw, 78rem);
+    --ui-shell-max-width: clamp(64rem, 78vw, 100rem);
     --ui-shell-padding-inline: clamp(1.25rem, 4vw, 2.75rem);
     --ui-shell-padding-block: clamp(1.5rem, 4vw, 3rem);
-    --ui-grid-gap: clamp(1rem, 2vw, 1.75rem);
-    --ui-grid-gap-tight: clamp(0.75rem, 1.5vw, 1.25rem);
-    --ui-grid-gap-loose: clamp(1.5rem, 3vw, 2.25rem);
+    --ui-grid-gap: clamp(1rem, 1.5vw, 1.75rem);
+    --ui-grid-gap-tight: clamp(0.75rem, 1.25vw, 1.25rem);
+    --ui-grid-gap-loose: clamp(1.5rem, 2.5vw, 2.5rem);
 }
 
 .ui-shell {
@@ -27,7 +27,7 @@
 }
 
 .ui-grid-12 {
-    --ui-grid-active-columns: 12;
+    --ui-grid-active-columns: var(--ui-grid-columns-desktop);
     display: grid;
     grid-template-columns: repeat(var(--ui-grid-active-columns), minmax(0, 1fr));
     column-gap: var(--ui-grid-column-gap, var(--ui-grid-gap));
@@ -94,13 +94,13 @@
 
 @media (max-width: 1200px) {
     .ui-grid-12 {
-        --ui-grid-active-columns: 10;
+        --ui-grid-active-columns: var(--ui-grid-columns-large-tablet);
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1000px) {
     .ui-grid-12 {
-        --ui-grid-active-columns: 8;
+        --ui-grid-active-columns: var(--ui-grid-columns-tablet);
     }
 }
 
@@ -112,7 +112,7 @@
 
 @media (max-width: 768px) {
     .ui-grid-12 {
-        --ui-grid-active-columns: 4;
+        --ui-grid-active-columns: var(--ui-grid-columns-compact);
     }
 
     [data-ui-col-span] {

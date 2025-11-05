@@ -9,6 +9,9 @@
   <data name="ScheduleMeeting" xml:space="preserve">
     <value>Schedule meeting</value>
   </data>
+  <data name="QuickActionsListLabel" xml:space="preserve">
+    <value>Quick customer actions</value>
+  </data>
   <data name="Call" xml:space="preserve">
     <value>Call</value>
   </data>

@@ -9,6 +9,9 @@
   <data name="ScheduleMeeting" xml:space="preserve">
     <value>미팅 일정 잡기</value>
   </data>
+  <data name="QuickActionsListLabel" xml:space="preserve">
+    <value>고객 빠른 작업</value>
+  </data>
   <data name="Call" xml:space="preserve">
     <value>전화</value>
   </data>

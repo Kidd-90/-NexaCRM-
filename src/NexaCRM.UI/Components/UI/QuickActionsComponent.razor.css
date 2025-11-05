@@ -1,13 +1,18 @@
 .quick-actions-container {
-    @apply flex items-center gap-2;
+    @apply flex flex-col gap-3;
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    border: 1px solid var(--ui-surface-border);
+    background-color: var(--surface-color, #ffffff);
 }
 
 .quick-actions-wrapper {
-    @apply flex items-center gap-2 flex-wrap;
+    @apply grid gap-3;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    align-items: stretch;
 }
 
 .quick-actions-feedback {
-    @apply mt-2 text-sm text-slate-600;
+    @apply text-sm text-slate-600;
     min-height: 1.25rem;
 }
 
@@ -76,7 +81,7 @@
 }
 
 .quick-action-btn {
-    @apply flex items-center justify-center gap-2 px-3 py-2 rounded-lg border-2 transition-all duration-200 cursor-pointer;
+    @apply flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all duration-200 cursor-pointer;
     min-height: 44px; /* Touch-friendly minimum size */
     min-width: 44px;
 }
@@ -127,15 +132,9 @@
 
 /* Mobile-specific styles */
 @media (max-width: 767px) {
-    .quick-actions-container {
-        @apply flex-col gap-3;
-        width: 100%;
-        align-items: stretch;
-    }
-
     .quick-actions-wrapper {
-        @apply flex-row justify-center gap-4;
-        width: 100%;
+        @apply grid gap-2;
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
     }
 
     .quick-actions-sheet-backdrop {
@@ -155,6 +154,33 @@
     
     .action-label {
         @apply text-xs;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+    .quick-actions-container {
+        @apply grid gap-4;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quick-actions-wrapper {
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+}
+
+@media (min-width: 1201px) {
+    .quick-actions-container {
+        @apply flex-row items-center;
+        gap: 1rem;
+    }
+
+    .quick-actions-wrapper {
+        grid-template-columns: repeat(auto-fit, minmax(9rem, max-content));
+        @apply flex items-center gap-3;
+    }
+
+    .quick-actions-wrapper {
+        display: flex;
     }
 }
 

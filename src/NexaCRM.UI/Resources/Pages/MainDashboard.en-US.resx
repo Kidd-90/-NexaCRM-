@@ -42,23 +42,68 @@
   <data name="DashboardOverview" xml:space="preserve">
     <value>Dashboard Overview</value>
   </data>
+  <data name="KpiGoalLabel" xml:space="preserve">
+    <value>Goal</value>
+  </data>
+  <data name="KpiDeltaPositive" xml:space="preserve">
+    <value>{0} above goal</value>
+  </data>
+  <data name="KpiDeltaNegative" xml:space="preserve">
+    <value>{0} below goal</value>
+  </data>
+  <data name="KpiDeltaNeutral" xml:space="preserve">
+    <value>On target</value>
+  </data>
+  <data name="KpiLastUpdated" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
   <data name="SalesPipeline" xml:space="preserve">
     <value>Sales Pipeline</value>
+  </data>
+  <data name="SalesPipelineKpiSubtitle" xml:space="preserve">
+    <value>Open pipeline value</value>
   </data>
   <data name="QuarterlyPerformance" xml:space="preserve">
     <value>Quarterly Performance</value>
   </data>
+  <data name="ReportsKpiSubtitle" xml:space="preserve">
+    <value>Goal attainment</value>
+  </data>
   <data name="Tasks" xml:space="preserve">
     <value>Tasks</value>
   </data>
+  <data name="TasksKpiSubtitle" xml:space="preserve">
+    <value>Tasks due this week</value>
+  </data>
   <data name="RecentActivity" xml:space="preserve">
     <value>Recent Activity</value>
+  </data>
+  <data name="RecentActivityKpiSubtitle" xml:space="preserve">
+    <value>New updates</value>
   </data>
   <data name="SalesPipelineSummary" xml:space="preserve">
     <value>Sales Pipeline Summary</value>
   </data>
   <data name="DealsByStage" xml:space="preserve">
     <value>Deals by Stage</value>
+  </data>
+  <data name="PipelineLegendLabel" xml:space="preserve">
+    <value>Pipeline stage visibility</value>
+  </data>
+  <data name="PipelineStageToggleLabel" xml:space="preserve">
+    <value>Toggle {0} stage visibility</value>
+  </data>
+  <data name="StageHiddenLabel" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="StageVisibleLabel" xml:space="preserve">
+    <value>Visible</value>
+  </data>
+  <data name="PipelineStageAccessibility" xml:space="preserve">
+    <value>{0} stage, {1} deals, {2} of pipeline</value>
+  </data>
+  <data name="PipelineStageTooltip" xml:space="preserve">
+    <value>{0}: {1} deals ({2})</value>
   </data>
   <data name="Prospecting" xml:space="preserve">
     <value>Prospecting</value>
@@ -80,6 +125,12 @@
   </data>
   <data name="RevenueByQuarter" xml:space="preserve">
     <value>Revenue by Quarter</value>
+  </data>
+  <data name="QuarterRevenueTooltip" xml:space="preserve">
+    <value>{0}: {1} revenue (goal {2})</value>
+  </data>
+  <data name="QuarterRevenueAccessibility" xml:space="preserve">
+    <value>{0} revenue {1}, goal {2}</value>
   </data>
   <data name="Q1" xml:space="preserve">
     <value>Q1</value>

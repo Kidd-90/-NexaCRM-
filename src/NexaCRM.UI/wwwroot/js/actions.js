@@ -152,6 +152,32 @@ export function isMobileViewport() {
     }
 }
 
+export function getViewportBreakpoint() {
+    if (typeof window === 'undefined') {
+        return 'desktop';
+    }
+
+    try {
+        const width = window.innerWidth || document.documentElement?.clientWidth || 1920;
+        if (width < 768) {
+            return 'mobile';
+        }
+
+        if (width < 1200) {
+            return 'tablet';
+        }
+
+        if (width < 1600) {
+            return 'desktop';
+        }
+
+        return 'desktop-wide';
+    } catch (err) {
+        console.warn('Failed to evaluate viewport breakpoint', err);
+        return 'desktop';
+    }
+}
+
 export function registerFabOutsideHandler() {
     if (fabOutsideHandlerRegistered || typeof document === 'undefined') {
         return;

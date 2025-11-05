@@ -1,104 +1,124 @@
 @page "/reports-page"
 @attribute [Authorize(Roles = "Manager,Admin,Developer")]
+@using System
 @using Microsoft.Extensions.Localization
 @using NexaCRM.UI.Models
 @using NexaCRM.UI.Services.Interfaces
 @inject IStringLocalizer<ReportsPage> Localizer
 @inject IReportService ReportService
 
-<ResponsivePage LayoutMode="expanded" class="common-page-container">
-    <div class="reports-layout">
-        <section class="reports-layout__form" aria-labelledby="reportBuilderTitle">
-            <h1 id="reportBuilderTitle" class="reports-layout__title">@Localizer["ReportsTitle"]</h1>
-            <EditForm Model="currentDefinition" class="reports-form">
-                <div class="reports-field">
-                    <label class="reports-field__label" for="reportNameInput">@Localizer["ReportName"]</label>
-                    <InputText id="reportNameInput" @bind-Value="currentDefinition.Name" class="form-input reports-input" />
-                </div>
-
-                <div class="reports-field reports-field--row">
-                    <label class="reports-field__label" for="newFieldInput">@Localizer["Field"]</label>
-                    <div class="reports-field__controls">
-                        <InputText id="newFieldInput" @bind-Value="newField" class="form-input reports-input" />
-                        <button type="button" class="reports-chip-button" @onclick="AddField">@Localizer["Add"]</button>
-                    </div>
-                </div>
-
-                <ul class="reports-token-list" aria-live="polite">
-                    @foreach (var field in currentDefinition.SelectedFields)
-                    {
-                        <li class="reports-token-item">@field</li>
-                    }
-                </ul>
-
-                <div class="reports-field reports-field--filters">
-                    <div class="reports-field__group">
-                        <label class="reports-field__label" for="filterKeyInput">@Localizer["FilterKey"]</label>
-                        <InputText id="filterKeyInput" @bind-Value="filterKey" class="form-input reports-input" />
-                    </div>
-                    <div class="reports-field__group">
-                        <label class="reports-field__label" for="filterValueInput">@Localizer["FilterValue"]</label>
-                        <InputText id="filterValueInput" @bind-Value="filterValue" class="form-input reports-input" />
-                    </div>
-                    <button type="button" class="reports-chip-button" @onclick="AddFilter">@Localizer["Add"]</button>
-                </div>
-
-                <ul class="reports-token-list reports-token-list--filters" aria-live="polite">
-                    @foreach (var filter in currentDefinition.Filters)
-                    {
-                        <li class="reports-token-item">@filter.Key: @filter.Value</li>
-                    }
-                </ul>
-
-                <div class="reports-form__actions">
-                    <button type="button" class="reports-action" @onclick="SaveDefinition">@Localizer["SaveDefinition"]</button>
-                    <button type="button" class="reports-action reports-action--primary" @onclick="GenerateReport">@Localizer["GenerateReport"]</button>
-                </div>
-            </EditForm>
-        </section>
-
-        <aside class="reports-layout__aside" aria-labelledby="savedReportsTitle">
-            <div class="reports-summary">
-                <h2 id="savedReportsTitle" class="reports-summary__title">@Localizer["SavedReports"]</h2>
-                <ul class="reports-summary__list">
-                    @foreach (var def in savedDefinitions)
-                    {
-                        <li><button class="reports-summary__link" @onclick="() => LoadDefinition(def)">@def.Name</button></li>
-                    }
-                </ul>
-
-                <section class="reports-preview" aria-labelledby="reportPreviewTitle">
-                    <h3 id="reportPreviewTitle" class="reports-preview__title">@Localizer["Preview"]</h3>
-                    @if (preview != null)
-                    {
-                        <div class="reports-preview__content">
-                            <h4 class="reports-preview__heading">@preview.Title</h4>
-                            <div class="reports-preview__table" role="region" aria-live="polite">
-                                <table class="table-auto border-collapse w-100">
-                                    <thead>
-                                        <tr><th class="border px-2">Field</th><th class="border px-2">Value</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        @if (preview.Data != null)
-                                        {
-                                            @foreach (var item in preview.Data)
-                                            {
-                                                <tr><td class="border px-2">@item.Key</td><td class="border px-2">@item.Value</td></tr>
-                                            }
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="reports-preview__placeholder">@Localizer["ReportsPreviewEmpty"]</p>
-                    }
-                </section>
+<ResponsivePage LayoutMode="expanded" class="common-page-container" data-responsive-grid>
+    <section class="reports-shell surface-hero" data-col-span="7" aria-labelledby="reportBuilderTitle">
+        <header class="reports-shell__header">
+            <h1 id="reportBuilderTitle" class="reports-shell__title">@Localizer["ReportsTitle"]</h1>
+            <p class="reports-shell__subtitle">@Localizer["ReportsSubtitle"]</p>
+        </header>
+        <EditForm Model="currentDefinition" class="reports-form" OnValidSubmit="GenerateReport">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="reports-validation" />
+            <div class="reports-field">
+                <label class="reports-field__label" for="reportNameInput">@Localizer["ReportName"]</label>
+                <InputText id="reportNameInput" @bind-Value="currentDefinition.Name" class="form-input reports-input" aria-describedby="reportNameHelp" />
+                <span id="reportNameHelp" class="reports-field__help">@Localizer["ReportNameHelp"]</span>
             </div>
-        </aside>
-    </div>
+
+            <div class="reports-field reports-field--row">
+                <label class="reports-field__label" for="newFieldInput">@Localizer["Field"]</label>
+                <div class="reports-field__controls">
+                    <InputText id="newFieldInput" @bind-Value="newField" class="form-input reports-input" aria-describedby="fieldError" />
+                    <button type="button" class="reports-chip-button" @onclick="AddField">@Localizer["Add"]</button>
+                </div>
+                @if (!string.IsNullOrEmpty(fieldError))
+                {
+                    <p id="fieldError" class="reports-inline-error" role="alert">@fieldError</p>
+                }
+            </div>
+
+            <ul class="reports-token-list" aria-live="polite">
+                @foreach (var field in currentDefinition.SelectedFields)
+                {
+                    <li class="reports-token-item">@field</li>
+                }
+            </ul>
+
+            <div class="reports-field reports-field--filters">
+                <div class="reports-field__group">
+                    <label class="reports-field__label" for="filterKeyInput">@Localizer["FilterKey"]</label>
+                    <InputText id="filterKeyInput" @bind-Value="filterKey" class="form-input reports-input" aria-describedby="filterError" />
+                </div>
+                <div class="reports-field__group">
+                    <label class="reports-field__label" for="filterValueInput">@Localizer["FilterValue"]</label>
+                    <InputText id="filterValueInput" @bind-Value="filterValue" class="form-input reports-input" />
+                </div>
+                <button type="button" class="reports-chip-button" @onclick="AddFilter">@Localizer["Add"]</button>
+            </div>
+            @if (!string.IsNullOrEmpty(filterError))
+            {
+                <p id="filterError" class="reports-inline-error" role="alert">@filterError</p>
+            }
+
+            <ul class="reports-token-list reports-token-list--filters" aria-live="polite">
+                @foreach (var filter in currentDefinition.Filters)
+                {
+                    <li class="reports-token-item">@filter.Key: @filter.Value</li>
+                }
+            </ul>
+
+            <div class="reports-form__actions">
+                <button type="button" class="reports-action" @onclick="SaveDefinition" disabled="@isSaving">@Localizer["SaveDefinition"]</button>
+                <button type="submit" class="reports-action reports-action--primary" disabled="@isSaving">@Localizer["GenerateReport"]</button>
+            </div>
+        </EditForm>
+        <div class="reports-status" aria-live="polite">
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="reports-status__message" data-tone="@statusTone">@statusMessage</div>
+            }
+        </div>
+    </section>
+
+    <aside class="reports-aside surface-rounded" data-col-span="5" aria-labelledby="savedReportsTitle">
+        <div class="reports-summary">
+            <h2 id="savedReportsTitle" class="reports-summary__title">@Localizer["SavedReports"]</h2>
+            <ul class="reports-summary__list">
+                @foreach (var def in savedDefinitions)
+                {
+                    <li><button class="reports-summary__link" @onclick="() => LoadDefinition(def)">@def.Name</button></li>
+                }
+            </ul>
+
+            <section class="reports-preview" aria-labelledby="reportPreviewTitle">
+                <div class="reports-preview__header">
+                    <h3 id="reportPreviewTitle" class="reports-preview__title">@Localizer["Preview"]</h3>
+                    <span class="reports-preview__badge" data-state="@((preview != null).ToString().ToLowerInvariant())">@(preview != null ? Localizer["PreviewReady"] : Localizer["PreviewPending"])</span>
+                </div>
+                @if (preview != null)
+                {
+                    <div class="reports-preview__content" role="region" aria-live="polite">
+                        <h4 class="reports-preview__heading">@preview.Title</h4>
+                        <table class="reports-preview__table">
+                            <thead>
+                                <tr><th scope="col">@Localizer["PreviewField"]</th><th scope="col">@Localizer["PreviewValue"]</th></tr>
+                            </thead>
+                            <tbody>
+                                @if (preview.Data != null)
+                                {
+                                    @foreach (var item in preview.Data)
+                                    {
+                                        <tr><td>@item.Key</td><td>@item.Value</td></tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="reports-preview__placeholder">@Localizer["ReportsPreviewEmpty"]</p>
+                }
+            </section>
+        </div>
+    </aside>
 </ResponsivePage>
 
 @code {
@@ -108,6 +128,11 @@
     private string? newField;
     private string? filterKey;
     private string? filterValue;
+    private string? fieldError;
+    private string? filterError;
+    private string? statusMessage;
+    private string statusTone = "info";
+    private bool isSaving;
 
     protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
@@ -116,37 +141,93 @@
 
     private void AddField()
     {
+        fieldError = null;
         if (!string.IsNullOrWhiteSpace(newField))
         {
-            currentDefinition.SelectedFields.Add(newField);
+            if (!currentDefinition.SelectedFields.Contains(newField, StringComparer.OrdinalIgnoreCase))
+            {
+                currentDefinition.SelectedFields.Add(newField);
+                statusTone = "success";
+                statusMessage = Localizer["FieldAdded", newField];
+            }
             newField = string.Empty;
+        }
+        else
+        {
+            fieldError = Localizer["FieldRequired"];
         }
     }
 
     private void AddFilter()
     {
+        filterError = null;
         if (!string.IsNullOrWhiteSpace(filterKey) && filterValue is not null)
         {
             currentDefinition.Filters[filterKey] = filterValue;
             filterKey = filterValue = string.Empty;
+            statusTone = "success";
+            statusMessage = Localizer["FilterAdded"];
+        }
+        else
+        {
+            filterError = Localizer["FilterRequired"];
         }
     }
 
     private async System.Threading.Tasks.Task SaveDefinition()
     {
-        await ReportService.SaveReportDefinitionAsync(currentDefinition);
-        savedDefinitions = (await ReportService.GetReportDefinitionsAsync()).ToList();
-        currentDefinition = new ReportDefinition();
+        statusMessage = null;
+        fieldError = null;
+        filterError = null;
+
+        if (string.IsNullOrWhiteSpace(currentDefinition.Name))
+        {
+            statusTone = "error";
+            statusMessage = Localizer["ReportNameRequired"];
+            return;
+        }
+
+        isSaving = true;
+        try
+        {
+            await ReportService.SaveReportDefinitionAsync(currentDefinition);
+            savedDefinitions = (await ReportService.GetReportDefinitionsAsync()).ToList();
+            statusTone = "success";
+            statusMessage = Localizer["ReportSaved", currentDefinition.Name!];
+        }
+        catch (Exception ex)
+        {
+            try { Console.WriteLine($"SaveDefinition failed: {ex}"); } catch { }
+            statusTone = "error";
+            statusMessage = Localizer["ReportSaveFailed"];
+        }
+        finally
+        {
+            isSaving = false;
+        }
     }
 
     private async System.Threading.Tasks.Task LoadDefinition(ReportDefinition def)
     {
         currentDefinition = def;
+        fieldError = null;
+        filterError = null;
+        statusTone = "info";
+        statusMessage = Localizer["ReportLoaded", def.Name ?? string.Empty];
         await GenerateReport();
     }
 
     private async System.Threading.Tasks.Task GenerateReport()
     {
+        if (string.IsNullOrWhiteSpace(currentDefinition.Name))
+        {
+            statusTone = "error";
+            statusMessage = Localizer["ReportNameRequired"];
+            return;
+        }
+
         preview = await ReportService.GenerateReportAsync(currentDefinition);
+        statusTone = "info";
+        statusMessage = Localizer["ReportGenerated"];
     }
 }

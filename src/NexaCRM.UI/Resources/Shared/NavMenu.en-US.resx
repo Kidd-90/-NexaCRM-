@@ -243,4 +243,13 @@
   <data name="GlobalSearchPlaceholder" xml:space="preserve">
     <value>Search pages, data and tools</value>
   </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Navigation</value>
+  </data>
+  <data name="ToggleNavigation" xml:space="preserve">
+    <value>Toggle navigation</value>
+  </data>
+  <data name="OpenQuickActions" xml:space="preserve">
+    <value>Open quick actions</value>
+  </data>
 </root>
