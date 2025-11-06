@@ -1,0 +1,36 @@
+/* Global overrides for sidebar / main layout offsets.
+   Placed in a non-scoped global CSS file and loaded after other styles so
+   it reliably wins over component-scoped rules injected by Blazor.
+*/
+
+/* Ensure the panel-open overlay does not push the main content */
+.page.desktop-layout.desktop-shell .sidebar.panel-open ~ .desktop-shell__main {
+    margin-left: 0 !important;
+    /* ensure panel overlays the main content by keeping main at lower stacking
+       priority when the panel is open */
+    position: relative;
+    z-index: 0 !important;
+}
+
+/* When the sidebar is present but not in overlay mode, apply the requested
+   negative shift so content sits under the rail/panel as intended. */
+.page.desktop-layout.desktop-shell .sidebar:not(.panel-open) ~ .desktop-shell__main {
+    margin-left: -255px !important;
+    /* Bring the main content above the fixed sidebar so it's visible at the
+       top when shifted left. Use position+z-index higher than the sidebar's
+       z-index (sidebar uses z-index:1000). */
+    position: relative;
+    z-index: 1100 !important;
+}
+
+/* Keep collapsed behavior consistent */
+.page.desktop-layout.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
+    margin-left: 68px !important;
+    position: relative;
+    z-index: 1100 !important;
+}
+
+/* Provide a very-specific fallback that targets the desktop-shell main
+   element attribute that Blazor may add in scoped CSS builds. This is a
+   defensive selector to help in some build/dev tooling scenarios. */
+

@@ -17,20 +17,25 @@
 <div class="login-container mobile-login-container white-theme white-theme-gradient-light">
   <!-- 태블릿/데스크톱용 이미지 영역 -->
   <div class="login-image-section">
-    <div @key="currentImageIndex" class="login-image-backdrop" style="background-image: url('@GetCurrentImageUrl()')"></div>
+    <div class="login-image-backdrop image-wrap">
+  <div class="image-layer layer-a @(frontIsA ? "visible" : "")" @ref="layerARef" style="background-image: @(layerABackground)"></div>
+  <div class="image-layer layer-b @(!frontIsA ? "visible" : "")" @ref="layerBRef" style="background-image: @(layerBBackground)"></div>
+    </div>
     <div class="login-image-content">
       <h1 class="login-image-title">Welcome to Nexa DB</h1>
       <p class="login-image-subtitle">Your powerful CRM solution</p>
     </div>
     
     <!-- 이미지 선택 인디케이터 -->
-    <div class="image-indicators">
+    <div class="image-indicators" role="tablist" aria-label="이미지 선택">
       @for (int i = 0; i < imageUrls.Length; i++)
       {
         var index = i;
-        <button class="indicator-dot @(currentImageIndex == index ?"active" : "")" 
+        <button type="button" class="indicator-dot @(currentImageIndex == index ?"active" : "")" 
                 @onclick="() => SetImage(index)"
-                aria-label="@($"이미지 {index + 1}")"></button>
+                aria-label="@($"이미지 {index + 1}")"
+                aria-current="@(currentImageIndex == index ? "true" : null)">
+        </button>
       }
     </div>
   </div>
@@ -70,9 +75,9 @@
         </div>
       </div>
 
-      <label class="remember-me">
-        <input type="checkbox" class="remember-checkbox" />
-        <span>@Localizer["RememberMe"]</span>
+      <label class="remember-me" for="remember-me-checkbox">
+        <input id="remember-me-checkbox" type="checkbox" class="remember-checkbox" @bind="rememberMe" aria-label="로그인 ID 저장" />
+        <span>로그인 ID 저장</span>
       </label>
     </div>
 
@@ -158,6 +163,9 @@
     private string? errorMessage;
     private bool isLoading = false;
     private bool isPasswordVisible = false;
+  // remember-me support: when true, store the username in localStorage
+  private bool rememberMe = false;
+  private const string RememberUsernameKey = "nexacrm.rememberedUsername";
 
     private string PasswordInputType => isPasswordVisible ? "text" : "password";
 
@@ -165,10 +173,12 @@
         ? Localizer["HidePassword"]
         : Localizer["ShowPassword"];
 
-    protected override async Task OnInitializedAsync()
-    {
-        await CheckExistingAuthentication();
-    }
+  protected override async Task OnInitializedAsync()
+  {
+    await CheckExistingAuthentication();
+    // load previously-remembered username (if any)
+    await LoadRememberedUsernameAsync();
+  }
 
     private async Task CheckExistingAuthentication()
     {
@@ -209,11 +219,10 @@
 
         errorMessage = null;
         isLoading = true;
-        // Give the renderer a chance to display the loading state before
-        // performing potentially blocking async work. Task.Yield yields back
-        // to the synchronization context so the UI updates immediately.
-        await Task.Yield();
-        StateHasChanged();
+        // Ensure the UI updates (spinner + text) before doing the sign-in work.
+        // Use InvokeAsync(StateHasChanged) so the renderer has a chance to flush
+        // the updated markup to the client/browser.
+        await InvokeAsync(StateHasChanged);
 
     try
     {
@@ -223,12 +232,17 @@
       }
       catch (JSException) { /* JSInterop 실패 무시 */ }
 
-      // Small delay to ensure spinner renders and logs appear in console
-      try { await Task.Delay(50); } catch { }
+      // Small delay to ensure spinner renders on the client and any
+      // CSS animations start before we run the sign-in logic.
+      try { await Task.Delay(120); } catch { }
       try { await JSRuntime.InvokeVoidAsync("console.log", "Calling AuthenticationService.SignInAsync"); } catch {}
 
-      var result = await AuthenticationService.SignInAsync(username, password);
-            if (!result.Succeeded)
+      // Run the sign-in on the thread-pool to avoid accidentally blocking the
+      // Blazor renderer / synchronization context if the implementation does
+      // synchronous work internally. AuthenticationService.SignInAsync is
+      // expected to be async; wrapping it in Task.Run is a defensive measure.
+      var result = await Task.Run(async () => await AuthenticationService.SignInAsync(username, password));
+      if (!result.Succeeded)
             {
                 errorMessage = result.ErrorMessage ?? "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
                 try
@@ -238,6 +252,20 @@
                 catch (JSException) { /* JSInterop 실패 무시 */ }
                 return;
             }
+
+      // Persist or remove the remembered username based on the checkbox.
+      try
+      {
+        if (rememberMe && !string.IsNullOrWhiteSpace(username))
+        {
+          await JSRuntime.InvokeVoidAsync("localStorage.setItem", RememberUsernameKey, username);
+        }
+        else
+        {
+          await JSRuntime.InvokeVoidAsync("localStorage.removeItem", RememberUsernameKey);
+        }
+      }
+      catch (JSException) { /* ignore JSInterop errors for localStorage */ }
 
             // 인증 상태가 업데이트될 시간을 주기 위해 지연
             //await Task.Delay(200);
@@ -303,8 +331,24 @@
         isPasswordVisible = !isPasswordVisible;
     }
 
-    // 이미지 슬라이드쇼
-    private string[] imageUrls = new[]
+  private async Task LoadRememberedUsernameAsync()
+  {
+    try
+    {
+      var saved = await JSRuntime.InvokeAsync<string>("localStorage.getItem", RememberUsernameKey);
+      if (!string.IsNullOrEmpty(saved))
+      {
+        username = saved;
+        rememberMe = true;
+        await InvokeAsync(StateHasChanged);
+      }
+    }
+    catch (JSException) { /* ignore */ }
+    catch { /* ignore other errors */ }
+  }
+
+  // 이미지 슬라이드쇼 (더블버퍼 전환)
+  private string[] imageUrls = new[]
     {
         "/_content/NexaCRM.UI/images/split1.jpg",
         "/_content/NexaCRM.UI/images/split2.jpg",
@@ -312,35 +356,70 @@
     };
     
     private int currentImageIndex = 0;
-    private System.Threading.Timer? imageTimer;
+  private System.Threading.Timer? imageTimer;
+
+  // double-buffer helpers
+  private ElementReference layerARef;
+  private ElementReference layerBRef;
+  private bool frontIsA = true;
+  private string layerABackground = string.Empty;
+  private string layerBBackground = string.Empty;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        StartImageSlideshow();
+    // initialize front layer background
+    layerABackground = $"url('{imageUrls[0]}')";
+    StartImageSlideshow();
     }
 
     private void StartImageSlideshow()
     {
         imageTimer = new System.Threading.Timer(_ =>
         {
-            InvokeAsync(() =>
-            {
-                currentImageIndex = (currentImageIndex + 1) % imageUrls.Length;
-                StateHasChanged();
-            });
+      var next = (currentImageIndex + 1) % imageUrls.Length;
+      // call async SetImage via the renderer
+      InvokeAsync(() => SetImage(next));
         }, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
     }
 
-    private void SetImage(int index)
+  private async Task SetImage(int index)
+  {
+    // bounds
+    if (index < 0 || index >= imageUrls.Length) return;
+
+    var url = imageUrls[index];
+
+    try
     {
-        currentImageIndex = index;
-        StateHasChanged();
-        
-        // 타이머 재시작
-        imageTimer?.Dispose();
-        StartImageSlideshow();
+      // Preload & decode via small JS helper to avoid flicker
+      await JSRuntime.InvokeVoidAsync("loginImages.preload", url);
     }
+    catch
+    {
+      // ignore preload errors and continue to set image
+    }
+
+    // set on back layer then crossfade
+    if (frontIsA)
+    {
+      layerBBackground = $"url('{url}')";
+      currentImageIndex = index;
+      frontIsA = false;
+    }
+    else
+    {
+      layerABackground = $"url('{url}')";
+      currentImageIndex = index;
+      frontIsA = true;
+    }
+
+    // restart timer
+    imageTimer?.Dispose();
+    StartImageSlideshow();
+
+    await InvokeAsync(StateHasChanged);
+  }
 
     private string GetCurrentImageUrl()
     {
@@ -352,3 +431,24 @@
         imageTimer?.Dispose();
     }
 }
+
+<script>
+  // Small helper to preload an image and decode it to avoid flicker.
+  window.loginImages = window.loginImages || {};
+  window.loginImages.preload = function (url) {
+    return new Promise(function (resolve, reject) {
+      try {
+        const img = new Image();
+        img.onload = function () { resolve(true); };
+        img.onerror = function () { resolve(false); };
+        // use decode if available for extra safety
+        img.src = url;
+        if (img.decode) {
+          img.decode().then(function () { resolve(true); }).catch(function () { resolve(false); });
+        }
+      } catch (e) {
+        resolve(false);
+      }
+    });
+  };
+</script>

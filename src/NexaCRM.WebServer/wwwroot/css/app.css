@@ -12,10 +12,12 @@
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
     --font-size-lg: 1.125rem;
-    --font-size-xl: 1.375rem;
-    --font-size-2xl: clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem);
-    --font-size-3xl: clamp(2.25rem, 1.8rem + 2.2vw, 3.125rem);
+    --font-size-xl: 1.375rem;    
+    --font-size-2xl: 1.75rem; /* 28px */
+    --font-size-3xl: 2.75rem; /* 44px */
     --body-line-height: 1.6;
+    --h1-size: 44px;
+    --h2-size: 28px;
     --heading-line-height-tight: 1.2;
     --heading-letter-spacing: -0.02em;
     --body-letter-spacing: -0.01em;
@@ -36,8 +38,9 @@
     --gradient-deep: linear-gradient(160deg, #2E2E2E 0%, #000000 100%);
     --overlay-glass-white: rgba(255, 255, 255, 0.1);
     --overlay-black: rgba(0, 0, 0, 0.5);
-    --shadow-soft-layer: 0px 2px 6px rgba(0, 0, 0, 0.15);
-    --shadow-deep-layer: 0px 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow-soft-layer: 0px 2px 6px rgba(15, 23, 42, 0.12);
+    --shadow-deep-layer: 0px 4px 16px rgba(15, 23, 42, 0.22);
+    --shadow-100: 0 8px 24px rgba(21, 33, 65, 0.06); /* soft shadow */
     --glow-white: 0px 0px 8px rgba(255, 255, 255, 0.8);
     --glow-dark: 0px 0px 6px rgba(0, 0, 0, 0.6);
 
@@ -49,17 +52,21 @@
 
     /* Light Theme Colors */
     --primary-color: var(--color-primary);
-    --primary-hover: #7c828f;
+    --primary-hover: #7c828f;    
+    --surface-100: #F8F9FB; /* 페이지 배경 */
+    --surface-200: #FFFFFF; /* 카드 배경 */
+    --muted-300: #E8EEF3; /* 섹션 카드 배경 */
+    --accent-500: #6C5CE7; /* 액센트/활성 색 */
     --secondary-color: var(--color-primary);
     --background-color: var(--neutral-white);
     --background-muted: var(--neutral-gray-100);
     --surface-color: var(--neutral-white);
-    --surface-muted: color-mix(in srgb, var(--neutral-white) 86%, var(--neutral-gray-100) 14%);
+    --surface-muted: rgba(245,245,245,0.86);
     --surface-tint: rgba(224, 224, 224, 0.45);
     --text-primary: var(--neutral-black);
     --text-secondary: var(--neutral-gray-600);
     --text-tertiary: var(--neutral-gray-300);
-    --border-color: color-mix(in srgb, var(--neutral-gray-100) 70%, transparent);
+    --border-color: rgba(224,224,224,0.7);
     --divider-color: rgba(176, 176, 176, 0.35);
     --shadow-light: rgba(0, 0, 0, 0.08);
     --shadow-medium: rgba(0, 0, 0, 0.18);
@@ -74,7 +81,7 @@
     --app-background-gradient: var(--gradient-light);
     --surface-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(224, 224, 224, 0.9) 100%);
     --floating-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(224, 224, 224, 0.82));
-    --frosted-border: color-mix(in srgb, var(--neutral-gray-100) 65%, transparent);
+    --frosted-border: rgba(224,224,224,0.65);
     --favorite-surface: linear-gradient(135deg, rgba(224, 224, 224, 0.45), rgba(176, 176, 176, 0.35));
     --favorite-icon-shadow: rgba(74, 74, 74, 0.25);
 
@@ -91,12 +98,27 @@
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
     --mobile-header-height: 4.5rem;
+    --space-xs: 6px;
+    --space-sm: 12px;
+    --space-md: 24px;
+    --space-lg: 40px;
+
+    /* Radius (Rounding) Tokens */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+
+    /* Touch Target Sizes */
+    --touch-target-min: 44px;
     --mobile-footer-height: 4.75rem;
 
     /* Global layout alignment tokens */
     --app-shell-page-header-height: 57px;
     --sidebar-width: min(90vw, 320px);
+    --nav-width: 280px; /* default nav width token (can be overridden by sidebar state) */
     --app-shell-surface-padding-top: 0.5rem;
+    --shell-content-padding: 1.5rem; /* 24px, 쉘 내부 공통 패딩 */
     --app-shell-content-top-gap: calc(var(--app-shell-surface-padding-top) + 0.25rem);
     --nav-rail-vertical-offset-base: 86px;
     --nav-rail-vertical-offset: max(var(--nav-rail-vertical-offset-base), var(--app-shell-page-header-height));
@@ -378,6 +400,46 @@ body {
 
 .app-shell__content {
     flex: 1;
+
+/* Layout offset rules for desktop shell main content to account for nav rail and panel */
+.desktop-shell__main {
+    transition: margin-left var(--transition-normal);
+    margin-left: 68px; /* default: sit next to collapsed rail */
+}
+
+/* When the sidebar is visible and NOT in panel-open overlay mode, reserve
+   space for the rail and the sidebar panel so the main content starts after
+   both elements. We use the rail (80px) plus the CSS variable --sidebar-width
+   (defaults to 320px) so this adapts if that variable is changed. */
+.sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main,
+.desktop-shell .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
+    /* Use --nav-width to compute the offset. The variable will be adjusted
+       depending on whether the sidebar is in overlay (panel-open) mode or
+       in normal sidebar-only mode. */
+    margin-left: calc(80px + var(--nav-width));
+}
+
+/* When sidebar is collapsed, keep a small offset to match the collapsed rail */
+.sidebar.collapsed ~ .desktop-shell__main,
+.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
+    margin-left: 68px;
+}
+
+/* Control --nav-width per sidebar state:
+     - When the sidebar is a panel overlay (panel-open) the effective nav width
+         should be 0 so the main content is not pushed.
+     - When the sidebar is present but not panel-open, the nav width should be
+         negative (e.g. -280px) to shift the main content appropriately.
+     These rules set the custom property; the layout selector above consumes it. */
+.desktop-shell .sidebar.panel-open { --nav-width: 0px; }
+.desktop-shell .sidebar:not(.panel-open) { --nav-width: -280px; }
+
+/* Keep a specific override for the common case (ensure no left margin when
+     panel overlay is active). */
+.sidebar.panel-open ~ .desktop-shell__main,
+.desktop-shell .sidebar.panel-open ~ .desktop-shell__main {
+        margin-left: 0 !important;
+}
     border-radius: 1rem;
     background: var(--background-color);
     border: 1px solid var(--divider-color);
@@ -764,7 +826,7 @@ a:hover,
 .sidebar {
     --nav-accent-color: var(--primary-color, #2153C8);
     background: linear-gradient(180deg, rgba(114, 99, 255, 0.08) 0%, rgba(114, 99, 255, 0.02) 100%), var(--surface-gradient, var(--surface-color));
-    background: linear-gradient(180deg, color-mix(in srgb, var(--nav-accent-color) 14%, transparent) 0%, color-mix(in srgb, var(--nav-accent-color) 4%, transparent) 100%), var(--surface-gradient, var(--surface-color));
+    background: linear-gradient(180deg, rgba(33,83,200,0.14) 0%, rgba(33,83,200,0.04) 100%), var(--surface-gradient, var(--surface-color));
     border-right: none;
     width: var(--sidebar-width);
     min-height: 100vh;
@@ -851,7 +913,7 @@ a:hover,
     font-size: 1.35rem;
     color: #fff;
     background: linear-gradient(135deg, rgba(114, 99, 255, 0.95), rgba(88, 73, 228, 0.9));
-    background: linear-gradient(135deg, color-mix(in srgb, var(--nav-accent-color) 82%, #6b4dff 18%), color-mix(in srgb, var(--nav-accent-color) 65%, #4c3ac1 35%));
+    background: linear-gradient(135deg, rgba(33,83,200,0.82) 0%, rgba(76,58,193,0.65) 100%);
     box-shadow: 0 14px 28px rgba(114, 99, 255, 0.25);
 }
 
@@ -1262,16 +1324,20 @@ a:hover,
         --sidebar-width: clamp(260px, 24vw, 320px);
     }
 
-    /* Offset the main document content by the fixed navigation rail width on
-       desktop/tablet so content does not get covered when the rail is fixed. */
-    body {
-    }
+     /* Offset the main document content by the fixed navigation rail width on
+         desktop/tablet so content does not get covered when the rail is fixed. */
 
-    /* Hide legacy .sidebar (mobile drawer) on desktop/tablet to avoid having two
-       sidebars rendered at once (the fixed NavigationTail is used on desktop). */
-    .sidebar {
+    /* Hide legacy .sidebar (mobile drawer) only on pages that are NOT using
+       the desktop-layout. Desktop pages should use `.page.desktop-layout` and
+       render the fixed navigation rail; limit the hide rule so component
+       scoped sidebars on desktop are not accidentally suppressed. */
+    .page:not(.desktop-layout) .sidebar {
         display: none !important;
     }
+
+     /* NOTE: desktop layout applies via `.page.desktop-layout`; avoid
+         overriding `.sidebar` here so component-scoped / library styles can
+         control presentation. */
 
     /* Edge-to-edge layout on tablet and above */
     .page.desktop-layout {

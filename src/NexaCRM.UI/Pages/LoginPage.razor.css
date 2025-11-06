@@ -1,34 +1,50 @@
 .login-container {
+    /* Balanced neutral grayscale palette (used across login view) */
+    --neutral-50: #f9fafb; /* very light */
+    --neutral-100: #f3f4f6;
+    --neutral-200: #e5e7eb;
+    --neutral-300: #d1d5db;
+    --neutral-400: #9ca3af;
+    --neutral-500: #6b7280;
+    --neutral-600: #4b5563;
+    --neutral-700: #374151;
+    --neutral-800: #1f2937;
+    --neutral-900: #0f1724; /* near-black */
+
+    /* Brand accents are preserved but the base surfaces/text use the neutral scale */
     --brand-accent: var(--primary-color);
     --brand-accent-dark: var(--primary-hover);
-    --brand-accent-soft: rgba(59,130,246,0.28); /* approx primary tint */
-    --brand-gradient-start: rgba(59,130,246,0.82);
-    --brand-gradient-end: rgba(16,24,40,0.24);
-    --surface-elevated: rgba(250,250,251,0.9);
-    --surface-muted-elevated: rgba(244,246,248,0.8);
-    --card-shadow: var(--shadow-soft, 0 18px 32px rgba(15, 23, 42, 0.08));
-    --card-shadow-layer: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.12));
-    --text-color: var(--text-primary);
-    --muted-color: rgba(107,114,128,0.82);
-    --input-border: rgba(226,232,240,0.85);
-    --input-bg: rgba(255,255,255,0.98);
-    --input-placeholder: rgba(107,114,128,0.65);
-    --input-focus-border: rgba(59,130,246,0.7);
-    --divider-color-elevated: rgba(226,232,240,0.85);
-    --focus-ring-color: var(--focus-ring);
-    --link-color: rgba(37,99,235,0.9);
-    --button-gradient: linear-gradient(135deg, rgba(59,130,246,0.92) 0%, rgba(59,130,246,1) 65%, rgba(15,23,42,0.55) 100%);
-    --button-gradient-hover: linear-gradient(135deg, rgba(59,130,246,1) 0%, rgba(59,130,246,1) 55%, rgba(15,23,42,0.45) 100%);
-    --button-shadow: var(--shadow-deep, 0 32px 64px rgba(15, 23, 42, 0.14));
-    --spinner-track-color: rgba(59,130,246,0.24);
-    --spinner-color: rgba(59,130,246,0.88);
+    --brand-accent-soft: color-mix(in srgb, var(--brand-accent) 18%, transparent);
+    --brand-gradient-start: color-mix(in srgb, var(--brand-accent) 86%, transparent);
+    --brand-gradient-end: color-mix(in srgb, var(--neutral-900) 12%, transparent);
+
+    /* Surface and text mapped onto neutral palette for consistent gray look */
+    --surface-elevated: var(--neutral-50);
+    --surface-muted-elevated: var(--neutral-100);
+    --card-shadow: var(--shadow-soft, 0 18px 32px rgba(15, 23, 42, 0.06));
+    --card-shadow-layer: var(--shadow-soft-layer, 0 2px 6px rgba(15, 23, 42, 0.08));
+    --text-color: var(--neutral-900);
+    --muted-color: rgba(55,65,81,0.78); /* balanced subtle gray for captions */
+    --input-border: var(--neutral-200);
+    --input-bg: var(--neutral-50);
+    --input-placeholder: rgba(107,114,128,0.52);
+    --input-focus-border: color-mix(in srgb, var(--brand-accent) 64%, var(--neutral-700) 36%);
+    --divider-color-elevated: var(--neutral-200);
+    --focus-ring-color: color-mix(in srgb, var(--brand-accent) 36%, transparent);
+    --link-color: var(--neutral-700);
+    /* Use flat button backgrounds instead of heavy gradients for a cleaner neutral UI */
+    --button-gradient: var(--brand-accent);
+    --button-gradient-hover: var(--brand-accent-dark);
+    --button-shadow: var(--shadow-deep, 0 32px 64px rgba(15, 23, 42, 0.12));
+    --spinner-track-color: color-mix(in srgb, var(--brand-accent) 18%, transparent);
+    --spinner-color: color-mix(in srgb, var(--brand-accent) 86%, var(--neutral-900) 14%);
     --surface-radius-sm: var(--radius-sm, 8px);
     --surface-radius-md: var(--radius-md, 12px);
     --surface-radius-lg: var(--radius-lg, 18px);
     --surface-radius-pill: var(--radius-pill, 999px);
     font-family: var(--font-family-sans);
-    /* force a clean white background for the login route to match design */
-    background: var(--neutral-white, #ffffff);
+    /* page background: slight neutral tone to separate card visually */
+    background: var(--neutral-100, #f3f4f6) !important;
     /* make the login containers fill the viewport to avoid background seams */
     width: min(100%, 100vw);
     min-height: 100dvh;
@@ -54,9 +70,8 @@
     content: "";
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(120% 120% at 18% 15%, color-mix(in srgb, var(--primary-color) 18%, transparent) 0%, color-mix(in srgb, var(--primary-color) 6%, transparent) 38%, transparent 72%),
-        linear-gradient(160deg, color-mix(in srgb, var(--primary-color) 12%, transparent) 0%, transparent 55%);
+    /* Decorative brand gradients removed to keep a clean neutral background */
+    background: none;
     z-index: 0;
     pointer-events: none;
 }
@@ -123,6 +138,8 @@
         position: absolute;
         inset: 0;
         background-size: cover;
+        /* wrapper uses dual layers for flicker-free image swapping */
+        display: block;
         /* prioritize the right-side subject so it sits closer to the card */
         background-position: center right;
         background-repeat: no-repeat;
@@ -139,6 +156,21 @@
         transform: translateX(14%) scale(1.12);
         pointer-events: none;
     }
+
+    /* Double-buffer image layers to avoid flicker during swaps */
+    .image-wrap { position: absolute; inset: 0; overflow: hidden; }
+    .image-layer {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center right;
+        background-repeat: no-repeat;
+        transition: opacity 480ms ease, transform 480ms ease;
+        opacity: 0;
+        will-change: opacity;
+    }
+    .image-layer.visible { opacity: 1; z-index: 2; }
+    .image-layer { z-index: 1; }
     
     /* 이미지 위 그라데이션 오버레이 */
     .login-image-section::before {
@@ -149,30 +181,37 @@
         right: 0;
         bottom: 0;
         z-index: 1;
-        /* soften the overlay so image details remain visible */
-        background: linear-gradient(160deg, rgba(8,12,31,0.28) 0%, rgba(11,17,32,0.12) 55%, rgba(15,19,36,0.06) 100%);
+                /* stronger overlay for text legibility over images */
+                background: linear-gradient(180deg, rgba(6,10,18,0.36) 0%, rgba(6,10,18,0.18) 48%, rgba(6,10,18,0.28) 100%);
     }
     
     .login-image-content {
         text-align: center;
-        color: white;
+        color: #fff;
         z-index: 2;
         position: relative;
+        padding: clamp(1rem, 2vw, 2rem);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* align text toward card area */
+        justify-content: center;
     }
-    
+
     .login-image-title {
         font-size: 3rem;
         font-weight: 800;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         letter-spacing: -0.02em;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        color: #ffffff;
     }
-    
+
     .login-image-subtitle {
-        font-size: 1.25rem;
+        font-size: 1.05rem;
         font-weight: 500;
         opacity: 0.95;
         letter-spacing: -0.01em;
+        color: rgba(255,255,255,0.92);
     }
     
     /* 이미지 인디케이터 */
@@ -184,31 +223,34 @@
         gap: 0.75rem;
         z-index: 3;
     }
-    
     .indicator-dot {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        background: rgba(255,255,255,0.18);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
         padding: 0;
+        display: inline-grid;
+        place-items: center;
     }
-    
+
     .indicator-dot:hover {
         background: rgba(255, 255, 255, 0.6);
-        transform: scale(1.2);
+        transform: scale(1.12);
     }
-    
+
     .indicator-dot.active {
         background: rgba(255, 255, 255, 1);
         border-color: rgba(255, 255, 255, 1);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+        transform: scale(1.06);
     }
-    
-    .indicator-dot:focus {
+
+    .indicator-dot:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 0 4px rgba(59,130,246,0.12), 0 0 0 2px rgba(255,255,255,0.14);
     }
     
     /* 오른쪽 로그인 폼 영역 */
@@ -226,8 +268,8 @@
         /* ensure card visually sits above the expanded image */
         z-index: 20;
         overflow: visible;
-        /* nudge the card slightly left so it overlaps the expanded backdrop by ~8px */
-        margin-left: -8px;
+        /* remove negative overlap — use shadow and border to separate card from image */
+        margin-left: 0;
         align-self: stretch;
         justify-self: center;
         box-shadow: var(--card-shadow-layer), var(--shadow-deep, 0 32px 64px rgba(15, 23, 42, 0.14));
@@ -250,18 +292,20 @@
 .mobile-login-card {
     width: 100%;
     max-width: 680px;
-    background: var(--surface-elevated);
+    background: var(--surface-elevated) !important;
     color: var(--text-color);
     border-radius: var(--surface-radius-lg);
-    border: 1px solid var(--divider-color-elevated);
-    box-shadow: var(--card-shadow-layer), var(--card-shadow);
+    /* stronger but subtle border for clearer separation from page background */
+    border: 1px solid var(--neutral-200);
+    /* lighter, consistent shadow to give depth without heavy overlap */
+    box-shadow: 0 12px 28px rgba(15,23,42,0.06), var(--card-shadow-layer);
     padding: clamp(2.25rem, 3.6vw, 3rem) clamp(1.8rem, 3.4vw, 2.6rem);
     display: flex;
     flex-direction: column;
     gap: 20px;
     overflow: visible;
-    backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -298,21 +342,16 @@
     font-weight: 800;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    background: linear-gradient(120deg, var(--brand-gradient-start), var(--brand-gradient-end));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; /* Safari / older WebKit fallback */
-    background-clip: text;
-    color: transparent;
+    /* Use flat color for logo text to remove gradient effect */
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    background-clip: initial;
+    color: var(--text-color);
 }
 
 /* Fallback for browsers that don't support background-clip:text (ensure logo is readable) */
-@supports not ((-webkit-background-clip: text)) {
-    .brand-logo {
-        background: none !important;
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: initial !important;
-    }
-}
+/* Logo uses plain text color now; no gradient fallback required */
 
 .brand-caption {
     font-size: 0.95rem;
@@ -440,6 +479,7 @@
     box-shadow: var(--button-shadow);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease;
+    position: relative; /* allow progress bar pseudo-element */
 }
 
 .login-button:hover:not(:disabled),
@@ -455,11 +495,50 @@
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-accent) 28%, transparent), var(--button-shadow);
 }
 
+/* Improve focus visibility for interactive controls */
+.login-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+}
+
+.indicator-dot { /* ensure keyboard target size */
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+}
+
 .login-button:disabled {
     opacity: 0.65;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+/* Ensure animate-spin class triggers the global spin keyframes */
+.animate-spin {
+    animation: spin 1s linear infinite;
+    transform-origin: center;
+}
+
+/* Indeterminate progress bar shown at the bottom of the disabled (loading) login button */
+.login-button:disabled::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: progress-slide 1.1s linear infinite;
+    pointer-events: none;
+    opacity: 0.95;
+}
+
+@keyframes progress-slide {
+    0% { background-position: 200% 0%; }
+    100% { background-position: -200% 0%; }
 }
 
 .login-button .ripple-effect,
@@ -477,6 +556,27 @@
     align-items: center;
     gap: 12px;
     color: var(--neutral-white);
+}
+
+/* When the spinner is used inside the primary login button, force
+   the spinner to use the button's foreground (white) so it remains
+   visible on a dark/brand background. */
+.login-button .button-loading .loading-spinner svg {
+    /* stronger pure white color and glow so the spinner is visible on
+       dark/brand button backgrounds */
+    color: #ffffff !important;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.18));
+    opacity: 1 !important;
+}
+
+.login-button .button-loading .loading-spinner svg circle {
+    stroke: rgba(255,255,255,0.65) !important;
+    opacity: 1 !important;
+}
+
+.login-button .button-loading .loading-spinner svg path {
+    fill: #ffffff !important;
+    opacity: 1 !important;
 }
 
 .loading-spinner svg {
