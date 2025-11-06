@@ -1,0 +1,43 @@
+.layout-content-container {
+  /* Ensure the main container itself has no border/shadow so inner content feels flush */
+  border: none;
+  box-shadow: none;
+}
+
+/* Make the soft-surface blocks look borderless and flatter like the provided design */
+.layout-content-container .bg-surface-soft {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important; /* optional: match page background for a borderless look */
+}
+
+/* Inputs and selects inside this page: remove visible borders and soften focus */
+.layout-content-container .form-input,
+.layout-content-container select,
+.layout-content-container .ui-input-height-lg {
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+    
+/* Buttons: keep primary color but remove strong outlines when desired */
+.layout-content-container .bg-primary {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Slight spacing tweak to maintain readable layout without visible separators */
+.layout-content-container .d-flex.align-items-center.gap-4 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Keep toggle pill visible (white thumb) but without an outer border */
+.layout-content-container label.position-relative.rounded-pill {
+  border: none !important;
+  background-color: var(--accent-soft, rgba(14,165,162,0.08));
+}
+
+/* Make status/info messages match the flatter look */
+.layout-content-container .px-2.py-2 {
+  background: transparent;
+}

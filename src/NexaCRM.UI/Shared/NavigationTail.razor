@@ -47,11 +47,36 @@
         </a>
 
         <ul class="rail-list">
+            @{ var hasDashboard = visibleGroups.Any(g => g.Key != null && g.Key.Contains("dashboard")); }
+
+            @if (!hasDashboard)
+            {
+                var dashboardHref = "/";
+                <li>
+                    <button role="tab" class="rail-btn @(string.Equals(selectedItem, "/", StringComparison.OrdinalIgnoreCase) ? "active" : "")"
+                            title="Dashboard"
+                            aria-label="Dashboard"
+                            tabindex="0"
+                            @onclick="() => SelectItem(dashboardHref)">
+                        @RenderIcon("graph", "rail-icon")
+                    </button>
+                </li>
+            }
+
             @for (var i = 0; i < visibleGroups.Count; i++)
             {
                 var g = visibleGroups[i];
                 var tooltip = g.DisplayName;
-                        <li>
+
+                // Only render the dashboard and db-related groups in the rail for this change.
+                // Keys are stored in lowercase when groups are built, so check lowercase tokens.
+                if (!(g.Key.Contains("dashboard") || g.Key.StartsWith("db")))
+                {
+                    // skip rendering other groups
+                    continue;
+                }
+
+                <li>
                     <button role="tab" class="rail-btn @(activeSubMenuIndex == i ? "active" : "")"
                             title="@tooltip"
                             aria-label="@tooltip"
@@ -87,7 +112,18 @@
             else
             {
                 var grp = visibleGroups[activeSubMenuIndex.Value];
-                var grouped = GroupLinks(grp.Links);
+                // For the consolidated dashboard group we inserted, render the
+                // three dashboard links as a single subgroup so they appear under
+                // the DASHBOARD header instead of as separate subgroup headings.
+                List<LinkSubgroup> grouped;
+                if (string.Equals(grp.Key, "dashboard", StringComparison.OrdinalIgnoreCase))
+                {
+                    grouped = new List<LinkSubgroup> { new LinkSubgroup("dashboard", grp.Links) };
+                }
+                else
+                {
+                    grouped = GroupLinks(grp.Links);
+                }
                 @foreach (var sub in grouped)
                 {
                         var hasActiveInSub = sub.Links.Any(l => string.Equals(NormalizePath(l.Href), selectedItem, StringComparison.OrdinalIgnoreCase));
@@ -206,7 +242,46 @@
             visibleGroups.Add(new NavGroupVm(key, displayName, mappedIcon, links));
         }
 
-        // Debug: log what groups were built
+            // Inject a MAIN-DASHBOARD group that contains Manager and Admin dashboard links.
+            // This replaces any existing 'main-dashboard' group and ensures the rail shows the
+            // consolidated dashboard entry we want for quick access.
+            try
+            {
+                // remove any existing dashboard-like entries (defensive)
+                // Remove groups that look like dashboard groups by checking multiple signals:
+                // - group key contains 'dashboard'
+                // - display name contains 'dashboard'
+                // - any link Href contains 'dashboard'
+                // This is defensive against different catalog key formats so the consolidated
+                // DASHBOARD group we insert is the only dashboard-like group visible.
+                visibleGroups.RemoveAll(v =>
+                    (v.Key != null && v.Key.Contains("dashboard", StringComparison.OrdinalIgnoreCase))
+                    || (!string.IsNullOrEmpty(v.DisplayName) && v.DisplayName.Contains("dashboard", StringComparison.OrdinalIgnoreCase))
+                    || (v.Links != null && v.Links.Any(l => !string.IsNullOrEmpty(l.Href) && l.Href.Contains("dashboard", StringComparison.OrdinalIgnoreCase)))
+                );
+
+                var dashboardLinks = new List<NavLinkVm>
+                {
+                    new NavLinkVm("/sales-dashboard", "세일즈 대시보드", "graph"),
+                    new NavLinkVm("/manager-dashboard", "매니저 대시보드", "graph"),
+                    new NavLinkVm("/admin-dashboard", "관리자 대시보드", "graph")
+                };
+
+                // insert at the front so it's easy to find and becomes the default panel when opened
+                visibleGroups.Insert(0, new NavGroupVm("dashboard", "DASHBOARD", "graph", dashboardLinks));
+
+                // If we injected the consolidated dashboard group, clear any stored
+                // active index from localStorage so stale client-state doesn't cause
+                // the panel to render older subgroupings (eg. separate sales/manager/admin)
+                try
+                {
+                    _ = JSRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKey);
+                }
+                catch { }
+            }
+            catch { }
+
+            // Debug: log what groups were built
         try
         {
             var names = string.Join(", ", visibleGroups.Select(v => v.DisplayName));

@@ -1,0 +1,17 @@
+@page "/manager-dashboard"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.Localization
+@attribute [Authorize(Roles = "Admin,Manager")]
+@inject IStringLocalizer<ManagerDashboard> Localizer
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+<div class="common-page-container" style="padding:2rem;">
+    <h1>매니져 대시보드</h1>
+    <p>개발중입니다. 곧 제공될 기능입니다.</p>
+</div>
+
+@code {
+
+   
+}

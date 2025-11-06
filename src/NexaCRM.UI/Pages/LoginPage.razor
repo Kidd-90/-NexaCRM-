@@ -1,5 +1,4 @@
 @page "/login"
-@page "/"
 @layout LoginLayout
 @attribute [AllowAnonymous]
 @using System.Linq
@@ -195,15 +194,15 @@
                 // 사용자 역할에 따라 적절한 대시보드로 리다이렉션
                 if (user.IsInRole("Manager"))
                 {
-                    NavigationManager.NavigateTo("/sales-manager-dashboard");
+                    NavigationManager.NavigateTo("/manager-dashboard");
                 }
                 else if (user.IsInRole("Sales"))
                 {
-                    NavigationManager.NavigateTo("/main-dashboard");
+                    NavigationManager.NavigateTo("/sales-dashboard");
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/main-dashboard");
+                    NavigationManager.NavigateTo("/admin-dashboard");
                 }
             }
         }
@@ -299,11 +298,11 @@
             }
             else if (user.IsInRole("Sales"))
             {
-                targetUrl = "/main-dashboard";
+                targetUrl = "/sales-dashboard";
             }
             else
             {
-                targetUrl = "/main-dashboard";
+                targetUrl = "/admin-dashboard";
             }
             
             Logger.LogInformation("🚀 Navigating to {Url}", targetUrl);
