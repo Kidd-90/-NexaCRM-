@@ -25,6 +25,14 @@
 - `tests/NexaCRM.Service.Tests/DbAdminServiceTests.cs`
   - 날짜/중복/상태/검색어 필터링, CSV 내보내기, 삭제 위임이 올바르게 동작하는지 단위 테스트로 검증합니다.
 
+## 전화번호 정규화 유틸리티
+- `PhoneNumberNormalizer`
+  - 관리자 서비스 전반에서 연락처 문자열에서 숫자만 추출하는 공용 도구입니다.
+  - `DbAdminService` 검색/중복 필터, `DuplicateService` 중복 그룹핑이 모두 동일한 정규화 규칙을 따릅니다.
+  - 내부적으로 `Span<char>`와 `stackalloc`을 활용해 짧은 문자열 처리 시 힙 할당을 줄여 성능 회귀를 방지합니다.
+- 추가 검증
+  - `tests/NexaCRM.Service.Tests/DuplicateServiceTests.FindDuplicatesAsync_NormalizesContactNumbers`가 포맷이 다른 연락처도 동일하게 묶이는지 보증합니다.
+
 ## UI 연동 현황
 - `src/NexaCRM.UI/Pages/DbAdvancedManagementPage.razor`
   - 초기 로딩 및 필터링, 삭제, CSV 내보내기를 `IDbAdminService`를 통해 수행합니다.
@@ -37,5 +45,15 @@
 ## Supabase 연동 참고
 - 실제 테이블은 `supabase/migrations/schema.sql`에 정의된 `db_customers` 스키마와 매핑되며, `SupabaseDbDataService`는 PostgREST API를 통해 CRUD 및 병합 작업을 수행합니다.
 - Supabase 환경값이 비어 있는 경우 `AddSupabaseClientOptions`가 오프라인 URL/Anon Key로 폴백하지만, 실서비스 배포 시 반드시 유효한 키를 주입해야 합니다.
+
+## 다음 작업 리스트
+1. **Supabase 동기화 단계 점검**
+   - 신규 고객 삽입/갱신 시 백엔드 레이어에서도 `PhoneNumberNormalizer`를 적용하도록 `SupabaseDbDataService` 파이프라인을 검토합니다.
+2. **프런트엔드 검색 정렬**
+   - Blazor UI의 검색어 전처리 로직을 백엔드 정규화 규칙과 맞추는 가이드 문서를 추가하고, Shared 컴포넌트에 적용 여부를 확인합니다.
+3. **성능 모니터링**
+   - 대량(>10만 건) 데이터셋에서 `PhoneNumberNormalizer` 호출 빈도를 샘플링하고, 필요 시 캐싱 또는 사전 정규화 전략을 실험합니다.
+4. **중복 병합 QA 자동화**
+   - `DuplicateService`의 병합 결과가 예상대로 동작하는지 통합 테스트 또는 Playwright 시나리오를 추가해 회귀를 예방합니다.
 
 > 이 문서는 DbAdminService 기능 확장 시 최신 상태를 유지하기 위해 관리합니다.
