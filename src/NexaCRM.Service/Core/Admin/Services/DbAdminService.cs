@@ -102,9 +102,28 @@ public sealed class DbAdminService : IDbAdminService
         var searchTerm = criteria?.SearchTerm?.Trim();
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            filtered = filtered.Where(c =>
-                (c.CustomerName?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (c.ContactNumber?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+            var normalizedDigits = NormalizeDigits(searchTerm);
+
+            filtered = filtered.Where(customer =>
+            {
+                if (customer.CustomerName?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return true;
+                }
+
+                if (customer.ContactNumber?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return true;
+                }
+
+                if (normalizedDigits.Length == 0)
+                {
+                    return false;
+                }
+
+                var contactDigits = NormalizeDigits(customer.ContactNumber);
+                return contactDigits.Length > 0 && contactDigits.Contains(normalizedDigits, StringComparison.Ordinal);
+            });
         }
 
         if (criteria?.Status is DbStatus status)
