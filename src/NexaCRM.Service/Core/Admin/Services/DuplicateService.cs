@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NexaCRM.Services.Admin.Interfaces;
 using NexaCRM.Services.Admin.Models.Db;
@@ -113,15 +112,8 @@ public sealed class DuplicateService : IDuplicateService
     public Task MergeAsync(int primaryContactId, IEnumerable<int> duplicateContactIds) =>
         _db.MergeCustomersAsync(primaryContactId, duplicateContactIds);
 
-    private static string NormalizeDigits(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        return Regex.Replace(value, "\\D", string.Empty);
-    }
+    private static string NormalizeDigits(string? value) =>
+        PhoneNumberNormalizer.ExtractDigits(value);
 
     private static string Last4(string? value)
     {

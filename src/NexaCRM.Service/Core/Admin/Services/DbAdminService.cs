@@ -102,7 +102,7 @@ public sealed class DbAdminService : IDbAdminService
         var searchTerm = criteria?.SearchTerm?.Trim();
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var normalizedDigits = NormalizeDigits(searchTerm);
+            var normalizedDigits = PhoneNumberNormalizer.ExtractDigits(searchTerm);
 
             filtered = filtered.Where(customer =>
             {
@@ -121,7 +121,7 @@ public sealed class DbAdminService : IDbAdminService
                     return false;
                 }
 
-                var contactDigits = NormalizeDigits(customer.ContactNumber);
+                var contactDigits = PhoneNumberNormalizer.ExtractDigits(customer.ContactNumber);
                 return contactDigits.Length > 0 && contactDigits.Contains(normalizedDigits, StringComparison.Ordinal);
             });
         }
@@ -136,7 +136,7 @@ public sealed class DbAdminService : IDbAdminService
         if (criteria?.CheckDuplicates == true)
         {
             var duplicateIds = materialized
-                .GroupBy(c => NormalizeDigits(c.ContactNumber))
+                .GroupBy(c => PhoneNumberNormalizer.ExtractDigits(c.ContactNumber))
                 .Where(group => !string.IsNullOrEmpty(group.Key) && group.Count() > 1)
                 .SelectMany(group => group.Select(customer => customer.ContactId))
                 .ToHashSet();
@@ -194,23 +194,4 @@ public sealed class DbAdminService : IDbAdminService
         return $"\"{content}\"";
     }
 
-    private static string NormalizeDigits(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        Span<char> buffer = stackalloc char[value.Length];
-        var index = 0;
-        foreach (var ch in value)
-        {
-            if (char.IsDigit(ch))
-            {
-                buffer[index++] = ch;
-            }
-        }
-
-        return index == 0 ? string.Empty : new string(buffer[..index]);
-    }
 }

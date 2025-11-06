@@ -157,6 +157,58 @@ public class DbAdminServiceTests
     }
 
     [Fact]
+    public async Task SearchAsync_WithDigitOnlyTerm_MatchesFormattedContactNumber()
+    {
+        // Arrange
+        var today = DateTime.Today;
+        var customers = new List<DbCustomer>
+        {
+            new()
+            {
+                ContactId = 21,
+                CustomerName = "Primary",
+                ContactNumber = "010-1234-5678",
+                AssignedDate = today,
+                LastContactDate = today,
+                Status = DbStatus.New
+            },
+            new()
+            {
+                ContactId = 22,
+                CustomerName = "Other",
+                ContactNumber = "+82 (10) 9876-5432",
+                AssignedDate = today,
+                LastContactDate = today,
+                Status = DbStatus.New
+            },
+            new()
+            {
+                ContactId = 23,
+                CustomerName = "Similar",
+                ContactNumber = "010-1234-5670",
+                AssignedDate = today,
+                LastContactDate = today,
+                Status = DbStatus.New
+            }
+        };
+
+        var dataService = new FakeDbDataService(customers);
+        var sut = new DbAdminService(dataService);
+        var criteria = new DbSearchCriteria
+        {
+            SearchTerm = "01012345678"
+        };
+
+        // Act
+        var results = await sut.SearchAsync(criteria);
+
+        // Assert
+        var list = results.ToList();
+        Assert.Single(list);
+        Assert.Equal(21, list[0].ContactId);
+    }
+
+    [Fact]
     public async Task ExportToExcelAsync_AppliesCriteriaFilter()
     {
         // Arrange
