@@ -6,9 +6,8 @@
 @using NexaCRM.Services.Admin.Interfaces
 @inject ISecurityService SecurityService
 
-<ResponsivePage class="common-page-container">
-    <h3>Security Settings</h3>
-    <p>Configure IP restrictions, login blocking and other security options.</p>
+<h3>Security Settings</h3>
+<p>Configure IP restrictions, login blocking and other security options.</p>
 
     <EditForm Model="_model" OnValidSubmit="HandleValidSubmit" class="security-settings-form">
         <DataAnnotationsValidator />
@@ -47,7 +46,6 @@
 
         <button type="submit" class="btn btn-primary mt-3">Save</button>
     </EditForm>
-</ResponsivePage>
 
 @code {
     private SecuritySettingsInputModel _model = new();

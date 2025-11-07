@@ -16,7 +16,7 @@
     /* Don't reserve space here unconditionally. The left offset will be
        applied to the main area only when a navigation rail is present. This
        prevents anonymous/login pages from showing an empty left column. */
-    padding: 0;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
     box-sizing: border-box;
     width: min(100%, 100vw);
     overflow: hidden;
@@ -239,7 +239,7 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
-    padding: clamp(1.5rem, 3vw, 2.5rem);
+    padding: 0;
     overflow: hidden;
     width: 100%;
     max-width: none;

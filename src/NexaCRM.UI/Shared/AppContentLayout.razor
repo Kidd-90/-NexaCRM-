@@ -1,0 +1,71 @@
+@inherits LayoutComponentBase
+@using System
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
+
+<CascadingValue Value="layoutOptions">
+    <ResponsivePage LayoutMode="@layoutOptions.LayoutMode"
+                    CssClass="@BuildCssClass(layoutOptions.AdditionalCssClass)"
+                    @attributes="GetMergedAttributes(layoutOptions.AdditionalAttributes)">
+        @Body
+    </ResponsivePage>
+</CascadingValue>
+
+@code {
+    private readonly AppContentLayoutOptions layoutOptions;
+    private IReadOnlyDictionary<string, object?>? mergedAttributes;
+
+    public AppContentLayout()
+    {
+        layoutOptions = new AppContentLayoutOptions(HandleOptionsChanged);
+    }
+
+    [CascadingParameter]
+    private RouteData? CurrentRouteData { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        layoutOptions.Reset(suppressNotification: true);
+        mergedAttributes = null;
+        base.OnParametersSet();
+    }
+
+    private string BuildCssClass(string? additionalCssClass)
+    {
+        return string.IsNullOrWhiteSpace(additionalCssClass)
+            ? "common-page-container"
+            : $"common-page-container {additionalCssClass}";
+    }
+
+    private IReadOnlyDictionary<string, object?> GetMergedAttributes(IReadOnlyDictionary<string, object?>? extraAttributes)
+    {
+        if (mergedAttributes is not null)
+        {
+            return mergedAttributes;
+        }
+
+        var attributes = new Dictionary<string, object?>(StringComparer.Ordinal)
+        {
+            ["data-page-type"] = CurrentRouteData?.PageType?.Name ?? string.Empty,
+            ["data-page-route"] = NavigationManager.ToBaseRelativePath(NavigationManager.Uri)
+        };
+
+        if (extraAttributes is not null)
+        {
+            foreach (var (key, value) in extraAttributes)
+            {
+                attributes[key] = value;
+            }
+        }
+
+        mergedAttributes = attributes;
+        return mergedAttributes;
+    }
+
+    private void HandleOptionsChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

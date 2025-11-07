@@ -4,8 +4,7 @@
 @using System.Linq
 @inject IFaqService FaqService
 
-<ResponsivePage class="common-page-container">
-    <h3>FAQ Management</h3>
+<h3>FAQ Management</h3>
 
     <div class="faq-filter">
         <label for="categoryFilter">Category:</label>
@@ -62,7 +61,6 @@
         <button type="submit">Save</button>
         <button type="button" @onclick="NewFaq">New</button>
     </EditForm>
-</ResponsivePage>
 
 @code {
     private List<FaqItem> items = new();

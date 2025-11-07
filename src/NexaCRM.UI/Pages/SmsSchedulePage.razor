@@ -7,8 +7,7 @@
 @using NexaCRM.Services.Admin.Interfaces
 @inject ISmsService SmsService
 
-<ResponsivePage class="common-page-container">
-    <h3 class="mb-4">SMS Schedule</h3>
+<h3 class="mb-4">SMS Schedule</h3>
 
     <EditForm Model="_form" OnValidSubmit="ScheduleAsync" class="schedule-form">
         <DataAnnotationsValidator />
@@ -64,7 +63,6 @@
     {
         <p>No upcoming messages.</p>
     }
-</ResponsivePage>
 
 @code {
     private ScheduleForm _form = new();

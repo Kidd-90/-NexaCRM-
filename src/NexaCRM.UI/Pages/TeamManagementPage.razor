@@ -8,8 +8,7 @@
 
 @inject ITeamService TeamService
 
-<ResponsivePage class="common-page-container">
-    <div class="team-management-page">
+<div class="team-management-page">
         <div class="card page-header">
             <div>
                 <h2 class="mb-1">팀 관리</h2>
@@ -150,7 +149,6 @@
             </div>
         </div>
     </div>
-</ResponsivePage>
 
 @code {
     private readonly List<TeamInfo> _filteredTeams = new();
