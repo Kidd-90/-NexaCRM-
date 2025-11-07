@@ -16,6 +16,7 @@
 @code {
     private readonly AppContentLayoutOptions layoutOptions;
     private IReadOnlyDictionary<string, object?>? mergedAttributes;
+    private string? currentRouteKey;
 
     public AppContentLayout()
     {
@@ -27,8 +28,16 @@
 
     protected override void OnParametersSet()
     {
-        layoutOptions.Reset(suppressNotification: true);
+        var routeKey = BuildRouteKey();
+
+        if (!string.Equals(currentRouteKey, routeKey, StringComparison.Ordinal))
+        {
+            currentRouteKey = routeKey;
+            layoutOptions.Reset(suppressNotification: true);
+        }
+
         mergedAttributes = null;
+
         base.OnParametersSet();
     }
 
@@ -64,8 +73,22 @@
         return mergedAttributes;
     }
 
+    private string BuildRouteKey()
+    {
+        var pageType = CurrentRouteData?.PageType?.FullName ?? string.Empty;
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        return string.Create(pageType.Length + relativePath.Length + 1, (pageType, relativePath), static (span, state) =>
+        {
+            var (pt, rp) = state;
+            pt.AsSpan().CopyTo(span);
+            span[pt.Length] = '|';
+            rp.AsSpan().CopyTo(span[(pt.Length + 1)..]);
+        });
+    }
+
     private void HandleOptionsChanged()
     {
+        mergedAttributes = null;
         _ = InvokeAsync(StateHasChanged);
     }
 }
