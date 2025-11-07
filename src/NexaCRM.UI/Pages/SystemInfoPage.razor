@@ -4,8 +4,7 @@
 @using NexaCRM.Services.Admin.Models.SystemInfo
 @inject ISystemInfoService SystemInfoService
 
-<ResponsivePage class="common-page-container">
-    <div class="container mx-auto p-4 space-y-6">
+<div class="container mx-auto p-4 space-y-6">
         <h3 class="mb-4 text-center">System Information</h3>
         @if (_info is null)
         {
@@ -37,7 +36,6 @@
             </section>
         }
     </div>
-</ResponsivePage>
 
 @code {
     private SystemInfo? _info;

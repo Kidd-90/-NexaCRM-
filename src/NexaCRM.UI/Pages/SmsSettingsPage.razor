@@ -4,9 +4,8 @@
 @using NexaCRM.Services.Admin.Interfaces
 @inject ISmsService SmsService
 
-<ResponsivePage class="common-page-container">
-    <h3>SMS Settings</h3>
-    <p>Manage provider credentials, sender IDs and default templates.</p>
+<h3>SMS Settings</h3>
+<p>Manage provider credentials, sender IDs and default templates.</p>
     <EditForm Model="_settings" OnValidSubmit="SaveAsync" class="sms-settings-form">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -38,7 +37,6 @@
         </div>
         <button type="submit" class="save-button">Save</button>
     </EditForm>
-</ResponsivePage>
 
 @code {
     private SmsSettings _settings = new();

@@ -8,8 +8,7 @@
 
 @inject ITeamService TeamService
 
-<ResponsivePage class="common-page-container">
-    <div class="team-member-page">
+<div class="team-member-page">
         <div class="card page-header">
             <div>
                 <h2 class="mb-1">팀원 관리</h2>
@@ -183,7 +182,6 @@
             </div>
         </div>
     </div>
-</ResponsivePage>
 
 @code {
     private readonly List<TeamMemberInfo> _filteredMembers = new();

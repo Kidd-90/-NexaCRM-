@@ -8,8 +8,7 @@
 @using NexaCRM.Services.Admin.Interfaces
 @inject ISmsService SmsService
 
-<ResponsivePage class="common-page-container">
-    <div class="sms-page">
+<div class="sms-page">
         <section class="sms-card sms-page-header">
             <div class="sms-page-title">
                 <h2 class="sms-title">문자메세지발송</h2>
@@ -261,7 +260,6 @@
             </aside>
         </div>
     </div>
-</ResponsivePage>
 
 @code {
     private readonly SmsSummary Summary = new(1_039_998, 142, 1_000_000, 857_438);

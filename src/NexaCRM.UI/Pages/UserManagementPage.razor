@@ -10,8 +10,7 @@
 
 @inject IUserManagementService UserManagementService
 
-<ResponsivePage>
-    <div class="user-management-page common-page-container">
+<div class="user-management-page common-page-container">
         <div class="card page-header">
             <div class="page-title">
                 <h2 class="mb-2">사용자 관리</h2>
@@ -182,7 +181,6 @@
             }
         </div>
     </div>
-</ResponsivePage>
 
 @if (_showEditModal && _editUser is not null)
 {

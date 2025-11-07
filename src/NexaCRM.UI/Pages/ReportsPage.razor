@@ -7,8 +7,9 @@
 @inject IStringLocalizer<ReportsPage> Localizer
 @inject IReportService ReportService
 
-<ResponsivePage LayoutMode="expanded" class="common-page-container" data-responsive-grid>
-    <section class="reports-shell surface-hero" data-col-span="7" aria-labelledby="reportBuilderTitle">
+<AppContentLayoutConfigurator LayoutMode="expanded" data-responsive-grid="" />
+
+<section class="reports-shell surface-hero" data-col-span="7" aria-labelledby="reportBuilderTitle">
         <header class="reports-shell__header">
             <h1 id="reportBuilderTitle" class="reports-shell__title">@Localizer["ReportsTitle"]</h1>
             <p class="reports-shell__subtitle">@Localizer["ReportsSubtitle"]</p>
@@ -119,7 +120,6 @@
             </section>
         </div>
     </aside>
-</ResponsivePage>
 
 @code {
     private ReportDefinition currentDefinition = new();
