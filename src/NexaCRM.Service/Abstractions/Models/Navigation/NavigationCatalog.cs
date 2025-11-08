@@ -12,12 +12,12 @@ public static class NavigationCatalog
 {
     private static readonly NavigationLinkDefinition[] ProjectLinks =
     {
-        new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles(), Keywords("overview", "metrics")),
+        new("Dashboard", "bi bi-house", "main-dashboard", Roles(), Keywords("overview", "metrics")),
         // Ensure these project-level links are visible to all users by using an explicit empty role list
         new("StatusAlerts", "bi bi-bell", "notifications", Array.Empty<string>(), Keywords("alerts", "notifications")),
-        new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles(), Keywords("updates", "notifications")),
+        //new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles(), Keywords("updates", "notifications")),
         new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Array.Empty<string>(), Keywords("announcements", "notifications")),
-        new("HistoryRecent", "bi bi-clock-history", "history/recent", Array.Empty<string>(), Keywords("history", "recent"))
+        //new("HistoryRecent", "bi bi-clock-history", "history/recent", Array.Empty<string>(), Keywords("history", "recent"))
     };
 
     private static readonly NavigationLinkDefinition[] SalesWorkspaceLinks =
@@ -56,7 +56,7 @@ public static class NavigationCatalog
     private static readonly NavigationLinkDefinition[] InsightsLinks =
     {
         new("StatisticsDashboard", "bi bi-graph-up", "statistics/dashboard", Roles("Manager", "Admin", "Developer"), Keywords("statistics", "analytics")),
-        new("Reports", "bi bi-file-earmark-bar-graph", "reports-page", Roles("Manager", "Admin", "Developer"), Keywords("reports", "insights"))
+        //new("Reports", "bi bi-file-earmark-bar-graph", "reports-page", Roles("Manager", "Admin", "Developer"), Keywords("reports", "insights"))
     };
 
     private static readonly NavigationLinkDefinition[] SettingsLinks =
@@ -65,7 +65,7 @@ public static class NavigationCatalog
         new("CompanyInfo", "bi bi-building", "settings/company-info", Roles("Admin", "Manager", "Developer"), Keywords("company", "settings")),
         new("ThemeSettings", "bi bi-palette", "settings-page", Roles("Admin", "Manager", "Developer"), Keywords("theme", "appearance")),
         new("SecuritySettings", "bi bi-shield-lock", "settings/security", Roles("Admin", "Developer"), Keywords("security")),
-        new("SmsSettings", "bi bi-chat-dots", "settings/sms", Roles("Admin", "Sales", "Manager"), Keywords("sms", "configuration")),
+        //new("SmsSettings", "bi bi-chat-dots", "settings/sms", Roles("Admin", "Sales", "Manager"), Keywords("sms", "configuration")),
         new("SenderNumbers", "bi bi-telephone", "sms/senders", Roles("Admin", "Developer"), Keywords("sms", "sender")),
         new("TemplateManagement", "bi bi-envelope-open", "email-template-builder", Roles("Admin", "Manager", "Developer"), Keywords("email", "template")),
         new("NotificationSettings", "bi bi-bell", "notification-settings-page", Roles("Admin", "Manager", "Developer", "Sales"), Keywords("notification"))
@@ -87,12 +87,13 @@ public static class NavigationCatalog
         new("SystemInformation", "bi bi-hdd-network", "system/info", Roles("Admin", "Developer"), Keywords("system", "info"))
     };
 
+    // Define the full set of navigation groups
     private static readonly NavigationGroupDefinition[] GroupsInternal =
     {
         new("NavigationProjects", "bi bi-kanban", Array.Empty<string>(), ProjectLinks),
         // Add an explicit Notifications group (appears under main navigation/dashboard)
         new("SalesWorkspace", "bi bi-briefcase", Roles("Admin", "Sales", "Manager"), SalesWorkspaceLinks),
-        new("DbManagement", "bi bi-database", Roles("Admin", "Sales", "Manager", "Developer"), DatabaseLinks),
+        new("DbManagement", "bi bi-people", Roles("Admin", "Sales", "Manager", "Developer"), DatabaseLinks),
         // Use a distinct chat icon for Engagement so it doesn't conflict with Organization/people icons
         new("Engagement", "bi bi-chat-left-text", Roles("Admin", "Sales", "Manager"), EngagementLinks),
         new("Insights", "bi bi-graph-up", Roles("Admin", "Manager", "Developer"), InsightsLinks),

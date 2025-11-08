@@ -529,12 +529,12 @@
     private RenderFragment RenderIcon(string iconKey, string? extraClass = null) => builder =>
     {
         // inline small SVGs for icons used in rail and links
-    var cls = string.IsNullOrEmpty(extraClass) ? "nav-icon" : $"nav-icon {extraClass}";
-    // Normalize incoming icon keys: callers sometimes pass CSS classes like
-    // "bi bi-kanban" or "fa fa-cog". Extract the most-meaningful token and
-    // strip common prefixes so our switch matches expected icon names.
-    var rawKey = iconKey ?? "default";
-    var svg = rawKey.ToLowerInvariant();
+        var cls = string.IsNullOrEmpty(extraClass) ? "nav-icon" : $"nav-icon {extraClass}";
+        // Normalize incoming icon keys: callers sometimes pass CSS classes like
+        // "bi bi-kanban" or "fa fa-cog". Extract the most-meaningful token and
+        // strip common prefixes so our switch matches expected icon names.
+        var rawKey = iconKey ?? "default";
+        var svg = rawKey.ToLowerInvariant();
         if (svg.Contains(' ')) svg = svg.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
         svg = svg.Replace("bi-", "").Replace("fa-", "").Replace("bi", "").Replace("fa", "").Trim('-','_');
 
@@ -542,6 +542,7 @@
         // inline SVG keys so more items render as icons instead of the fallback circle.
         var alias = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            //additional aliases for rail icons 
             ["table"] = "database",
             ["person-lines-fill"] = "people",
             ["person-lines"] = "people",
@@ -587,7 +588,7 @@
             "graph" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3 21v-8'/><path d='M3 21h18'/><polyline points='7 13 11 9 15 15 21 7'/></g></svg>",
 
             // Database: stacked ellipses, stroke-only for clarity
-            "database" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='12' cy='6' rx='8' ry='2.5'/><path d='M4 6v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V6'/><path d='M4 12c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5' stroke-width='1.2'/></g></svg>",
+            "database" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='12' cy='6' rx='8' ry='2.5'/><path d='M4 6v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V6'/><path d='M4 12c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5' stroke-width='1.2'/><circle cx='12' cy='17.5' r='2.5'/><path d='M7 22c0-2.2 2.2-4 5-4s5 1.8 5 4'/></g></svg>",
 
             // Chat / engagement: rounded bubble stroke-only
             "chat" => "<svg width='20' height='20' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false' role='img'><g class='svg-group' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></g></svg>",
