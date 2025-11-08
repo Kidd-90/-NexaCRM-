@@ -12,12 +12,12 @@ public static class NavigationCatalog
 {
     private static readonly NavigationLinkDefinition[] ProjectLinks =
     {
-    new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles(), Keywords("overview", "metrics")),
-    // Ensure these project-level links are visible to all users by using an explicit empty role list
-    new("StatusAlerts", "bi bi-bell", "notifications", Array.Empty<string>(), Keywords("alerts", "notifications")),
-    // new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles(), Keywords("updates", "notifications")),
-    new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Array.Empty<string>(), Keywords("announcements", "notifications")),
-    new("HistoryRecent", "bi bi-clock-history", "history/recent", Array.Empty<string>(), Keywords("history", "recent"))
+        new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles(), Keywords("overview", "metrics")),
+        // Ensure these project-level links are visible to all users by using an explicit empty role list
+        new("StatusAlerts", "bi bi-bell", "notifications", Array.Empty<string>(), Keywords("alerts", "notifications")),
+        new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles(), Keywords("updates", "notifications")),
+        new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Array.Empty<string>(), Keywords("announcements", "notifications")),
+        new("HistoryRecent", "bi bi-clock-history", "history/recent", Array.Empty<string>(), Keywords("history", "recent"))
     };
 
     private static readonly NavigationLinkDefinition[] SalesWorkspaceLinks =
@@ -120,7 +120,37 @@ public static class NavigationCatalog
         return AllLinksReadOnly.FirstOrDefault(link => Normalize(link.Href) == normalized);
     }
 
-    private static string Normalize(string value) => value.Trim('/').ToLowerInvariant();
+    // Normalize a relative URI for matching against defined Href values.
+    // - Removes query string and fragment (anything after '?' or '#')
+    // - Trims leading/trailing slashes
+    // - Converts to lower-case invariant
+    private static string Normalize(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        // Strip query string and fragment
+        var idxQuery = value.IndexOf('?');
+        var idxFrag = value.IndexOf('#');
+        var endIdx = value.Length;
+        if (idxQuery >= 0 && idxFrag >= 0)
+        {
+            endIdx = Math.Min(idxQuery, idxFrag);
+        }
+        else if (idxQuery >= 0)
+        {
+            endIdx = idxQuery;
+        }
+        else if (idxFrag >= 0)
+        {
+            endIdx = idxFrag;
+        }
+
+        var core = value.Substring(0, endIdx);
+        return core.Trim('/').ToLowerInvariant();
+    }
 
     private static string[] Roles(params string[] roles) => roles;
 

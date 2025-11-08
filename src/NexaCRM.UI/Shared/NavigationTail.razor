@@ -47,22 +47,6 @@
         </a>
 
         <ul class="rail-list">
-            @{ var hasDashboard = visibleGroups.Any(g => g.Key != null && g.Key.Contains("dashboard")); }
-
-            @if (!hasDashboard)
-            {
-                var dashboardHref = "/";
-                <li>
-                    <button role="tab" class="rail-btn @(string.Equals(selectedItem, "/", StringComparison.OrdinalIgnoreCase) ? "active" : "")"
-                            title="Dashboard"
-                            aria-label="Dashboard"
-                            tabindex="0"
-                            @onclick="() => SelectItem(dashboardHref)">
-                        @RenderIcon("graph", "rail-icon")
-                    </button>
-                </li>
-            }
-
             @for (var i = 0; i < visibleGroups.Count; i++)
             {
                 var g = visibleGroups[i];
@@ -70,12 +54,6 @@
 
                 // Only render the dashboard and db-related groups in the rail for this change.
                 // Keys are stored in lowercase when groups are built, so check lowercase tokens.
-                if (!(g.Key.Contains("dashboard") || g.Key.StartsWith("db")))
-                {
-                    // skip rendering other groups
-                    continue;
-                }
-
                 <li>
                     <button role="tab" class="rail-btn @(activeSubMenuIndex == i ? "active" : "")"
                             title="@tooltip"
@@ -249,14 +227,8 @@
 
         foreach (var g in NavigationCatalog.Groups)
         {
-            // Filter groups by required roles (if any)
-            if (g.RequiredRoles?.Count > 0)
-            {
-                if (roleSet.Count == 0 || !g.RequiredRoles.Any(r => roleSet.Contains(r)))
-                {
-                    continue;
-                }
-            }
+            // Previously we filtered out groups whose required roles were missing. To surface every
+            // available menu (per UX request) we now keep them all visible regardless of role claims.
 
             // Build link VMs and localize display names if Localizer is available
             var links = g.Links.Select(l => new NavLinkVm(GetHref(l.Href), Localizer[l.ResourceKey]?.Value ?? l.ResourceKey, l.IconCssClass)).ToList();
@@ -271,37 +243,8 @@
             visibleGroups.Add(new NavGroupVm(key, displayName, mappedIcon, links));
         }
 
-            // Inject a MAIN-DASHBOARD group that contains Manager and Admin dashboard links.
-            // This replaces any existing 'main-dashboard' group and ensures the rail shows the
-            // consolidated dashboard entry we want for quick access.
             try
             {
-                // remove any existing dashboard-like entries (defensive)
-                // Remove groups that look like dashboard groups by checking multiple signals:
-                // - group key contains 'dashboard'
-                // - display name contains 'dashboard'
-                // - any link Href contains 'dashboard'
-                // This is defensive against different catalog key formats so the consolidated
-                // DASHBOARD group we insert is the only dashboard-like group visible.
-                visibleGroups.RemoveAll(v =>
-                    (v.Key != null && v.Key.Contains("dashboard", StringComparison.OrdinalIgnoreCase))
-                    || (!string.IsNullOrEmpty(v.DisplayName) && v.DisplayName.Contains("dashboard", StringComparison.OrdinalIgnoreCase))
-                    || (v.Links != null && v.Links.Any(l => !string.IsNullOrEmpty(l.Href) && l.Href.Contains("dashboard", StringComparison.OrdinalIgnoreCase)))
-                );
-
-                var dashboardLinks = new List<NavLinkVm>
-                {
-                    new NavLinkVm("/sales-dashboard", "세일즈 대시보드", "graph"),
-                    new NavLinkVm("/manager-dashboard", "매니저 대시보드", "graph"),
-                    new NavLinkVm("/admin-dashboard", "관리자 대시보드", "graph")
-                };
-
-                // insert at the front so it's easy to find and becomes the default panel when opened
-                visibleGroups.Insert(0, new NavGroupVm("dashboard", "DASHBOARD", "graph", dashboardLinks));
-
-                // If we injected the consolidated dashboard group, clear any stored
-                // active index from localStorage so stale client-state doesn't cause
-                // the panel to render older subgroupings (eg. separate sales/manager/admin)
                 try
                 {
                     _ = JSRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKey);
@@ -313,27 +256,6 @@
             // Debug: log what groups were built
             try
             {
-                // Ensure a Notifications group is present in the sidebar even if role filtering
-                // filtered it out for some principals. Notifications are useful to most users
-                // so add a UI-side fallback if the catalog contains the group but it
-                // didn't make it into visibleGroups earlier.
-                if (!visibleGroups.Any(v => v.Key != null && v.Key.Contains("notifications", StringComparison.OrdinalIgnoreCase)))
-                {
-                    try
-                    {
-                        var notifDef = NavigationCatalog.Groups.FirstOrDefault(ng => string.Equals(ng.ResourceKey, "Notifications", StringComparison.OrdinalIgnoreCase));
-                        if (notifDef != null)
-                        {
-                            var notifLinks = notifDef.Links.Select(l => new NavLinkVm(GetHref(l.Href), Localizer[l.ResourceKey]?.Value ?? l.ResourceKey, l.IconCssClass)).ToList();
-                            if (notifLinks.Count > 0)
-                            {
-                                visibleGroups.Add(new NavGroupVm("notifications", Localizer[notifDef.ResourceKey]?.Value ?? notifDef.ResourceKey, MapIcon(Localizer[notifDef.ResourceKey]?.Value ?? notifDef.ResourceKey, notifDef.IconCssClass), notifLinks));
-                            }
-                        }
-                    }
-                    catch { }
-                }
-
                 var names = string.Join(", ", visibleGroups.Select(v => v.DisplayName));
                 lastBuiltGroupNames = names ?? string.Empty;
                 _ = JSRuntime.InvokeVoidAsync("console.log", $"NavigationTail.LoadGroupsAsync built groups: {names}");
@@ -545,7 +467,7 @@
         if (string.IsNullOrEmpty(displayName)) return originalIcon ?? "default";
 
         var key = displayName.ToLowerInvariant();
-    var result = key switch
+        var result = key switch
         {
             // Dashboard / main overview
             var s when s.Contains("dashboard") || s.Contains("main") || s.Contains("overview") => "graph",
