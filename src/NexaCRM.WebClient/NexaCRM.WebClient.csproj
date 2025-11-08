@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
+        <!-- 트리밍(PublishTrimmed) 및 빌드 캐시 삭제 -->
+        <PublishTrimmed>false</PublishTrimmed>
         <!-- 다중 대상 프레임워크 -->
         <TargetFramework>net8.0</TargetFramework>
         <OutputType>Exe</OutputType>
