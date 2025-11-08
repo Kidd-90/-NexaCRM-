@@ -68,14 +68,6 @@
                 var g = visibleGroups[i];
                 var tooltip = g.DisplayName;
 
-                // Only render the dashboard and db-related groups in the rail for this change.
-                // Keys are stored in lowercase when groups are built, so check lowercase tokens.
-                if (!(g.Key.Contains("dashboard") || g.Key.StartsWith("db")))
-                {
-                    // skip rendering other groups
-                    continue;
-                }
-
                 <li>
                     <button role="tab" class="rail-btn @(activeSubMenuIndex == i ? "active" : "")"
                             title="@tooltip"
