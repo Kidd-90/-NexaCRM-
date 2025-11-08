@@ -201,6 +201,9 @@
   <data name="NavigationProjects" xml:space="preserve">
     <value>프로젝트</value>
   </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>알림</value>
+  </data>
   <data name="SalesWorkspace" xml:space="preserve">
     <value>업무 공간</value>
   </data>

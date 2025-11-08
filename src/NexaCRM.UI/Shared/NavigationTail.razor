@@ -190,6 +190,7 @@
     private string StorageKey => string.Create(CultureInfo.InvariantCulture, $"{StorageKeyPrefix}.{_viewportKey}");
 
     private readonly List<NavGroupVm> visibleGroups = new();
+    private string lastBuiltGroupNames = string.Empty;
     // Track which subgroups are expanded in the panel. Keys are the subgroup.Title values
     // produced by GroupLinks (eg. first path segment or db/... keys).
     private readonly HashSet<string> openSubgroups = new(StringComparer.OrdinalIgnoreCase);
@@ -197,12 +198,28 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        // Load initial groups based on current authentication state
         await LoadGroupsAsync();
+
+        // Ensure we refresh groups when authentication state changes (e.g., user logs in/out)
+        try
+        {
+            AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+        }
+        catch { }
     }
 
     private async Task LoadGroupsAsync()
     {
-        // Try to get roles from authentication state if available to filter groups
+        try
+        {
+            Console.WriteLine("NavigationTail.LoadGroupsAsync START");
+        }
+        catch { }
+        // Try to get roles from authentication state if available to filter groups.
+        // Expand claim-type checks to cover common JWT/Identity conventions ("role", "roles",
+        // ClaimTypes.Role and any claim type that ends with '/role') so roles provided by different
+        // auth systems are recognized.
         string[] roles = Array.Empty<string>();
         try
         {
@@ -210,7 +227,19 @@
             var user = authState.User;
             if (user?.Identity?.IsAuthenticated == true)
             {
-                roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+                roles = user.Claims
+                    .Where(c =>
+                        string.Equals(c.Type, ClaimTypes.Role, StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(c.Type, "role", StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(c.Type, "roles", StringComparison.OrdinalIgnoreCase)
+                        || (c.Type?.EndsWith("/role", StringComparison.OrdinalIgnoreCase) ?? false))
+                    .Select(c => c.Value)
+                    .Where(v => !string.IsNullOrWhiteSpace(v))
+                    .ToArray();
+
+                // As a last resort, if no explicit role claims found but the principal exposes
+                // IsInRole information via authentication schemes, attempt a few common roles
+                // heuristically (optional — keep roles empty rather than guessing).
             }
         }
         catch { }
@@ -282,13 +311,45 @@
             catch { }
 
             // Debug: log what groups were built
-        try
-        {
-            var names = string.Join(", ", visibleGroups.Select(v => v.DisplayName));
-            _ = JSRuntime.InvokeVoidAsync("console.log", $"NavigationTail.LoadGroupsAsync built groups: {names}");
-            try { Logger?.LogInformation("NavigationTail.LoadGroupsAsync built groups: {Groups}", names); } catch { }
-        }
-        catch { }
+            try
+            {
+                // Ensure a Notifications group is present in the sidebar even if role filtering
+                // filtered it out for some principals. Notifications are useful to most users
+                // so add a UI-side fallback if the catalog contains the group but it
+                // didn't make it into visibleGroups earlier.
+                if (!visibleGroups.Any(v => v.Key != null && v.Key.Contains("notifications", StringComparison.OrdinalIgnoreCase)))
+                {
+                    try
+                    {
+                        var notifDef = NavigationCatalog.Groups.FirstOrDefault(ng => string.Equals(ng.ResourceKey, "Notifications", StringComparison.OrdinalIgnoreCase));
+                        if (notifDef != null)
+                        {
+                            var notifLinks = notifDef.Links.Select(l => new NavLinkVm(GetHref(l.Href), Localizer[l.ResourceKey]?.Value ?? l.ResourceKey, l.IconCssClass)).ToList();
+                            if (notifLinks.Count > 0)
+                            {
+                                visibleGroups.Add(new NavGroupVm("notifications", Localizer[notifDef.ResourceKey]?.Value ?? notifDef.ResourceKey, MapIcon(Localizer[notifDef.ResourceKey]?.Value ?? notifDef.ResourceKey, notifDef.IconCssClass), notifLinks));
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                var names = string.Join(", ", visibleGroups.Select(v => v.DisplayName));
+                lastBuiltGroupNames = names ?? string.Empty;
+                _ = JSRuntime.InvokeVoidAsync("console.log", $"NavigationTail.LoadGroupsAsync built groups: {names}");
+                try { Logger?.LogInformation("NavigationTail.LoadGroupsAsync built groups: {Groups}", names); } catch { }
+                try { Console.WriteLine($"NavigationTail.LoadGroupsAsync built groups: {names}"); } catch { }
+            }
+            catch (Exception ex)
+            {
+                try { Console.WriteLine($"NavigationTail.LoadGroupsAsync debug logging failed: {ex}"); } catch { }
+            }
+
+            try
+            {
+                Console.WriteLine("NavigationTail.LoadGroupsAsync END");
+            }
+            catch { }
 
         // Ensure the active index remains valid after rebuilding groups
         if (activeSubMenuIndex.HasValue)
@@ -732,6 +793,14 @@
         if (firstRender)
         {
             await InitializeViewportAsync();
+            try
+            {
+                if (!string.IsNullOrEmpty(lastBuiltGroupNames))
+                {
+                    await JSRuntime.InvokeVoidAsync("console.log", $"NavigationTail (afterrender) built groups: {lastBuiltGroupNames}");
+                }
+            }
+            catch { }
         }
     }
 
@@ -850,6 +919,30 @@
             NavigationManager.LocationChanged -= OnLocationChanged;
         }
         catch { }
+
+        try
+        {
+            AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+        }
+        catch { }
+    }
+
+    private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        // When auth changes, rebuild visible groups (run async but don't block the event)
+        _ = InvokeAsync(async () =>
+        {
+            try
+            {
+                // ensure latest groups are built based on the new auth state
+                await LoadGroupsAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                try { Logger?.LogDebug(ex, "OnAuthenticationStateChanged handling failed"); } catch { }
+            }
+        });
     }
 
     protected override void OnInitialized()

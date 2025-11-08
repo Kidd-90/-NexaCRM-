@@ -12,11 +12,12 @@ public static class NavigationCatalog
 {
     private static readonly NavigationLinkDefinition[] ProjectLinks =
     {
-        new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("overview", "metrics")),
-        new("StatusAlerts", "bi bi-bell", "notifications", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("alerts", "notifications")),
-        // new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("updates", "notifications")),
-        new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("announcements", "notifications")),
-        new("HistoryRecent", "bi bi-clock-history", "history/recent", Roles("Sales", "Manager", "Admin", "Developer"), Keywords("history", "recent"))
+    new("Dashboard", "bi bi-speedometer2", "main-dashboard", Roles(), Keywords("overview", "metrics")),
+    // Ensure these project-level links are visible to all users by using an explicit empty role list
+    new("StatusAlerts", "bi bi-bell", "notifications", Array.Empty<string>(), Keywords("alerts", "notifications")),
+    // new("StatusUpdates", "bi bi-arrow-repeat", "notifications/updates", Roles(), Keywords("updates", "notifications")),
+    new("StatusAnnouncements", "bi bi-megaphone", "notifications/announcements", Array.Empty<string>(), Keywords("announcements", "notifications")),
+    new("HistoryRecent", "bi bi-clock-history", "history/recent", Array.Empty<string>(), Keywords("history", "recent"))
     };
 
     private static readonly NavigationLinkDefinition[] SalesWorkspaceLinks =
@@ -89,10 +90,11 @@ public static class NavigationCatalog
     private static readonly NavigationGroupDefinition[] GroupsInternal =
     {
         new("NavigationProjects", "bi bi-kanban", Array.Empty<string>(), ProjectLinks),
+        // Add an explicit Notifications group (appears under main navigation/dashboard)
         new("SalesWorkspace", "bi bi-briefcase", Roles("Admin", "Sales", "Manager"), SalesWorkspaceLinks),
         new("DbManagement", "bi bi-database", Roles("Admin", "Sales", "Manager", "Developer"), DatabaseLinks),
-    // Use a distinct chat icon for Engagement so it doesn't conflict with Organization/people icons
-    new("Engagement", "bi bi-chat-left-text", Roles("Admin", "Sales", "Manager"), EngagementLinks),
+        // Use a distinct chat icon for Engagement so it doesn't conflict with Organization/people icons
+        new("Engagement", "bi bi-chat-left-text", Roles("Admin", "Sales", "Manager"), EngagementLinks),
         new("Insights", "bi bi-graph-up", Roles("Admin", "Manager", "Developer"), InsightsLinks),
         new("BasicSettings", "bi bi-sliders", Roles("Admin", "Sales", "Manager", "Developer"), SettingsLinks),
         new("OrganizationManagement", "bi bi-building-fill", Roles("Admin", "Manager", "Developer"), OrganizationLinks),

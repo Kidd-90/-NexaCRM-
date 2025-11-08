@@ -21,6 +21,27 @@
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/components/login-status.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/overrides.css" />
     <script>
+        // Defensive guard: if server prerender produced a responsive-page but the
+        // outer `.page.desktop-layout` wrapper is missing (for example during
+        // incremental rendering or when a layout wasn't applied), create a wrapper
+        // so layout scripts and CSS selectors find the expected DOM structure.
+        (function () {
+            try {
+                if (!document.querySelector('.page.desktop-layout')) {
+                    var resp = document.querySelector('.responsive-page');
+                    if (resp && resp.parentNode) {
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'page desktop-layout desktop-shell';
+                        resp.parentNode.insertBefore(wrapper, resp);
+                        wrapper.appendChild(resp);
+                        try { console.log('[layout-guard] injected .page.desktop-layout wrapper'); } catch (e) {}
+                    }
+                }
+            } catch (e) {
+                try { console.warn('[layout-guard] failed', e); } catch (e) {}
+            }
+        })();
+
         (function () {
             if (window.__nexacrm_ui_scripts_loaded) return;
             window.__nexacrm_ui_scripts_loaded = true;
@@ -35,7 +56,10 @@
                 'client-console-forwarder.js',
                 'csv-export.js',
                 'actions.js',
-                'layout.js',
+                // note: layout.js is intentionally NOT injected here as a classic script.
+                // It is imported as an ES module in OnAfterRenderAsync to avoid
+                // duplicate evaluation (which can cause "duplicate variable" errors
+                // in some browsers if the same top-level bindings are evaluated twice).
             ];
 
             files.forEach(function (file) {

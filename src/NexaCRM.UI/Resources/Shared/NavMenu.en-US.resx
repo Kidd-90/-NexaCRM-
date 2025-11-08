@@ -201,6 +201,9 @@
   <data name="NavigationProjects" xml:space="preserve">
     <value>Projects</value>
   </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
   <data name="SalesWorkspace" xml:space="preserve">
     <value>Workspace</value>
   </data>
