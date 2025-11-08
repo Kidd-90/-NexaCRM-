@@ -142,32 +142,56 @@ public sealed class SupabaseServerSessionPersistence : IGotrueSessionPersistence
                 _logger.LogDebug("HttpContext is null, cannot load session from cookie");
                 return null;
             }
-            
-            if (!httpContext.Request.Cookies.TryGetValue(SessionCookieName, out var sessionJson) || 
+
+            if (!httpContext.Request.Cookies.TryGetValue(SessionCookieName, out var sessionJson) ||
                 string.IsNullOrEmpty(sessionJson))
             {
                 _logger.LogDebug("No session cookie found");
                 return null;
             }
-            
-            var session = JsonSerializer.Deserialize<Session>(sessionJson);
-            
-            if (session == null)
+
+            // Attempt to parse cookie safely
+            try
             {
-                _logger.LogWarning("Failed to deserialize session from cookie");
+                var toParse = sessionJson;
+
+                // Cookie value may be a quoted JSON string — try to unwrap first
+                if (!string.IsNullOrEmpty(toParse) && toParse[0] == '"')
+                {
+                    try
+                    {
+                        toParse = JsonSerializer.Deserialize<string>(toParse) ?? toParse;
+                    }
+                    catch
+                    {
+                        // ignore and use original cookie string
+                    }
+                }
+
+                var session = JsonSerializer.Deserialize<Session>(toParse);
+
+                if (session == null)
+                {
+                    _logger.LogWarning("Failed to deserialize session from cookie. Raw: {RawCookie}", sessionJson);
+                    return null;
+                }
+
+                // 세션 만료 확인
+                if (session.ExpiresAt() < DateTimeOffset.UtcNow)
+                {
+                    _logger.LogInformation("Session cookie expired for user {UserId}", session.User?.Id);
+                    DeleteSessionCookie();
+                    return null;
+                }
+
+                _logger.LogDebug("✅ Session loaded from cookie for user {UserId}", session.User?.Id);
+                return session;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Failed to load session from cookie; raw cookie: {RawCookie}", sessionJson);
                 return null;
             }
-            
-            // 세션 만료 확인
-            if (session.ExpiresAt() < DateTimeOffset.UtcNow)
-            {
-                _logger.LogInformation("Session cookie expired for user {UserId}", session.User?.Id);
-                DeleteSessionCookie();
-                return null;
-            }
-            
-            _logger.LogDebug("✅ Session loaded from cookie for user {UserId}", session.User?.Id);
-            return session;
         }
         catch (Exception ex)
         {

@@ -91,7 +91,34 @@ public sealed class SupabaseSessionPersistence : IGotrueSessionPersistence<Sessi
                 return null;
             }
 
-            return JsonConvert.DeserializeObject<Session>(rawSession);
+            try
+            {
+                // Some callers / storage layers may double-quote or escape the JSON string.
+                // If the stored value is a quoted JSON string (starts with '"'), unwrap it first.
+                if (rawSession.Length > 0 && rawSession[0] == '"')
+                {
+                    try
+                    {
+                        var maybeInner = JsonConvert.DeserializeObject<string>(rawSession);
+                        if (!string.IsNullOrEmpty(maybeInner))
+                        {
+                            rawSession = maybeInner;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore - fall back to original rawSession
+                    }
+                }
+
+                return JsonConvert.DeserializeObject<Session>(rawSession);
+            }
+            catch (Exception ex)
+            {
+                // Log raw payload to help diagnose malformed data in localStorage
+                _logger.LogWarning(ex, "Failed to deserialize Supabase session from local storage. Raw payload: {RawSession}", rawSession);
+                return null;
+            }
         }
         catch (Exception ex)
         {

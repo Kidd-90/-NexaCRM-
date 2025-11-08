@@ -92,7 +92,7 @@ public static class NavigationCatalog
     {
         new("NavigationProjects", "bi bi-kanban", Array.Empty<string>(), ProjectLinks),
         // Add an explicit Notifications group (appears under main navigation/dashboard)
-        new("SalesWorkspace", "bi bi-briefcase", Roles("Admin", "Sales", "Manager"), SalesWorkspaceLinks),
+        new("SalesWorkspace", "bi bi-workspace", Roles("Admin", "Sales", "Manager"), SalesWorkspaceLinks),
         new("DbManagement", "bi bi-people", Roles("Admin", "Sales", "Manager", "Developer"), DatabaseLinks),
         // Use a distinct chat icon for Engagement so it doesn't conflict with Organization/people icons
         new("Engagement", "bi bi-chat-left-text", Roles("Admin", "Sales", "Manager"), EngagementLinks),

@@ -51,14 +51,37 @@ public sealed class NavigationStateService : INavigationStateService, IAsyncDisp
                 var json = await JsInvokeAsync<string?>("getRecentNavigation").ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(json))
                 {
-                    var entries = JsonSerializer.Deserialize<List<NavigationHistoryEntry>>(json, SerializerOptions);
-                    if (entries is not null && entries.Count > 0)
+                    try
                     {
+                        var toParse = json;
+
+                        // localStorage value may be a quoted JSON string; try to unwrap
+                        if (toParse.Length > 0 && toParse[0] == '"')
+                        {
+                            try
+                            {
+                                toParse = JsonSerializer.Deserialize<string>(toParse) ?? toParse;
+                            }
+                            catch
+                            {
+                                // ignore and use original value
+                            }
+                        }
+
+                        var entries = JsonSerializer.Deserialize<List<NavigationHistoryEntry>>(toParse, SerializerOptions);
+                        if (entries is not null && entries.Count > 0)
+                        {
+                            _recent.Clear();
+                            _recent.AddRange(entries
+                                .Where(entry => entry is not null)
+                                .OrderByDescending(entry => entry.TimestampUtc)
+                                .Take(MaxRecentItems));
+                        }
+                    }
+                    catch
+                    {
+                        // Local storage might be unavailable or contain malformed JSON. Ignore errors.
                         _recent.Clear();
-                        _recent.AddRange(entries
-                            .Where(entry => entry is not null)
-                            .OrderByDescending(entry => entry.TimestampUtc)
-                            .Take(MaxRecentItems));
                     }
                 }
             }
