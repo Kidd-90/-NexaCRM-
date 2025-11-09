@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @implements IDisposable
+@using System
 @using System.Globalization
 @using System.Linq
 @using System.Security.Claims
@@ -301,6 +302,10 @@
     private string? parentPageTitle;
     private DevicePlatform currentDevicePlatform = DevicePlatform.Desktop;
     private bool devicePlatformInitialized;
+    private bool devicePlatformResolving;
+    private int devicePlatformAttemptCount;
+    private static readonly TimeSpan DevicePlatformRetryDelay = TimeSpan.FromMilliseconds(250);
+    private const int DevicePlatformMaxAttempts = 5;
     private bool isUserAuthenticated;
     private IJSObjectReference? layoutModule;
 
@@ -370,29 +375,75 @@
 
     private async Task InitializeDevicePlatformAsync()
     {
-        if (devicePlatformInitialized)
+        if (devicePlatformInitialized || devicePlatformResolving)
         {
             return;
         }
 
-        var resolvedPlatform = DevicePlatform.Desktop;
+        devicePlatformResolving = true;
 
         try
         {
-            resolvedPlatform = await DeviceService.GetPlatformAsync();
+            var resolvedPlatform = await DeviceService.GetPlatformAsync();
+            currentDevicePlatform = resolvedPlatform;
+            devicePlatformInitialized = true;
+            devicePlatformAttemptCount = 0;
+            await InvokeAsync(StateHasChanged);
         }
-        catch (JSException)
+        catch (JSException ex)
         {
-            resolvedPlatform = DevicePlatform.Desktop;
+            ScheduleDevicePlatformRetry(ex);
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
-            resolvedPlatform = DevicePlatform.Desktop;
+            ScheduleDevicePlatformRetry(ex);
+        }
+        finally
+        {
+            devicePlatformResolving = false;
+        }
+    }
+
+    private void ScheduleDevicePlatformRetry(Exception exception)
+    {
+        devicePlatformAttemptCount++;
+
+        if (devicePlatformAttemptCount >= DevicePlatformMaxAttempts)
+        {
+            currentDevicePlatform = DevicePlatform.Desktop;
+            devicePlatformInitialized = true;
+            _ = InvokeAsync(StateHasChanged);
+            try
+            {
+                Console.Error?.WriteLine($"Device platform detection failed after {devicePlatformAttemptCount} attempts: {exception.Message}");
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return;
         }
 
-        currentDevicePlatform = resolvedPlatform;
-        devicePlatformInitialized = true;
-        StateHasChanged();
+        _ = InvokeAsync(async () =>
+        {
+            try
+            {
+                await Task.Delay(DevicePlatformRetryDelay);
+                await InitializeDevicePlatformAsync();
+            }
+            catch (Exception retryException)
+            {
+                try
+                {
+                    Console.Error?.WriteLine($"Device platform retry failed: {retryException.Message}");
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        });
     }
 
     private string BuildPageClass()

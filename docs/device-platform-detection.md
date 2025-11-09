@@ -31,7 +31,7 @@ The `IDeviceService` abstraction (namespace `NexaCRM.UI.Services.Interfaces`) no
 
 ## Layout Behaviour
 
-`MainLayout.razor` reads the device platform once after the first render and appends the `mobile-layout` class to the page container for mobile platforms. When a signed-in user is on iOS or Android, the layout switches into a dedicated **mobile shell** that renders:
+`MainLayout.razor` reads the device platform once after the first render and appends the `mobile-layout` class to the page container for mobile platforms. Detection now includes a short retry loop so that deferred script loading on mobile Safari (particularly during server prerender) does not force the shell into desktop mode. When a signed-in user is on iOS or Android, the layout switches into a dedicated **mobile shell** that renders:
 
 - A floating header with greeting text, page title, notification badge support, and a rounded avatar chip that mirrors the desktop login indicator.
 - A body section that keeps the existing page content present (for debugging) while displaying a "모바일 화면 준비중" card so that testers recognise the mobile experience is under construction.
