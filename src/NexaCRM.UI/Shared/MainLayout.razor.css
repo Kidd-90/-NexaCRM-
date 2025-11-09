@@ -36,6 +36,7 @@
        whether a sidebar (or panel) is present. */
     padding: var(--shell-content-padding);
     margin-left: 0;
+    width: 100%;
     gap: clamp(1.25rem, 2vw, 1.75rem);
 }
 
@@ -46,18 +47,21 @@
    component). */
 .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
     margin-left: calc(var(--nav-rail-width) + var(--nav-width));
+    width: clamp(0px, calc(100% - (var(--nav-rail-width) + var(--nav-width))), 100%);
 }
 
 /* When the sidebar is an overlaying panel (panel-open), do not offset the
    main content — the panel floats above content. */
 .sidebar.panel-open ~ .desktop-shell__main {
     margin-left: 0;
+    width: 100%;
 }
 
 /* When the sidebar is present but collapsed, reduce the left offset so the
    main area aligns with the smaller sidebar width. */
 .sidebar.collapsed ~ .desktop-shell__main {
     margin-left: var(--nav-collapsed-width);
+    width: clamp(0px, calc(100% - var(--nav-collapsed-width)), 100%);
 }
 
 .desktop-shell__header {
