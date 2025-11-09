@@ -16,19 +16,35 @@ namespace NexaCRM.UI.Services
 
         public async Task<DevicePlatform> GetPlatformAsync()
         {
-            try
+            const int maxAttempts = 3;
+            const int retryDelayMilliseconds = 200;
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                var platform = await _jsRuntime.InvokeAsync<string>("deviceInterop.getPlatform");
-                return ConvertPlatform(platform);
+                try
+                {
+                    var platform = await _jsRuntime.InvokeAsync<string>("deviceInterop.getPlatform");
+                    return ConvertPlatform(platform);
+                }
+                catch (JSException) when (attempt < maxAttempts)
+                {
+                    await Task.Delay(retryDelayMilliseconds);
+                }
+                catch (InvalidOperationException) when (attempt < maxAttempts)
+                {
+                    await Task.Delay(retryDelayMilliseconds);
+                }
+                catch (JSException)
+                {
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
             }
-            catch (JSException)
-            {
-                return DevicePlatform.Desktop;
-            }
-            catch (InvalidOperationException)
-            {
-                return DevicePlatform.Desktop;
-            }
+
+            return DevicePlatform.Desktop;
         }
 
         public async Task<bool> IsMobileAsync()
