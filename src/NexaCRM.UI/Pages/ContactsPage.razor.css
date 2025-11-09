@@ -1,13 +1,14 @@
 .contacts-layout {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-lg, 2rem);
 }
 
 .contacts-toolbar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-md, 1.25rem);
     justify-content: space-between;
 }
 
@@ -15,18 +16,18 @@
     flex: 1;
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-sm, 0.75rem);
     padding: 0.6rem 0.85rem;
     border-radius: 0.85rem;
-    background: var(--surface-muted);
-    color: var(--text-secondary);
+    background: var(--surface-muted, #f1f5f9);
+    color: var(--text-secondary, #475569);
 }
 
 .contacts-search input {
     flex: 1;
     border: none;
     background: transparent;
-    color: var(--text-primary);
+    color: var(--text-primary, #0f172a);
 }
 
 .contacts-search input:focus {
@@ -36,27 +37,30 @@
 .contacts-toolbar__button {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-xs, 0.5rem);
     border: none;
-    background: var(--primary-color);
+    background: var(--primary-color, #2563eb);
     color: #fff;
     padding: 0.6rem 1rem;
     border-radius: 0.85rem;
     font-weight: 600;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    transition: transform var(--transition-fast, 0.18s), box-shadow var(--transition-fast, 0.18s);
 }
 
 .contacts-toolbar__button:hover {
     transform: translateY(-1px);
-    box-shadow: 0 14px 32px var(--shadow-light);
+    box-shadow: 0 14px 32px rgba(37, 99, 235, 0.24);
 }
 
 .contacts-table-container {
-    overflow-x: auto;
     border-radius: 1rem;
-    border: 1px solid var(--divider-color);
-    background: var(--surface-color);
-    box-shadow: 0 20px 36px var(--shadow-light);
+    border: 1px solid var(--divider-color, #e2e8f0);
+    background: var(--surface-color, #ffffff);
+    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.08);
+}
+
+.contacts-table-wrapper {
+    overflow-x: auto;
 }
 
 .contacts-table {
@@ -65,19 +69,15 @@
 }
 
 .contacts-table thead {
-    background: var(--surface-muted);
+    background: var(--surface-muted, #f8fafc);
 }
 
 .contacts-table th,
 .contacts-table td {
     text-align: left;
     padding: 0.85rem 1rem;
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--divider-color);
-}
-
-.contacts-table tbody tr:hover {
-    background: var(--hover-overlay);
+    color: var(--text-primary, #0f172a);
+    border-bottom: 1px solid var(--divider-color, #e2e8f0);
 }
 
 .contacts-loading,
@@ -85,68 +85,27 @@
     display: grid;
     place-items: center;
     padding: 4rem 0;
-    color: var(--text-secondary);
-    gap: var(--spacing-sm);
+    color: var(--text-secondary, #475569);
+    gap: var(--spacing-sm, 0.75rem);
 }
 
 .contacts-empty i {
     font-size: 2.5rem;
-    color: var(--primary-color);
+    color: var(--primary-color, #2563eb);
 }
 
-.contacts-mobile-view {
-    display: none;
-}
-
-.contact-card {
-    display: grid;
-    gap: var(--spacing-sm);
-    padding: 1.25rem;
-    border-radius: 1rem;
-    background: var(--surface-color);
-    border: 1px solid var(--divider-color);
-    box-shadow: 0 16px 32px var(--shadow-light);
-}
-
-.contact-name {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.contact-info {
-    display: grid;
-    gap: var(--spacing-xs);
-}
-
-.contact-info-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--text-secondary);
-}
-
-.contact-info-item i {
-    color: var(--primary-color);
-}
-
-.contact-info-label {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-.contact-actions {
-    margin-top: var(--spacing-sm);
-}
-
-@media (max-width: 767px) {
-    .contacts-table-container {
-        display: none;
+@media (max-width: 768px) {
+    .contacts-toolbar {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .contacts-mobile-view {
-        display: grid;
-        gap: var(--spacing-md);
+    .contacts-toolbar__button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .contacts-table-container {
+        border-radius: 1.25rem;
     }
 }

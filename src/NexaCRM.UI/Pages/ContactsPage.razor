@@ -44,37 +44,37 @@
     {
         <div class="contacts-table-container">
             <div class="contacts-table-wrapper">
-                <table class="contacts-table">
+                <table class="contacts-table responsive-table">
                     <thead>
                         <tr>
-                            <th>@Localizer["Id"]</th>
-                            <th>@Localizer["FirstName"]</th>
-                            <th>@Localizer["LastName"]</th>
-                            <th>@Localizer["Email"]</th>
-                            <th>@Localizer["PhoneNumber"]</th>
-                            <th>@Localizer["Actions"]</th>
+                            <th scope="col">@Localizer["Id"]</th>
+                            <th scope="col">@Localizer["FirstName"]</th>
+                            <th scope="col">@Localizer["LastName"]</th>
+                            <th scope="col">@Localizer["Email"]</th>
+                            <th scope="col">@Localizer["PhoneNumber"]</th>
+                            <th scope="col">@Localizer["Actions"]</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var contact in filteredContacts)
                         {
                             <tr>
-                                <td>@contact.Id</td>
-                                <td>@contact.FirstName</td>
-                                <td>@contact.LastName</td>
-                                <td>
+                                <td data-label="@Localizer["Id"]">@contact.Id</td>
+                                <td data-label="@Localizer["FirstName"]">@contact.FirstName</td>
+                                <td data-label="@Localizer["LastName"]">@contact.LastName</td>
+                                <td data-label="@Localizer["Email"]">
                                     @if (!string.IsNullOrEmpty(contact.Email))
                                     {
                                         <a href="mailto:@contact.Email">@contact.Email</a>
                                     }
                                 </td>
-                                <td>
+                                <td data-label="@Localizer["PhoneNumber"]">
                                     @if (!string.IsNullOrEmpty(contact.PhoneNumber))
                                     {
                                         <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
                                     }
                                 </td>
-                                <td>
+                                <td data-label="@Localizer["Actions"]">
                                     <NexaCRM.UI.Components.UI.QuickActionsComponent
                                         PhoneNumber="@contact.PhoneNumber"
                                         Email="@contact.Email"
@@ -89,60 +89,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <div class="contacts-mobile-view">
-            @foreach (var contact in filteredContacts)
-            {
-                <div class="contact-card">
-                    <div class="contact-name">
-                        @if (!string.IsNullOrEmpty(contact.FirstName) || !string.IsNullOrEmpty(contact.LastName))
-                        {
-                            @($"{contact.FirstName} {contact.LastName}".Trim())
-                        }
-                        else
-                        {
-                            <span class="text-muted">@Localizer["No Name"]</span>
-                        }
-                    </div>
-                    <div class="contact-id">ID: @contact.Id</div>
-
-                    <div class="contact-info">
-                        @if (!string.IsNullOrEmpty(contact.Email))
-                        {
-                            <div class="contact-info-item">
-                                <i class="bi bi-envelope" aria-hidden="true"></i>
-                                <div>
-                                    <span class="contact-info-label">@Localizer["Email"]</span>
-                                    <a href="mailto:@contact.Email">@contact.Email</a>
-                                </div>
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(contact.PhoneNumber))
-                        {
-                            <div class="contact-info-item">
-                                <i class="bi bi-telephone" aria-hidden="true"></i>
-                                <div>
-                                    <span class="contact-info-label">@Localizer["PhoneNumber"]</span>
-                                    <a href="tel:@contact.PhoneNumber">@contact.PhoneNumber</a>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <div class="contact-actions">
-                        <NexaCRM.UI.Components.UI.QuickActionsComponent
-                            PhoneNumber="@contact.PhoneNumber"
-                            Email="@contact.Email"
-                            CustomerName="@($"{contact.FirstName} {contact.LastName}".Trim())"
-                            CustomerId="@contact.Id.ToString()"
-                            ShowLabels="true"
-                            CssClass="inline"
-                            OnActionCompletedWithContact="HandleQuickActionWithContact" />
-                    </div>
-                </div>
-            }
         </div>
     }
 </div>
