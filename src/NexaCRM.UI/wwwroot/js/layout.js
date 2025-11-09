@@ -126,18 +126,18 @@ function observeSidebarState() {
 
         const applyState = () => {
             const isPanelOpen = sidebar.classList.contains('panel-open');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            main.style.position = 'relative';
             if (isPanelOpen) {
-                // Panel overlays main: ensure main has no left offset and lower z-index
+                // Panel overlays main: ensure main has no left offset and a lower z-index
                 main.style.marginLeft = '0';
-                main.style.position = 'relative';
+                main.style.zIndex = '0';
+            } else if (isCollapsed) {
+                main.style.marginLeft = 'var(--nav-collapsed-width, 72px)';
                 main.style.zIndex = '0';
             } else {
-                // Sidebar-only: shift main left so it's visible rather than hidden
-                // (negative offset matches requested layout). Use -280px as the
-                // baseline; if you change --nav-width, update this value too.
-                main.style.marginLeft = '-280px';
-                main.style.position = 'relative';
-                main.style.zIndex = '1100';
+                main.style.marginLeft = 'calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px))';
+                main.style.zIndex = '0';
             }
         };
 

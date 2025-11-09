@@ -285,14 +285,20 @@
    these layout rules win over other scoped styles. */
 :global(.sidebar.panel-open) ~ .desktop-shell__main {
     margin-left: 0 !important; /* panel overlays — main should not be pushed */
+    position: relative;
+    z-index: 0 !important;
 }
 
 :global(.sidebar:not(.panel-open)) ~ .desktop-shell__main {
-    margin-left: -280px !important; /* sidebar-only state: apply requested -280px */
+    margin-left: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px)) !important;
+    position: relative;
+    z-index: 0 !important;
 }
 
 :global(.sidebar.collapsed) ~ .desktop-shell__main {
-    margin-left: 68px !important; /* keep collapsed behavior consistent */
+    margin-left: var(--nav-collapsed-width, 72px) !important; /* keep collapsed behavior consistent */
+    position: relative;
+    z-index: 0 !important;
 }
 
 .panel-header {
