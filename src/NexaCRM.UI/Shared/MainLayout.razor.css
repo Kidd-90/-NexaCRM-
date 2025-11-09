@@ -18,7 +18,8 @@
     /* Don't reserve space here unconditionally. The left offset will be
        applied to the main area only when a navigation rail is present. This
        prevents anonymous/login pages from showing an empty left column. */
-    padding: clamp(1.5rem, 3vw, 2.5rem);
+    --desktop-shell-padding: clamp(1.5rem, 3vw, 2.5rem);
+    padding: var(--desktop-shell-padding);
     box-sizing: border-box;
     width: min(100%, 100vw);
     overflow: hidden;
@@ -35,8 +36,10 @@
        sibling selectors below will set the correct left offset depending on
        whether a sidebar (or panel) is present. */
     padding: var(--shell-content-padding);
-    margin-left: 0;
-    width: 100%;
+    --desktop-shell-offset: 0px;
+    margin-left: var(--desktop-shell-offset);
+    width: max(0px, calc(100% - var(--desktop-shell-offset)));
+    box-sizing: border-box;
     gap: clamp(1.25rem, 2vw, 1.75rem);
 }
 
@@ -46,22 +49,19 @@
    before the main content (which matches how the layout renders the nav
    component). */
 .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
-    margin-left: calc(var(--nav-rail-width) + var(--nav-width));
-    width: clamp(0px, calc(100% - (var(--nav-rail-width) + var(--nav-width))), 100%);
+    --desktop-shell-offset: calc(var(--nav-rail-width) + var(--nav-width));
 }
 
 /* When the sidebar is an overlaying panel (panel-open), do not offset the
    main content — the panel floats above content. */
 .sidebar.panel-open ~ .desktop-shell__main {
-    margin-left: 0;
-    width: 100%;
+    --desktop-shell-offset: 0px;
 }
 
 /* When the sidebar is present but collapsed, reduce the left offset so the
    main area aligns with the smaller sidebar width. */
 .sidebar.collapsed ~ .desktop-shell__main {
-    margin-left: var(--nav-collapsed-width);
-    width: clamp(0px, calc(100% - var(--nav-collapsed-width)), 100%);
+    --desktop-shell-offset: var(--nav-collapsed-width);
 }
 
 .desktop-shell__header {
