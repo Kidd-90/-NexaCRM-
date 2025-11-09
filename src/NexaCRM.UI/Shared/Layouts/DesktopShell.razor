@@ -1,0 +1,99 @@
+@namespace NexaCRM.UI.Shared
+
+<div class="@(DecorateAsMobile ? "page desktop-layout desktop-shell mobile-layout" : "page desktop-layout desktop-shell")" data-device-platform="@DevicePlatformToken">
+    <NavigationTail />
+    <LayoutInterop />
+
+    <div class="desktop-shell__main">
+        <header class="desktop-shell__header">
+            <div class="desktop-shell__meta">
+                <div class="desktop-shell__page-icon" aria-hidden="true">
+                    <i class="@HeaderActionIcon"></i>
+                </div>
+                <div class="desktop-shell__titles">
+                    @if (IsDetailPage && !string.IsNullOrEmpty(ParentPageTitle))
+                    {
+                        <button type="button" class="desktop-shell__parent" @onclick="HandleNavigateBack">
+                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                            <span>@ParentPageTitle</span>
+                        </button>
+                    }
+                    <h1 class="desktop-shell__title">@CurrentPageTitle</h1>
+                </div>
+            </div>
+
+            <div class="desktop-shell__search">
+                <NavigationQuickSearch OnNavigate="OnSearchNavigate" />
+            </div>
+
+            <div class="desktop-shell__actions">
+                <button type="button" class="desktop-shell__action theme-toggle-button" data-theme-toggle aria-label="Switch theme">
+                    <span class="theme-light-icon">🌞</span>
+                    <span class="theme-dark-icon">🌙</span>
+                </button>
+                <button class="desktop-shell__action" title="Notifications" @onclick="HandleNotificationsClick">
+                    <i class="bi bi-bell" aria-hidden="true"></i>
+                    @if (UnreadNotificationsCount > 0)
+                    {
+                        <span class="desktop-shell__badge" aria-label="@UnreadNotificationsCount unread notifications">@UnreadNotificationsCount</span>
+                    }
+                </button>
+            </div>
+        </header>
+
+        <main class="desktop-shell__content">
+            @BodyContent
+        </main>
+    </div>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="login-status-indicator" title="Logged in">
+                <span class="indicator-dot" aria-hidden="true"></span>
+                <span class="indicator-text">@UserInitials</span>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; }
+
+    [Parameter]
+    public string HeaderActionIcon { get; set; } = "bi bi-grid-3x3-gap";
+
+    [Parameter]
+    public string CurrentPageTitle { get; set; } = "Home";
+
+    [Parameter]
+    public bool IsDetailPage { get; set; }
+
+    [Parameter]
+    public string? ParentPageTitle { get; set; }
+
+    [Parameter]
+    public EventCallback OnNavigateBack { get; set; }
+
+    [Parameter]
+    public EventCallback OnNotificationsClick { get; set; }
+
+    [Parameter]
+    public EventCallback OnSearchNavigate { get; set; }
+
+    [Parameter]
+    public int UnreadNotificationsCount { get; set; }
+
+    [Parameter]
+    public string UserInitials { get; set; } = "G";
+
+    [Parameter]
+    public string DevicePlatformToken { get; set; } = "desktop";
+
+    [Parameter]
+    public bool DecorateAsMobile { get; set; }
+
+    private Task HandleNavigateBack() => OnNavigateBack.InvokeAsync(null);
+
+    private Task HandleNotificationsClick() => OnNotificationsClick.InvokeAsync(null);
+}

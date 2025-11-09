@@ -1,0 +1,108 @@
+@namespace NexaCRM.UI.Shared
+
+<div class="page mobile-layout mobile-shell" data-device-platform="@DevicePlatformToken">
+    <NavigationTail />
+    <LayoutInterop />
+
+    <div class="mobile-shell__viewport">
+        <header class="mobile-shell__header">
+            <div class="mobile-shell__header-leading">
+                @if (ShowBackButton)
+                {
+                    <button type="button" class="mobile-shell__icon-button" @onclick="HandleNavigateBack" aria-label="뒤로가기">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                    </button>
+                }
+            </div>
+
+            <div class="mobile-shell__header-info">
+                <span class="mobile-shell__greeting">안녕하세요, @UserDisplayName</span>
+                <h1 class="mobile-shell__title">@CurrentPageTitle</h1>
+            </div>
+
+            <div class="mobile-shell__header-actions">
+                <button type="button" class="mobile-shell__icon-button" @onclick="HandleNotificationsClick" aria-label="알림">
+                    <i class="bi bi-bell" aria-hidden="true"></i>
+                    @if (UnreadNotificationsCount > 0)
+                    {
+                        <span class="mobile-shell__badge" aria-label="@UnreadNotificationsCount unread notifications">@UnreadNotificationsCount</span>
+                    }
+                </button>
+
+                <div class="mobile-shell__avatar" title="@UserDisplayName">
+                    <span aria-hidden="true">@UserInitials</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="mobile-shell__body" role="main">
+            <section class="mobile-shell__placeholder" aria-label="모바일 화면 개발 안내">
+                <div class="mobile-shell__placeholder-icon" aria-hidden="true">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h2 class="mobile-shell__placeholder-title">모바일 화면 준비중</h2>
+                <p class="mobile-shell__placeholder-subtitle">현재 모바일 환경 UI는 개발 중입니다. 데스크톱 레이아웃을 이용해 주세요.</p>
+            </section>
+
+            <div class="mobile-shell__body-content" aria-hidden="true">
+                @BodyContent
+            </div>
+        </main>
+
+        <footer class="mobile-shell__footer">
+            <nav class="mobile-shell__nav" aria-label="모바일 기본 메뉴">
+                @foreach (var item in NavigationItems)
+                {
+                    <button type="button"
+                            class="mobile-shell__nav-item @(item.IsActive ? "mobile-shell__nav-item--active" : string.Empty)"
+                            @onclick="() => HandleNavigateTo(item.TargetUri)"
+                            aria-label="@item.Label">
+                        <i class="@item.Icon" aria-hidden="true"></i>
+                        <span>@item.Label</span>
+                    </button>
+                }
+            </nav>
+        </footer>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; }
+
+    [Parameter]
+    public string UserDisplayName { get; set; } = "Guest";
+
+    [Parameter]
+    public string UserInitials { get; set; } = "G";
+
+    [Parameter]
+    public string CurrentPageTitle { get; set; } = "Home";
+
+    [Parameter]
+    public bool ShowBackButton { get; set; }
+
+    [Parameter]
+    public int UnreadNotificationsCount { get; set; }
+
+    [Parameter]
+    public EventCallback OnNavigateBack { get; set; }
+
+    [Parameter]
+    public EventCallback OnNotificationsClick { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<MainLayout.MobileNavigationLink> NavigationItems { get; set; } = Array.Empty<MainLayout.MobileNavigationLink>();
+
+    [Parameter]
+    public EventCallback<string?> OnNavigateTo { get; set; }
+
+    [Parameter]
+    public string DevicePlatformToken { get; set; } = "mobile";
+
+    private Task HandleNavigateBack() => OnNavigateBack.InvokeAsync(null);
+
+    private Task HandleNotificationsClick() => OnNotificationsClick.InvokeAsync(null);
+
+    private Task HandleNavigateTo(string? target) => OnNavigateTo.InvokeAsync(target);
+}
