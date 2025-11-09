@@ -5,7 +5,7 @@ using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.UI.Services
 {
-    public class DeviceService : IDeviceService
+    public sealed class DeviceService : IDeviceService
     {
         private readonly IJSRuntime _jsRuntime;
 
@@ -16,19 +16,45 @@ namespace NexaCRM.UI.Services
 
         public async Task<DevicePlatform> GetPlatformAsync()
         {
-            try
+            const int maxAttempts = 5;
+            const int retryDelayMilliseconds = 200;
+            Exception? lastException = null;
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                var platform = await _jsRuntime.InvokeAsync<string>("deviceInterop.getPlatform");
-                return ConvertPlatform(platform);
+                try
+                {
+                    var platform = await _jsRuntime.InvokeAsync<string>("deviceInterop.getPlatform");
+                    return ConvertPlatform(platform);
+                }
+                catch (JSException ex) when (attempt < maxAttempts)
+                {
+                    lastException = ex;
+                    await Task.Delay(retryDelayMilliseconds);
+                }
+                catch (InvalidOperationException ex) when (attempt < maxAttempts)
+                {
+                    lastException = ex;
+                    await Task.Delay(retryDelayMilliseconds);
+                }
+                catch (JSException ex)
+                {
+                    lastException = ex;
+                    break;
+                }
+                catch (InvalidOperationException ex)
+                {
+                    lastException = ex;
+                    break;
+                }
             }
-            catch (JSException)
+
+            if (lastException is not null)
             {
-                return DevicePlatform.Desktop;
+                throw new DevicePlatformDetectionException("Failed to resolve the device platform from the JavaScript runtime.", lastException);
             }
-            catch (InvalidOperationException)
-            {
-                return DevicePlatform.Desktop;
-            }
+
+            return DevicePlatform.Desktop;
         }
 
         public async Task<bool> IsMobileAsync()
@@ -57,6 +83,14 @@ namespace NexaCRM.UI.Services
                 "ios" => DevicePlatform.Ios,
                 _ => DevicePlatform.Desktop
             };
+        }
+    }
+
+    public sealed class DevicePlatformDetectionException : Exception
+    {
+        public DevicePlatformDetectionException(string message, Exception innerException)
+            : base(message, innerException)
+        {
         }
     }
 }

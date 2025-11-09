@@ -27,7 +27,7 @@ The `IDeviceService` abstraction (namespace `NexaCRM.UI.Services.Interfaces`) no
 - `Task<bool> IsIosAsync()`
 - `Task<bool> IsAndroidAsync()`
 
-`DeviceService` uses JS interop to retrieve the platform token and projects it into the `DevicePlatform` enum. Each call safely falls back to `DevicePlatform.Desktop` when interop is unavailable.
+`DeviceService` uses JS interop to retrieve the platform token and projects it into the `DevicePlatform` enum. The service retries transient `JSException` / `InvalidOperationException` failures and now surfaces a `DevicePlatformDetectionException` when the JavaScript runtime is not yet ready so the caller can defer layout decisions until a real platform value is available.
 
 ## Layout Behaviour
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
+using NexaCRM.UI.Services;
 using NexaCRM.UI.Services.Interfaces;
 
 namespace NexaCRM.UI.Shared;
@@ -139,33 +140,31 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (firstRender)
         {
-            return;
-        }
-
-        try
-        {
-            layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/NexaCRM.UI/js/layout.js");
-            await layoutModule.InvokeVoidAsync("initializeShell");
-            await UpdateUnreadNotificationsAsync();
-            await layoutModule.InvokeVoidAsync("refreshThemeToggle");
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Console.Error?.WriteLine($"Failed to import layout module: {ex.Message}");
-
             try
             {
-                await JSRuntime.InvokeVoidAsync("initializeShell");
+                layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/NexaCRM.UI/js/layout.js");
+                await layoutModule.InvokeVoidAsync("initializeShell");
                 await UpdateUnreadNotificationsAsync();
-                await JSRuntime.InvokeVoidAsync("refreshThemeToggle");
+                await layoutModule.InvokeVoidAsync("refreshThemeToggle");
                 StateHasChanged();
             }
-            catch (Exception inner)
+            catch (Exception ex)
             {
-                Console.Error?.WriteLine($"Fallback initializeShell failed: {inner.Message}");
+                Console.Error?.WriteLine($"Failed to import layout module: {ex.Message}");
+
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("initializeShell");
+                    await UpdateUnreadNotificationsAsync();
+                    await JSRuntime.InvokeVoidAsync("refreshThemeToggle");
+                    StateHasChanged();
+                }
+                catch (Exception inner)
+                {
+                    Console.Error?.WriteLine($"Fallback initializeShell failed: {inner.Message}");
+                }
             }
         }
 
@@ -179,24 +178,25 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
             return;
         }
 
-        var resolvedPlatform = DevicePlatform.Desktop;
-
         try
         {
-            resolvedPlatform = await DeviceService.GetPlatformAsync();
+            var resolvedPlatform = await DeviceService.GetPlatformAsync();
+            currentDevicePlatform = resolvedPlatform;
+            devicePlatformInitialized = true;
+            StateHasChanged();
         }
-        catch (JSException)
+        catch (DevicePlatformDetectionException ex)
         {
-            resolvedPlatform = DevicePlatform.Desktop;
+            Console.Error?.WriteLine($"Device platform detection not yet available: {ex.InnerException?.Message ?? ex.Message}");
         }
-        catch (InvalidOperationException)
+        catch (JSException ex)
         {
-            resolvedPlatform = DevicePlatform.Desktop;
+            Console.Error?.WriteLine($"Device platform detection failed: {ex.Message}");
         }
-
-        currentDevicePlatform = resolvedPlatform;
-        devicePlatformInitialized = true;
-        StateHasChanged();
+        catch (InvalidOperationException ex)
+        {
+            Console.Error?.WriteLine($"Device platform detection is not ready: {ex.Message}");
+        }
     }
 
     private bool ShouldRenderMobileShell => devicePlatformInitialized && currentDevicePlatform != DevicePlatform.Desktop && isUserAuthenticated;
