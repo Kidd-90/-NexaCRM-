@@ -63,17 +63,23 @@
 
 .sidebar.collapsed .sidebar-rail {
     width: 72px;
+    min-width: 72px;
+    flex: 0 0 72px;
 }
 
+/* Prevent the navigation rail from shrinking when the desktop viewport narrows. */
 .sidebar-rail {
     width: 80px;
+    min-width: 80px;
+    flex: 0 0 80px;
+    flex-shrink: 0;
     background-color: #f8fafb;
     border-right: 1px solid #eaecf0;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 16px;
-    transition: width 0.25s ease;
+    transition: width 0.25s ease, flex-basis 0.25s ease;
 }
 
 .rail-logo {
