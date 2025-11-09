@@ -108,6 +108,9 @@
 .rail-btn {
     width: 44px;
     height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    flex: 0 0 44px;
     border-radius: 10px;
     background: transparent;
     border: none;
@@ -142,19 +145,28 @@
     display: block;
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
+}
+.rail-btn .nav-icon {
+    flex-shrink: 0;
 }
 .rail-btn .nav-icon svg {
     width: 20px;
     height: 20px;
     fill: currentColor;
     stroke: currentColor;
+    flex-shrink: 0;
 }
 
 /* normalize icon rendering: ensure consistent stroke width and crisp geometry */
+.nav-icon {
+    flex-shrink: 0;
+}
 .nav-icon svg {
     display: block;
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
 }
 .nav-icon svg path,
 .nav-icon svg line,
