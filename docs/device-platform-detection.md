@@ -31,6 +31,12 @@ The `IDeviceService` abstraction (namespace `NexaCRM.UI.Services.Interfaces`) no
 
 ## Layout Behaviour
 
-`MainLayout.razor` reads the device platform once after the first render and appends the `mobile-layout` class to the page container for mobile platforms. Style overrides live in `wwwroot/css/ui/mobile-layout.css`, which simplifies the shell for smaller screens (hiding the sidebar, stacking header content, and repositioning the login indicator).
+`MainLayout.razor` reads the device platform once after the first render and appends the `mobile-layout` class to the page container for mobile platforms. When a signed-in user is on iOS or Android, the layout switches into a dedicated **mobile shell** that renders:
+
+- A floating header with greeting text, page title, notification badge support, and a rounded avatar chip that mirrors the desktop login indicator.
+- A body section that keeps the existing page content present (for debugging) while displaying a "모바일 화면 준비중" card so that testers recognise the mobile experience is under construction.
+- A bottom navigation footer with high-touch shortcuts (Home, DB, 할 일, 설정) styled after the design reference shared by stakeholders.
+
+Style overrides live in `wwwroot/css/ui/mobile-layout.css`. The stylesheet hides the sidebar, applies the mobile shell gradients, and adds safe-area aware padding for modern devices.
 
 The JavaScript helper and Blazor layout both write to `data-device-platform` / `data-platform` attributes to aid debugging and future CSS hooks.

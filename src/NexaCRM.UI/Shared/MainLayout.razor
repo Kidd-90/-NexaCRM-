@@ -81,56 +81,123 @@
     <NavigationTail />
     <LayoutInterop />
 
-    <div class="desktop-shell__main">
-        <header class="desktop-shell__header">
-            <div class="desktop-shell__meta">
-                <div class="desktop-shell__page-icon" aria-hidden="true">
-                    <i class="@headerActionIcon"></i>
-                </div>
-                <div class="desktop-shell__titles">
-                    @if (isDetailPage && !string.IsNullOrEmpty(parentPageTitle))
+    @if (ShouldUseMobileShell)
+    {
+        <div class="mobile-shell__viewport">
+            <header class="mobile-shell__header">
+                <div class="mobile-shell__header-leading">
+                    @if (isDetailPage)
                     {
-                        <button type="button" class="desktop-shell__parent" @onclick="NavigateBack">
+                        <button type="button" class="mobile-shell__icon-button" @onclick="NavigateBack" aria-label="뒤로가기">
                             <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                            <span>@parentPageTitle</span>
                         </button>
                     }
-                    <h1 class="desktop-shell__title">@currentPageTitle</h1>
                 </div>
-            </div>
 
-            <div class="desktop-shell__search">
-                <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
-            </div>
+                <div class="mobile-shell__header-info">
+                    <span class="mobile-shell__greeting">안녕하세요, @userDisplayName</span>
+                    <h1 class="mobile-shell__title">@currentPageTitle</h1>
+                </div>
 
-            <div class="desktop-shell__actions">
-                <button type="button" class="desktop-shell__action theme-toggle-button" data-theme-toggle aria-label="Switch theme">
-                    <span class="theme-light-icon">🌞</span>
-                    <span class="theme-dark-icon">🌙</span>
-                </button>
-                <button class="desktop-shell__action" title="Notifications" @onclick="OnNotificationsClick">
-                    <i class="bi bi-bell" aria-hidden="true"></i>
-                    @if (unreadNotificationsCount > 0)
+                <div class="mobile-shell__header-actions">
+                    <button type="button" class="mobile-shell__icon-button" @onclick="OnNotificationsClick" aria-label="알림">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (unreadNotificationsCount > 0)
+                        {
+                            <span class="mobile-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
+                        }
+                    </button>
+
+                    <div class="mobile-shell__avatar" title="@userDisplayName">
+                        <span aria-hidden="true">@userInitials</span>
+                    </div>
+                </div>
+            </header>
+
+            <main class="mobile-shell__body" role="main">
+                <section class="mobile-shell__placeholder" aria-label="모바일 화면 개발 안내">
+                    <div class="mobile-shell__placeholder-icon" aria-hidden="true">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <h2 class="mobile-shell__placeholder-title">모바일 화면 준비중</h2>
+                    <p class="mobile-shell__placeholder-subtitle">현재 모바일 환경 UI는 개발 중입니다. 데스크톱 레이아웃을 이용해 주세요.</p>
+                </section>
+
+                <div class="mobile-shell__body-content" aria-hidden="true">
+                    @Body
+                </div>
+            </main>
+
+            <footer class="mobile-shell__footer">
+                <nav class="mobile-shell__nav" aria-label="모바일 기본 메뉴">
+                    @foreach (var item in MobileNavigationItems)
                     {
-                        <span class="desktop-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
+                        var isActive = IsActiveMobileNav(item.TargetUri);
+                        <button type="button"
+                                class="mobile-shell__nav-item @(isActive ? "mobile-shell__nav-item--active" : string.Empty)"
+                                @onclick="() => NavigateToMobile(item.TargetUri)"
+                                aria-label="@item.Label">
+                            <i class="@item.Icon" aria-hidden="true"></i>
+                            <span>@item.Label</span>
+                        </button>
                     }
-                </button>
-            </div>
-        </header>
+                </nav>
+            </footer>
+        </div>
+    }
+    else
+    {
+        <div class="desktop-shell__main">
+            <header class="desktop-shell__header">
+                <div class="desktop-shell__meta">
+                    <div class="desktop-shell__page-icon" aria-hidden="true">
+                        <i class="@headerActionIcon"></i>
+                    </div>
+                    <div class="desktop-shell__titles">
+                        @if (isDetailPage && !string.IsNullOrEmpty(parentPageTitle))
+                        {
+                            <button type="button" class="desktop-shell__parent" @onclick="NavigateBack">
+                                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                                <span>@parentPageTitle</span>
+                            </button>
+                        }
+                        <h1 class="desktop-shell__title">@currentPageTitle</h1>
+                    </div>
+                </div>
 
-        <main class="desktop-shell__content">
-            @Body
-        </main>
-    </div>
+                <div class="desktop-shell__search">
+                    <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
+                </div>
 
-    <AuthorizeView>
-        <Authorized>
-            <div class="login-status-indicator" title="Logged in">
-                <span class="indicator-dot" aria-hidden="true"></span>
-                <span class="indicator-text">@userInitials</span>
-            </div>
-        </Authorized>
-    </AuthorizeView>
+                <div class="desktop-shell__actions">
+                    <button type="button" class="desktop-shell__action theme-toggle-button" data-theme-toggle aria-label="Switch theme">
+                        <span class="theme-light-icon">🌞</span>
+                        <span class="theme-dark-icon">🌙</span>
+                    </button>
+                    <button class="desktop-shell__action" title="Notifications" @onclick="OnNotificationsClick">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (unreadNotificationsCount > 0)
+                        {
+                            <span class="desktop-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
+                        }
+                    </button>
+                </div>
+            </header>
+
+            <main class="desktop-shell__content">
+                @Body
+            </main>
+        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="login-status-indicator" title="Logged in">
+                    <span class="indicator-dot" aria-hidden="true"></span>
+                    <span class="indicator-text">@userInitials</span>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    }
 </div>
 
 <GlobalActionHost />
@@ -214,6 +281,16 @@
         ["email-template-builder"] = "bi bi-envelope-open"
     };
 
+    private sealed record MobileNavItem(string Label, string Icon, string TargetUri);
+
+    private static readonly MobileNavItem[] MobileNavigationItems =
+    {
+        new MobileNavItem("홈", "bi bi-house-door-fill", "/"),
+        new MobileNavItem("DB", "bi bi-database", "/db/customer/all"),
+        new MobileNavItem("할 일", "bi bi-check2-square", "/tasks-page"),
+        new MobileNavItem("설정", "bi bi-gear-fill", "/settings")
+    };
+
     private bool isDetailPage;
     private string currentPageTitle = "Home";
     private string headerActionIcon = "bi bi-grid-3x3-gap";
@@ -224,6 +301,7 @@
     private string? parentPageTitle;
     private DevicePlatform currentDevicePlatform = DevicePlatform.Desktop;
     private bool devicePlatformInitialized;
+    private bool isUserAuthenticated;
     private IJSObjectReference? layoutModule;
 
     protected override void OnInitialized()
@@ -320,6 +398,11 @@
     private string BuildPageClass()
     {
         var baseClass = "page desktop-layout desktop-shell";
+        if (ShouldUseMobileShell)
+        {
+            return baseClass + " mobile-layout mobile-shell";
+        }
+
         if (devicePlatformInitialized && currentDevicePlatform != DevicePlatform.Desktop)
         {
             return baseClass + " mobile-layout";
@@ -327,6 +410,8 @@
 
         return baseClass;
     }
+
+    private bool ShouldUseMobileShell => devicePlatformInitialized && currentDevicePlatform != DevicePlatform.Desktop && isUserAuthenticated;
 
     private string GetDevicePlatformToken()
     {
@@ -355,7 +440,38 @@
         }
     }
 
+    private void NavigateToMobile(string? targetUri)
+    {
+        var destination = string.IsNullOrWhiteSpace(targetUri) ? NavigationManager.BaseUri : targetUri;
+        NavigationManager.NavigateTo(destination);
+    }
+
     private Task HandleSearchNavigate() => Task.CompletedTask;
+
+    private bool IsActiveMobileNav(string? targetUri)
+    {
+        var current = NormalizePath(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+
+        if (string.IsNullOrWhiteSpace(targetUri))
+        {
+            return string.IsNullOrEmpty(current);
+        }
+
+        var absoluteTarget = NavigationManager.ToAbsoluteUri(targetUri);
+        var normalizedTarget = NormalizePath(NavigationManager.ToBaseRelativePath(absoluteTarget.ToString()));
+
+        if (string.IsNullOrEmpty(normalizedTarget))
+        {
+            return string.IsNullOrEmpty(current);
+        }
+
+        if (string.Equals(current, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return current.StartsWith(normalizedTarget + "/", StringComparison.OrdinalIgnoreCase);
+    }
 
     private void UpdateLayoutState()
     {
@@ -525,7 +641,9 @@
 
     private void UpdateUserInfo(ClaimsPrincipal user)
     {
-        if (user?.Identity?.IsAuthenticated == true)
+        isUserAuthenticated = user?.Identity?.IsAuthenticated == true;
+
+        if (isUserAuthenticated)
         {
             userDisplayName = string.IsNullOrWhiteSpace(user.Identity?.Name) ? "User" : user.Identity!.Name!;
 
