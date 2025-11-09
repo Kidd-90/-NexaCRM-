@@ -5,7 +5,9 @@
 
 /* Ensure the panel-open overlay does not push the main content */
 .page.desktop-layout.desktop-shell .sidebar.panel-open ~ .desktop-shell__main {
-    margin-left: 0 !important;
+    --desktop-shell-offset: 0px !important;
+    margin-left: var(--desktop-shell-offset) !important;
+    width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
     /* ensure panel overlays the main content by keeping main at lower stacking
        priority when the panel is open */
     position: relative;
@@ -16,14 +18,18 @@
    fixed rail and sidebar width so the main content begins to the right of the
    navigation tail. */
 .page.desktop-layout.desktop-shell .sidebar:not(.panel-open) ~ .desktop-shell__main {
-    margin-left: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px)) !important;
+    --desktop-shell-offset: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px)) !important;
+    margin-left: var(--desktop-shell-offset) !important;
+    width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
     position: relative;
     z-index: 0 !important;
 }
 
 /* Keep collapsed behavior consistent */
 .page.desktop-layout.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
-    margin-left: var(--nav-collapsed-width, 72px) !important;
+    --desktop-shell-offset: var(--nav-collapsed-width, 72px) !important;
+    margin-left: var(--desktop-shell-offset) !important;
+    width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
     position: relative;
     z-index: 0 !important;
 }
