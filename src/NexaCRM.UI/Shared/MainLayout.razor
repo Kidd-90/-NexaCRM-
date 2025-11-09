@@ -1,15 +1,8 @@
-@inherits LayoutComponentBase
-@implements IDisposable
-@using System.Globalization
-@using System.Linq
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components.Web
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject INotificationFeedService NotificationFeed
+@inject IDeviceService DeviceService
 
 <HeadContent>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
@@ -21,10 +14,6 @@
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/components/login-status.css" />
     <link rel="stylesheet" href="_content/NexaCRM.UI/css/overrides.css" />
     <script>
-        // Defensive guard: if server prerender produced a responsive-page but the
-        // outer `.page.desktop-layout` wrapper is missing (for example during
-        // incremental rendering or when a layout wasn't applied), create a wrapper
-        // so layout scripts and CSS selectors find the expected DOM structure.
         (function () {
             try {
                 if (!document.querySelector('.page.desktop-layout')) {
@@ -48,6 +37,7 @@
 
             var base = '/_content/NexaCRM.UI/js/';
             var files = [
+                'device.js',
                 'auth-manager.js',
                 'navigation.js',
                 'culture.js',
@@ -56,10 +46,6 @@
                 'client-console-forwarder.js',
                 'csv-export.js',
                 'actions.js',
-                // note: layout.js is intentionally NOT injected here as a classic script.
-                // It is imported as an ES module in OnAfterRenderAsync to avoid
-                // duplicate evaluation (which can cause "duplicate variable" errors
-                // in some browsers if the same top-level bindings are evaluated twice).
             ];
 
             files.forEach(function (file) {
@@ -75,446 +61,34 @@
     </script>
 </HeadContent>
 
-<div class="page desktop-layout desktop-shell">
-    <NavigationTail />
-    <LayoutInterop />
-
-    <div class="desktop-shell__main">
-        <header class="desktop-shell__header">
-            <div class="desktop-shell__meta">
-                <div class="desktop-shell__page-icon" aria-hidden="true">
-                    <i class="@headerActionIcon"></i>
-                </div>
-                <div class="desktop-shell__titles">
-                    @if (isDetailPage && !string.IsNullOrEmpty(parentPageTitle))
-                    {
-                        <button type="button" class="desktop-shell__parent" @onclick="NavigateBack">
-                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                            <span>@parentPageTitle</span>
-                        </button>
-                    }
-                    <h1 class="desktop-shell__title">@currentPageTitle</h1>
-                </div>
-            </div>
-
-            <div class="desktop-shell__search">
-                <NavigationQuickSearch OnNavigate="HandleSearchNavigate" />
-            </div>
-
-            <div class="desktop-shell__actions">
-                <button type="button" class="desktop-shell__action theme-toggle-button" data-theme-toggle aria-label="Switch theme">
-                    <span class="theme-light-icon">🌞</span>
-                    <span class="theme-dark-icon">🌙</span>
-                </button>
-                <button class="desktop-shell__action" title="Notifications" @onclick="OnNotificationsClick">
-                    <i class="bi bi-bell" aria-hidden="true"></i>
-                    @if (unreadNotificationsCount > 0)
-                    {
-                        <span class="desktop-shell__badge" aria-label="@unreadNotificationsCount unread notifications">@unreadNotificationsCount</span>
-                    }
-                </button>
-            </div>
-        </header>
-
-        <main class="desktop-shell__content">
-            @Body
-        </main>
-    </div>
-
-    <AuthorizeView>
-        <Authorized>
-            <div class="login-status-indicator" title="Logged in">
-                <span class="indicator-dot" aria-hidden="true"></span>
-                <span class="indicator-text">@userInitials</span>
-            </div>
-        </Authorized>
-    </AuthorizeView>
-</div>
+@if (ShouldRenderMobileShell)
+{
+    <MobileShell DevicePlatformToken="@GetDevicePlatformToken()"
+                 BodyContent="@Body"
+                 UserDisplayName="@userDisplayName"
+                 UserInitials="@userInitials"
+                 CurrentPageTitle="@currentPageTitle"
+                 UnreadNotificationsCount="@unreadNotificationsCount"
+                 ShowBackButton="@isDetailPage"
+                 OnNavigateBack="NavigateBack"
+                 OnNotificationsClick="OnNotificationsClick"
+                 NavigationItems="@mobileNavigationLinks"
+                 OnNavigateTo="NavigateToMobile" />
+}
+else
+{
+    <DesktopShell DevicePlatformToken="@GetDevicePlatformToken()"
+                  BodyContent="@Body"
+                  HeaderActionIcon="@headerActionIcon"
+                  CurrentPageTitle="@currentPageTitle"
+                  IsDetailPage="@isDetailPage"
+                  ParentPageTitle="@parentPageTitle"
+                  OnNavigateBack="NavigateBack"
+                  OnNotificationsClick="OnNotificationsClick"
+                  OnSearchNavigate="HandleSearchNavigate"
+                  UnreadNotificationsCount="@unreadNotificationsCount"
+                  UserInitials="@userInitials"
+                  DecorateAsMobile="@ShouldDecorateAsMobileChrome" />
+}
 
 <GlobalActionHost />
-
-@code {
-    private static readonly string[] DetailRoutePrefixes =
-    {
-        "contacts/",
-        "db/distribution/assign/",
-        "email-template-builder/"
-    };
-
-    private static readonly Dictionary<string, string> DetailParentRoutes = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["contacts/"] = "/contacts",
-        ["db/distribution/assign/"] = "/db/distribution/status",
-        ["email-template-builder/"] = "/email-template-builder"
-    };
-
-    private static readonly Dictionary<string, string> PageTitleOverrides = new(StringComparer.OrdinalIgnoreCase)
-    {
-        [""] = "Home",
-        ["main-dashboard"] = "Home",
-        ["sales-manager-dashboard"] = "Manager Dashboard",
-        ["statistics/dashboard"] = "Statistics",
-        ["statistics"] = "Statistics",
-        ["reports-page"] = "Reports",
-        ["sales-pipeline-page"] = "Sales Pipeline",
-        ["contacts"] = "Contacts",
-        ["tasks-page"] = "Tasks",
-        ["settings"] = "Settings",
-        ["settings-page"] = "Theme Settings",
-        ["profile-settings-page"] = "Profile",
-        ["settings/company-info"] = "Company Info",
-        ["settings/security"] = "Security",
-        ["settings/sms"] = "SMS Settings",
-        ["sms/senders"] = "Sender Numbers",
-        ["notification-settings-page"] = "Notifications",
-        ["organization/structure"] = "Organization Structure",
-        ["organization/biz-management"] = "Business Management",
-        ["organization/stats"] = "Organization Stats",
-        ["organization/system-admin"] = "System Admin",
-        ["db/customer/all"] = "All Customers",
-        ["db/customer/new"] = "New Customers",
-        ["db/customer/starred"] = "Starred Customers",
-        ["db/customer/assigned-today"] = "Today's Assignments",
-        ["db/distribution/unassigned"] = "Unassigned DB",
-        ["db/distribution/newly-assigned"] = "Newly Assigned",
-        ["db/distribution/status"] = "Distribution Status",
-        ["db/distribution/my-history"] = "Assignment History",
-        ["db/customer/team-status"] = "Team DB Status",
-        ["db/advanced"] = "Advanced DB",
-        ["db/customer/my-list"] = "My DB List",
-        ["customer-support-dashboard"] = "Support Dashboard",
-        ["customer-support-ticket-management-interface"] = "Support Tickets",
-        ["customer-support-knowledge-base"] = "Support Knowledge Base",
-        ["marketing-campaign-management-interface"] = "Marketing Campaigns",
-        ["system/info"] = "System Info",
-        ["email-template-builder"] = "Email Templates"
-    };
-
-    private static readonly Dictionary<string, string> HeaderIconOverrides = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["contacts"] = "bi bi-person-lines-fill",
-        ["reports-page"] = "bi bi-bar-chart-line",
-        ["statistics"] = "bi bi-graph-up",
-        ["statistics/dashboard"] = "bi bi-graph-up",
-        ["sales-pipeline-page"] = "bi bi-kanban",
-        ["tasks-page"] = "bi bi-check2-square",
-        ["settings"] = "bi bi-gear-wide-connected",
-        ["settings-page"] = "bi bi-brightness-high",
-        ["profile-settings-page"] = "bi bi-person-circle",
-        ["organization"] = "bi bi-diagram-3",
-        ["marketing-campaign-management-interface"] = "bi bi-bullseye",
-        ["customer-support-dashboard"] = "bi bi-headset",
-        ["customer-support-ticket-management-interface"] = "bi bi-card-checklist",
-        ["system"] = "bi bi-hdd-network",
-        ["sms"] = "bi bi-chat-dots",
-        ["db"] = "bi bi-database",
-        ["sales-manager-dashboard"] = "bi bi-speedometer2",
-        ["email-template-builder"] = "bi bi-envelope-open"
-    };
-
-    private bool isDetailPage;
-    private string currentPageTitle = "Home";
-    private string headerActionIcon = "bi bi-grid-3x3-gap";
-    private int unreadNotificationsCount;
-    private string userDisplayName = "Guest";
-    private string userInitials = "G";
-    private string? parentPagePath;
-    private string? parentPageTitle;
-    private IJSObjectReference? layoutModule;
-
-    protected override void OnInitialized()
-    {
-        NavigationManager.LocationChanged += OnLocationChanged;
-        NotificationFeed.UnreadCountChanged += OnUnreadChanged;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        try
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            UpdateUserInfo(authState.User);
-        }
-        catch
-        {
-            UpdateUserInfo(new ClaimsPrincipal(new ClaimsIdentity()));
-        }
-
-        UpdateLayoutState();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Prefer the library script packaged under the Razor Class Library content path.
-            // If that import fails (wrong path or server config), catch the error and
-            // try a graceful fallback to any global functions the non-module script
-            // might have registered on window.
-            try
-            {
-                layoutModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/NexaCRM.UI/js/layout.js");
-                await layoutModule.InvokeVoidAsync("initializeShell");
-                await UpdateUnreadNotificationsAsync();
-                await layoutModule.InvokeVoidAsync("refreshThemeToggle");
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                // Log a clearer error for diagnostics and attempt a non-module fallback.
-                Console.Error?.WriteLine($"Failed to import layout module: {ex.Message}");
-
-                try
-                {
-                    // If the non-module scripts were included via <script> tags they may have
-                    // registered functions on window. Call those as a fallback.
-                    await JSRuntime.InvokeVoidAsync("initializeShell");
-                    await UpdateUnreadNotificationsAsync();
-                    await JSRuntime.InvokeVoidAsync("refreshThemeToggle");
-                    StateHasChanged();
-                }
-                catch (Exception inner)
-                {
-                    // If fallback also fails, log it but don't rethrow so the app stays up.
-                    Console.Error?.WriteLine($"Fallback initializeShell failed: {inner.Message}");
-                }
-            }
-        }
-    }
-
-    private void GoToProfile()
-    {
-        NavigationManager.NavigateTo("profile-settings-page");
-    }
-
-    private void NavigateBack()
-    {
-        if (!string.IsNullOrWhiteSpace(parentPagePath))
-        {
-            NavigationManager.NavigateTo(parentPagePath);
-        }
-        else
-        {
-            _ = JSRuntime.InvokeVoidAsync("history.back");
-        }
-    }
-
-    private Task HandleSearchNavigate() => Task.CompletedTask;
-
-    private void UpdateLayoutState()
-    {
-        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        var normalized = NormalizePath(relativePath);
-
-        isDetailPage = false;
-        parentPagePath = null;
-        parentPageTitle = null;
-
-        foreach (var prefix in DetailRoutePrefixes)
-        {
-            if (normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && normalized.Length > prefix.Length)
-            {
-                isDetailPage = true;
-                if (DetailParentRoutes.TryGetValue(prefix, out var explicitParent))
-                {
-                    parentPagePath = explicitParent;
-                }
-                break;
-            }
-        }
-
-        if (isDetailPage)
-        {
-            var basePath = normalized;
-            if (!string.IsNullOrEmpty(parentPagePath))
-            {
-                basePath = NormalizePath(parentPagePath);
-            }
-            else
-            {
-                var lastSeparator = normalized.LastIndexOf('/');
-                if (lastSeparator > 0)
-                {
-                    basePath = normalized[..lastSeparator];
-                    parentPagePath = "/" + basePath;
-                }
-            }
-
-            parentPageTitle = ResolvePageTitle(basePath, false);
-        }
-
-        currentPageTitle = ResolvePageTitle(normalized, isDetailPage);
-        headerActionIcon = ResolveHeaderActionIcon(normalized);
-    }
-
-    private static string NormalizePath(string? relativePath)
-    {
-        if (string.IsNullOrWhiteSpace(relativePath))
-        {
-            return string.Empty;
-        }
-
-        var trimmed = relativePath.Split('?', '#')[0];
-        return trimmed.Trim('/');
-    }
-
-    private string ResolvePageTitle(string normalizedPath, bool treatAsDetail)
-    {
-        if (PageTitleOverrides.TryGetValue(normalizedPath, out var directTitle))
-        {
-            return directTitle;
-        }
-
-        if (string.IsNullOrEmpty(normalizedPath))
-        {
-            return "Home";
-        }
-
-        var segments = normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments.Length == 0)
-        {
-            return "Home";
-        }
-
-        if (treatAsDetail && segments.Length > 1)
-        {
-            var detailBase = string.Join('/', segments[..^1]);
-            if (PageTitleOverrides.TryGetValue(detailBase, out var detailTitle))
-            {
-                return detailTitle;
-            }
-
-            segments = segments[..^1];
-        }
-
-        var lastSegment = segments.Last();
-        if (PageTitleOverrides.TryGetValue(lastSegment, out var segmentTitle))
-        {
-            return segmentTitle;
-        }
-
-        return ToTitleCase(lastSegment.Replace("-", " "));
-    }
-
-    private string ResolveHeaderActionIcon(string normalizedPath)
-    {
-        if (HeaderIconOverrides.TryGetValue(normalizedPath, out var icon))
-        {
-            return icon;
-        }
-
-        if (string.IsNullOrEmpty(normalizedPath))
-        {
-            return "bi bi-grid-3x3-gap";
-        }
-
-        var segments = normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        foreach (var segment in new[] { normalizedPath, segments.First(), segments.Last() })
-        {
-            if (HeaderIconOverrides.TryGetValue(segment, out icon))
-            {
-                return icon;
-            }
-        }
-
-        return "bi bi-grid-3x3-gap";
-    }
-
-    private static string ToTitleCase(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return "Home";
-        }
-
-        var lowerInvariant = value.ToLower(CultureInfo.CurrentCulture);
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lowerInvariant);
-    }
-
-    private async Task UpdateUnreadNotificationsAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
-        {
-            try
-            {
-                unreadNotificationsCount = Math.Max(0, await NotificationFeed.GetUnreadCountAsync());
-            }
-            catch (Exception ex)
-            {
-                Console.Error?.WriteLine($"Failed to update unread notifications: {ex.Message}");
-                unreadNotificationsCount = 0;
-            }
-        }
-        else
-        {
-            unreadNotificationsCount = 0;
-        }
-    }
-
-    private void OnNotificationsClick() => NavigationManager.NavigateTo("/notifications");
-
-    private async void OnUnreadChanged(int count)
-    {
-        try
-        {
-            unreadNotificationsCount = Math.Max(0, count);
-            await InvokeAsync(StateHasChanged);
-        }
-        catch
-        {
-            // ignore
-        }
-    }
-
-    private void UpdateUserInfo(ClaimsPrincipal user)
-    {
-        if (user?.Identity?.IsAuthenticated == true)
-        {
-            userDisplayName = string.IsNullOrWhiteSpace(user.Identity?.Name) ? "User" : user.Identity!.Name!;
-
-            userInitials = string.Join(string.Empty, userDisplayName
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Where(segment => segment.Length > 0)
-                .Take(2)
-                .Select(segment => char.ToUpperInvariant(segment[0])));
-
-            if (string.IsNullOrWhiteSpace(userInitials))
-            {
-                var firstChar = userDisplayName.FirstOrDefault();
-                userInitials = firstChar == default ? "U" : char.ToUpperInvariant(firstChar).ToString();
-            }
-        }
-        else
-        {
-            userDisplayName = "Guest";
-            userInitials = "G";
-        }
-    }
-
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        try
-        {
-            UpdateLayoutState();
-            await UpdateUnreadNotificationsAsync();
-            await InvokeAsync(StateHasChanged);
-            if (layoutModule is not null)
-            {
-                await layoutModule.InvokeVoidAsync("refreshThemeToggle");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Error?.WriteLine($"Failed to update layout on navigation: {ex.Message}");
-        }
-    }
-
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-        NotificationFeed.UnreadCountChanged -= OnUnreadChanged;
-    }
-}

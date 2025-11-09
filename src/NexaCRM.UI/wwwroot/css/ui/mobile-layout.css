@@ -1,0 +1,278 @@
+/*!
+ * NexaCRM Mobile Layout Shell
+ * Applies when the `.mobile-layout` marker class is present on the page wrapper.
+ */
+
+.page.desktop-layout.desktop-shell.mobile-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f3f4f6 0%, #ffffff 65%, #f8fafc 100%);
+}
+
+.page.desktop-layout.desktop-shell.mobile-layout .sidebar,
+.page.desktop-layout.desktop-shell.mobile-layout .desktop-shell__main,
+.page.desktop-layout.desktop-shell.mobile-layout .login-status-indicator {
+    display: none !important;
+}
+
+.page.desktop-layout.desktop-shell.mobile-layout.mobile-shell {
+    padding: 0;
+}
+
+.mobile-shell__viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0f172a 0%, #1f2937 45%, #f8fafc 100%);
+    color: #0f172a;
+}
+
+.mobile-shell__header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem 1rem;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.92) 100%);
+    color: #ffffff;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35);
+}
+
+.mobile-shell__header-leading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 2.75rem;
+}
+
+.mobile-shell__header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.mobile-shell__greeting {
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.mobile-shell__title {
+    margin: 0;
+    font-size: 1.55rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.mobile-shell__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.mobile-shell__icon-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 1.25rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    cursor: pointer;
+    padding: 0;
+}
+
+.mobile-shell__icon-button:hover,
+.mobile-shell__icon-button:focus-visible {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35);
+}
+
+.mobile-shell__icon-button:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+}
+
+.mobile-shell__icon-button i {
+    font-size: 1.15rem;
+}
+
+.mobile-shell__badge {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.35rem;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(249, 115, 22, 0.45);
+}
+
+.mobile-shell__avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 1.25rem;
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
+    text-transform: uppercase;
+}
+
+.mobile-shell__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.75rem 1.5rem 5.5rem;
+    background: linear-gradient(180deg, rgba(248, 250, 252, 1) 0%, rgba(241, 245, 249, 0.85) 60%, rgba(248, 250, 252, 1) 100%);
+}
+
+.mobile-shell__placeholder {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 1.85rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+    color: #1f2937;
+}
+
+.mobile-shell__placeholder-icon {
+    font-size: 1.9rem;
+    color: #2563eb;
+    margin-bottom: 0.75rem;
+}
+
+.mobile-shell__placeholder-title {
+    margin: 0 0 0.45rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.mobile-shell__placeholder-subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+.mobile-shell__body-content {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px dashed rgba(99, 102, 241, 0.35);
+    border-radius: 1.25rem;
+    padding: 1.5rem 1.25rem;
+    overflow: auto;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.mobile-shell__body-content::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+.mobile-shell__body-content::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.35);
+    border-radius: 999px;
+}
+
+.mobile-shell__footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.75rem 1.25rem calc(env(safe-area-inset-bottom, 0) + 1.15rem);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 -12px 30px rgba(15, 23, 42, 0.18);
+    border-top-left-radius: 1.75rem;
+    border-top-right-radius: 1.75rem;
+}
+
+.mobile-shell__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.mobile-shell__nav-item {
+    flex: 1;
+    border: none;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.25rem;
+    border-radius: 1rem;
+    color: #6b7280;
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.mobile-shell__nav-item i {
+    font-size: 1.2rem;
+}
+
+.mobile-shell__nav-item:hover,
+.mobile-shell__nav-item:focus-visible {
+    color: #1f2937;
+    background: rgba(37, 99, 235, 0.12);
+    transform: translateY(-1px);
+}
+
+.mobile-shell__nav-item:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.45);
+    outline-offset: 2px;
+}
+
+.mobile-shell__nav-item--active {
+    color: #1f2937;
+    font-weight: 700;
+    background: rgba(37, 99, 235, 0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+}
+
+.mobile-shell__nav-item--active i {
+    color: #2563eb;
+}
+
+@media (min-width: 768px) {
+    .mobile-shell__header {
+        padding-inline: 2rem;
+    }
+
+    .mobile-shell__body {
+        padding-inline: 2rem;
+    }
+
+    .mobile-shell__footer {
+        padding-inline: 2rem;
+    }
+}
