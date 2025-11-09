@@ -1,28 +1,73 @@
 /* ========================================
-   Responsive Table/Card Component Styles
+   Responsive Table Utility
    ======================================== */
 
-/* Generic responsive helpers for DB list pages */
-.desktop-table-view {
-    overflow-x: auto;
-}
-
-.mobile-card-view {
-    display: none;
-    padding: 0 12px;
-}
-
-.customer-card {
+.responsive-table {
     width: 100%;
-    box-sizing: border-box;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: var(--surface-color, #ffffff);
 }
 
-@media (max-width: 767.98px) {
-    .desktop-table-view {
+.responsive-table thead {
+    background: var(--surface-muted, #f8fafc);
+}
+
+.responsive-table th,
+.responsive-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--divider-color, #e2e8f0);
+    color: var(--text-primary, #0f172a);
+    vertical-align: top;
+}
+
+.responsive-table tbody tr {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.responsive-table tbody tr:hover {
+    background: var(--hover-overlay, rgba(148, 163, 184, 0.12));
+}
+
+@media (max-width: 768px) {
+    .responsive-table thead {
         display: none;
     }
 
-    .mobile-card-view {
-        display: block;
+    .responsive-table tbody {
+        display: grid;
+        gap: var(--spacing-md, 1rem);
+    }
+
+    .responsive-table tbody tr {
+        display: grid;
+        gap: var(--spacing-sm, 0.75rem);
+        border: 1px solid var(--divider-color, #e2e8f0);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        background: var(--surface-color, #ffffff);
+        box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .responsive-table tbody tr:hover {
+        background: var(--surface-color, #ffffff);
+        transform: translateY(-2px);
+    }
+
+    .responsive-table tbody tr td {
+        display: grid;
+        gap: var(--spacing-xs, 0.35rem);
+        padding: 0;
+        border: none;
+    }
+
+    .responsive-table tbody tr td::before {
+        content: attr(data-label);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-secondary, #475569);
     }
 }

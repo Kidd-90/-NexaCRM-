@@ -24,57 +24,30 @@
     }
     else
     {
-        <!-- Desktop View -->
-        <div class="table-responsive desktop-table-view">
-            <table class="table table-striped table-hover">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover responsive-table">
                 <thead class="table-light">
                     <tr>
-                        <th>고객명</th>
-                        <th>연락처</th>
-                        <th>분배일</th>
-                        <th>DB 상태</th>
-                        <th>전달자</th>
+                        <th scope="col">고객명</th>
+                        <th scope="col">연락처</th>
+                        <th scope="col">분배일</th>
+                        <th scope="col">DB 상태</th>
+                        <th scope="col">전달자</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var customer in customers)
                     {
                         <tr @onclick="() => NavigateToContact(customer.ContactId)">
-                            <td>@customer.CustomerName</td>
-                            <td>@customer.ContactNumber</td>
-                            <td>@customer.AssignedDate.ToShortDateString()</td>
-                            <td>@StatusLocalizer[customer.Status.ToString()]</td>
-                            <td>@customer.Assigner</td>
+                            <td data-label="고객명">@customer.CustomerName</td>
+                            <td data-label="연락처">@customer.ContactNumber</td>
+                            <td data-label="분배일">@customer.AssignedDate.ToShortDateString()</td>
+                            <td data-label="DB 상태">@StatusLocalizer[customer.Status.ToString()]</td>
+                            <td data-label="전달자">@customer.Assigner</td>
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
-
-        <!-- Mobile View -->
-        <div class="mobile-card-view">
-            @foreach (var customer in customers)
-            {
-                <div class="customer-card" @onclick="() => NavigateToContact(customer.ContactId)">
-                    <h5>@customer.CustomerName</h5>
-                    <div class="card-info-row">
-                        <span class="card-info-label">연락처</span>
-                        <span class="card-info-value">@customer.ContactNumber</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">분배일</span>
-                        <span class="card-info-value">@customer.AssignedDate.ToShortDateString()</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">DB 상태</span>
-                        <span class="card-info-value">@StatusLocalizer[customer.Status.ToString()]</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-info-label">전달자</span>
-                        <span class="card-info-value">@customer.Assigner</span>
-                    </div>
-                </div>
-            }
         </div>
     }
 </div>
