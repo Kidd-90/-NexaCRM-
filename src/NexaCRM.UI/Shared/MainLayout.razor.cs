@@ -466,5 +466,5 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
 
     private sealed record MobileNavigationItem(string Label, string Icon, string TargetUri);
 
-    internal sealed record MobileNavigationLink(string Label, string Icon, string TargetUri, bool IsActive);
+    public sealed record MobileNavigationLink(string Label, string Icon, string TargetUri, bool IsActive);
 }
