@@ -12,22 +12,20 @@
     z-index: 0 !important;
 }
 
-/* When the sidebar is present but not in overlay mode, apply the requested
-   negative shift so content sits under the rail/panel as intended. */
+/* When the sidebar is present but not in overlay mode, reserve space for the
+   fixed rail and sidebar width so the main content begins to the right of the
+   navigation tail. */
 .page.desktop-layout.desktop-shell .sidebar:not(.panel-open) ~ .desktop-shell__main {
-    margin-left: -255px !important;
-    /* Bring the main content above the fixed sidebar so it's visible at the
-       top when shifted left. Use position+z-index higher than the sidebar's
-       z-index (sidebar uses z-index:1000). */
+    margin-left: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px)) !important;
     position: relative;
-    z-index: 1100 !important;
+    z-index: 0 !important;
 }
 
 /* Keep collapsed behavior consistent */
 .page.desktop-layout.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
-    margin-left: 68px !important;
+    margin-left: var(--nav-collapsed-width, 72px) !important;
     position: relative;
-    z-index: 1100 !important;
+    z-index: 0 !important;
 }
 
 /* Provide a very-specific fallback that targets the desktop-shell main

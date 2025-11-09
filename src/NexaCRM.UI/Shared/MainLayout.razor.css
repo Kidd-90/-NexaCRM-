@@ -2,10 +2,12 @@
     display: contents;
 }
 .desktop-shell {
-    /* Default navigation width for the fixed sidebar. Kept here so layout can
-       adapt when the sidebar is collapsed without editing many rules. */
-    --nav-width: 280px;
-    --nav-collapsed-width: 80px;
+    /* Default navigation width tokens for the fixed sidebar. Kept here so
+       layout can adapt when the sidebar is collapsed without editing many
+       rules. */
+    --nav-rail-width: 80px;
+    --nav-width: 320px;
+    --nav-collapsed-width: 72px;
 }
 .desktop-shell {
     display: grid;
@@ -43,7 +45,7 @@
    before the main content (which matches how the layout renders the nav
    component). */
 .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
-    margin-left: calc(80px + var(--nav-width));
+    margin-left: calc(var(--nav-rail-width) + var(--nav-width));
 }
 
 /* When the sidebar is an overlaying panel (panel-open), do not offset the
