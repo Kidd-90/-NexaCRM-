@@ -118,6 +118,7 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
     {
         NavigationManager.LocationChanged += OnLocationChanged;
         NotificationFeed.UnreadCountChanged += OnUnreadChanged;
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -169,14 +170,18 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
             }
         }
 
-        await InitializeDevicePlatformAsync();
+        var platformChanged = await InitializeDevicePlatformAsync();
+        if (platformChanged)
+        {
+            StateHasChanged();
+        }
     }
 
-    private async Task InitializeDevicePlatformAsync()
+    private async Task<bool> InitializeDevicePlatformAsync(bool forceRefresh = false)
     {
-        if (devicePlatformInitialized)
+        if (devicePlatformInitialized && !forceRefresh)
         {
-            return;
+            return false;
         }
 
         var resolvedPlatform = DevicePlatform.Desktop;
@@ -194,9 +199,11 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
             resolvedPlatform = DevicePlatform.Desktop;
         }
 
+        var platformChanged = !devicePlatformInitialized || currentDevicePlatform != resolvedPlatform;
+
         currentDevicePlatform = resolvedPlatform;
         devicePlatformInitialized = true;
-        StateHasChanged();
+        return platformChanged;
     }
 
     private bool ShouldRenderMobileShell => devicePlatformInitialized && currentDevicePlatform != DevicePlatform.Desktop && isUserAuthenticated;
@@ -440,6 +447,41 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
         }
     }
 
+    private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        _ = HandleAuthenticationStateChangedAsync(task);
+    }
+
+    private async Task HandleAuthenticationStateChangedAsync(Task<AuthenticationState> task)
+    {
+        AuthenticationState? authenticationState = null;
+
+        try
+        {
+            authenticationState = await task.ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Console.Error?.WriteLine($"Failed to resolve authentication state: {ex.Message}");
+        }
+
+        await InvokeAsync(async () =>
+        {
+            if (authenticationState is not null)
+            {
+                UpdateUserInfo(authenticationState.User);
+            }
+            else
+            {
+                UpdateUserInfo(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
+
+            var shouldForceRefresh = !devicePlatformInitialized || currentDevicePlatform == DevicePlatform.Desktop;
+            await InitializeDevicePlatformAsync(shouldForceRefresh);
+            StateHasChanged();
+        });
+    }
+
     private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         try
@@ -462,6 +504,7 @@ public sealed partial class MainLayout : LayoutComponentBase, IDisposable
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
         NotificationFeed.UnreadCountChanged -= OnUnreadChanged;
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 
     private sealed record MobileNavigationItem(string Label, string Icon, string TargetUri);
