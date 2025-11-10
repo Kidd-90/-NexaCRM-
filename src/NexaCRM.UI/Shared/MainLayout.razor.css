@@ -8,6 +8,7 @@
     --nav-rail-width: 80px;
     --nav-width: 320px;
     --nav-collapsed-width: 72px;
+    --navigation-tail-width: calc(var(--nav-rail-width) + var(--nav-width));
 }
 .desktop-shell {
     display: grid;
@@ -49,7 +50,7 @@
    before the main content (which matches how the layout renders the nav
    component). */
 .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
-    --desktop-shell-offset: calc(var(--nav-rail-width) + var(--nav-width));
+    --desktop-shell-offset: var(--navigation-tail-width);
 }
 
 /* When the sidebar is an overlaying panel (panel-open), do not offset the

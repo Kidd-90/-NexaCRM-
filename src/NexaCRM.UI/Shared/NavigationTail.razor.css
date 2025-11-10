@@ -7,13 +7,15 @@
     top: 0;
     z-index: 1000;
     align-items: stretch;
-    width: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px));
-    min-width: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px));
+    --sidebar-total-width: var(--navigation-tail-width, calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px)));
+    width: var(--sidebar-total-width);
+    min-width: var(--sidebar-total-width);
 }
 
 .sidebar.collapsed {
-    width: var(--nav-collapsed-width, 72px);
-    min-width: var(--nav-collapsed-width, 72px);
+    --sidebar-total-width: var(--nav-collapsed-width, 72px);
+    width: var(--sidebar-total-width);
+    min-width: var(--sidebar-total-width);
 }
 
 .sidebar-mobile-header {
@@ -295,26 +297,34 @@
    these layout rules win over other scoped styles. */
 :global(.sidebar.panel-open) ~ .desktop-shell__main {
     --desktop-shell-offset: 0px !important; /* panel overlays — main should not be pushed */
-    margin-left: var(--desktop-shell-offset) !important;
-    width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
     position: relative;
     z-index: 0 !important;
 }
 
 :global(.sidebar:not(.panel-open)) ~ .desktop-shell__main {
-    --desktop-shell-offset: calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px)) !important;
-    margin-left: var(--desktop-shell-offset) !important;
-    width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
+    --desktop-shell-offset: var(--sidebar-total-width, calc(var(--nav-rail-width, 80px) + var(--nav-width, 320px))) !important;
     position: relative;
     z-index: 0 !important;
 }
 
 :global(.sidebar.collapsed) ~ .desktop-shell__main {
-    --desktop-shell-offset: var(--nav-collapsed-width, 72px) !important; /* keep collapsed behavior consistent */
-    margin-left: var(--desktop-shell-offset) !important;
-    width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
+    --desktop-shell-offset: var(--sidebar-total-width, var(--nav-collapsed-width, 72px)) !important; /* keep collapsed behavior consistent */
     position: relative;
     z-index: 0 !important;
+}
+
+@media (max-width: 1023.98px) {
+    :global(.sidebar) ~ .desktop-shell__main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    :global(.sidebar) ~ .desktop-shell__main {
+        margin-left: var(--desktop-shell-offset) !important;
+        width: max(0px, calc(100% - var(--desktop-shell-offset))) !important;
+    }
 }
 
 .panel-header {
