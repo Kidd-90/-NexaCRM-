@@ -7,6 +7,9 @@ namespace NexaCRM.UI.Services
 {
     public class DeviceService : IDeviceService
     {
+        private const int MaximumRetryAttempts = 5;
+        private const int RetryDelayMilliseconds = 150;
+
         private readonly IJSRuntime _jsRuntime;
 
         public DeviceService(IJSRuntime jsRuntime)
@@ -16,19 +19,40 @@ namespace NexaCRM.UI.Services
 
         public async Task<DevicePlatform> GetPlatformAsync()
         {
-            try
+            for (var attempt = 0; attempt < MaximumRetryAttempts; attempt++)
             {
-                var platform = await _jsRuntime.InvokeAsync<string>("deviceInterop.getPlatform");
-                return ConvertPlatform(platform);
+                try
+                {
+                    var platformToken = await _jsRuntime.InvokeAsync<string>("deviceInterop.getPlatform");
+
+                    if (string.IsNullOrWhiteSpace(platformToken))
+                    {
+                        if (attempt < MaximumRetryAttempts - 1)
+                        {
+                            await Task.Delay(RetryDelayMilliseconds).ConfigureAwait(false);
+                            continue;
+                        }
+
+                        return DevicePlatform.Desktop;
+                    }
+
+                    return ConvertPlatform(platformToken);
+                }
+                catch (JSException ex) when (ShouldRetryInterop(ex) && attempt < MaximumRetryAttempts - 1)
+                {
+                    await Task.Delay(RetryDelayMilliseconds).ConfigureAwait(false);
+                }
+                catch (InvalidOperationException) when (attempt < MaximumRetryAttempts - 1)
+                {
+                    await Task.Delay(RetryDelayMilliseconds).ConfigureAwait(false);
+                }
+                catch (JSException)
+                {
+                    break;
+                }
             }
-            catch (JSException)
-            {
-                return DevicePlatform.Desktop;
-            }
-            catch (InvalidOperationException)
-            {
-                return DevicePlatform.Desktop;
-            }
+
+            return DevicePlatform.Desktop;
         }
 
         public async Task<bool> IsMobileAsync()
@@ -47,6 +71,24 @@ namespace NexaCRM.UI.Services
         {
             var platform = await GetPlatformAsync();
             return platform == DevicePlatform.Android;
+        }
+
+        private static bool ShouldRetryInterop(JSException exception)
+        {
+            if (exception is null)
+            {
+                return false;
+            }
+
+            var message = exception.Message;
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return false;
+            }
+
+            return message.Contains("deviceInterop", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("is not defined", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("does not exist", StringComparison.OrdinalIgnoreCase);
         }
 
         private static DevicePlatform ConvertPlatform(string? platformToken)
