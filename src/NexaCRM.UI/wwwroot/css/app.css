@@ -403,38 +403,6 @@ body {
 .app-shell__content {
     flex: 1;
 
-/* Layout offset rules for desktop shell main content to account for nav rail and panel */
-.desktop-shell__main {
-    --desktop-shell-offset: 0px;
-    transition: margin-left var(--transition-normal), width var(--transition-normal);
-    margin-left: var(--desktop-shell-offset);
-    width: max(0px, calc(100% - var(--desktop-shell-offset)));
-    box-sizing: border-box;
-}
-
-/* When the sidebar is visible and NOT in panel-open overlay mode, reserve
-   space for the rail and sidebar width so main content starts to the right of
-   the navigation tail. */
-.sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main,
-.desktop-shell .sidebar:not(.panel-open):not(.collapsed) ~ .desktop-shell__main {
-    --desktop-shell-offset: calc(var(--nav-rail-width) + var(--nav-width));
-    margin-left: var(--desktop-shell-offset);
-}
-
-/* When sidebar is collapsed, keep a smaller offset to match the collapsed rail */
-.sidebar.collapsed ~ .desktop-shell__main,
-.desktop-shell .sidebar.collapsed ~ .desktop-shell__main {
-    --desktop-shell-offset: var(--nav-collapsed-width);
-    margin-left: var(--desktop-shell-offset);
-}
-
-/* Keep a specific override for the common case (ensure no left margin when
-     panel overlay is active). */
-.sidebar.panel-open ~ .desktop-shell__main,
-.desktop-shell .sidebar.panel-open ~ .desktop-shell__main {
-        --desktop-shell-offset: 0px;
-        margin-left: var(--desktop-shell-offset) !important;
-}
     border-radius: 1rem;
     background: var(--background-color);
     border: 1px solid var(--divider-color);
