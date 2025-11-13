@@ -2,6 +2,8 @@
 
 ## 개요
 - `NexaCrmSolution.sln`은 .NET 8 SDK를 필요로 합니다.
+- 루트에 있는 `global.json`은 `8.0.100` 기능 밴드를 기준으로 `rollForward: latestFeature` 옵션을 선언하여 `8.0.4xx`와 같이 더 최신
+  패치를 자동으로 활용합니다. CI 이미지에 보다 새로운 8.0 SDK만 설치되어 있어도 `dotnet restore`가 실패하지 않습니다.
 - 이 문서는 CI나 로컬 개발 환경에서 `dotnet build --configuration Release`를 실행하기 위한 필수 패키지 설치 절차를 정리합니다.
 
 ## 사전 준비
